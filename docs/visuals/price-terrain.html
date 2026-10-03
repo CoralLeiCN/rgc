@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RGC / Price Terrain</title>
+  <link rel="stylesheet" href="price-terrain.css">
+  <script defer src="vendor/plotly-gl3d-3.1.0.min.js"></script>
+  <script defer src="price-terrain-model.js"></script>
+  <script defer src="price-terrain.js"></script>
+</head>
+<body>
+<header class="masthead"><a class="wordmark" href="visualization-reference-board.html" aria-label="RGC visualization references">RGC<span class="wordmark-dot"></span></a><span class="masthead-label">CATEGORY INTELLIGENCE / DESIGN STUDY 02</span><span class="status"><i></i> SYNTHETIC DEMO</span></header>
+<main>
+  <div class="intro"><div><p class="eyebrow">A new perspective on pricing</p><h1>Price <span>Terrain.</span></h1><p class="subtitle">Explore the traits. Trace the benchmark. See the price gap.</p></div><div class="disclosure"><strong>Fictional products · illustrative function</strong><br>No fitted model or retailer data. This is trait space, not a geographic map.</div></div>
+  <div class="workspace">
+    <section class="landscape" aria-labelledby="landscape-title">
+      <div class="scene-header"><div><p class="eyebrow" id="scene-kicker">01 / CONDITIONAL PRICE LANDSCAPE</p><h2 id="landscape-title">A surface for the selected context</h2></div><div class="segmented" aria-label="Analytical view"><button id="terrain-mode" aria-pressed="true">Trait terrain</button><button id="fit-mode" aria-pressed="false">All-trait fit</button></div></div>
+      <div class="controls"><label id="x-control">Horizontal trait<select id="x-axis"><option value="cocoa">Cocoa %</option><option value="grams">Net weight / g</option><option value="sugar">Sugar / 100 g</option></select></label><label>Depth trait<select id="y-axis"><option value="grams">Net weight / g</option><option value="cocoa">Cocoa %</option><option value="sugar">Sugar / 100 g</option></select></label><div class="control-note" id="axis-note">Height = price / £ per 100 g</div><div class="camera-buttons"><button id="orbit-view" title="Return to an angled 3D view">3D</button><button id="top-view" title="Look down on trait space">Top</button><button id="side-view" title="View the price gap from the side">Side</button></div></div>
+      <div class="chart-shell"><div id="scene" role="img" aria-label="Interactive three-dimensional price surface. Exact values and product selection are also available in the adjacent controls and table."></div><div class="scene-tag"><span class="signal"></span><span id="scene-count">Preparing synthetic cohort</span></div><p class="gesture">DRAG TO ORBIT · SCROLL TO ZOOM · SELECT A PRODUCT DOT</p><div id="chart-error" hidden role="alert">The 3D scene could not start. Open this page in a browser with WebGL enabled. Exact values and the fitted-curve cross-section remain available below.</div></div>
+      <div class="legend"><span><i class="swatch surface"></i><span id="surface-label">Conditional benchmark surface</span></span><span><i class="swatch line"></i><span id="curve-label">Selected-context fit curve</span></span><span><i class="swatch dot"></i>Current price</span><span><i class="swatch diamond"></i>Proposed price</span></div>
+      <p class="context-note" id="context-note"></p>
+      <div class="cross-section"><div><p class="eyebrow">PRECISION VIEW</p><h3 id="section-title">The fitting curve through this product</h3><p id="section-note"></p></div><svg id="section-chart" viewBox="0 0 610 146" role="img" aria-label="Two-dimensional cross-section of the selected fitting curve and product price gap"></svg></div>
+    </section>
+    <aside class="review" aria-label="Selected product price review">
+      <p class="eyebrow">PRODUCT SPOTLIGHT</p><label class="visually-hidden" for="product-picker">Select a fictional product</label><select id="product-picker"></select>
+      <h2 id="product-title"></h2><p class="product-id" id="product-id"></p><div class="trait-tags" id="trait-tags"></div>
+      <div class="price-pair"><div><span>CURRENT / PACK</span><strong id="current-pack"></strong></div><div><span>PROPOSED / PACK</span><strong class="violet" id="proposed-pack"></strong></div></div>
+      <label class="input-label" for="price-input">Test a pack price <span>GBP</span></label><div class="number-wrap"><span>£</span><input id="price-input" type="number" min="0.5" max="12" step="0.01" aria-label="Proposed pack price in GBP"></div><label class="visually-hidden" for="price-slider">Adjust proposed pack price</label><input id="price-slider" type="range" min="0.5" max="12" step="0.01"><div class="slider-labels"><span>£0.50</span><span>£12.00</span></div>
+      <div class="benchmark-card"><div class="eyebrow">BENCHMARK HEIGHT / £ PER 100 G</div><strong id="benchmark-value"></strong><p>Fixed while the proposed price moves.</p><div class="metric"><span>Proposed unit price</span><b id="proposed-unit"></b></div><div class="metric"><span>Gap to benchmark</span><b id="price-gap"></b></div><div class="metric"><span>Change from current</span><b id="price-change"></b></div></div>
+      <button class="reset" id="reset-proposal">Reset to current price</button>
+      <div class="readout" aria-live="polite" id="decision-readout"></div>
+      <details><summary>How to read this landscape</summary><p>A filled circle is the observed price. The open marker below or above it is the illustrative benchmark. The vertical stem is their difference. The violet diamond is your proposed price.</p><p>The surface holds undisplayed traits fixed. The all-trait fit view compares every product using its own full trait vector. Neither view establishes quality, demand or an optimal price.</p><p>No prediction interval is displayed: the hand-authored function has no calibrated uncertainty.</p></details>
+    </aside>
+  </div>
+  <section class="matrix" aria-labelledby="matrix-title"><div class="matrix-header"><div><p class="eyebrow">EVERY POINT HAS A PRODUCT BEHIND IT</p><h2 id="matrix-title">Compare the underlying traits</h2></div><span id="matrix-count"></span></div><div class="table-scroll"><table><thead><tr><th>Product</th><th>Cocoa</th><th>Weight</th><th>Sugar /100 g</th><th>Organic</th><th>Nuts</th><th>Single origin</th><th>Current /100 g</th><th>Benchmark /100 g</th><th>Current gap</th></tr></thead><tbody id="product-rows"></tbody></table></div></section>
+  <footer><span>108 synthetic fixtures · hand-authored price function · no geographic coordinates</span><a href="../3d-price-landscape.md">Design rationale &amp; next steps ↗</a><a href="visualization-reference-board.html">Earlier visual references ↗</a></footer>
+</main>
+<noscript><p class="no-script">Enable JavaScript to explore this concept. All data is fictional; no prices are changed externally.</p></noscript>
+</body>
+</html>
