@@ -235,7 +235,7 @@ def test_empty_verified_gold_saves_readiness_without_fitting(tmp_path):
     assert not report["regression_fitted"] and report["blockers"]
     with pytest.raises(ModelContractError, match="no fitted"):
         load_run(destination)
-    (gold / "model-inputs.parquet").write_bytes(b"tampered")
+    (gold / "training-data.parquet").write_bytes(b"tampered")
     with pytest.raises(ValueError, match="checksum mismatch"):
         build_run(gold, tmp_path / "other", contract, "2026-10-01T00:00:00+01:00", "2026-10-03T23:59:59+01:00", fixture=True)
 

@@ -43,7 +43,7 @@ immutable Gold snapshots.
 | --- | --- | --- | --- |
 | **Bronze / raw** | Preserve what each source reported so later interpretations can be checked. | Original product records, prices and claims; source text and available images; seller identity and immutable capture history. | Implemented in the raw archive. Bronze is the presentation name for this existing layer. |
 | **Silver** | Turn preserved evidence into consistent records while retaining uncertainty and provenance. | Listings deduplicated within each seller, typed features, standardized units, normalized prices, source references, quality reports, review queues and eligibility decisions. | Implemented with pandas. Missing and conflicting values remain visible; current chocolate records still need review before training. |
-| **Gold** | Package verified training views in immutable snapshots for model use. | Parquet candidate and eligible tables, copied contracts and price/identity evidence, manifests, hashes and preservation reports. | Export and an experimental OLS trainer are implemented. Gold preserves Silver's decisions in its parent snapshot. The user-directed Gold view marks all 2,134 candidates eligible; actual quantities and model identification gates still apply, and no real-data model has fitted. Validated price benchmarks and explanations remain planned. |
+| **Gold** | Package verified training views in immutable snapshots for model use. | One Parquet training population, copied contracts and price/identity evidence, manifests, hashes and preservation reports. | Export and an experimental OLS trainer are implemented. Gold retains Silver decisions as provenance and exposes all 2,134 candidates without eligibility fields; actual quantities and model identification gates still apply, and no real-data model has fitted. Validated price benchmarks and explanations remain planned. |
 
 ### Processing steps
 
@@ -79,11 +79,11 @@ flowchart TD
     Eligible --> GoldPurpose
 
     subgraph Gold["Gold stage: immutable training snapshots"]
-        GoldPurpose["Implemented: preserve verified training views in Parquet<br/>Keep candidates and eligible inputs in separate tables<br/>Retain values, eligibility, contracts and evidence provenance"] --> Snapshot["Immutable Gold snapshot with manifests and integrity reports"]
+        GoldPurpose["Implemented: preserve verified training views in Parquet<br/>Include every candidate in one table<br/>Retain analytical values, contracts and evidence provenance"] --> Snapshot["Immutable Gold snapshot with manifests and integrity reports"]
     end
 
     Snapshot --> Trainer["Implemented experimental OLS trainer<br/>Family holdout, frozen encoder and bootstrap diagnostics"]
-    Trainer --> Readiness["Current chocolate: readiness report<br/>Zero eligible rows and no fitted model"]
+    Trainer --> Readiness["Current chocolate: readiness report<br/>Missing inputs and no real fitted model"]
     Trainer -.-> Future["Planned validated pricing benchmarks<br/>LightGBM, SHAP and AI explanations"]
 ```
 
@@ -93,9 +93,9 @@ conflicting, unmapped and excluded evidence. Applying updated reviews or
 contracts requires a new build while preserving the raw archive and earlier
 snapshots.
 
-Gold export preserves candidate and eligible rows separately, including a typed
-empty eligible table. Storage verification and optional bulk review annotations
-preserve eligibility; the trainer reports unmet readiness when no rows qualify.
+Gold exports every candidate to one typed training table without eligibility
+or exclusion fields. Source reviews remain provenance. Trainers consider every
+Gold row and report actual missing or invalid inputs as readiness blockers.
 The [Gold guide](chocolate-gold.md) owns export and training commands. The
 [portable processing guide](category-processing.md) covers its separate model
 preparation interface with family splits and frozen encoders. The dashed arrow
@@ -368,7 +368,7 @@ by the [documentation policy](../documentation-policy.md). Run
 
 ## Gold and reviewed family identities
 
-Raw → combined Silver → immutable Parquet [Gold](chocolate-gold.md) is the chocolate training pipeline. Silver owns evidence-backed transformations and eligibility. Gold initially copies candidate and eligible rows without semantic changes. A user-directed bulk review creates a new snapshot with its administrative basis; it does not establish individual evidence review or fill missing targets.
+Raw → combined Silver → immutable Parquet [Gold](chocolate-gold.md) is the chocolate training pipeline. Silver owns evidence-backed transformations and eligibility. Gold projects every candidate into one population without selection fields. A user-directed bulk review creates a new snapshot with administrative manifest provenance; it does not establish individual evidence review or fill missing targets.
 
 `--family-mappings` accepts `chocolate-family-mappings-1` decisions; without an override the build loads `reviews/chocolate/family-mappings.json` when present. Taxonomy `chocolate-product-identity-1` distinguishes conservative related ranges from exact consumer-pack identities. The [identity registry guide](../../reviews/chocolate/README.md) explains exact seller/listing selectors, original-name guards, reviewer/reason/capture evidence and current-task Codex decisions. Keep every seller listing and original capture separate. New or conflicting cases become `family-review-packets.jsonl`; hints do not establish physical equality. `family-mappings.json` preserves the accepted parsed registry and candidate IDs come from its resolved typed attributes. Both files are managed and hashed in the manifest.
 
@@ -379,20 +379,12 @@ The current default dataset contracts pin verified Hugging Face revision `d549ad
 
 ## Gold selection under a user instruction
 
-Gold can promote every candidate for model selection under the user's explicit
-instruction. This writes a new Gold snapshot and embeds the complete original
-Gold parent, preserving Silver evidence reviews, exclusions and quality counts.
-The promoted tables have their own Gold counts; copied Silver quality reports
-continue to describe the original Silver decisions. Targets, identities and
-missing values retain their original meaning. See
-[Gold eligibility](chocolate-gold.md#make-every-gold-candidate-model-eligible).
-
-
-Current-price training reads the copied Silver `displayed_price`, currency and
-edible quantity from verified Gold. It does not edit Silver's regular-price
-fields, tax/promotion classifications or evidence reviews. Model preparation
-creates current target fields with their own explicit contract and reports
-missing quantities. See the [current study target](chocolate-modeling-design.md#1-population-and-price-target).
+Gold includes every candidate automatically and removes eligibility/exclusion
+fields from its analytical rows. New builds use one `training-data.parquet`
+population; the loader also exposes all historical candidates without selection
+flags. Copied Silver reports and source views retain their original decisions as
+provenance. Model fitting still needs valid quantities, targets and identities.
+See [Gold population](chocolate-gold.md#make-every-gold-candidate-model-eligible).
 
 ## Independent LightGBM experiment
 
@@ -418,7 +410,8 @@ mode remains available; no real baseline fit or upload is claimed.
 
 ## Handoff to the independent hedonic estimator
 
-Silver continues to own evidence reviews, identities and eligibility for `hedonic_without_brand`. The [local trainer](analysis/hedonic-without-brand-implementation.md) requires explicit supermarket single-pack cohort, recipe class and pack count in its analytical handoff, in addition to eligible regular price and product identity. Existing published Silver exports do not supply that handoff. The historical regular-price rebuild in this session retained 3,743 listings, 4,347 captures, 2,134 candidates and zero eligible rows. Gold and the trainer preserve these exclusions; training and bulk Gold review cannot supply missing facts.
+Silver continues to own evidence reviews, identities and eligibility for `hedonic_without_brand`. The [local trainer](analysis/hedonic-without-brand-implementation.md) requires explicit supermarket single-pack cohort, recipe class and pack count in its analytical handoff, in addition to eligible regular price and product identity. Existing published Silver exports do not supply that handoff. The historical regular-price rebuild in this session retained 3,743 listings, 4,347 captures, 2,134 candidates and zero eligible rows. Historical snapshots retain those source exclusions as provenance; the current Gold loader considers every candidate and validates actual study inputs; training and bulk Gold review cannot supply missing facts.
+
 
 ## Gold inferred web collection
 
@@ -437,28 +430,17 @@ defines preparation and offline rebuild commands.
 
 ## Matched retailer handoff
 
-Silver remains responsible for evidence review and eligibility when Gold feeds
-the [matched retailer diagnostic](chocolate-matched-retailer.md). The separate
-estimator narrows eligible inputs using reviewed exact variants and comparable
-source-price observations within 48 hours. It preserves separate seller rows and
-rejects conflicting physical identity. Its local working contract does not promote
-Silver candidates or replace published eligibility. This session's preserved raw
-rebuild produced `silver-f651a7faea94ed5a7f003e64`: 3,743 listings, 4,347 captures,
-2,134 candidates and zero eligible rows. No real fitted diagnostic is available.
-
-The user has confirmed all existing Gold data as verified. The matched trainer's
-explicit `--verified-gold-candidates` path considers the existing candidate table
-under that task instruction. It preserves Silver/Gold bytes and stored metadata,
-with no rebuild. It records actual missing price/identity inputs in model artifacts.
-The [matched guide](chocolate-matched-retailer.md#task-authorized-gold-verification)
-owns this trainer-only selection path.
-
-A Gold bulk eligibility decision can promote every candidate under explicit user
-authorization, with the complete parent retained and verified. This does not
-rebuild Silver or rewrite its provenance; Gold owns the additional eligibility
-instruction. The matched refresh uses the supplied newer Silver-derived Gold
-snapshot directly and records both input identities and remaining missing
-values. See [bulk Gold loading](chocolate-gold.md#explicit-bulk-eligibility-snapshot-loading).
+Silver owns evidence reviews and its source eligibility decisions. Gold exposes
+every candidate as a training population without selection fields. The
+[matched retailer diagnostic](chocolate-matched-retailer.md) applies actual
+exact-variant and comparable price-context requirements within 48 hours. It
+preserves seller rows and rejects conflicting physical identity. Missing required
+values are recorded in model artifacts. No selection flag or bulk eligibility
+operation is required; historical snapshots remain verified against their
+original storage rules. The preserved raw rebuild produced
+`silver-f651a7faea94ed5a7f003e64`: 3,743 listings, 4,347 captures and 2,134 candidates.
+Its zero eligible Silver rows remain source provenance, while all candidates are
+available through Gold. No real fitted diagnostic is available.
 
 The current-price matched study accepts the user's updated target instruction.
 It derives current unit prices from existing Gold displayed-price and edible

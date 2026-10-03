@@ -142,3 +142,8 @@ states, source evidence or eligibility. The fixture retains its historical
 regular-price basis and explicit synthetic status. The
 [serving guide](data/analysis/web-fixture-pricing.md) owns inputs, attribution
 units, verification and limitations. The hosted preview predates this feature.
+
+The Gold inferred adapter reports `training_rows` for the complete nested Gold
+training population. It verifies source quality counts separately and retains
+`eligible_model_inputs` and per-price source review flags as historical Silver
+provenance. Source eligibility counts do not select the Gold modeling view.

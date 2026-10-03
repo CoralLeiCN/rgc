@@ -24,8 +24,10 @@ from chocolate_gold import (
     row_bytes,
     rows,
     training_schema,
-    verified_gold,
     write_snapshot,
+)
+from chocolate_gold import (
+    verified_gold_storage as verified_gold,
 )
 
 RULE_VERSION = "chocolate-gold-bulk-eligibility-1"

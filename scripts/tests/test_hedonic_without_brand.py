@@ -207,10 +207,10 @@ def test_empty_verified_gold_has_immutable_readiness_run(tmp_path, contract):
     policy = tmp_path / "working.json"
     policy.write_bytes(json_bytes(contract))
     report, destination = build_run(gold, tmp_path / "runs", policy, fixture=True)
-    assert report["counts"]["eligible_model_inputs"] == 0
+    assert report["counts"]["training_rows"] == 0
     assert report["candidate_value_audit"]["positive_regular_unit_targets"] == 0
     assert not report["regression_fitted"]
-    assert "no_reviewed_eligible_observations" in report["blockers"]
+    assert "no_gold_observations" in report["blockers"]
     assert not (destination / "model.json").exists()
     assert build_run(gold, tmp_path / "runs", policy, fixture=True)[1] == destination
     (destination / "report.json").write_text("corrupt")
@@ -275,7 +275,7 @@ def test_gold_corruption_cannot_become_a_readiness_or_fitted_run(tmp_path, contr
     gold = fixture_gold(tmp_path / "input", [])
     policy = tmp_path / "working.json"
     policy.write_bytes(json_bytes(contract))
-    (gold / "model-inputs.parquet").write_bytes(b"corrupt")
+    (gold / "training-data.parquet").write_bytes(b"corrupt")
     with pytest.raises(ValueError, match="checksum mismatch"):
         build_run(gold, tmp_path / "runs", policy, fixture=True)
     assert not (tmp_path / "runs").exists()
@@ -308,7 +308,7 @@ def test_integrated_cli_can_prepare_and_select_hedonic(tmp_path, monkeypatch, mo
     assert main() == 2
     report = json.loads(next(output.glob("*/report.json")).read_bytes())
     assert report["model_id"] == "hedonic_without_brand"
-    assert "no_reviewed_eligible_observations" in report["blockers"]
+    assert "no_gold_observations" in report["blockers"]
 
 
 @pytest.mark.parametrize("model_argument", [["--model-id", "lightgbm_without_brand"], ["--model-id=lightgbm_without_brand"]])

@@ -249,28 +249,51 @@ def test_gold_fixture_run_has_verified_immutable_artifacts_and_cannot_overwrite(
     with pytest.raises(ValueError, match="immutable snapshot"):
         build_run(gold, tmp_path / "models", path, fixture=True)
     # Corruption of Gold itself fails before a model directory is created.
-    (gold / "model-inputs.parquet").write_bytes(b"corrupt")
+    (gold / "training-data.parquet").write_bytes(b"corrupt")
     with pytest.raises(ValueError, match="checksum"):
         build_run(gold, tmp_path / "other-models", path, fixture=True)
     assert not (tmp_path / "other-models").exists()
 
 
-def test_excluded_gold_rows_save_readiness_and_never_fit(tmp_path, contract):
+def test_previously_excluded_gold_rows_with_valid_inputs_can_fit(tmp_path, contract):
     gold, _ = fixture_gold(tmp_path, eligible=False)
     path = tmp_path / "working.json"
     path.write_bytes(json_bytes(contract))
-    with patch("train_chocolate_lightgbm_without_brand.fit", side_effect=AssertionError("must not fit excluded rows")):
-        report, destination = build_run(gold, tmp_path / "models", path, fixture=True)
-    assert report["status"] == "readiness_blocked"
-    assert report["counts"]["eligible_rows"] == 0
+    report, destination = build_run(gold, tmp_path / "models", path, fixture=True)
+    assert report["status"] == "fixture_fitted"
+    assert report["counts"]["training_rows"] == 1080
     assert report["counts"]["training_candidates"] == 1080
-    assert "no_reviewed_eligible_supermarket_bar_rows" in report["blockers"]
-    assert not (destination / "booster.txt").exists()
-    with pytest.raises(ModelContractError, match="no fitted model"):
-        load_model_run(destination)
+    assert report["fixture_fitted"] and not report["blockers"]
+    assert (destination / "booster.txt").exists()
+    assert load_model_run(destination)["model_id"] == "lightgbm_without_brand"
+
     changed = deepcopy(contract)
     changed["target"]["tax_basis"] = "unknown"
     path.write_bytes(json_bytes(changed))
     with pytest.raises(ModelContractError, match="target policy"):
         build_run(gold, tmp_path / "other-models", path, fixture=True)
     assert not (tmp_path / "other-models").exists()
+
+
+def test_missing_family_identity_remains_in_gold_and_blocks_partitioning(tmp_path, contract):
+    from chocolate_gold import build_gold_dataset
+
+    fixture_gold(tmp_path / "input")
+    silver = tmp_path / "input/silver"
+    candidates = [json.loads(line) for line in (silver / "training-candidates.jsonl").read_bytes().splitlines()]
+    candidates[0]["family_id"] = None
+    data = b"".join(json.dumps(row).encode() + b"\n" for row in candidates)
+    manifest = json.loads((silver / "manifest.json").read_bytes())
+    for name in ("training-candidates.jsonl", "model-inputs.jsonl"):
+        (silver / name).write_bytes(data)
+        manifest["managed_files"][name] = {"sha256": checksum(data), "byte_length": len(data)}
+    (silver / "manifest.json").write_bytes(json_bytes(manifest))
+    _, gold = build_gold_dataset(silver, tmp_path / "gold")
+    policy = tmp_path / "working.json"
+    policy.write_bytes(json_bytes(contract))
+    with patch("train_chocolate_lightgbm_without_brand.fit", side_effect=AssertionError("must not partition missing families")):
+        report, run = build_run(gold, tmp_path / "models", policy, fixture=True)
+    assert report["counts"]["training_rows"] == len(candidates)
+    assert report["counts"]["selected_rows"] == len(candidates)
+    assert "selected_rows_missing_family_identity" in report["blockers"]
+    assert not (run / "booster.txt").exists()

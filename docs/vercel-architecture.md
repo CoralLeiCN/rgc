@@ -332,3 +332,8 @@ raw SHAP and pounds/percentages using the documented allocation convention.
 Excluded schema fields are explicitly not modeled. Model input edits hide stale
 results, while proposed price edits never enter the model. The prediction form
 is connected locally; the existing protected preview requires a new deployment.
+
+The Gold inferred adapter reports `training_rows` for the complete nested Gold
+training population. It verifies source quality counts separately and retains
+`eligible_model_inputs` and per-price source review flags as historical Silver
+provenance. Source eligibility counts do not select the Gold modeling view.

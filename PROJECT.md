@@ -16,8 +16,7 @@ information remains visible.
 
 The working product produces reproducible datasets, review reports, eligibility
 decisions and immutable Parquet Gold training snapshots. An experimental OLS
-trainer is implemented. All 2,134 Gold candidates are model eligible under the
-user instruction, and current-price preparation produces 630 unit-price targets.
+trainer is implemented. All 2,134 Gold candidates are included automatically without eligibility fields, and current-price preparation produces 630 unit-price targets.
 Actual missing quantities and identities still constrain real fitting. The web
 form now serves the published LightGBM synthetic fixture with price predictions
 and signed SHAP field contributions. Validated market benchmarks and AI
@@ -33,7 +32,7 @@ explanations remain planned.
 | Source evidence | Source links, capture dates, original text and available images. |
 | Bronze / raw archive | Original records, source evidence and capture history. |
 | Silver dataset | Standardized features, comparable price units and review flags; missing or conflicting information stays visible. |
-| Gold snapshots | Immutable Parquet candidate and eligible tables with verified contracts and evidence provenance. |
+| Gold snapshots | One immutable Parquet training population with verified contracts and evidence provenance; eligibility columns are removed. |
 | Current status | All Gold candidates are model eligible under the user instruction; actual missing inputs still limit training, and UK market coverage is unverified. |
 | Demo sample | Five illustrative records from the study. |
 
@@ -48,7 +47,7 @@ purpose, outputs and current status.
 | Collect and preserve original product records, source artifacts and capture history. | Implemented through the collection plugin. |
 | Deduplicate within sellers, standardize supported chocolate features and normalize supported prices. | Implemented through the combined silver pipeline. Listings from different sellers retain separate identities. |
 | Retain evidence references, missing values, conflicts and review requirements. | Implemented in derived records and quality/review reports. |
-| Prepare eligible model inputs and keep related product families together during validation splits. | Helpers implemented. The user marked all 2,134 Gold candidates model eligible; current-price preparation produces 630 targets per 100 g. |
+| Prepare eligible model inputs and keep related product families together during validation splits. | Helpers implemented. Gold includes all 2,134 candidates without an eligibility flag; current-price preparation produces 630 targets per 100 g. |
 | Export immutable Gold and train an experimental OLS model. | Export and trainer implemented. Current-price targets use collected displayed prices; missing quantities and identities still limit fitting. |
 | Predict a demo price and inspect field SHAP contributions. | Implemented locally using the published LightGBM synthetic fixture; real market accuracy and intervals are unvalidated. |
 | Validate pricing benchmarks, compare retailer contexts and generate AI explanations. | Proposed designs; market validation and AI explanations remain pending. |

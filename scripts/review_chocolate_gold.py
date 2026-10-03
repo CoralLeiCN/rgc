@@ -28,8 +28,8 @@ def main(argv=None):
         print("Gold bulk review could not complete: " + str(error), file=sys.stderr)
         return 2
     print(json.dumps({"dataset_version": report["dataset_version"], "status": report["status"],
-                      "counts": report["counts"], "reviewed_counts": report["reviewed_counts"],
-                      "review_provenance": report["review_provenance"], "eligibility_preserved": True,
+                      "counts": report["counts"],
+                      "review_provenance": report["review_provenance"],
                       "release_ready": False, "output": str(destination),
                       "report_path": str(destination / "report.json")}, indent=2))
     return 0

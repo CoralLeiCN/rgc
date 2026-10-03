@@ -210,21 +210,21 @@ def build_model_run(silver_root, output, group, *, gold_root=None, current_price
     if current_price_target:
         from chocolate_current_price import current_price_targets
         candidates, preparation = current_price_targets(candidates, rows(inputs["prices.jsonl"]))
-        eligible = [row for row in candidates if row["model_eligible"] is True]
+        eligible = candidates if gold_root is not None else [row for row in candidates if row["model_eligible"] is True]
     for table in (candidates, eligible):
         ids = [r.get("observation_id") for r in table]
         if len(ids) != len(set(ids)):
             raise ValueError("Duplicate modeling observation IDs in silver.")
         if any(r.get("dataset_version") != manifest["dataset_version"] or r.get("schema_version") != manifest["schema_version"] for r in table):
             raise ValueError("Modeling row versions disagree with the silver snapshot.")
-    expected = {r["observation_id"]: r for r in candidates if r.get("model_eligible") is True}
+    expected = {r["observation_id"]: r for r in candidates if gold_root is not None or r.get("model_eligible") is True}
     if expected != {r["observation_id"]: r for r in eligible}:
         raise ValueError("Model inputs differ from reviewed eligible silver candidates.")
     input_blocker = None
-    if current_price_target:
+    if current_price_target or gold_root is not None:
         try:
             validate_candidates(eligible, design)
-            price_observations = validate_price_targets(eligible, rows(inputs["prices.jsonl"]), design)
+            price_observations = validate_price_targets(eligible, rows(inputs["prices.jsonl"]), design, require_price_eligibility=gold_root is None)
         except ModelContractError as error:
             input_blocker = str(error)
             price_observations = {}
@@ -237,7 +237,8 @@ def build_model_run(silver_root, output, group, *, gold_root=None, current_price
     selected = sorted((r for r in eligible if r["comparable_group"] == group), key=lambda r: r["observation_id"])
     implementation = {name: checksum((ROOT / name).read_bytes()) for name in IMPLEMENTATION}
     if gold_root is not None:
-        implementation["scripts/chocolate_gold.py"] = checksum((ROOT / "scripts/chocolate_gold.py").read_bytes())
+        for name in ("scripts/chocolate_gold.py", "scripts/chocolate_gold_population.py"):
+            implementation[name] = checksum((ROOT / name).read_bytes())
     if current_price_target:
         implementation["scripts/chocolate_current_price.py"] = checksum((ROOT / "scripts/chocolate_current_price.py").read_bytes())
     identity = {"run_format_version": RUN_FORMAT, "silver_manifest_sha256": checksum(manifest_bytes),
@@ -271,23 +272,28 @@ def build_model_run(silver_root, output, group, *, gold_root=None, current_price
     if current_price_target:
         report["current_price_preparation"] = preparation
         report["limitations"].extend(preparation["limitations"])
-        if input_blocker:
-            report["blockers"].append(input_blocker)
         files["inputs/current-price-target-contract.json"] = target_contract_bytes
         files["model-design.json"] = json_bytes(design)
+    if input_blocker:
+        report["blockers"].append(input_blocker)
     files["inputs/silver-manifest.json"] = manifest_bytes
     if gold_root is not None:
         report["gold_dataset_version"] = identity["gold_dataset_version"]
-        if "review_provenance" in gold_manifest:
+        if gold_manifest.get("review_provenance") is not None:
             report["gold_review_provenance"] = gold_manifest["review_provenance"]
-        if "eligibility_provenance" in gold_manifest:
-            report["gold_eligibility_provenance"] = gold_manifest["eligibility_provenance"]
+        report["population_selection"] = "all_gold_rows"
+        report["counts"] = {"training_rows": len(candidates), "selected_observations": len(selected),
+                            "selected_families": len({r["family_id"] for r in selected}),
+                            "other_group_observations": len(candidates) - len(selected)}
+        report.pop("exclusion_counts")
+        report.pop("selected_group_exclusion_counts")
         files["inputs/gold-manifest.json"] = storage_manifest_bytes
     files["selected-inputs.jsonl"] = b"".join(json.dumps(r, sort_keys=True, ensure_ascii=False, allow_nan=False).encode() + b"\n" for r in selected)
     if report_source.get("status") != "complete_snapshot":
         report["blockers"].append("silver_snapshot_incomplete")
     if not selected:
-        report["blockers"].append("no_reviewed_eligible_observations_in_group")
+        report["blockers"].append("no_gold_observations_in_group" if gold_root is not None
+                                  else "no_reviewed_eligible_observations_in_group")
     if len({r["family_id"] for r in selected}) < 2:
         report["blockers"].append("fewer_than_two_reviewed_families_in_group")
     if len({r["listing_id"] for r in selected}) != len(selected):
@@ -315,7 +321,11 @@ def build_model_run(silver_root, output, group, *, gold_root=None, current_price
             model.update(run_id=run_id, dataset_version=manifest["dataset_version"],
                          source_dataset_version=manifest["source_dataset_version"], mapping_version=report["mapping_version"],
                          observation_window=report["observation_window"], validation_results=evaluation,
-                         split_groups=split["metadata"], eligibility_rules=design["eligibility_gates"])
+                         split_groups=split["metadata"])
+            if gold_root is None:
+                model["eligibility_rules"] = design["eligibility_gates"]
+            else:
+                model["population_selection"] = "all_gold_rows"
             model["input_kind"] = input_kind
             if gold_root is not None:
                 model["gold_dataset_version"] = report["gold_dataset_version"]

@@ -161,8 +161,8 @@ def test_gold_fixture_run_is_immutable_and_all_artifacts_are_bound(tmp_path):
 def test_empty_gold_and_missing_gold_save_concrete_blockers(tmp_path):
     gold = fixture_gold(tmp_path / "empty", [])
     report, destination = build_run(gold, tmp_path / "models")
-    assert report["counts"] == {"candidates": 0, "eligible": 0, "selected": 0, "selected_families": 0}
-    assert "no_reviewed_eligible_observations" in report["blockers"]
+    assert report["counts"] == {"candidates": 0, "training_rows": 0, "selected": 0, "selected_families": 0}
+    assert "no_gold_observations" in report["blockers"]
     assert "explicit_source_price_window_required" in report["blockers"]
     assert not (destination / "model.json").exists()
     missing, path = build_run(tmp_path / "missing", tmp_path / "models")
@@ -222,16 +222,16 @@ def test_bulk_eligibility_retains_missing_input_counts_and_provenance(tmp_path):
     gold = fixture_gold(tmp_path / "fixture", [], candidates=[row])
     _, promoted = mark_gold_eligible(gold, tmp_path / "promoted", "task-user", "Every row is eligible.")
     report, destination = build_run(promoted, tmp_path / "models", fixture=True)
-    assert report["counts"]["eligible"] == 1
-    assert report["exclusion_counts"] == {}
-    assert "no_reviewed_eligible_observations" not in report["blockers"]
+    assert report["counts"]["training_rows"] == 1
+    assert "exclusion_counts" not in report
+    assert "no_gold_observations" not in report["blockers"]
     assert "required_model_inputs_missing" in report["blockers"]
     assert report["missing_value_counts"]["variant_id"] == 1
     assert report["missing_value_counts"]["target.regular_price_per_100g_gbp"] == 1
-    assert report["gold_eligibility_provenance"]["eligibility_basis"] == "user_instruction"
+    assert report["population_selection"] == "all_gold_rows"
     manifest = json.loads((destination / "manifest.json").read_bytes())
-    assert manifest["gold_eligibility_provenance"] == report["gold_eligibility_provenance"]
-    assert (destination / "inputs/parent-gold-manifest.json").read_bytes() == (gold / "manifest.json").read_bytes()
+    assert "gold_eligibility_provenance" not in manifest
+    assert (destination / "inputs/gold-manifest.json").read_bytes() == (promoted / "manifest.json").read_bytes()
     assert not report["fitted"] and not (destination / "model.json").exists()
 
 

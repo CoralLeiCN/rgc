@@ -49,7 +49,7 @@ CLAIMS = ["dietary.vegan_claim", "certifications.fairtrade_claim", "certificatio
 OPTIONAL = [COCOA, BASIS, *CLAIMS]
 COHORT_ID = "uk-supermarket-single-pack-bars-1"
 IMPLEMENTATION = ["scripts/chocolate_hedonic.py", "scripts/train_chocolate_model.py",
-                  "scripts/chocolate_gold.py", "scripts/chocolate_model.py",
+                  "scripts/chocolate_gold.py", "scripts/chocolate_gold_population.py", "scripts/chocolate_model.py",
                   "scripts/chocolate_regression.py", "scripts/chocolate_cleanup/core.py"]
 
 
@@ -740,15 +740,21 @@ def build_run(gold_root, output, contract_path, experiment_path=None, *, fixture
     quality = read_json(inputs["quality-report.json"])
     fixture = fixture or quality.get("fixture") is True or silver.get("fixture") is True
     observations = rows(inputs["prices.jsonl"])
-    price_index = validate_price_targets(eligible, observations)
+    price_blocker = None
+    try:
+        price_index = validate_price_targets(eligible, observations, require_price_eligibility=False)
+    except ModelContractError as error:
+        price_blocker, price_index = str(error), {}
     gold = read_json(gold_bytes)
     source_pin = (ROOT / "schemas/chocolate/dataset-contract.json").read_bytes()
     pinned = read_json(source_pin)
     declarations = set(design["predictors"])
     missing = sorted(set(CORE + [COHORT, PACK_COUNT, BRAND]) - declarations)
     blockers = ["Gold contract lacks shared required field: " + n for n in missing]
+    if price_blocker:
+        blockers.append(price_blocker)
     if not eligible:
-        blockers.append("no_reviewed_eligible_observations")
+        blockers.append("no_gold_observations")
     if read_json(inputs["quality-report.json"]).get("status") != "complete_snapshot":
         blockers.append("incomplete_source_snapshot")
     # Select only explicitly declared cohorts. Old bar-only rows cannot acquire
@@ -763,11 +769,11 @@ def build_run(gold_root, output, contract_path, experiment_path=None, *, fixture
     if invalid_rows:
         blockers.append("selected_cohort_contains_invalid_required_inputs")
     if eligible and not selected:
-        blockers.append("no_eligible_rows_in_declared_cohort")
+        blockers.append("no_gold_rows_in_declared_cohort")
     if not blockers:
         validate_rows(selected, contract, design["target"])
-    split, assignments = partitions(selected, contract["split"]["seed"])
-    times = sorted({price_index[r["observation_id"]]["observed_at"] for r in selected},
+    split, assignments = partitions([] if invalid_rows else selected, contract["split"]["seed"])
+    times = sorted({price_index[r["observation_id"]]["observed_at"] for r in selected if not price_blocker},
                    key=lambda t: datetime.fromisoformat(t.replace("Z", "+00:00")))
     experiment = {"experiment_format_version": "chocolate-frozen-experiment-1", "cohort": contract["cohort"],
                   "gold_dataset_version": gold["dataset_version"], "gold_manifest_sha256": checksum(gold_bytes),
@@ -776,7 +782,7 @@ def build_run(gold_root, output, contract_path, experiment_path=None, *, fixture
                   "feature_policy_version": contract["feature_policy_version"], "feature_policy_sha256": fingerprint(contract),
                   "source_price_window": {"start": times[0] if times else None, "end": times[-1] if times else None,
                                           "selection": "all_reviewed_cross_sectional_observations_in_explicit_snapshot_cohort"},
-                  "eligibility": "Silver_model_eligible_and_explicit_reviewed_cohort_context",
+                  "population_selection": "all_gold_rows_then_declared_cohort",
                   "split": contract["split"], "family_assignments": assignments,
                   "partition_observation_ids": {p: [r["observation_id"] for r in rs] for p, rs in split.items()},
                   "calibration_selection": contract["calibration"], "fixture": fixture}
@@ -795,10 +801,9 @@ def build_run(gold_root, output, contract_path, experiment_path=None, *, fixture
     report = {"model_id": MODEL_ID, "run_id": run_id, "status": "readiness_blocked",
               "implemented": True, "fixture": fixture, "fixture_validated": False,
               "real_data_fitted": False, "regression_fitted": False, "calibrated": False, "release_ready": False,
-              "counts": {"training_candidates": len(candidates), "eligible_model_inputs": len(eligible),
+              "counts": {"training_candidates": len(candidates), "training_rows": len(eligible),
                          "selected_rows": len(selected), "selected_families": len(assignments),
                          "partitions": {p: {"rows": len(rs), "families": len({r["family_id"] for r in rs})} for p, rs in split.items()}},
-              "exclusion_counts": dict(sorted(Counter(e for r in candidates for e in r["exclusion_reasons"]).items())),
               "blockers": blockers, "invalid_rows": invalid_rows, "price_target_policy": policy,
               "candidate_value_audit": candidate_value_audit(candidates, observations),
               "gold_dataset_version": gold["dataset_version"], "silver_dataset_version": silver["dataset_version"],

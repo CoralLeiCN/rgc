@@ -269,8 +269,9 @@ def build(root, output):
                          "sourceListingIds": product["source_listing_ids"]})
     if set(prices) - ids:
         raise ValueError("Price observations reference unknown listings")
-    expected = quality["counts"]
-    if (len(listings), len(observation_ids), len(model_rows)) != (expected["listings"], expected["price_observations"], expected["eligible_model_inputs"]):
+    expected = dict(quality["counts"])
+    training_count = expected["training_candidates"] if inferred else expected["eligible_model_inputs"]
+    if (len(listings), len(observation_ids), len(model_rows)) != (expected["listings"], expected["price_observations"], training_count):
         raise ValueError("Downloaded row counts do not reconcile with the quality report")
     attributes = []
     for key, definition in profile["attributes"].items():
@@ -282,6 +283,8 @@ def build(root, output):
                            "minimum": definition.get("minimum"), "maximum": definition.get("maximum"),
                            "allowedValues": definition.get("allowed_values", []), "modelRole": definition.get("model_role"),
                            "modelSelected": key in design["predictors"], "modelDefinition": design["predictors"].get(key)})
+    if inferred:
+        expected["training_rows"] = len(model_rows)
     report = {"repository": REPO, "revision": metadata["sha"], "datasetVersion": version,
               "sourceDatasetVersion": manifest["source_dataset_version"], "lastModified": metadata.get("lastModified"),
               "schemaVersion": profile["schema_version"], "modelDesignVersion": design["model_design_version"],
@@ -293,9 +296,9 @@ def build(root, output):
               "interpretation": "Source listings and unreviewed observations. No fitted pricing model. Latest dated observation selected; undated observations rank last. Same-time price conflicts are excluded from the price plot."}
     report["dataLayer"] = "gold-inferred" if inferred else "silver"
     if inferred:
-        if (len(listings), len(observation_ids), len(model_rows), len(fields)) != (
-                gold_report["counts"]["products"], gold_report["counts"]["price_observations"],
-                gold_report["counts"]["eligible_model_inputs"], gold_manifest["attribute_count"]):
+        if ((len(listings), len(observation_ids), len(fields)) != (
+                gold_report["counts"]["products"], gold_report["counts"]["price_observations"], gold_manifest["attribute_count"])
+                or gold_report["counts"]["eligible_model_inputs"] != quality["counts"]["eligible_model_inputs"]):
             raise ValueError("Gold inferred counts disagree with the web projection")
         report.update({"datasetVersion": reference["datasetVersion"], "sourceSilverDatasetVersion": version,
                        "trainingGoldDatasetVersion": gold_manifest["training_gold_dataset_version"],
@@ -305,7 +308,7 @@ def build(root, output):
                                      "basis": provenance["basis"], "model": provenance["model"]},
                        "evidenceLookup": provenance["public_evidence_lookup"],
                        "priceBasis": gold_report["regular_price_basis_contract_version"],
-                       "interpretation": "Published Gold inferred traits with curated source evidence and original review states. Training eligibility is preserved. Latest dated observation selected; undated observations rank last. Same-time price conflicts are excluded from the price plot."})
+                       "interpretation": "Published Gold inferred traits with curated source evidence and original review states. All Gold candidates belong to the training population; source review metadata is retained. Latest dated observation selected; undated observations rank last. Same-time price conflicts are excluded from the price plot."})
     contract = {"schemaVersion": profile["schema_version"], "modelDesignVersion": design["model_design_version"],
                 "category": profile["category"], "market": profile["market"], "groups": profile["groups"],
                 "states": profile["missing_states"], "reviewStatuses": profile["review_statuses"],

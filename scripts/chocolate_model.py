@@ -137,7 +137,7 @@ def _validate_identity(rows):
     variant_families = {}
     listing_variants = {}
     for row in rows:
-        if not isinstance(row, dict) or row.get("model_eligible") is not True:
+        if not isinstance(row, dict) or ("model_eligible" in row and row["model_eligible"] is not True):
             raise ModelContractError("only rows passing the schema eligibility gate are accepted")
         for key in ("observation_id", "listing_id", "variant_id", "family_id", "comparable_group"):
             _identifier(row.get(key), key)
@@ -155,10 +155,9 @@ def _validate_identity(rows):
 
 
 def validate_candidates(rows, design):
-    """Return validated copies; refuse ineligible, unknown, or invalid rows.
+    """Validate actual model inputs; Gold rows require no eligibility flag.
 
-    The eligibility flag represents the upstream evidence review. This function
-    cannot independently establish that a source supports a review decision.
+    Explicit Silver exclusions remain enforced when their flag is supplied.
     """
     definitions = _predictor_definitions(design)
     validate_target_policy(design.get("target"))

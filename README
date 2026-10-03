@@ -253,17 +253,17 @@ uv run python -B scripts/build_chocolate_gold.py --silver-root data/silver/choco
 uv run python -B scripts/train_chocolate_model.py --gold-root data/gold/chocolate/uk/<gold-version> --output data/models/chocolate/uk --group bar
 ```
 
-The raw-to-Silver builder includes reviewed family mappings from the [registry](reviews/chocolate/README.md), with `--family-mappings` overrides and grouped Codex review packets. The current chocolate study uses collected displayed prices as its regular-price proxy; independent regular-price and confirmed-tax evidence are not target requirements. The source Silver has family IDs on 402 candidates and zero eligible model inputs; the user-directed Gold snapshot marks all 2,134 candidates eligible, and current-price preparation derives 630 unit-price targets; no real-data regression has fitted. [The published release](docs/data/analysis/gold-modeling-contract-release.md) records the verified contract publication and validation. Existing main features, discovery and proposed LightGBM/SHAP design remain available.
+The raw-to-Silver builder includes reviewed family mappings from the [registry](reviews/chocolate/README.md), with `--family-mappings` overrides and grouped Codex review packets. The current chocolate study uses collected displayed prices as its regular-price proxy; independent regular-price and confirmed-tax evidence are not target requirements. The source Silver has family IDs on 402 candidates and zero eligible model inputs; the Gold loader includes all 2,134 candidates automatically, and current-price preparation derives 630 unit-price targets; no real-data regression has fitted. [The published release](docs/data/analysis/gold-modeling-contract-release.md) records the verified contract publication and validation. Existing main features, discovery and proposed LightGBM/SHAP design remain available.
 
 
-To apply an explicit user instruction making every Gold candidate model eligible,
-run `uv run python -B scripts/make_chocolate_gold_eligible.py --gold-root
-/path/to/gold-snapshot --authorized-by task-user --reason 'Make every entity
-model eligible'`. The new snapshot contains every candidate in both training
-views and retains its complete parent. The loader returns promoted flags while
-checking analytical values against that parent. See
-[the command and provenance](docs/data/chocolate-gold.md#make-every-gold-candidate-model-eligible).
-
+Gold now treats every row as part of the training population. New snapshots use
+`chocolate-gold-population-1` / `chocolate-gold-arrow-3`, omit `model_eligible`
+and `exclusion_reasons`, and contain one `training-data.parquet` table. To migrate
+an existing snapshot, run `uv run python -B scripts/build_chocolate_gold.py
+--gold-root /path/to/gold-snapshot --output data/gold/chocolate/uk`. The complete
+parent and source evidence remain available. Historical snapshots also load as
+the complete population without selection flags. Trainers still validate actual
+model inputs. See [the Gold contract](docs/data/chocolate-gold.md#output-contract).
 
 For the current chocolate study, append `--current-price-target` to the Gold
 training command. It uses collected displayed prices as the target and records

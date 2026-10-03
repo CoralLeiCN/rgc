@@ -4,7 +4,6 @@ import argparse
 import json
 import platform
 import sys
-from collections import Counter
 from datetime import datetime
 from pathlib import Path
 
@@ -35,7 +34,7 @@ from train_chocolate_model import (
 
 ROOT = Path(__file__).resolve().parents[1]
 IMPLEMENTATION = ["scripts/chocolate_lightgbm_without_brand.py", "scripts/train_chocolate_lightgbm_without_brand.py",
-                  "scripts/train_chocolate_model.py", "scripts/chocolate_model.py", "scripts/chocolate_gold.py",
+                  "scripts/train_chocolate_model.py", "scripts/chocolate_model.py", "scripts/chocolate_gold.py", "scripts/chocolate_gold_population.py",
                   "scripts/chocolate_cleanup/core.py", "pyproject.toml", "uv.lock"]
 
 
@@ -80,8 +79,12 @@ def build_run(gold_root, output, contract_path, *, experiment_path=None, fixture
         raise ModelContractError("working contract target/source differs from copied Gold design")
     candidates = rows(inputs["training-candidates.jsonl"])
     eligible = rows(inputs["model-inputs.jsonl"])
-    # Verify prices for every upstream eligible row before cohort filtering.
-    prices = validate_price_targets(eligible, rows(inputs["prices.jsonl"]))
+    # Validate the actual study price basis for the complete Gold population.
+    price_blocker = None
+    try:
+        prices = validate_price_targets(eligible, rows(inputs["prices.jsonl"]), require_price_eligibility=False)
+    except ModelContractError as error:
+        price_blocker, prices = str(error), {}
     selected = sorted([r for r in eligible if r["comparable_group"] == "bar" and r["source_role"] == "retail"
                        and r["predictors"].get("identity.retailer") in contract["allowed_retailers"]],
                       key=lambda r: r["observation_id"])
@@ -89,7 +92,9 @@ def build_run(gold_root, output, contract_path, *, experiment_path=None, fixture
     common_identity = {"gold_dataset_version": gold["dataset_version"], "gold_manifest_sha256": checksum(gold_bytes),
                        "silver_dataset_version": silver["dataset_version"], "silver_manifest_sha256": checksum(silver_bytes),
                        "source_dataset_version": silver["source_dataset_version"], "contract_sha256": gold["contract_sha256"]}
-    frozen = experiment(selected, common_identity, contract)
+    identity_blocker = any(not isinstance(r.get("family_id"), str) or not r["family_id"].strip() for r in selected)
+    frozen = experiment([] if identity_blocker else selected, common_identity, contract)
+    frozen["considered_observation_ids"] = [r["observation_id"] for r in selected]
     if experiment_path:
         supplied = read_json(Path(experiment_path).read_bytes())
         if supplied != frozen:
@@ -102,23 +107,26 @@ def build_run(gold_root, output, contract_path, *, experiment_path=None, fixture
     report = {"model_id": MODEL_ID, "status": "readiness_blocked", "implemented": True,
               "fixture": fixture, "real_data_fitted": False, "fixture_fitted": False,
               "calibrated": False, "release_ready": False, "blockers": [],
-              "counts": {"training_candidates": len(candidates), "eligible_rows": len(eligible),
+              "counts": {"training_candidates": len(candidates), "training_rows": len(eligible),
                          "selected_rows": len(selected), "selected_families": len({r["family_id"] for r in selected})},
-              "exclusion_counts": dict(sorted(Counter(reason for r in candidates for reason in r["exclusion_reasons"]).items())),
               "price_target_policy": validate_target_policy(contract["target"]),
               "contract_publication": "pending aligned dataset/portable release review; working configuration is local",
               "baseline_relative_gates": "pending_comparator_results", "champion_selection": "pending_comparator_results",
               "unseen_brand_and_future_validation": "pending separate designs",
               "gold_review_provenance": gold.get("review_provenance")}
+    if price_blocker:
+        report["blockers"].append(price_blocker)
+    if identity_blocker:
+        report["blockers"].append("selected_rows_missing_family_identity")
     files = {"inputs/" + name: data for name, data in inputs.items()}
     files.update({"inputs/gold-manifest.json": gold_bytes, "inputs/silver-manifest.json": silver_bytes,
                   "working-contract.json": contract_bytes, "experiment.json": json_bytes(frozen)})
-    partitions = {name: [r for r in selected if frozen["row_partitions"][r["observation_id"]] == name]
+    partitions = {name: [r for r in selected if frozen["row_partitions"].get(r["observation_id"]) == name]
                   for name in ("fitting", "calibration", "testing")}
     report["partition_counts"] = {name: {"rows": len(values), "families": len({r["family_id"] for r in values})}
                                   for name, values in partitions.items()}
     if not selected:
-        report["blockers"].append("no_reviewed_eligible_supermarket_bar_rows")
+        report["blockers"].append("no_gold_supermarket_bar_rows")
     if read_json(inputs["quality-report.json"])["status"] != "complete_snapshot":
         report["blockers"].append("Silver snapshot is incomplete")
     required = set(contract["core_features"] + contract["optional_features"] +

@@ -1,5 +1,13 @@
 # Hedonic Price Benchmark Without Brand implementation
 
+Gold now supplies every candidate without `model_eligible` or `exclusion_reasons`
+under the [population contract](../chocolate-gold.md#output-contract). The trainer uses
+`counts.training_rows` and applies its declared cohort and actual input checks.
+Source price eligibility flags are not required. Historical experiment counts
+below describe their original immutable runs; the selected regular-price study
+retains its price, quantity, time and review context. Invalid actual inputs produce
+readiness blockers rather than a population eligibility exclusion.
+
 Recorded: 3 October 2026. Model ID: `hedonic_without_brand`. Status: implemented
 under an explicit local working policy and validated with synthetic inputs;
 this historical regular-price experiment has no real-data fit. Its original

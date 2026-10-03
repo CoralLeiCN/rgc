@@ -194,10 +194,11 @@ price positioning only.
 
 ## Gold, final price basis and family maintenance
 
-Prepare immutable Parquet Gold from Silver as the training interface, initially
-preserving its candidates, missing values and reviewed eligibility without new
-processing. Implement experimental training from verified Gold; distinguish
-loadable candidates, actual eligible observations and a validated fitted model.
+Prepare immutable Parquet Gold from Silver as the training interface. Include
+every candidate and remove `model_eligible` and related exclusion fields from
+Gold analytical rows. Preserve analytical values, missingness and source evidence.
+Implement experimental training from verified Gold; validate actual model inputs
+and distinguish population membership from a fitted and validated model.
 
 The current chocolate study uses collected displayed prices as its regular-price
 proxy under `current-consumer-price-1`, without a separate regular-price,
@@ -358,9 +359,9 @@ writing rules in [AGENTS.md](../AGENTS.md).
 ## Independent training sessions
 
 On 2026-10-03 the user requested every Gold entity model eligible and instructed
-all three chocolate training chats to pull the refreshed data and refit. Gold
-records this selection instruction in a new immutable snapshot, retaining the
-original parent and evidence. Training uses actual stored values and the current
+all three chocolate training chats to pull the refreshed data and refit. The user refined this instruction to remove Gold eligibility requirements and
+related fields entirely. Gold now includes every candidate automatically,
+retaining original parents and evidence. Training uses actual stored values and the current
 displayed consumer price target; eligibility does not fill missing facts or establish a
 successful fit.
 

@@ -126,7 +126,7 @@ def experiment(rows, identity, contract):
                                    for r in sorted(rows, key=lambda r: r["observation_id"])},
                 "selected_rows_sha256": digest(sorted(rows, key=lambda r: r["observation_id"])),
                 "feature_policy_sha256": digest(contract), "price_window": contract["price_window"],
-                "eligibility": "Silver reviewed model_eligible, verified regular consumer price and declared cohort",
+                "population_selection": "all_gold_rows_then_declared_cohort",
                 "weighting": "1/n_f_recomputed_within_each_partition_fold_and_stratum"}
     return manifest
 

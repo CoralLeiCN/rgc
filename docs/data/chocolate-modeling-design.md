@@ -1,5 +1,12 @@
 # UK chocolate pricing model design
 
+The Gold training population includes every candidate automatically. New Gold
+rows have no `model_eligible` or `exclusion_reasons`; all model implementations
+validate their actual required inputs and declared study cohort. Readiness
+blockers remain explicit for missing quantities, targets, identity or features.
+The [Gold contract](chocolate-gold.md#output-contract) owns storage, migration and
+historical loader behavior.
+
 Updated: 3 October 2026. Status: consolidated design; real-data models are not yet fitted.
 
 The independent [without-brand trainer](analysis/lightgbm-without-brand-implementation.md)
@@ -73,7 +80,7 @@ record these interpretation limits.
 `chocolate-pricing-current-price-design-1` is the dataset-owned current target
 contract. `scripts/chocolate_current_price.py` derives training inputs from the
 verified Gold candidate and auxiliary price views. `current_price_targets`
-retains all eligible candidates, produces explicit `current_price_per_100g_gbp`
+retains every Gold candidate, produces explicit `current_price_per_100g_gbp`
 and `log_current_price_per_100g_gbp` targets, and records missing-value counts.
 Existing experimental trainers may read the corresponding `regular_*` aliases;
 under the recorded current-price contract those aliases carry the same current

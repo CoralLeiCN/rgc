@@ -13,12 +13,14 @@ separate identifier and contract. Only the assigned estimator runs here.
 ## Inputs and local contract
 
 Use raw → combined Silver → immutable Parquet [Gold](chocolate-gold.md).
-The loader verifies all Gold managed hashes, Parquet logical digests, copied
-contracts, source manifest provenance, eligible/candidate equality and reviewed
-regular-price observations. Copied contract hashes and lengths must match the
-immutable base reference in the working contract. The default path retains the legacy snapshot's eligibility predictor
-requirements. The explicit task-authorized path below selects this diagnostic's
-required fields while preserving source eligibility metadata.
+The loader verifies managed hashes, Parquet logical digests, copied contracts
+and source Silver provenance, then exposes every Gold candidate without
+`model_eligible` or `exclusion_reasons`. Snapshot-bound contracts retain their
+exact manifest and copied-contract hashes. Actual target, quantity, identity and
+matching-context requirements determine model readiness. Reports record
+`gold_verification_basis: all_gold_rows` and `counts.training_rows`.
+The historical `--verified-gold-candidates` flag is accepted for compatibility;
+all Gold rows are considered automatically.
 
 The integrated CLI selects this estimator with `--model-id matched_retailer`.
 Its target and experiment settings come from the matched working contract and
@@ -163,12 +165,10 @@ published identities.
 
 ## Task-authorized Gold verification
 
-The user confirmed that all Gold data are verified and requested training directly
-from the existing layer. `--verified-gold-candidates` records that instruction in
-the model run and considers the existing candidate Parquet table. It preserves
-the Gold manifest, Parquet bytes, source eligibility flags and exclusion reasons.
-It requires no Silver or Gold rebuild. Source metadata cannot enable this option;
-the calling task supplies it under the user's explicit instruction.
+The user confirmed that every Gold row belongs to the training population.
+Candidate selection now applies automatically. The loader preserves historical
+snapshot bytes and removes selection fields from the modeling view. Missing
+required values remain visible in readiness reports and per-row artifacts.
 
 This path selects the fields required by exact matching, so historical optional
 regression-feature review requirements do not block it. It validates actual
@@ -180,7 +180,7 @@ Splits use existing family identities; rows without family identity have an
 unavailable partition. Predictions/domain membership retain every considered
 candidate, including rows with missing required values.
 
-The direct command appends `--verified-gold-candidates` to the earlier command.
+Earlier commands appended `--verified-gold-candidates`; current commands need no selection flag.
 A fresh attempt inspected `gold-4939405fcf8724686f9ee32c`, the only snapshot
 available in this worktree or the two referenced checkouts. It considered all
 2,134 candidates as task-verified. Actual stored values include zero regular
@@ -191,7 +191,7 @@ missing numeric targets and exact identities. This attempt uses current values
 and bypasses historical review flags; it does not require a repeated review of
 the user's verification decision.
 
-The new run records `gold_verification_basis: explicit_task_authorized_candidates`
+The historical run recorded `gold_verification_basis: explicit_task_authorized_candidates`
 and concrete missing-value counts. Displayed prices cannot substitute for this
 model's specified regular-price target. The missing formulation, flavor, pack
 and comparable channel/location/membership fields remain additional matching
@@ -203,8 +203,9 @@ The loader supports `chocolate-gold-bulk-eligibility-1`. It verifies the complet
 embedded parent, source/copy hashes, decoded analytical values and user
 eligibility provenance. Both modeling tables contain the promoted candidate
 rows; flags and exclusions are the only permitted changes from the parent.
-The model run persists `eligibility_provenance`, the parent Gold ID, exact input
-manifest and copied storage-design identity.
+Historical model runs persisted `eligibility_provenance`. Current runs bind the
+exact input manifest, parent Gold ID and copied storage-design identity; the
+modeling population contains all candidates without selection fields.
 
 For a provided Gold snapshot with locally prepared copied contracts, prepare a
 working configuration bound to that exact input:
@@ -246,7 +247,7 @@ Historical regular-price working contracts and snapshots keep their identities.
 
 Prepare the current-price configuration by adding `--current-price-proxy` to
 the snapshot-bound preparation command and selecting a fresh output path.
-The training command continues to use `--verified-gold-candidates`. The trainer
+The training command selects all Gold rows automatically. The trainer
 reads actual positive `displayed_price` and GBP currency from the copied price
 observation. Shared preparation `chocolate-current-price-target-1` requires
 positive candidate `quantity.total_edible_weight_g` and a matching positive

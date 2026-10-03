@@ -177,20 +177,21 @@ def check_numeric(value, label):
         raise ValueError("Gold numeric value is unsupported: " + label)
 
 
-def validate_rows(values, design, manifest):
+def validate_rows(values, design, manifest, *, selection_metadata=True):
     """Validate representation and upstream versions, without reclassifying values."""
     predictors = design["predictors"]
     for row in values:
-        check_fields(row, ROW_FIELDS, "row")
+        expected = ROW_FIELDS if selection_metadata else ROW_FIELDS - {"model_eligible", "exclusion_reasons"}
+        check_fields(row, expected, "row")
         check_fields(row["predictors"], predictors, "predictor")
         check_fields(row["target"], TARGET_FIELDS, "target")
         for name in STRING_FIELDS:
             if row[name] is not None and not isinstance(row[name], str):
                 raise ValueError("Gold string value is unsupported: " + name)
-        if type(row["model_eligible"]) is not bool:
+        if selection_metadata and type(row["model_eligible"]) is not bool:
             raise ValueError("Gold eligibility must retain a silver boolean.")
-        if (not isinstance(row["exclusion_reasons"], list)
-                or any(not isinstance(reason, str) for reason in row["exclusion_reasons"])):
+        if selection_metadata and (not isinstance(row["exclusion_reasons"], list)
+                                   or any(not isinstance(reason, str) for reason in row["exclusion_reasons"])):
             raise ValueError("Gold exclusion reasons must retain a silver string list.")
         for name, specification in predictors.items():
             value = row["predictors"][name]
@@ -268,7 +269,7 @@ def write_snapshot(output, version, files):
     return destination
 
 
-def build_gold_dataset(silver_root, output):
+def build_legacy_gold_dataset(silver_root, output):
     source = Path(silver_root).expanduser().resolve()
     output = Path(output).expanduser().absolute()
     reject_output_links(output)
@@ -387,7 +388,7 @@ def strip_review(values):
     return result
 
 
-def mark_gold_reviewed(gold_root, output, reviewed_by, reason):
+def mark_legacy_gold_reviewed(gold_root, output, reviewed_by, reason):
     """Create an immutable user-directed review annotation; keep eligibility intact."""
     provenance = review_provenance(reviewed_by, reason)
     source = Path(gold_root).expanduser().resolve()
@@ -399,7 +400,7 @@ def mark_gold_reviewed(gold_root, output, reviewed_by, reason):
     if source == resolved_output or source in resolved_output.parents:
         raise ValueError("Gold review output must be separate from its source snapshot.")
     parent_bytes = checked_path(source, "manifest.json", "Gold").read_bytes()
-    silver, silver_bytes, inputs = verified_gold(source)
+    silver, silver_bytes, inputs = verified_gold_storage(source)
     parent = read_json(parent_bytes)
     if checked_path(source, "manifest.json", "Gold").read_bytes() != parent_bytes:
         raise ValueError("Gold source manifest changed during review.")
@@ -453,13 +454,13 @@ def mark_gold_reviewed(gold_root, output, reviewed_by, reason):
             or {name: checksum((ROOT / name).read_bytes()) for name in REVIEW_IMPLEMENTATION} != implementation):
         raise ValueError("Gold source or review implementation changed during the build.")
     # Recheck the source's managed data before publishing the new snapshot.
-    verified_gold(source)
+    verified_gold_storage(source)
     if checked_path(source, "manifest.json", "Gold").read_bytes() != parent_bytes:
         raise ValueError("Gold source manifest changed during review.")
     return report, write_snapshot(output, version, files)
 
 
-def verified_gold(root):
+def verified_gold_storage(root):
     """Return the original silver manifest and verified in-memory training inputs.
 
     Parquet logical hashes verify decoded typed values. Reconstructed JSONL is a
@@ -549,3 +550,34 @@ def verified_gold(root):
     if manifest_path.read_bytes() != manifest_bytes:
         raise ValueError("Gold manifest changed during verification.")
     return source, source_bytes, inputs
+
+
+def build_gold_dataset(silver_root, output):
+    """Export every Silver candidate without eligibility metadata."""
+    from chocolate_gold_population import build_population
+    return build_population(silver_root, output, input_kind="silver")
+
+
+def verified_gold(root):
+    """Verify immutable storage and expose every Gold row without selection flags."""
+    from chocolate_gold_population import (
+        POPULATION_RULE,
+        population_rows,
+        verified_population,
+    )
+    root = Path(root).expanduser().resolve()
+    manifest = read_json(checked_path(root, "manifest.json", "Gold").read_bytes())
+    if manifest.get("processing_rule_version") == POPULATION_RULE:
+        return verified_population(root)
+    source, source_bytes, inputs = verified_gold_storage(root)
+    population = row_bytes(population_rows(rows(inputs["training-candidates.jsonl"])))
+    # These aliases keep existing trainer interfaces usable with one population.
+    inputs["training-candidates.jsonl"] = inputs["model-inputs.jsonl"] = population
+    return source, source_bytes, inputs
+
+
+def mark_gold_reviewed(gold_root, output, reviewed_by, reason):
+    """Record an administrative review in a new population snapshot."""
+    provenance = review_provenance(reviewed_by, reason)
+    from chocolate_gold_population import build_population
+    return build_population(gold_root, output, input_kind="gold", review=provenance)

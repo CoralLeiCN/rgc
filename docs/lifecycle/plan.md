@@ -1283,3 +1283,64 @@ cases, Ruff, the documentation guard against main and whitespace checks.
 Node 24.20.0 TypeScript and production builds passed source-data, asset/model
 verification and all eight API traces. Main's configured upstream was refreshed
 successfully. The requested landing adds one local squash commit to main.
+
+
+
+## Gold population without eligibility fields
+
+On 2026-10-03 the user refined the Gold instruction: treat every row as eligible
+and remove `model_eligible` and relevant fields entirely. Implemented
+`chocolate-gold-population-1` / `chocolate-gold-arrow-3` with one
+`training-data.parquet` table, no eligibility/exclusion columns or stored subset,
+and `counts.training_rows`. Builds verify source Silver and retain its exact
+training JSONL as provenance. Migrations and administrative reviews retain a
+complete verified Gold parent and compare ordered analytical values.
+
+The public loader verifies historical storage then exposes every candidate
+without selection fields. Both legacy logical input names alias that population.
+All four experimental trainers consume it without row or source-price eligibility
+flags. Actual input checks and declared study cohorts remain; current-price OLS
+records the displayed-price proxy and historical studies keep their target basis.
+Source analytical contracts and portable profiles keep their exact versions.
+
+Downloaded and hash-verified all 24 files in the pinned source Gold snapshot.
+The local migration `gold-ae712cc107e875e18816280c` contains all 2,134 rows in one
+Parquet table without either selection column. Its manifest SHA-256 is
+`a3add352cf4974bd447b736f80314dd96eca182e2ca1bea36c52e253468f83c6`.
+Current-price readiness run `model-run-9182ff8464720d2698b6b26b` considered all
+2,134 rows, derived 630 unit-price targets and selected all 800 bar observations.
+Missing canonical variant IDs and repeated listing observations block fitting;
+no real model was fitted. The retained parent verifies independently.
+
+The new snapshot is local. The published reference continues to identify its
+immutable historical bytes; no Hugging Face publication was performed.
+
+
+Validation passed: `uv sync --locked`, pinned contract fetching and
+`python3 -B scripts/fetch_contracts.py --all --offline`, `uv run pytest`
+(483 passed, 7 optional web tests skipped), `uv run ruff check .`,
+`python3 -B scripts/check_documentation.py` and `git diff --check`.
+Tests cover every supported historical migration, preserved parents and source
+bytes, omitted/reordered/altered rows despite recomputed hashes, typed empty
+populations, source-price flags absent, formerly excluded valid fixture fitting,
+and explicit actual-price/family readiness failures. The actual corpus migration
+and current-price readiness run were verified locally; remote publication and
+real model fitting remain unperformed.
+
+## Integrate Gold population with the current main branch
+
+The local main branch added matched-retailer, retailer-median and Gold inferred
+web consumers after this task started. Their merged implementations consume
+the complete Gold population automatically. Matched-retailer checks actual
+required values and records `gold_verification_basis: all_gold_rows`; the median
+records `population_selection: all_gold_rows`. Both report `training_rows`,
+omit modeling eligibility fields and retain exact source inputs. The web adapter
+verifies complete population counts separately from historical Silver quality
+counts and exposes `training_rows` in metadata. Historical run identities and
+source analytical contracts remain preserved.
+
+Integration validation passed: `uv sync --locked`, all four contract caches
+verified offline, `uv run pytest` (567 passed, 7 optional web tests skipped),
+`uv run ruff check .`, `python3 -B scripts/check_documentation.py --base main`
+and `git diff --check`. Focused retailer and web integration coverage passed
+all 83 cases. Real model fitting remains blocked by missing actual inputs.

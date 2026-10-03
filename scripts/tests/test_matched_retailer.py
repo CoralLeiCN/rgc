@@ -6,7 +6,7 @@ from datetime import datetime, timedelta, timezone
 
 import numpy as np
 import pytest
-from chocolate_gold import build_gold_dataset
+from chocolate_gold import build_legacy_gold_dataset as build_gold_dataset
 from chocolate_matched_retailer import (
     COMMON_POLICY,
     CURRENT_TARGET,
@@ -251,9 +251,9 @@ def test_corrupt_evidence_and_gold_never_fit(tmp_path):
 def test_missing_review_and_empty_eligible_rows_save_readiness(tmp_path):
     gold, contract, _ = fixture_snapshot(tmp_path, observations=[])
     report, destination = build_matched_run(gold, tmp_path / "models", contract)
-    assert "no_reviewed_eligible_gold_observations" in report["blockers"]
+    assert "no_complete_matched_model_inputs_in_verified_gold" in report["blockers"]
     assert not (destination / "model.json").exists()
-    assert report["counts"]["eligible"] == 0
+    assert report["counts"]["training_rows"] == 0
 
 
 @pytest.mark.parametrize("model_argument", [["--model-id", "matched_retailer"], ["--model-id=matched_retailer"]])
@@ -367,14 +367,14 @@ def test_task_verified_candidates_can_fit_without_rewriting_gold_flags(tmp_path)
     report, destination = build_matched_run(gold, tmp_path / "models", contract, review,
                                           verified_gold_candidates=True)
     assert report["fixture_fitted"]
-    assert report["counts"]["source_eligible"] == 0
-    assert report["counts"]["task_verified_candidates"] == 40
+    assert report["counts"]["training_rows"] == 40
+    assert report["counts"]["candidates"] == 40
     assert report["counts"]["fitting_matched_rows"] == 24
-    assert report["gold_verification_basis"] == "explicit_task_authorized_candidates"
+    assert report["gold_verification_basis"] == "all_gold_rows"
     assert before == {p.relative_to(gold).as_posix(): p.read_bytes() for p in gold.rglob("*") if p.is_file()}
     original = [read_json(line) for line in (destination / "inputs/training-candidates.jsonl").read_bytes().splitlines()]
-    assert all(r["model_eligible"] is False for r in original)
-    assert all(r["exclusion_reasons"] == ["historical_unreviewed"] for r in original)
+    assert all("model_eligible" not in r for r in original)
+    assert all("exclusion_reasons" not in r for r in original)
     assert "--verified-gold-candidates" in read_json((destination / "reproduce.json").read_bytes())["argv"]
 
 
@@ -444,15 +444,15 @@ def test_promoted_gold_and_working_snapshot_contract_preserve_model_and_provenan
     contract_path.write_bytes(json_bytes(config))
     report, run = build_matched_run(promoted, tmp_path / "models", contract_path, review,
                                    verified_gold_candidates=True)
-    assert report["counts"]["source_eligible"] == 40
-    assert report["counts"]["eligible"] == 40
+    assert report["counts"]["training_rows"] == 40
+    assert report["counts"]["training_rows"] == 40
     assert report["counts"]["complete_required_inputs"] == 40
     assert report["fixture_fitted"]
-    assert report["eligibility_provenance"]["authorized_by"] == "Fixture User"
+    assert "eligibility_provenance" not in report
     artifact = read_json((run / "manifest.json").read_bytes())
     assert artifact["parent_gold_dataset_version"] == parent.name
     assert artifact["input_storage_model_design_version"] == "synthetic-storage-design-1"
-    assert artifact["eligibility_provenance"] == report["eligibility_provenance"]
+    assert "eligibility_provenance" not in artifact
     model = read_json((run / "model.json").read_bytes())
     assert model["model_id"] == "matched_retailer"
     assert model["estimator"] == "weighted_exact_variant_plus_retailer_fixed_effects"

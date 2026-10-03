@@ -2,17 +2,23 @@
 
 import pytest
 from chocolate_gold import (
-    build_gold_dataset,
+    build_legacy_gold_dataset as build_gold_dataset,
+)
+from chocolate_gold import (
     checksum,
     json_bytes,
-    mark_gold_reviewed,
     parquet_bytes,
     read_json,
     read_parquet,
     row_bytes,
     rows,
     training_schema,
-    verified_gold,
+)
+from chocolate_gold import (
+    mark_legacy_gold_reviewed as mark_gold_reviewed,
+)
+from chocolate_gold import (
+    verified_gold_storage as verified_gold,
 )
 from chocolate_gold_eligibility import mark_gold_eligible
 from chocolate_model import ModelContractError, validate_candidates

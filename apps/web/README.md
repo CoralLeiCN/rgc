@@ -283,3 +283,8 @@ LightGBM 4.6.0 native contributions across 324 input combinations. Pounds and
 percentages use proportional exponential allocation; raw SHAP units are log
 GBP/100 g. These allocations describe this prediction relative to its reference.
 The hosted preview documented above has not been redeployed with this addition.
+
+The Gold inferred adapter reports `training_rows` for the complete nested Gold
+training population. It verifies source quality counts separately and retains
+`eligible_model_inputs` and per-price source review flags as historical Silver
+provenance. Source eligibility counts do not select the Gold modeling view.

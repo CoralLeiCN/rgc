@@ -203,10 +203,9 @@ class TrainingRunTests:
         (_, original) = build_gold_dataset(self.silver, self.root / 'gold')
         (_, reviewed) = mark_gold_reviewed(original, self.root / 'reviewed-gold', 'task-user', 'User requested bulk review')
         (report, destination) = build_model_run(None, self.output, 'bar', gold_root=reviewed)
-        assert report['counts']['training_candidates'] == 1
-        assert report['counts']['eligible_model_inputs'] == 0
+        assert report['counts']['training_rows'] == 1
         assert not report['regression_fitted']
-        assert 'no_reviewed_eligible_observations_in_group' in report['blockers']
+        assert report['blockers']
         assert not report['gold_review_provenance']['evidence_validation_performed']
         assert report['gold_review_provenance']['reviewed_by'] == 'task-user'
         assert not (destination / 'model.json').exists()

@@ -10,17 +10,23 @@ from chocolate_gold import (
     REVIEW_IDENTITY_FIELDS,
     REVIEW_SCHEMA_VERSION,
     TABLES,
-    build_gold_dataset,
     checksum,
     json_bytes,
-    mark_gold_reviewed,
     parquet_bytes,
     read_json,
     read_parquet,
     row_bytes,
     rows,
     training_schema,
-    verified_gold,
+)
+from chocolate_gold import (
+    build_legacy_gold_dataset as build_gold_dataset,
+)
+from chocolate_gold import (
+    mark_legacy_gold_reviewed as mark_gold_reviewed,
+)
+from chocolate_gold import (
+    verified_gold_storage as verified_gold,
 )
 from review_chocolate_gold import main as review_main
 from test_gold import GoldFixture
@@ -204,5 +210,6 @@ class GoldReviewParquetTests(GoldFixture):
         assert code == 0
         result = read_json(output.getvalue())
         assert result['review_provenance']['reason'] == 'Review every row now.'
-        assert result['reviewed_counts'] == {'training_candidates': 1, 'eligible_model_inputs': 0}
-        verified_gold(result['output'])
+        assert result['counts'] == {'training_rows': 1}
+        from chocolate_gold import verified_gold as population_loader
+        population_loader(result['output'])

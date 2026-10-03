@@ -520,20 +520,20 @@ and require another evidence-backed decision; frequency does not pick a winner.
 
 The published contract release retains `chocolate-schema-1` and its 103 typed fields, changes source mappings to `chocolate-source-mappings-2`, and selects `chocolate-pricing-design-3`. Model helpers use `chocolate-encoder-2` and `chocolate-regression-2`. The historical `regular-consumer-price-1` target requires regular, non-promotional, consumer-tax-inclusive price with reject fallback; chocolate remains log GBP per 100g. The 11 selected predictors are unchanged. Seller role supplies reviewed context; seller identity supplies fitted seller terms. Training validates target amounts against the copied price observations.
 
-The experimental trainer implements family-held-out OLS, rank/conditioning and confounding gates, and family-cluster bootstrap coefficient intervals. No real-data regression has fitted and no prediction intervals or released domain are established. [Gold](chocolate-gold.md) preserves candidates separately from eligible inputs and carries accepted identity decisions. The [published release](analysis/gold-modeling-contract-release.md) records exact files, hashes, impact and publication status; authoritative manifests now pin verified Hugging Face commit `d549ad91d63fb452af605df4a939c4e1f0a59bfa`.
+The experimental trainer implements family-held-out OLS, rank/conditioning and confounding gates, and family-cluster bootstrap coefficient intervals. No real-data regression has fitted and no prediction intervals or released domain are established. [Gold](chocolate-gold.md) exports every candidate into one population without eligibility columns and carries accepted identity decisions. The [published release](analysis/gold-modeling-contract-release.md) records exact files, hashes, impact and publication status; authoritative manifests now pin verified Hugging Face commit `d549ad91d63fb452af605df4a939c4e1f0a59bfa`.
 
 
 ## User eligibility in Gold
 
-The explicit Gold bulk eligibility operation sets every candidate model eligible
-for training selection. Silver's evidence eligibility is retained in a complete
-parent snapshot; logical predictor/target fields, nulls, identifiers and copied
-analytical contracts retain their original values and versions. This operation
-changes Gold selection under `chocolate-gold-bulk-eligibility-1` without changing
-the analytical product schema or price policy. Trainers must validate actual
-required values and retain the override provenance in their run artifacts. See
-[Gold eligibility](chocolate-gold.md#make-every-gold-candidate-model-eligible).
-
+Gold population membership now follows the user's instruction to include every
+candidate and remove `model_eligible` and `exclusion_reasons` from its analytical
+rows. `chocolate-gold-population-1` / `chocolate-gold-arrow-3` stores one table;
+loaders verify original storage and expose all rows without selection fields.
+Silver's source evidence, contracts and review decisions remain in immutable
+provenance. Model helpers accept Gold rows without an eligibility field and
+validate actual target, quantity, identity and predictor values. Historical
+regular-price studies retain their target context checks; current-price training
+uses the displayed-price proxy. See [Gold](chocolate-gold.md#output-contract).
 
 ## Current-price training target contract
 

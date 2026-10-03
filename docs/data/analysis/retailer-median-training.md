@@ -5,6 +5,13 @@ synthetic validation are complete. The original real-data attempt reached verifi
 and saved immutable readiness artifacts with zero eligible observations. No real
 model has fitted, no interval has calibrated, and no model has been uploaded.
 
+Every Gold row belongs to the training population. The loader removes
+`model_eligible` and `exclusion_reasons` from model inputs and ignores source
+price eligibility flags. Reports and experiments record
+`population_selection: all_gold_rows`; reports use `counts.training_rows`.
+Actual target, quantity, identity and declared cohort requirements determine
+readiness. The run records below describe their historical implementations.
+
 ## Estimator and frozen experiment
 
 `scripts/train_chocolate_retailer_median.py` runs independently.
@@ -88,7 +95,7 @@ Integrity errors return 1; successful fitting returns 0 with experimental status
 reported as real training when the flag is omitted.
 
 The loader verifies Gold managed bytes, logical row digests, copied contracts,
-Silver provenance and eligible rows. The trainer checks targets against reviewed
+Silver provenance and the complete Gold population. The trainer checks targets against reviewed
 regular-price observations and edible weights, and rechecks input/implementation
 before writing. Immutable runs bind model/data/contract/experiment identities,
 environment/implementation hashes, seeds, parameters, assignments, copied inputs,
@@ -193,7 +200,7 @@ Parent Gold is `gold-56817976905f24210105f069`; source Silver is
 `evidence_validation_performed: false`. The complete parent remains embedded
 under `inputs/parent-gold/`.
 
-The integrated `chocolate_gold_eligibility.py` loader verifies parent integrity,
+The historical `chocolate_gold_eligibility.py` loader verified parent integrity,
 unchanged analytical fields, exact promoted flags, complete managed inventory,
 logical row digests and provenance. Both Parquet views now have all 2,134 rows
 with `model_eligible: true` and `exclusion_reasons: []`. The trainer accepts that
@@ -201,9 +208,10 @@ eligibility. Under the verified override, original auxiliary Silver price
 eligibility flags do not veto the Gold decision; target, tax, quantity and price
 evidence checks remain enforced. Source auxiliary files are preserved exactly.
 
-The trainer now writes missing-value counts and readiness artifacts for actual
-input failures, including the exact Gold manifest, eligibility provenance,
-parent identity and parent manifest. A missing-input failure no longer exits
+The trainer writes missing-value counts and readiness artifacts for actual
+input failures, including the exact Gold manifest and original inputs.
+Historical artifacts retain their recorded eligibility provenance; current
+modeling inputs omit selection fields and reports identify the full population. A missing-input failure no longer exits
 before saving that report. Run:
 
 ```sh
@@ -275,12 +283,12 @@ is permitted.
 
 The default current-price sample covers every observation in the immutable
 snapshot. Optional `--window-start` and `--window-end` UTC bounds filter recorded
-source observation times. Each eligible row receives an input readiness audit;
-complete rows can form a model sample even when other eligible rows are missing
+source observation times. Every Gold row receives an input readiness audit;
+complete rows can form a model sample even when other rows are missing
 inputs. Variant/family consistency, population, one observation per seller
 listing, the family split, weights and support rules still apply. Price, tax,
-promotion and review context remain recorded as limitations. Original Gold
-eligibility flags stay unchanged for all 2,134 rows.
+promotion and review context remain recorded as limitations. Original snapshot
+bytes remain preserved; the modeling view has no eligibility columns.
 
 Run the exact refit with:
 
@@ -317,9 +325,9 @@ all required inputs. The only readiness blockers are
 promotion/tax review, and absence of explicit window bounds are not blockers.
 No real model, market error metrics, calibrated intervals or upload resulted.
 
-Artifacts include the exact original inputs and Gold manifest, eligibility
-provenance and parent manifest, all four published target contracts and pin,
-working model design, target policy, target preparation, all derived eligible
+Current artifacts include the exact original inputs and Gold manifest,
+all four published target contracts and pin, working model design, target
+policy, target preparation, the complete derived Gold population and selected
 rows, per-row readiness, missing-value counts, source price context, unavailable
 experiment, exact command and report. Their hashes and byte lengths are bound
 by the immutable run manifest. Historical regular-price mode remains available

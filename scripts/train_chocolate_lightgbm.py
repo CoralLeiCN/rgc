@@ -38,7 +38,7 @@ from train_chocolate_model import (
 ROOT = Path(__file__).resolve().parents[1]
 IMPLEMENTATION = ("scripts/train_chocolate_lightgbm.py", "scripts/chocolate_lightgbm.py",
                   "scripts/chocolate_experiment.py", "scripts/train_chocolate_model.py",
-                  "scripts/chocolate_model.py", "scripts/chocolate_gold.py", "scripts/chocolate_cleanup/core.py")
+                  "scripts/chocolate_model.py", "scripts/chocolate_gold.py", "scripts/chocolate_gold_population.py", "scripts/chocolate_cleanup/core.py")
 
 
 def build_run(gold_root, output, contract_path, window_start, window_end, *, fixture=False):
@@ -61,25 +61,32 @@ def build_run(gold_root, output, contract_path, window_start, window_end, *, fix
     design = read_json(inputs["model-design.json"])
     validate_target_policy(design["target"])
     candidates, eligible = rows(inputs["training-candidates.jsonl"]), rows(inputs["model-inputs.jsonl"])
-    price_index = validate_price_targets(eligible, rows(inputs["prices.jsonl"]))
+    price_blocker = None
+    try:
+        price_index = validate_price_targets(eligible, rows(inputs["prices.jsonl"]), require_price_eligibility=False)
+    except ModelContractError as error:
+        price_blocker, price_index = str(error), {}
     report = {"model_id": MODEL_ID, "status": "readiness_blocked", "implementation_status": "implemented",
               "fixture": fixture, "real_data_fitted": False, "regression_fitted": False, "calibrated": False,
-              "release_ready": False, "blockers": [], "counts": {"candidates": len(candidates), "eligible": len(eligible),
+              "release_ready": False, "blockers": [], "counts": {"candidates": len(candidates), "training_rows": len(eligible),
               "candidates_with_family_id": sum(bool(r.get("family_id")) for r in candidates)},
-              "exclusion_counts": dict(sorted(Counter(reason for r in candidates for reason in r["exclusion_reasons"]).items())),
               "upstream_design_version": design["model_design_version"],
               "contract_publication_status": "working_overlay_unpublished",
               "baseline_relative_gate": "pending_comparators", "champion_selection": "pending_comparators"}
+    if price_blocker:
+        report["blockers"].append(price_blocker)
     missing_contract_fields = sorted(set(contract["required_evidence_fields"]) - set(design["predictors"]))
     if missing_contract_fields:
         report["blockers"].append("Gold contract lacks shared population/feature fields: " + ", ".join(missing_contract_fields))
     if read_json(inputs["quality-report.json"]).get("status") != "complete_snapshot":
         report["blockers"].append("incomplete Silver source snapshot")
     if not eligible:
-        report["blockers"].append("zero reviewed eligible observations; Gold review cannot supply missing evidence")
+        report["blockers"].append("zero Gold observations")
     selected = []
     outside = []
     for r in eligible:
+        if price_blocker:
+            continue
         time = datetime.fromisoformat(price_index[r["observation_id"]]["observed_at"].replace("Z", "+00:00"))
         if r["source_role"] == "retail" and r["comparable_group"] == "bar" and r["predictors"].get(RETAILER) in contract["retailers"] and start <= time <= end:
             selected.append(r)

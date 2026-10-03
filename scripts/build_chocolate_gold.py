@@ -3,7 +3,7 @@
 # requires-python = ">=3.10"
 # dependencies = ["pyarrow==21.0.0"]
 # ///
-"""Copy combined chocolate silver training values into an immutable Parquet gold layer."""
+"""Export every chocolate candidate to Gold without eligibility metadata."""
 
 import argparse
 import json
@@ -17,11 +17,17 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--silver-root", type=Path, default=ROOT / "data/silver/chocolate/uk")
+    source = parser.add_mutually_exclusive_group()
+    source.add_argument("--silver-root", type=Path, default=ROOT / "data/silver/chocolate/uk")
+    source.add_argument("--gold-root", type=Path, help="Migrate a verified existing Gold snapshot.")
     parser.add_argument("--output", type=Path, default=ROOT / "data/gold/chocolate/uk")
     args = parser.parse_args(argv)
     try:
-        report, destination = build_gold_dataset(args.silver_root, args.output)
+        if args.gold_root is not None:
+            from chocolate_gold_population import build_population
+            report, destination = build_population(args.gold_root, args.output, input_kind="gold")
+        else:
+            report, destination = build_gold_dataset(args.silver_root, args.output)
     except (OSError, ValueError, KeyError, ImportError) as error:
         print("Gold build could not complete: " + str(error), file=sys.stderr)
         return 2

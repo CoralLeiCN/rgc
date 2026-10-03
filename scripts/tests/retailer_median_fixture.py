@@ -3,7 +3,7 @@
 import math
 from pathlib import Path
 
-from chocolate_gold import build_gold_dataset
+from chocolate_gold import build_legacy_gold_dataset as build_gold_dataset
 from dataset_contracts import resolve_contract_root
 from prepare_chocolate_retailer_contract import working_design
 from train_chocolate_model import CONTRACTS, checksum, json_bytes, read_json

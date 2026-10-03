@@ -83,6 +83,7 @@ def test_projection_preserves_complete_values_evidence_prices_and_eligibility(in
     assert meta["datasetVersion"].startswith("gold-inferred-")
     assert meta["sourceSilverDatasetVersion"] == products[0]["dataset_version"]
     assert meta["counts"]["eligible_model_inputs"] == 0
+    assert meta["counts"]["training_rows"] == 1
     assert len(snapshot["fields"]) == 103
     for key, attribute in evidence["attributes"].items():
         assert attribute == {name: products[0]["attributes"][key].get(name) for name in attribute}

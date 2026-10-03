@@ -40,7 +40,7 @@ from train_chocolate_model import (
 
 IMPLEMENTATION = ("scripts/train_chocolate_retailer_median.py", "scripts/chocolate_retailer_median.py",
                   "scripts/chocolate_experiment.py", "scripts/prepare_chocolate_retailer_contract.py",
-                  "scripts/train_chocolate_model.py", "scripts/chocolate_model.py", "scripts/chocolate_gold.py",
+                  "scripts/train_chocolate_model.py", "scripts/chocolate_model.py", "scripts/chocolate_gold.py", "scripts/chocolate_gold_population.py",
                   "scripts/chocolate_cleanup/core.py", "scripts/chocolate_gold_eligibility.py",
                   "scripts/make_chocolate_gold_eligible.py", "scripts/chocolate_retailer_target.py",
                   "scripts/chocolate_current_price.py")
@@ -83,7 +83,7 @@ def current_input_audit(eligible, observations, design, window_start, window_end
                 reasons.append("input_validation_failed: " + str(error))
         if not reasons:
             selected.append(row)
-        audit.append({"observation_id": row["observation_id"], "gold_model_eligible": row["model_eligible"],
+        audit.append({"observation_id": row["observation_id"], "population_member": True,
                       "selected": not reasons, "unusable_reasons": reasons})
     # Check identity consistency and duplicate listings across the complete selected view.
     reviewed_rows(selected, design)
@@ -188,11 +188,7 @@ def build_run(gold_root, output, *, window_start=None, window_end=None, fixture=
             files["source-price-context.json"] = json_bytes(price_context)
         missing_counts = missing_value_counts(eligible, design)
         files["missing-values.json"] = json_bytes(missing_counts)
-        override = "eligibility_provenance" in storage
-        if override:
-            identity["gold_eligibility_provenance"] = storage["eligibility_provenance"]
-            identity["parent_gold_dataset_version"] = storage["parent_gold_dataset_version"]
-            files["inputs/parent-gold-manifest.json"] = (source / "inputs/parent-gold/manifest.json").read_bytes()
+        identity["population_selection"] = "all_gold_rows"
         prices = {}
         if current_mode:
             try:
@@ -207,10 +203,9 @@ def build_run(gold_root, output, *, window_start=None, window_end=None, fixture=
             blockers.append("required_model_inputs_missing")
         else:
             try:
-                # Verified Gold supplies row eligibility. A user override supersedes
-                # auxiliary Silver flags; the actual regular-price checks still apply.
+                # Validate actual historical price context for every Gold row.
                 prices = validate_price_targets(eligible, observations,
-                                                require_price_eligibility=not override)
+                                                require_price_eligibility=False)
             except ModelContractError as error:
                 blockers.append("price_target_validation_failed: " + str(error))
         try:
@@ -238,7 +233,7 @@ def build_run(gold_root, output, *, window_start=None, window_end=None, fixture=
         elif not current_mode and not window_start:
             blockers.append("explicit_source_price_window_required")
     if not eligible:
-        blockers.append("no_reviewed_eligible_observations")
+        blockers.append("no_gold_observations")
     if len({r["family_id"] for r in selected}) < 3:
         blockers.append("fewer_than_three_usable_families_in_selected_sample" if price_context
                         else "fewer_than_three_reviewed_families_in_declared_window")
@@ -258,7 +253,7 @@ def build_run(gold_root, output, *, window_start=None, window_end=None, fixture=
             "feature_policy_sha256": identity["feature_policy_sha256"],
             "price_target_policy": price_policy,
             "working_model_design_sha256": identity["working_model_design_sha256"],
-            "eligibility": "Gold eligible view under new population contract; never promote candidates",
+            "population_selection": "all_gold_rows",
             "comparison_status": "baseline_cohort_only; shared regression feature evidence and identification pending",
             "selected_observation_ids": sorted(r["observation_id"] for r in selected)}
     files["experiment.json"] = json_bytes(experiment)
@@ -267,12 +262,12 @@ def build_run(gold_root, output, *, window_start=None, window_end=None, fixture=
     report = {"model_id": MODEL_ID, "run_id": run_id, "status": "readiness_blocked",
               "implemented": True, "fixture_run": fixture, "fitted": False, "real_data_fitted": False,
               "calibrated": False, "release_ready": False, "blockers": blockers,
-              "counts": {"candidates": len(candidates), "eligible": len(eligible), "selected": len(selected),
+              "population_selection": "all_gold_rows",
+              "counts": {"candidates": len(candidates), "training_rows": len(eligible), "selected": len(selected),
                          "selected_families": len({r["family_id"] for r in selected})},
               "missing_value_counts": missing_counts,
               "price_target_policy": price_policy, "source_price_context": price_context,
               "input_readiness_counts": dict(sorted(Counter(reason for row in input_audit for reason in row["unusable_reasons"]).items())),
-              "exclusion_counts": dict(sorted(Counter(reason for r in candidates for reason in r["exclusion_reasons"]).items())),
               "comparison_release_gates": "pending_comparator_runs", "contract_publication": "separate_release_review_required",
               "comparison_readiness_blockers": ["shared_regression_feature_evidence_and_identification_pending",
                                                 "common_applicable_row_comparison_pending", "comparator_results_unavailable"],
@@ -281,8 +276,7 @@ def build_run(gold_root, output, *, window_start=None, window_end=None, fixture=
                               "Common regression feature admissibility remains pending fitting-only identification."]}
     if price_context:
         report["limitations"].extend(price_context["preparation"]["limitations"])
-    if "gold_eligibility_provenance" in identity:
-        report["gold_eligibility_provenance"] = identity["gold_eligibility_provenance"]
+
     evaluations = {}
     if not blockers:
         model = fit_retailer_median(partitions["fitting"], design)

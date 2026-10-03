@@ -12,7 +12,6 @@ from chocolate_gold import (
     CONTRACTS,
     PYARROW_VERSION,
     arrow_runtime,
-    build_gold_dataset,
     checksum,
     json_bytes,
     read_json,
@@ -20,8 +19,13 @@ from chocolate_gold import (
     row_bytes,
     rows,
     training_schema,
-    verified_gold,
     verified_silver,
+)
+from chocolate_gold import (
+    build_legacy_gold_dataset as build_gold_dataset,
+)
+from chocolate_gold import (
+    verified_gold_storage as verified_gold,
 )
 from dataset_contracts import resolve_contract_root
 
@@ -152,7 +156,7 @@ class GoldIntegrityTests(GoldFixture):
 class GoldParquetTests(GoldFixture):
 
     def test_family_decisions_survive_gold_and_bulk_review(self):
-        from chocolate_gold import mark_gold_reviewed
+        from chocolate_gold import mark_legacy_gold_reviewed as mark_gold_reviewed
         self.snapshot([self.observation(1)])
         decisions = json_bytes({'mapping_format_version': 'chocolate-family-mappings-1', 'families': {'fixture-family': {'label': 'Fixture range'}}})
         self.change_manifest(self.silver, 'family-mappings.json', decisions)
@@ -286,11 +290,12 @@ class GoldParquetTests(GoldFixture):
             result = gold_main(['--silver-root', str(self.silver), '--output', str(self.output)])
         assert result == 0
         response = read_json(output.getvalue())
-        assert response['counts'] == {'training_candidates': 0, 'eligible_model_inputs': 0}
+        assert response['counts'] == {'training_rows': 0}
         assert response['gold_ready_for_loading']
         assert not response['release_ready']
         assert Path(response['report_path']).is_file()
-        assert verified_gold(Path(response['output']))[2]['training-candidates.jsonl'] == b''
+        from chocolate_gold import verified_gold as population_loader
+        assert population_loader(Path(response['output']))[2]['training-candidates.jsonl'] == b''
 
     def test_finite_numeric_values_must_survive_arrow_precision(self):
         candidate = self.observation(1)

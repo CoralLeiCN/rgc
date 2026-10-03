@@ -91,7 +91,7 @@ def test_current_price_refit_binds_contract_and_keeps_gold_bytes(tmp_path):
     before = {str(p.relative_to(gold)): checksum(p.read_bytes()) for p in gold.rglob("*") if p.is_file()}
     report, destination = build_run(gold, tmp_path / "models", fixture=True, current_price_proxy=True)
     assert report["fitted"] and report["fixture_run"] and not report["real_data_fitted"]
-    assert report["counts"] == {"candidates": 100, "eligible": 100, "selected": 100, "selected_families": 50}
+    assert report["counts"] == {"candidates": 100, "training_rows": 100, "selected": 100, "selected_families": 50}
     assert report["blockers"] == []
     assert report["source_price_context"]["tax_basis"] == {"unknown": 100}
     assert report["source_price_context"]["promotion_status"] == {"promotional": 100}
@@ -116,10 +116,10 @@ def test_current_price_fits_complete_subset_without_changing_eligibility(tmp_pat
     gold = fixture_gold(tmp_path / "fixture", values, current_price=True)
     report, destination = build_run(gold, tmp_path / "models", fixture=True, current_price_proxy=True)
     assert report["fitted"]
-    assert report["counts"]["eligible"] == 100 and report["counts"]["selected"] == 99
+    assert report["counts"]["training_rows"] == 100 and report["counts"]["selected"] == 99
     assert report["input_readiness_counts"] == {"missing:variant_id": 1}
     audit = [json.loads(line) for line in (destination / "input-readiness.jsonl").read_bytes().splitlines()]
-    assert all(row["gold_model_eligible"] is True for row in audit)
+    assert all(row["population_member"] is True for row in audit)
     assert sum(row["selected"] for row in audit) == 99
 
 
@@ -130,7 +130,7 @@ def test_current_price_missing_ids_persists_actual_blockers(tmp_path):
     gold = fixture_gold(tmp_path / "fixture", values, current_price=True)
     report, destination = build_run(gold, tmp_path / "models", fixture=True, current_price_proxy=True)
     assert not report["fitted"]
-    assert report["counts"]["eligible"] == 100
+    assert report["counts"]["training_rows"] == 100
     assert report["missing_value_counts"]["target.current_price_per_100g_gbp"] == 0
     assert report["input_readiness_counts"] == {"missing:variant_id": 100}
     assert "no_complete_current_price_model_inputs" in report["blockers"]

@@ -28,7 +28,6 @@ from chocolate_gold import (
 from chocolate_model import (
     ModelContractError,
     regular_price_basis_supported,
-    validate_candidates,
     validate_target_policy,
 )
 from train_chocolate_model import (
@@ -70,7 +69,7 @@ COMMON_POLICY = {
 EVIDENCE_FIELDS = ("cohort", "formulation", "flavor", "edible_weight_g", "pack_count", "brand",
                    "chocolate_type", "observed_at", "observed_at_basis", "channel", "location_scope", "membership")
 IMPLEMENTATION = ("scripts/chocolate_matched_retailer.py", "scripts/train_chocolate_model.py",
-                  "scripts/chocolate_gold.py", "scripts/chocolate_gold_eligibility.py",
+                  "scripts/chocolate_gold.py", "scripts/chocolate_gold_population.py",
                   "scripts/chocolate_current_price.py", "scripts/dataset_contracts.py",
                   "scripts/chocolate_model.py", "scripts/chocolate_cleanup/core.py")
 
@@ -629,6 +628,7 @@ def current_candidate_values(candidates, prices):
 
 
 def build_matched_run(gold_root, output, contract_path, review_path=None, group="bar", *, verified_gold_candidates=False):
+    # The historical opt-in flag is accepted for compatibility; all Gold rows are considered.
     source, output = Path(gold_root).resolve(), Path(output).absolute()
     reject_output_links(output)
     if np.__version__ != "2.2.6":
@@ -678,21 +678,14 @@ def build_matched_run(gold_root, output, contract_path, review_path=None, group=
         target_files["inputs/current-price-contract-reference.json"] = reference_bytes
     if not current_proxy:
         validate_target_policy(copied_design["target"])
-    source_eligible, candidates = rows(inputs["model-inputs.jsonl"]), rows(inputs["training-candidates.jsonl"])
+    candidates = rows(inputs["training-candidates.jsonl"])
     missing_values, missing_domains = {}, {}
     prepared_current, shared_preparation = {}, None
+    prices = validate_price_targets([], rows(inputs["prices.jsonl"]))
     if current_proxy:
-        if not verified_gold_candidates:
-            raise ModelContractError("Current-price proxy requires explicit task-verified candidate selection")
-        prices = validate_price_targets([], rows(inputs["prices.jsonl"]))
         eligible, missing_values, missing_domains, prepared_current, shared_preparation = current_candidate_values(candidates, prices)
-    elif verified_gold_candidates:
-        prices = validate_price_targets([], rows(inputs["prices.jsonl"]))
-        eligible, missing_values, missing_domains = verified_candidate_values(candidates, prices)
     else:
-        eligible = source_eligible
-        validate_candidates(eligible, copied_design)
-        prices = validate_price_targets(eligible, rows(inputs["prices.jsonl"]))
+        eligible, missing_values, missing_domains = verified_candidate_values(candidates, prices)
     files = {"inputs/" + name: data for name, data in inputs.items()}
     files.update(target_files)
     files.update({"inputs/gold-manifest.json": gold_bytes, "inputs/silver-manifest.json": silver_bytes,
@@ -705,27 +698,20 @@ def build_matched_run(gold_root, output, contract_path, review_path=None, group=
         if bundle.get("gold_manifest_sha256") != checksum(gold_bytes):
             raise ModelContractError("Match reviews do not bind the verified Gold snapshot")
         files.update(evidence_files)
-    elif verified_gold_candidates:
+    else:
         reviews = context_from_gold(eligible, prices)
         if eligible and not reviews:
             blockers.append("missing_exact_variant_or_comparable_context_values_in_gold")
-    else:
-        blockers.append("missing_reviewed_exact_variant_context_bundle")
     if not eligible:
-        blockers.append("no_complete_matched_model_inputs_in_verified_gold" if verified_gold_candidates
-                        else "no_reviewed_eligible_gold_observations")
-    if verified_gold_candidates and not eligible:
+        blockers.append("no_complete_matched_model_inputs_in_verified_gold")
         blockers.extend(missing_values)
     if contract["price_window"] is None and eligible:
         blockers.append("missing_declared_genuine_price_window")
-    elif contract["price_window"] is None and not verified_gold_candidates:
-        blockers.append("missing_declared_genuine_price_window")
     if read_json(inputs["quality-report.json"]).get("status") != "complete_snapshot":
         blockers.append("incomplete_silver_source")
-    # Assign common partitions on upstream eligible rows, before this diagnostic's
-    # stricter matched domain. Missing matching evidence never changes the split.
-    split_population = ([r for r in candidates if isinstance(r.get("family_id"), str) and r["family_id"].strip()]
-                        if verified_gold_candidates else eligible)
+    # Freeze partitions on the complete Gold population with family identities,
+    # before applying this diagnostic's matching requirements.
+    split_population = [r for r in candidates if isinstance(r.get("family_id"), str) and r["family_id"].strip()]
     split = frozen_split(split_population, contract["split_seed"])
     domain = {r["observation_id"]: "readiness_blocked" for r in eligible}
     accepted, fitted_rows, excluded = [], [], {}
@@ -745,7 +731,7 @@ def build_matched_run(gold_root, output, contract_path, review_path=None, group=
             blockers.append(str(error))
     predictions = []
     fitted_ids = {r["observation_id"] for r in fitted_rows}
-    for source_row in candidates if verified_gold_candidates else eligible:
+    for source_row in candidates:
         row = prepared_current.get(source_row["observation_id"], source_row)
         partition = split["assignments"].get(row["family_id"])
         enriched = next((r for r in fitted_rows if r["observation_id"] == row["observation_id"]), None)
@@ -775,8 +761,7 @@ def build_matched_run(gold_root, output, contract_path, review_path=None, group=
                 "implementation_sha256": implementation, "python_version": platform.python_version(),
                 "numpy_version": np.__version__, "pyarrow_version": gold["pyarrow_version"],
                 "seeds": {"split": contract["split_seed"], "bootstrap": contract["bootstrap_seed"]}}
-    identity["gold_verification_basis"] = "explicit_task_authorized_candidates" if verified_gold_candidates else "stored_eligibility"
-    identity["eligibility_provenance"] = gold.get("eligibility_provenance")
+    identity["gold_verification_basis"] = "all_gold_rows"
     identity["parent_gold_dataset_version"] = gold.get("parent_gold_dataset_version")
     identity["input_storage_model_design_version"] = copied_design["model_design_version"]
     identity["price_target_policy"] = target_policy(contract["target"])
@@ -792,14 +777,11 @@ def build_matched_run(gold_root, output, contract_path, review_path=None, group=
               "calibrated": False, "release_ready": False, "regression_fitted": False,
               "blockers": blockers, "gold_dataset_version": gold["dataset_version"],
               "gold_verification_basis": identity["gold_verification_basis"],
-              "eligibility_provenance": identity["eligibility_provenance"],
               "price_target_policy": identity["price_target_policy"],
               "missing_required_value_counts": missing_values,
-              "counts": {"candidates": len(candidates), "eligible": len(source_eligible),
+              "counts": {"candidates": len(candidates), "training_rows": len(candidates),
                          "complete_required_inputs": len(eligible), "evidence_ready": len(accepted),
-                         "source_eligible": len(source_eligible), "task_verified_candidates": len(candidates) if verified_gold_candidates else 0,
                          "fitting_matched_rows": len(fitted_rows), "fitting_matched_families": len({r["family_id"] for r in fitted_rows})},
-              "exclusion_counts": dict(sorted(Counter(reason for r in candidates for reason in r["exclusion_reasons"]).items())),
               "match_exclusion_counts": dict(Counter(domain.values())),
               "limitations": ["Contrasts describe only the matched assortment; no new-product, future-price or causal interpretation.",
                               "No regression conformal interval applies to this diagnostic.",
