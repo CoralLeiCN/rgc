@@ -172,6 +172,11 @@ release summary and wait for user review before its Hugging Face commit.
 Use the locked development environment for pytest and Ruff, then run the
 documentation guard under the policy:
 
+On macOS, install the native OpenMP runtime with `brew install libomp` before
+running the LightGBM trainers or the complete test suite. The Python dependency
+lock does not install this system library; without it, LightGBM cannot load
+`libomp.dylib` during test collection.
+
 ```sh
 uv sync --locked
 python3 -B scripts/fetch_contracts.py --all

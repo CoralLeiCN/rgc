@@ -39,7 +39,16 @@ verified 3,743 listings, 103 traits, 24 evidence shards, visualization assets
 and snapshot inclusion in all seven API traces. `uv run pytest` stopped during
 collection because the local LightGBM installation lacked `libomp.dylib`.
 The user requested an immediate push while that dependency installation was in
-progress; the complete Python suite has not passed in this checkout.
+progress; the complete Python suite had not passed at that initial push.
+
+Follow-up verification installed the missing OpenMP runtime with
+`brew install libomp`. The complete `uv run pytest` suite passed all 465 cases
+in 43.32 seconds on macOS with CPython 3.13.13. All four pinned contract caches
+verified offline. The [GitHub validation run](https://github.com/CoralLeiCN/rgc/actions/runs/37134596388)
+also passed for merged commit `f72604a`, including locked dependencies, Ruff,
+documentation maintenance and the Python suite on Linux. No code fixes were
+required. The README now records the native macOS dependency for LightGBM and
+test collection. Existing browser/WebGL and live extraction limitations remain.
 
 ### Application and model status
 
