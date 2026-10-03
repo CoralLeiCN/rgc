@@ -1,0 +1,34 @@
+{
+  "attribute_count": 103,
+  "category": "chocolate",
+  "contract_set": "chocolate-current-price",
+  "files": {
+    "model-design.json": {
+      "path": "contracts/chocolate-current-price/model-design.json",
+      "sha256": "c7b7f55d0424f8bdbef2fbc76e7b75475753eaad8021f7e1acd266de284ac8de",
+      "size_bytes": 23254
+    },
+    "product.schema.json": {
+      "path": "contracts/chocolate-current-price/product.schema.json",
+      "sha256": "e61c8d202774a95250d40673f292f68fa743dbec3a6d0948beedcc58e8fec84c",
+      "size_bytes": 327514
+    },
+    "profile.json": {
+      "path": "contracts/chocolate-current-price/profile.json",
+      "sha256": "881da5b79167bde7c8ac54dce76d39a3962cb5f73540e0e062c34dfde81e6458",
+      "size_bytes": 65092
+    },
+    "source-mappings.json": {
+      "path": "contracts/chocolate-current-price/source-mappings.json",
+      "sha256": "5084dde12e3b2309f11b33e4a98226005bc6cb877531eb58510d17715f6f0128",
+      "size_bytes": 18698
+    }
+  },
+  "format_version": "rgc-dataset-contract-reference-1",
+  "mapping_version": "chocolate-source-mappings-2",
+  "market": "uk",
+  "model_design_version": "chocolate-pricing-current-price-design-1",
+  "repo_id": "CoralLeiCN/rgc-collections",
+  "revision": "d743cb8dbca37f5241cccd444a16165523304f6c",
+  "schema_version": "chocolate-schema-1"
+}

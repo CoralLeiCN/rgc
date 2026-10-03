@@ -88,7 +88,7 @@ def validate_training_contract(design):
     validate_target_policy(design.get("target"))
     training = design.get("training", {})
     uncertainty = training.get("coefficient_uncertainty", {})
-    if (design.get("model_design_version") != "chocolate-pricing-design-3"
+    if (design.get("model_design_version") not in ("chocolate-pricing-design-3", "chocolate-pricing-current-price-design-1")
             or training.get("training_contract_version") != "chocolate-ols-training-1"
             or training.get("estimator") != "ordinary_least_squares"
             or training.get("solver") != "numpy.linalg.lstsq"
@@ -113,8 +113,11 @@ def validate_training_contract(design):
     return training
 
 
-def validate_price_targets(candidates, observations):
+def validate_price_targets(candidates, observations, design=None):
     """Bind accepted targets to the copied regular consumer price observations."""
+    if design is not None and design["target"].get("price_basis_contract_version") == "current-consumer-price-1":
+        from chocolate_current_price import validate_current_price_targets
+        return validate_current_price_targets(candidates, observations)
     index = {}
     for price in observations:
         identifier = price.get("observation_id") if isinstance(price, dict) else None
@@ -168,7 +171,7 @@ def write_run(output, run_id, files):
     return destination
 
 
-def build_model_run(silver_root, output, group, *, gold_root=None):
+def build_model_run(silver_root, output, group, *, gold_root=None, current_price_target=False, target_contract_root=None):
     source = Path(gold_root if gold_root is not None else silver_root).expanduser().resolve()
     output = Path(output).expanduser().absolute()
     if source == output.resolve() or source in output.resolve().parents or output.resolve() in source.parents:
@@ -182,6 +185,18 @@ def build_model_run(silver_root, output, group, *, gold_root=None):
     storage_manifest_bytes = (source / "manifest.json").read_bytes()
     manifest, manifest_bytes, inputs = verify_input(source)
     design = read_json(inputs["model-design.json"])
+    preparation = None
+    target_contract_bytes = None
+    if current_price_target:
+        from dataset_contracts import (
+            CURRENT_PRICE_REFERENCE,
+            SCHEMA_CACHE,
+            resolve_contracts,
+        )
+        target_root = Path(target_contract_root) if target_contract_root is not None else resolve_contracts(
+            CURRENT_PRICE_REFERENCE, SCHEMA_CACHE)
+        target_contract_bytes = (target_root / "model-design.json").read_bytes()
+        design = read_json(target_contract_bytes)
     training = validate_training_contract(design)
     report_source = read_json(inputs["quality-report.json"])
     if (manifest.get("schema_version") != design.get("schema_version")
@@ -191,6 +206,10 @@ def build_model_run(silver_root, output, group, *, gold_root=None):
     if group not in allowed_groups:
         raise ValueError("Group is outside the declared chocolate study domain.")
     candidates, eligible = rows(inputs["training-candidates.jsonl"]), rows(inputs["model-inputs.jsonl"])
+    if current_price_target:
+        from chocolate_current_price import current_price_targets
+        candidates, preparation = current_price_targets(candidates, rows(inputs["prices.jsonl"]))
+        eligible = [row for row in candidates if row["model_eligible"] is True]
     for table in (candidates, eligible):
         ids = [r.get("observation_id") for r in table]
         if len(ids) != len(set(ids)):
@@ -200,8 +219,17 @@ def build_model_run(silver_root, output, group, *, gold_root=None):
     expected = {r["observation_id"]: r for r in candidates if r.get("model_eligible") is True}
     if expected != {r["observation_id"]: r for r in eligible}:
         raise ValueError("Model inputs differ from reviewed eligible silver candidates.")
-    validate_candidates(eligible, design)
-    price_observations = validate_price_targets(eligible, rows(inputs["prices.jsonl"]))
+    input_blocker = None
+    if current_price_target:
+        try:
+            validate_candidates(eligible, design)
+            price_observations = validate_price_targets(eligible, rows(inputs["prices.jsonl"]), design)
+        except ModelContractError as error:
+            input_blocker = str(error)
+            price_observations = {}
+    else:
+        validate_candidates(eligible, design)
+        price_observations = validate_price_targets(eligible, rows(inputs["prices.jsonl"]))
     if any(r["predictors"].get("identity.product_group") != r["comparable_group"]
            or r["predictors"].get("identity.source_role") != r["source_role"] for r in eligible):
         raise ValueError("Reviewed model predictors disagree with row group/source context.")
@@ -209,10 +237,15 @@ def build_model_run(silver_root, output, group, *, gold_root=None):
     implementation = {name: checksum((ROOT / name).read_bytes()) for name in IMPLEMENTATION}
     if gold_root is not None:
         implementation["scripts/chocolate_gold.py"] = checksum((ROOT / "scripts/chocolate_gold.py").read_bytes())
+    if current_price_target:
+        implementation["scripts/chocolate_current_price.py"] = checksum((ROOT / "scripts/chocolate_current_price.py").read_bytes())
     identity = {"run_format_version": RUN_FORMAT, "silver_manifest_sha256": checksum(manifest_bytes),
                 "input_kind": input_kind, "input_manifest_sha256": checksum(storage_manifest_bytes),
                 "group": group, "training_contract": training, "implementation_sha256": implementation,
                 "python_version": platform.python_version(), "numpy_version": training["numpy_version"]}
+    if current_price_target:
+        identity["current_price_target_contract_sha256"] = checksum(target_contract_bytes)
+        identity["model_design_sha256"] = checksum(json_bytes(design))
     if gold_root is not None:
         gold_manifest = read_json(storage_manifest_bytes)
         identity["gold_dataset_version"] = gold_manifest["dataset_version"]
@@ -234,11 +267,20 @@ def build_model_run(silver_root, output, group, *, gold_root=None):
                               "Experimental coefficients describe conditional listing-price associations, not causal premiums.",
                               "Extraction evaluation, release thresholds and new-product prediction intervals remain outstanding."]}
     files = {"inputs/" + name: data for name, data in inputs.items()}
+    if current_price_target:
+        report["current_price_preparation"] = preparation
+        report["limitations"].extend(preparation["limitations"])
+        if input_blocker:
+            report["blockers"].append(input_blocker)
+        files["inputs/current-price-target-contract.json"] = target_contract_bytes
+        files["model-design.json"] = json_bytes(design)
     files["inputs/silver-manifest.json"] = manifest_bytes
     if gold_root is not None:
         report["gold_dataset_version"] = identity["gold_dataset_version"]
         if "review_provenance" in gold_manifest:
             report["gold_review_provenance"] = gold_manifest["review_provenance"]
+        if "eligibility_provenance" in gold_manifest:
+            report["gold_eligibility_provenance"] = gold_manifest["eligibility_provenance"]
         files["inputs/gold-manifest.json"] = storage_manifest_bytes
     files["selected-inputs.jsonl"] = b"".join(json.dumps(r, sort_keys=True, ensure_ascii=False, allow_nan=False).encode() + b"\n" for r in selected)
     if report_source.get("status") != "complete_snapshot":
@@ -298,10 +340,14 @@ def main():
     source.add_argument("--gold-root", type=Path, help="Input: an immutable Parquet gold snapshot directory")
     parser.add_argument("--output", type=Path, default=ROOT / "data/models/chocolate/uk")
     parser.add_argument("--group", required=True, help="One reviewed comparable product group, such as bar")
+    parser.add_argument("--current-price-target", action="store_true", help="Use collected displayed prices under current-consumer-price-1")
+    parser.add_argument("--target-contract-root", type=Path, help="Prepared local current-price contract root before publication")
     args = parser.parse_args()
     try:
         report, destination = build_model_run(args.silver_root or ROOT / "data/silver/chocolate/uk",
-                                              args.output, args.group, gold_root=args.gold_root)
+                                              args.output, args.group, gold_root=args.gold_root,
+                                              current_price_target=args.current_price_target,
+                                              target_contract_root=args.target_contract_root)
     except (OSError, ValueError, KeyError, ImportError) as error:
         print(json.dumps({"status": "error", "error": str(error)}), file=sys.stderr)
         return 1

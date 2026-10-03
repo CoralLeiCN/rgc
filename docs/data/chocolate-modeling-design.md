@@ -17,9 +17,11 @@ identity resolution will determine the actual analytical sample.
 The [LightGBM, SHAP, and AI explanation design](analysis/lightgbm-shap-explanation-design.md)
 defines training, attribution units, and the narrative contract in detail.
 
-The current [silver workflow](chocolate-silver.md) and
-[schema guide](chocolate-schema.md) implement preparation under
-`chocolate-pricing-design-3`; they do not implement this proposed model comparison.
+The source [silver workflow](chocolate-silver.md) and
+[schema guide](chocolate-schema.md) retain `chocolate-pricing-design-3` for their
+original evidence contract. Current-price model preparation selects
+`chocolate-pricing-current-price-design-1` downstream of verified Gold. The
+complete model comparison remains a separate design and validation task.
 Its 11 required predictors, rejection of missing selected values, and current
 training/validation helpers differ from the brand/no-brand variants,
 optional-feature policy, and calibration design below. Implementing this proposal
@@ -42,21 +44,44 @@ use separate subsequent study configurations; their selling mechanisms and
 brand/channel overlap differ.
 Never pool them silently into the supermarket model.
 
-Use positive GBP regular, publicly available non-member consumer pack prices,
-on a consistent recorded tax basis and within a declared source-price window.
-Retain promotions separately.
-A compare-at value alone does not establish regular price. Reject unresolved
-price/tax conflicts and quantities; an import timestamp does not make a cached
-price current. If the regular-price sample is inadequate, return a readiness
-report; a displayed-price study has its own identifier, eligibility, and models.
+The current study uses `current-consumer-price-1`: the positive collected current
+(displayed) GBP selling-pack price is the modeling target and serves as the
+study's regular-price proxy. A separately evidenced regular price is not needed.
+Promotion classification and confirmed tax inclusion do not gate this target.
+Keep the original promotion, membership and tax metadata as limitations. Use
+recorded source captures across available dates; no date arguments are required
+for the hedonic study. A capture is not a live quote.
 
 The regression target and pack conversion are:
 
 ```text
-unit_price = regular_pack_price_gbp / total_edible_weight_g * 100
+unit_price = current_displayed_pack_price_gbp / total_edible_weight_g * 100
 y = log(unit_price)
 predicted_pack_price = predicted_unit_price * total_edible_weight_g / 100
 ```
+
+Actual positive edible weight is required for unit normalization. Missing current
+prices, weights and identities remain missing. Promotions, membership conditions,
+unverified tax inclusion and variation across capture dates can influence fitted
+product, brand and retailer associations. The [project limitations](../../PROJECT.md#limitations)
+record these interpretation limits.
+
+`chocolate-pricing-current-price-design-1` is the dataset-owned current target
+contract. `scripts/chocolate_current_price.py` derives training inputs from the
+verified Gold candidate and auxiliary price views. `current_price_targets`
+retains all eligible candidates, produces explicit `current_price_per_100g_gbp`
+and `log_current_price_per_100g_gbp` targets, and records missing-value counts.
+Existing experimental trainers may read the corresponding `regular_*` aliases;
+under the recorded current-price contract those aliases carry the same current
+price proxy and assert no separate regular price. Source Gold, Silver prices,
+review states and earlier snapshots retain their original bytes.
+
+The experimental OLS command uses `--current-price-target`; three independent
+training chats apply the same policy to their selected model designs. Run
+artifacts retain the exact source Gold manifest, original price observations,
+current target contract, effective design, preparation counts and limitations.
+Historical regular-price studies retain `regular-consumer-price-1` and their own
+contract metadata.
 
 Retain a fitted size term because unit normalization does not remove quantity
 discounts. With the same rows and freely estimated log-weight term, unpenalized
@@ -511,4 +536,4 @@ Value-for-money scores, consumer willingness to pay, causal brand value, demand,
 and profit-maximizing price remain outside this model design. A later adjusted-
 price indicator must use out-of-fold benchmarks and be labeled price position.
 
-The [independent LightGBM with brand implementation](chocolate-lightgbm-with-brand.md) implements the assigned estimator under a separate unpublished working experiment. Native fitting, calibration and attribution are exercised with synthetic fixtures; the real-data attempt remains blocked by zero eligible inputs and absent shared handoff fields. Other estimators and the common comparison are outside this session.
+The [independent LightGBM with brand implementation](chocolate-lightgbm-with-brand.md) implements the assigned estimator under a separate unpublished working experiment. Native fitting, calibration and attribution are exercised with synthetic fixtures; its recorded historical real-data attempt had zero eligible inputs and absent shared handoff fields. The current published Gold makes all candidates eligible, while migration of this frozen trainer to the current-price policy and shared fields remains pending. Other estimators and the common comparison are outside this session.

@@ -17,6 +17,7 @@ from chocolate_model import (
     ModelContractError,
     coefficient_percent,
     fit_encoder,
+    target_field_names,
     transform_rows,
     validate_candidates,
     validate_target_policy,
@@ -53,7 +54,8 @@ def _designs(design):
     target = design.get("target", {})
     if not isinstance(target, dict):
         raise ModelContractError("model target must be an object")
-    for key, expected in (("name", "log_regular_gbp_per_100g"), ("currency", "GBP"),
+    target_name = "log_current_gbp_per_100g" if target.get("price_basis_contract_version") == "current-consumer-price-1" else "log_regular_gbp_per_100g"
+    for key, expected in (("name", target_name), ("currency", "GBP"),
                           ("unit", "GBP_per_100g")):
         if key in target and target[key] != expected:
             raise ModelContractError("unsupported regression target " + key)
@@ -285,7 +287,7 @@ def fit_regression(train_rows, design, *, bootstrap_replicates=500, random_seed=
         "model_format_version": MODEL_FORMAT_VERSION,
         "model_design_version": design.get("model_design_version", design.get("design_version")),
         "schema_version": design.get("schema_version"), "estimator": "ordinary_least_squares",
-        "target_basis": TARGET_BASIS, "estimate_type": "conditional_median_price",
+        "target_basis": target_field_names(design["target"])[1], "estimate_type": "conditional_median_price",
         "price_target_policy": validate_target_policy(design["target"]),
         "retransformation_method": "exp_log_prediction_without_mean_bias_correction",
         "weighting": "one_equal_weight_observation_per_seller_listing",
@@ -388,7 +390,7 @@ def evaluate_regression(validation_rows, model, train_rows):
     prediction_index = {record["observation_id"]: record for record in predictions}
     return {
         "status": "evaluated_supported_holdout" if predictions else "no_supported_holdout",
-        "target_basis": TARGET_BASIS, "estimate_type": "conditional_median_price",
+        "target_basis": model["target_basis"], "estimate_type": "conditional_median_price",
         "price_target_policy": policy,
         "validation_observations": len(rows), "supported_observations": len(predictions),
         "unsupported_observations": len(unsupported), "coverage": len(predictions) / len(rows) if rows else 0.0,

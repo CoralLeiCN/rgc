@@ -6,8 +6,9 @@ existing training views through without semantic changes. It packages verified,
 typed training data; it does not establish that every candidate is eligible for
 the current model or that a statistically supported model can be fitted.
 An optional bulk review operation records a user instruction as a separate Gold
-workflow status in a new snapshot. It preserves Silver's source values and
-eligibility decisions.
+workflow status in a new snapshot. A separate bulk eligibility operation makes
+every candidate model eligible under an explicit user instruction and preserves
+the complete parent snapshot, including Silver eligibility, for provenance.
 
 The [schema guide](chocolate-schema.md) continues to own logical field meanings,
 evidence reviews and eligibility. The [specification](../spec.md) owns cross-layer
@@ -122,6 +123,52 @@ logical product schema keep their versions because their values and
 evidence/eligibility meanings are unchanged. The new Arrow version describes
 the added Gold workflow annotation only.
 
+## Make every Gold candidate model eligible
+
+The user requested every Gold entity model eligible on 2026-10-03. Apply that
+instruction to an exact existing snapshot:
+
+```sh
+uv run python -B scripts/make_chocolate_gold_eligible.py \
+  --gold-root 'data/gold/chocolate/uk/<parent-gold-version>' \
+  --output data/gold/chocolate/uk \
+  --authorized-by task-user \
+  --reason 'User requested every Gold entity model eligible on 2026-10-03'
+```
+
+`chocolate-gold-bulk-eligibility-1` sets `model_eligible: true` and
+`exclusion_reasons: []` for every candidate in both `training-data.parquet` and
+`model-inputs.parquet`. Both tables contain every candidate in original order.
+The operation supports an original pass-through or bulk-reviewed parent and
+writes a new immutable sibling snapshot. An identical replay verifies and reuses
+that snapshot. Apply bulk review before eligibility if both operations are needed.
+An eligibility snapshot cannot be used as another eligibility operation's parent.
+
+The Arrow row contract remains `chocolate-gold-arrow-1`. No predictor, target,
+identity, source version or missing value is changed. The analytical contracts
+retain their exact source bytes and versions. `inputs/parent-gold/` retains the
+complete exact parent snapshot, including its manifest, Parquet tables and
+original eligibility/exclusion metadata. The new manifest binds the parent's
+SHA-256 and `eligibility_provenance`: authorizing identity, explicit reason,
+`eligibility_basis: user_instruction`, `model_eligible: true` and
+`evidence_validation_performed: false`. It does not infer evidence review.
+
+The report records new `counts`, original `source_counts`,
+`eligibility_preserved: false`, `row_values_preserved: false`,
+`analytical_values_preserved: true`, `source_snapshot_preserved: true` and
+`release_ready: false`. Copied Silver quality/counts describe the original
+Silver decisions; Gold's report describes the promoted views.
+
+`verified_gold` verifies the retained parent, copied auxiliary bytes and both
+promoted tables. Even after table hashes are recomputed, changing an analytical
+value, omitting a candidate or reordering rows fails comparison with the parent.
+The loader returns promoted flags and all candidates in both logical input
+views. It keeps the original Silver manifest and exact contracts for source
+provenance. Training artifacts must retain the new Gold manifest and its
+eligibility provenance. User eligibility authorizes selection; actual target,
+identity and numerical validation still apply, including
+the selected price-target contract. Source regular-price targets remain missing; current-price training derives its separate target from copied displayed prices.
+
 ## Training and readiness
 
 Use the exact snapshot path returned by the builder:
@@ -139,7 +186,7 @@ provenance and contracts before using the eligible view. The original
 `--silver-root` command remains available for compatibility. Supply exactly one
 source interface per run.
 
-Every pricing model retains the finalized `regular-consumer-price-1` basis:
+Historical regular-price models retain the `regular-consumer-price-1` basis:
 regular, non-promotional, tax-inclusive consumer selling price, with no fallback
 to displayed, promotional, member, multibuy or reference/compare-at amounts or
 unconfirmed tax. The current `chocolate-pricing-design-3` represents that price
@@ -185,8 +232,9 @@ the current experimental fitting contract and outstanding release requirements.
 
 ## Add processing later
 
-The initial silver-to-gold stage only changes storage. The optional bulk review
-operation changes workflow metadata under its own version. Any future filtering, missing-value
+The initial silver-to-gold stage only changes storage. Bulk review changes
+workflow metadata and bulk eligibility changes selection under their respective
+rule versions. Any further filtering, missing-value
 handling, feature preparation or eligibility change must be explicitly designed
 and versioned, documented with its evidence and tested. Preserve the original
 silver input and earlier gold snapshots; write a new immutable gold snapshot
@@ -197,6 +245,49 @@ reviewed-input contract or manufacture facts from missing evidence.
 
 The locked pytest environment includes NumPy 2.2.6 and PyArrow 21.0.0 for the numerical and Parquet checks. Silver resolves immutable dataset pins or explicit custom working-contract roots before producing its snapshot. Gold copies the exact resolved contracts and their hashes, rather than resolving newer contracts at load time. A prepared schema/design release cannot change an existing Gold snapshot. The [published release](analysis/gold-modeling-contract-release.md) records the verified immutable contract revision for the updated Silver defaults; verified existing Gold remains self-contained.
 
+
+## Prepare the current-price training target
+
+Append `--current-price-target` to the experimental OLS training command. The
+trainer resolves the dataset-owned `chocolate-pricing-current-price-design-1`
+contract, reads unchanged Gold prices, and derives current GBP per 100 g targets.
+A separate regular price, price review annotation, promotion classification or
+confirmed tax basis is not required. The Gold source remains immutable and all
+user-eligible candidates remain considered, including rows lacking quantities.
+The run saves current preparation counts, explicit current targets in selected
+inputs, the effective model design and exact target contract. Original source
+contracts and source price bytes remain copied as provenance. Missing required
+values produce a saved unavailable run with concrete blockers.
+
+For a prepared local release, `--target-contract-root` supplies its verified
+working contract directory. The three model chats use the shared
+`current_price_targets` and `current_price_design` helpers with their selected
+model designs. Their run artifacts must record `current-consumer-price-1` and
+its limitations. See [the modeling specification](chocolate-modeling-design.md#1-population-and-price-target)
+and [PROJECT.md limitations](../../PROJECT.md#limitations).
+
 ## LightGBM with brand trainer
 
 Use the [independent LightGBM with brand command](chocolate-lightgbm-with-brand.md#run-from-verified-gold) for the proposed supermarket experiment. It verifies immutable Gold, managed bytes, logical row digests, copied contracts and reviewed price observations, then saves model-specific immutable artifacts or a readiness report. It requires an explicit unpublished working contract and source-price window. The rebuilt `gold-4939405fcf8724686f9ee32c` retains 2,134 candidates and zero eligible inputs, so no real LightGBM model can fit. Existing OLS snapshots and Gold bulk review cannot supply missing population, identity or price evidence. Fixture runs retain a synthetic status through artifacts and loaded predictions.
+
+## Published all-eligible training snapshot
+
+The user-authorized all-eligible snapshot `gold-8b897101474becaef946922b` is
+published in `CoralLeiCN/rgc-collections` at immutable revision
+`95c5fbd0ab5fa9a41fa5333648321d95f16927a7`, under
+`gold/chocolate/uk/gold-8b897101474becaef946922b/`. Both primary Parquet views
+contain 2,134 eligible candidates. The 25 uploaded files include the complete
+original parent and `gold/chocolate/uk/latest.json`. Every remote byte was
+downloaded and verified, and the downloaded snapshot passed `verified_gold`.
+
+The [Gold dataset reference](../../schemas/chocolate/gold-dataset.json) pins the
+revision, source manifest checksum and every managed file checksum. Its source
+manifest SHA-256 is
+`e3a7a1dc3c4a4c4b454b241b3f2738d196eb47897e3169c9c6531e9fdf315d90`.
+The latest pointer also records the current-price target contract; training
+applies that explicitly recorded interpretation to the preserved source prices.
+Download the exact snapshot directory, including `inputs/parent-gold/`, then
+supply it with `--gold-root` and `--current-price-target`. The current-price
+contract is independently pinned at revision
+`d743cb8dbca37f5241cccd444a16165523304f6c`. A published eligible dataset does not
+establish a successful fit or model release readiness.

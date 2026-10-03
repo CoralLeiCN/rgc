@@ -17,6 +17,7 @@ from category_processing.dataset_contracts import (  # noqa: E402
 
 SCHEMA_REFERENCE = ROOT / "schemas/chocolate/dataset-contract.json"
 SCHEMA_CACHE = ROOT / "data/contract-cache"
+CURRENT_PRICE_REFERENCE = ROOT / "schemas/chocolate/current-price/dataset-contract.json"
 
 
 def resolve_contract_root(schema_root=None, *, offline=False):

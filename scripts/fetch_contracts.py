@@ -4,7 +4,13 @@
 import argparse
 from pathlib import Path
 
-from dataset_contracts import ROOT, SCHEMA_CACHE, SCHEMA_REFERENCE, resolve_contracts
+from dataset_contracts import (
+    CURRENT_PRICE_REFERENCE,
+    ROOT,
+    SCHEMA_CACHE,
+    SCHEMA_REFERENCE,
+    resolve_contracts,
+)
 
 
 def main(argv=None):
@@ -15,6 +21,8 @@ def main(argv=None):
     args = parser.parse_args(argv)
     entries = [(SCHEMA_REFERENCE, args.cache_root or SCHEMA_CACHE)]
     if args.all:
+        if CURRENT_PRICE_REFERENCE.exists():
+            entries.append((CURRENT_PRICE_REFERENCE, args.cache_root or SCHEMA_CACHE))
         plugin = ROOT / "plugins/category-processing"
         for category in ("chocolate", "coffee"):
             entries.append((plugin / "profiles" / category / "dataset-contract.json",

@@ -215,6 +215,99 @@ gates. Ruff, the documentation guard, whitespace checks and all three verified
 contract caches passed. Both parents' existing capabilities and contract pins
 are retained for the local squash landing.
 
+
+## Gold eligibility for every entity and training refresh
+
+On 2026-10-03 the user requested every Gold entity model eligible and authorized
+messages to all three chocolate training chats asking them to refresh and refit.
+Implemented `scripts/make_chocolate_gold_eligible.py` and
+`chocolate-gold-bulk-eligibility-1`. Both training tables contain every candidate
+with true eligibility and empty current exclusions. The exact parent snapshot
+retains original flags, exclusions, evidence provenance and workflow annotations.
+The loader compares promoted rows to parent analytical values before returning
+all rows. Contracts retain their original bytes and versions. The override is
+Gold workflow selection; missing regular prices and model identities still need
+actual values for a fit. No fitted model is implied by eligibility.
+
+Eight new cases cover original/reviewed parents, mixed eligibility, unchanged
+missing values, original snapshot preservation, replay and damaged destinations,
+empty views, missing authorization, recomputed-hash target/flag/order corruption,
+false readiness reports and parent corruption. Focused Gold tests passed: 35.
+Offline pinned contract verification and the locked development installation
+passed. Full suite, documentation checks and shared snapshot/refit handoff are
+recorded below after completion.
+
+The real operation used the newest available training snapshot,
+`gold-56817976905f24210105f069`, from
+`silver-485af2f8e7fae127cd73578b`. Its new immutable sibling is
+`gold-8b897101474becaef946922b`; manifest SHA-256:
+`e3a7a1dc3c4a4c4b454b241b3f2738d196eb47897e3169c9c6531e9fdf315d90`.
+Both Parquet views and the verified loader contain 2,134 eligible candidates,
+compared with zero eligible rows in the parent. All regular unit-price targets
+and exact variant IDs remain null; family IDs are present on 402 rows. Source
+contracts and price policy retain their original bytes and versions. This
+change publishes a local immutable snapshot; no remote dataset files changed.
+
+`uv run pytest` passed all 399 tests in 9.91 seconds. Ruff, the documentation
+guard and whitespace checks passed. Messages delivered to all three existing
+training chats with the exact snapshot path, hash, loader support and instruction
+to pull/copy it and refit: Train retailer median chocolate model; Train hedonic
+chocolate model with brand; Train matched retailer chocolate comparison. All
+three acknowledged and began their refresh/refit. Training completion is recorded
+in their individual model runs; Gold eligibility alone does not establish it.
+
+
+## Current-price target at the user's request
+
+On 2026-10-03 the user replaced the chocolate study's regular-price requirement
+with collected current displayed prices and requested this assumption in
+`PROJECT.md` limitations. Implemented a versioned current target contract and
+shared preparation from unchanged verified Gold observations. Current training
+requires positive GBP displayed price and actual edible pack weight, with no
+separate regular-price, promotion/review or confirmed-tax gate. Explicit current
+fields and equal legacy aliases are recorded under `current-consumer-price-1`;
+source regular prices, source evidence and historical studies are preserved.
+The three training chats received the new user instruction and will use the
+shared helpers and contract for fresh refits. `PROJECT.md` documents promotions,
+membership conditions, unverified tax inclusion and different capture dates.
+
+The real preparation considered all 2,134 eligible candidates and produced 630
+current unit-price targets. There are 1,503 missing edible weights and one
+missing current price. The OLS attempt saved concrete identity and repeated
+listing blockers instead of a missing regular-price gate. Contract publication
+and final validation are recorded below after completion.
+
+The current-price contract set was published to the authoritative dataset at
+`d743cb8dbca37f5241cccd444a16165523304f6c`, adding four files under
+`contracts/chocolate-current-price/` and updating the contract-set index. All
+five uploaded files were downloaded and verified byte for byte. The product
+schema (`chocolate-schema-1`, 103 attributes), source mappings
+(`chocolate-source-mappings-2`), original evidence and historical source/portable
+contract pins retain their original bytes and versions. The new model design is
+`chocolate-pricing-current-price-design-1`, SHA-256
+`c7b7f55d0424f8bdbef2fbc76e7b75475753eaad8021f7e1acd266de284ac8de`.
+A new small Git reference pins this immutable set; the resolver, all-contract
+fetcher and offline documentation guard verify it through the existing cache
+protocol. No typed product schema change was made.
+
+All three existing training chats received the exact target pin, verified local
+contract directory, shared helpers, actual target counts and instruction to
+refit under the current-price policy. The real OLS attempt considers all 2,134
+eligible candidates and selects 800 bar observations. It produces 630 current
+unit-price targets across the candidate table and saves explicit identity and
+repeated-listing blockers, with no missing-regular-price gate. Independent model
+outcomes belong to their individual chats and run artifacts.
+
+Ten new tests validate current-price arithmetic, missing weights/prices, invalid
+amounts/currencies, no regular-price fallback, quantity/provenance conflicts,
+source preservation, current target metadata, a synthetic regression and an
+end-to-end fitted model run with regular prices absent and tax/review unresolved.
+`uv run pytest` passed all 409 tests in 9.38 seconds. Ruff, documentation checks,
+whitespace checks and offline verification of all four contract sets passed.
+`PROJECT.md` limitations and the modeling specification record temporary/member
+prices, unverified tax inclusion and different source capture dates. These
+assumptions do not establish causal effects or model release readiness.
+
 ## Independent LightGBM with brand session
 
 Implemented `scripts/chocolate_experiment.py`, `scripts/chocolate_lightgbm.py`, `scripts/train_chocolate_lightgbm.py` and a synthetic fixture builder. The [model guide](../data/chocolate-lightgbm-with-brand.md) records the explicit working contract, common seed 1729, family partitions, fold-specific weights and preprocessing, known-brand identification/support gates, bounded LightGBM tuning, frozen tree count, retailer conformal calibration, native TreeSHAP reconstruction and immutable artifact verification.
@@ -237,3 +330,32 @@ All three pinned contract caches verify offline; Ruff, documentation and
 whitespace checks pass. Historical immutable fixture/readiness artifacts retain
 their original data, package and implementation identities. Real-data fitting,
 contract migration, comparator release decisions and model upload remain pending.
+
+## Commit, Gold publication and main integration
+
+The user requested committing this task, merging to local main and publishing
+changed data to Hugging Face. Source changes were committed on
+`codex/gold-current-price`. Main's reorganized `docs/data` layout and updated
+PROJECT overview were integrated while preserving the current-price limitations.
+A later independent LightGBM commit on main was also incorporated; its historical
+readiness artifacts and implementation remain preserved.
+
+Published `gold-8b897101474becaef946922b` and its latest pointer at immutable
+Hugging Face revision `95c5fbd0ab5fa9a41fa5333648321d95f16927a7`. All 25
+remote files (24,549,078 bytes) were downloaded, compared to the local snapshot
+and loaded successfully with `verified_gold`. Both primary tables contain all
+2,134 eligible rows. Git records a small reference pinning the revision,
+manifest SHA-256 and managed file hashes; dataset bytes stay in Hugging Face.
+The previously published current-price model contract retains revision
+`d743cb8dbca37f5241cccd444a16165523304f6c`. No fitted real-data model is
+implied by publication. Updated handoffs were sent to the active LightGBM
+without-brand chat; the with-brand chat had been archived when dispatch was
+attempted. Its landed historical trainer remains available on main.
+
+Final integrated validation passed: `uv sync --locked`, all 426 pytest cases
+(including the native LightGBM checks), Ruff, documentation and whitespace
+checks, and offline verification of all four contract sets. The landing procedure
+refreshes main from its upstream and guards the target revision before creating
+one squash commit. The source and target file trees must match and both
+worktrees must be clean after landing. Real-data model fitting remains subject
+to each training chat's preparation and identification gates.

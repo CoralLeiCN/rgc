@@ -688,9 +688,10 @@ Collection retains original price text, currency, quantities, and offers as
 reported, even when their normalization or model eligibility is unresolved.
 Computed prices belong to the derived layer and retain links to the originals.
 
-For the UK example, the initial proposal is GBP regular consumer pack price on a
-consistent recorded tax basis. Also retain the displayed price and promotions.
-If regular price is unobservable, exclude the observation from the regular price
+For the current UK chocolate study, use collected displayed GBP pack prices as
+the regular-price proxy and retain source tax/promotion metadata as limitations.
+The earlier regular-price proposal remains a historical study contract.
+For historical regular-price studies, if regular price is unobservable, exclude the observation from the regular price
 model or use a separately defined analysis of displayed prices. A discount label
 alone cannot establish regular price.
 
@@ -1127,12 +1128,44 @@ Resolve these decisions before the corresponding implementation or release commi
 
 The canonical chocolate architecture is raw → combined Silver → immutable Parquet Gold. Silver retains seller rows, evidence, reviews and eligibility. Gold copies `training-candidates.jsonl` to `training-data.parquet` and `model-inputs.jsonl` to `model-inputs.parquet`, with typed empty tables, Zstandard compression, manifests, logical row checks and exact contract/price/identity decision provenance. Existing snapshots cannot be overwritten with changed bytes. The [Gold guide](data/chocolate-gold.md) defines CLI, versions, review annotations and verified trainer handoff.
 
-Every pricing model uses `regular-consumer-price-1`: regular, non-promotional, consumer-tax-inclusive selling price, with `fallback_policy: reject`. Retain displayed/promotional/reference amounts as evidence; none substitutes for the target, and no tax guess or reverse discount is permitted. A separately evidenced regular amount alongside a promotional offer is supported. Chocolate normalizes GBP per 100g and logs it; other categories retain their declared currency and quantity basis. This fixed monetary basis supersedes earlier examples allowing excluded-tax model targets, without changing the preserved observations. Generated custom profiles retain this basis.
+Historical regular-price models and the portable processing profiles use `regular-consumer-price-1`: regular, non-promotional, consumer-tax-inclusive selling price, with `fallback_policy: reject`. Retain displayed/promotional/reference amounts as evidence; none substitutes for the target, and no tax guess or reverse discount is permitted. A separately evidenced regular amount alongside a promotional offer is supported. Chocolate normalizes GBP per 100g and logs it; other categories retain their declared currency and quantity basis. This fixed monetary basis supersedes earlier examples allowing excluded-tax model targets, without changing the preserved observations. Generated custom profiles retain this basis.
 
 `chocolate-source-mappings-2` adds reusable `chocolate-product-identity-1` family taxonomy. Evidence-backed Codex assignments populate product and candidate IDs; related range grouping prevents validation leakage while seller rows and prices stay separate. Unknown/conflicting relationships remain in grouped review packets. Family assignment alone does not confer eligibility. Exact physical pack identity, reviewed scope, price/tax/time/availability, edible quantity and predictors remain separate requirements. [The schema guide](data/chocolate-schema.md) and [registry guide](../reviews/chocolate/README.md) own mapping details.
 
 The experimental `chocolate-pricing-design-3` trainer reads verified Gold, with Silver compatibility, and saves immutable runs. It implements log-price OLS, family holdout, training-only encoders, support/rank/confounding gates and family-cluster bootstrap coefficient intervals. It validates eligible targets against the copied regular-price observations. Zero eligible rows yield a readiness report and no fitted artifact. This implemented experimental baseline does not establish release readiness or supersede the proposed LightGBM/SHAP research design. [The published contract release](data/analysis/gold-modeling-contract-release.md) documents the verified publication and exact changes.
 
+
+Gold supports `chocolate-gold-bulk-eligibility-1` under an explicit user instruction.
+Every candidate is emitted in both training views with `model_eligible: true`
+and empty current exclusions. The exact parent snapshot retains the original
+Silver decisions. Gold verifies all analytical values against that parent and
+returns promoted flags to trainers. Original contract bodies, source evidence,
+missing targets retain their source meaning. The current study derives a separate current-price target at training time under `current-consumer-price-1`. Gold's
+report distinguishes override counts from original Silver quality counts and
+records authorization without claiming evidence validation or fitted models.
+See [bulk eligibility](data/chocolate-gold.md#make-every-gold-candidate-model-eligible).
+
+
+## Current chocolate study price target
+
+The user's 2026-10-03 instruction supersedes the regular-price requirement for
+current chocolate training. Use `current-consumer-price-1`: collected current
+displayed GBP price normalized by actual positive edible weight to GBP per 100 g,
+with log scale for regression. Separate regular price, promotion classification,
+review flags on the monetary observation and confirmed tax inclusion do not gate
+target preparation. Original metadata stays preserved. The effective target is
+recorded in model artifacts; no silent substitution into a historical study is
+allowed. See the [modeling specification](data/chocolate-modeling-design.md#1-population-and-price-target)
+and [project limitations](../PROJECT.md#limitations).
+
 ## Independent LightGBM with brand implementation
 
-The [LightGBM with brand guide](data/chocolate-lightgbm-with-brand.md) owns the independent experimental trainer, explicit unpublished working experiment, grouped fitting selection, retailer calibration, native TreeSHAP and artifact integrity. The assigned estimator is implemented; fixture validation and real-data readiness are recorded in the lifecycle plan. The rebuilt Gold has 2,134 candidates and zero eligible rows. Real fitting, authoritative handoff migration, comparator gates and supported release remain pending.
+The [LightGBM with brand guide](data/chocolate-lightgbm-with-brand.md) owns the independent experimental trainer, explicit unpublished working experiment, grouped fitting selection, retailer calibration, native TreeSHAP and artifact integrity. The assigned estimator is implemented; fixture validation and real-data readiness are recorded in the lifecycle plan. Its historical rebuilt Gold has 2,134 candidates and zero eligible rows. The published current Gold marks every candidate eligible; this trainer requires migration to the current-price policy and shared handoff fields. Real fitting, authoritative handoff migration, comparator gates and supported release remain pending.
+
+The user requested committing the task and publishing changed data. The Gold
+publication contains 2,134 eligible candidates in both Parquet views, with its
+full original parent. Immutable dataset revision
+`95c5fbd0ab5fa9a41fa5333648321d95f16927a7` and per-file checksums are recorded
+in the [Gold reference](../schemas/chocolate/gold-dataset.json). All 25 files
+were downloaded and byte/loader verified. Publication and fitting are separate;
+current-price preparation remains the explicitly versioned training operation.

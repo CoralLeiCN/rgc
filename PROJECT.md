@@ -16,8 +16,9 @@ information remains visible.
 
 The working product produces reproducible datasets, review reports, eligibility
 decisions and immutable Parquet Gold training snapshots. An experimental OLS
-trainer is implemented; current chocolate data has no eligible reviewed inputs
-and no fitted model. Validated pricing benchmarks, LightGBM predictions and AI
+trainer is implemented. All 2,134 Gold candidates are model eligible under the
+user instruction, and current-price preparation produces 630 unit-price targets.
+Actual missing quantities and identities still constrain fitting. Validated pricing benchmarks, LightGBM predictions and AI
 explanations remain planned.
 
 ## Our data
@@ -31,7 +32,7 @@ explanations remain planned.
 | Bronze / raw archive | Original records, source evidence and capture history. |
 | Silver dataset | Standardized features, comparable price units and review flags; missing or conflicting information stays visible. |
 | Gold snapshots | Immutable Parquet candidate and eligible tables with verified contracts and evidence provenance. |
-| Current status | Review required before model training; UK market coverage is unverified. |
+| Current status | All Gold candidates are model eligible under the user instruction; actual missing inputs still limit training, and UK market coverage is unverified. |
 | Demo sample | Five illustrative records from the study. |
 
 ## How it works
@@ -45,8 +46,8 @@ purpose, outputs and current status.
 | Collect and preserve original product records, source artifacts and capture history. | Implemented through the collection plugin. |
 | Deduplicate within sellers, standardize supported chocolate features and normalize supported prices. | Implemented through the combined silver pipeline. Listings from different sellers retain separate identities. |
 | Retain evidence references, missing values, conflicts and review requirements. | Implemented in derived records and quality/review reports. |
-| Prepare eligible model inputs and keep related product families together during validation splits. | Helpers implemented. Current chocolate evidence requires review and has no eligible reviewed training inputs. |
-| Export immutable Gold and train an experimental OLS model. | Export and trainer implemented; current chocolate has zero eligible inputs and no fitted model. |
+| Prepare eligible model inputs and keep related product families together during validation splits. | Helpers implemented. The user marked all 2,134 Gold candidates model eligible; current-price preparation produces 630 targets per 100 g. |
+| Export immutable Gold and train an experimental OLS model. | Export and trainer implemented. Current-price targets use collected displayed prices; missing quantities and identities still limit fitting. |
 | Validate pricing benchmarks, compare retailer contexts and explain predictions with SHAP and AI. | Proposed designs; validation and explanations remain pending. |
 
 The standalone [processing plugin](plugins/category-processing/README.md)
@@ -60,6 +61,29 @@ The [implementation plan](docs/lifecycle/plan.md) records verification and
 remaining work. The [pricing design](docs/data/chocolate-modeling-design.md) and
 [explanation design](docs/data/analysis/lightgbm-shap-explanation-design.md) describe
 the proposed modelling stage.
+
+## Limitations
+
+The chocolate models use the collected current displayed selling price as the
+study's regular-price proxy. A separate verified regular-price target is not
+required. Where edible pack weight is available, the target is current GBP per
+100 g; regressions use its natural logarithm.
+
+Displayed prices may include promotions, membership conditions or temporary
+offers. These effects are not separated from product features, brand or retailer
+associations. Source tax inclusion is not independently verified or harmonized.
+Prices describe their recorded source captures and may span different dates;
+they do not establish live prices or a common observation window.
+
+Eligibility records the user's selection instruction. It does not supply missing
+quantities, product identities or predictor values. The current snapshot yields
+630 normalized targets from 2,134 candidates; 1,503 lack edible weight and one
+lacks a usable current price. Exact variant IDs are still missing. Models must
+report their actual usable sample and remaining fitting constraints. Observed
+associations do not establish causal feature premiums or willingness to pay.
+
+The [training target specification](docs/data/chocolate-modeling-design.md#1-population-and-price-target)
+defines this assumption and its versioned preparation.
 
 ## Running the current product
 

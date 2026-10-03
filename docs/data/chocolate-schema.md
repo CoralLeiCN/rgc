@@ -477,10 +477,49 @@ and require another evidence-backed decision; frequency does not pick a winner.
 
 ## Prepared Gold and regression contract release
 
-The published contract release retains `chocolate-schema-1` and its 103 typed fields, changes source mappings to `chocolate-source-mappings-2`, and selects `chocolate-pricing-design-3`. Model helpers use `chocolate-encoder-2` and `chocolate-regression-2`. The finalized `regular-consumer-price-1` target requires regular, non-promotional, consumer-tax-inclusive price with reject fallback; chocolate remains log GBP per 100g. The 11 selected predictors are unchanged. Seller role supplies reviewed context; seller identity supplies fitted seller terms. Training validates target amounts against the copied price observations.
+The published contract release retains `chocolate-schema-1` and its 103 typed fields, changes source mappings to `chocolate-source-mappings-2`, and selects `chocolate-pricing-design-3`. Model helpers use `chocolate-encoder-2` and `chocolate-regression-2`. The historical `regular-consumer-price-1` target requires regular, non-promotional, consumer-tax-inclusive price with reject fallback; chocolate remains log GBP per 100g. The 11 selected predictors are unchanged. Seller role supplies reviewed context; seller identity supplies fitted seller terms. Training validates target amounts against the copied price observations.
 
 The experimental trainer implements family-held-out OLS, rank/conditioning and confounding gates, and family-cluster bootstrap coefficient intervals. No real-data regression has fitted and no prediction intervals or released domain are established. [Gold](chocolate-gold.md) preserves candidates separately from eligible inputs and carries accepted identity decisions. The [published release](analysis/gold-modeling-contract-release.md) records exact files, hashes, impact and publication status; authoritative manifests now pin verified Hugging Face commit `d549ad91d63fb452af605df4a939c4e1f0a59bfa`.
+
+
+## User eligibility in Gold
+
+The explicit Gold bulk eligibility operation sets every candidate model eligible
+for training selection. Silver's evidence eligibility is retained in a complete
+parent snapshot; logical predictor/target fields, nulls, identifiers and copied
+analytical contracts retain their original values and versions. This operation
+changes Gold selection under `chocolate-gold-bulk-eligibility-1` without changing
+the analytical product schema or price policy. Trainers must validate actual
+required values and retain the override provenance in their run artifacts. See
+[Gold eligibility](chocolate-gold.md#make-every-gold-candidate-model-eligible).
+
+
+## Current-price training target contract
+
+The current chocolate modeling study selects `chocolate-pricing-current-price-design-1`
+under `current-consumer-price-1`, using unchanged `chocolate-schema-1` and
+`chocolate-source-mappings-2`. The 103 typed product attributes, validator,
+source mappings, prices and source contracts retain their existing versions.
+A separately pinned contract set `chocolate-current-price` copies the original
+profile/mapping/validator bytes and supplies the current target design. This
+changes training interpretation without manufacturing a regular-price observation.
+Explicit current target fields exist in prepared model inputs; legacy `regular_*`
+fields are equal compatibility aliases under this recorded contract. Source Gold
+still retains its original target schema. The [modeling guide](chocolate-modeling-design.md#1-population-and-price-target)
+owns normalization and limitations.
+
+The [current-price pin](../../schemas/chocolate/current-price/dataset-contract.json)
+selects immutable dataset revision `d743cb8dbca37f5241cccd444a16165523304f6c`.
+Its model-design SHA-256 is
+`c7b7f55d0424f8bdbef2fbc76e7b75475753eaad8021f7e1acd266de284ac8de`.
+All four files and available caches verify against the pin.
 
 ## LightGBM with brand handoff
 
 The [independent LightGBM trainer](chocolate-lightgbm-with-brand.md) uses an explicit working experiment alongside copied Gold contracts. The current published `chocolate-pricing-design-3` remains the experimental OLS contract. Its eligible view lacks the shared single-pack population, recipe/inclusion, cocoa basis and optional missingness handoff required by the new experiment. Missing fields block training; the new trainer cannot manufacture evidence or promote candidates. An aligned original and portable contract release and regenerated reviewed inputs are still required.
+
+The all-eligible Gold data is now published at immutable dataset revision
+`95c5fbd0ab5fa9a41fa5333648321d95f16927a7`. Its
+[small Gold reference](../../schemas/chocolate/gold-dataset.json) records the
+source manifest and managed file hashes. This publication packages the existing
+source interpretation and user eligibility; it changes no typed product fields.

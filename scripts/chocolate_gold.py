@@ -472,6 +472,9 @@ def verified_gold(root):
     manifest_path = checked_path(root, "manifest.json", "Gold")
     manifest_bytes = manifest_path.read_bytes()
     manifest = read_json(manifest_bytes)
+    if manifest.get("processing_rule_version") == "chocolate-gold-bulk-eligibility-1":
+        from chocolate_gold_eligibility import verified_eligible_gold
+        return verified_eligible_gold(root, manifest_bytes)
     reviewed = validate_gold_identity(manifest)
     files = read_managed(root, manifest["managed_files"], "Gold")
     parent = validate_review_parent(manifest, files["inputs/parent-gold-manifest.json"]) if reviewed else None

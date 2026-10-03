@@ -100,3 +100,29 @@ intervals or a new model contract.
 ## Current contract release
 
 On 2026-10-03, the user-approved Gold/modeling release was published at immutable commit `d549ad91d63fb452af605df4a939c4e1f0a59bfa`. All 16 managed files were downloaded and verified byte for byte; the three Git references now pin that revision. The release preserves the intervening published Silver and analysis files. [The release record](analysis/gold-modeling-contract-release.md) lists exact hashes, versions and corpus impact. Existing snapshots retain their copied historical contracts.
+
+
+The current chocolate modeling study adds a separate `chocolate-current-price`
+contract set with four files, using the standard immutable reference/cache
+format. Its profile, mappings and validator match the historical chocolate
+contract bytes; `model-design.json` specifies
+`chocolate-pricing-current-price-design-1` and `current-consumer-price-1`.
+`fetch_contracts.py --all` includes its pin when present, and the documentation
+guard validates the pin offline and every available cached file. Historical
+source and portable processing contract sets retain their own price basis.
+
+The current-price contract was published at immutable revision
+`d743cb8dbca37f5241cccd444a16165523304f6c`. Its five uploaded files were
+downloaded and verified byte for byte. The new pin is
+[the current-price reference](../../schemas/chocolate/current-price/dataset-contract.json).
+The four contract bodies occupy `contracts/chocolate-current-price/`; the
+existing index gains this contract set. The source and portable contract pins
+retain their historical revisions.
+
+The Gold publication at `95c5fbd0ab5fa9a41fa5333648321d95f16927a7` adds the
+immutable all-eligible snapshot and its latest pointer. The
+[Gold data reference](../../schemas/chocolate/gold-dataset.json) records the
+manifest and each managed file checksum. All 25 uploaded files were downloaded,
+compared byte for byte and loaded with the verified Gold interface. The
+[Gold guide](chocolate-gold.md#published-all-eligible-training-snapshot) describes
+its exact path and current-price trainer handoff.

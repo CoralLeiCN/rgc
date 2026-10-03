@@ -32,7 +32,7 @@ immutable Gold snapshots.
 | --- | --- | --- | --- |
 | **Bronze / raw** | Preserve what each source reported so later interpretations can be checked. | Original product records, prices and claims; source text and available images; seller identity and immutable capture history. | Implemented in the raw archive. Bronze is the presentation name for this existing layer. |
 | **Silver** | Turn preserved evidence into consistent records while retaining uncertainty and provenance. | Listings deduplicated within each seller, typed features, standardized units, normalized prices, source references, quality reports, review queues and eligibility decisions. | Implemented with pandas. Missing and conflicting values remain visible; current chocolate records still need review before training. |
-| **Gold** | Package verified training views in immutable snapshots for model use. | Parquet candidate and eligible tables, copied contracts and price/identity evidence, manifests, hashes and preservation reports. | Export and an experimental OLS trainer are implemented. Gold preserves Silver's eligibility decisions; current chocolate has zero eligible model inputs and no fitted model. Validated price benchmarks and explanations remain planned. |
+| **Gold** | Package verified training views in immutable snapshots for model use. | Parquet candidate and eligible tables, copied contracts and price/identity evidence, manifests, hashes and preservation reports. | Export and an experimental OLS trainer are implemented. Gold preserves Silver's decisions in its parent snapshot. The user-directed Gold view marks all 2,134 candidates eligible; actual quantities and model identification gates still apply, and no real-data model has fitted. Validated price benchmarks and explanations remain planned. |
 
 ### Processing steps
 
@@ -345,6 +345,31 @@ A family-only assignment reviews only the family relationship. It does not revie
 
 The current default dataset contracts pin verified Hugging Face revision `d549ad91d63fb452af605df4a939c4e1f0a59bfa`, including `chocolate-source-mappings-2` and `chocolate-pricing-design-3`. The [published release](analysis/gold-modeling-contract-release.md) records byte verification, family coverage and the unchanged raw/capture evidence. Historical Silver and Gold keep their exact copied contracts.
 
+
+## Gold selection under a user instruction
+
+Gold can promote every candidate for model selection under the user's explicit
+instruction. This writes a new Gold snapshot and embeds the complete original
+Gold parent, preserving Silver evidence reviews, exclusions and quality counts.
+The promoted tables have their own Gold counts; copied Silver quality reports
+continue to describe the original Silver decisions. Targets, identities and
+missing values retain their original meaning. See
+[Gold eligibility](chocolate-gold.md#make-every-gold-candidate-model-eligible).
+
+
+Current-price training reads the copied Silver `displayed_price`, currency and
+edible quantity from verified Gold. It does not edit Silver's regular-price
+fields, tax/promotion classifications or evidence reviews. Model preparation
+creates current target fields with their own explicit contract and reports
+missing quantities. See the [current study target](chocolate-modeling-design.md#1-population-and-price-target).
+
 ## Independent LightGBM experiment
 
 The [LightGBM with brand trainer](chocolate-lightgbm-with-brand.md) consumes immutable Gold derived from Silver and records a separate frozen working experiment. Silver continues to own evidence, seller identity, quantities, regular-price eligibility and physical/family decisions. The session rebuild produced `silver-f651a7faea94ed5a7f003e64` with 2,134 candidates and zero eligible observations; the trainer preserves this readiness failure. New shared population/feature fields require an aligned contract migration and evidence-backed Silver rebuild.
+
+The user eligibility snapshot derived from source Silver
+`silver-485af2f8e7fae127cd73578b` is published as immutable Gold
+`gold-8b897101474becaef946922b` at dataset revision
+`95c5fbd0ab5fa9a41fa5333648321d95f16927a7`. The downloaded Gold and embedded
+parent verify; Silver remains its preserved source evidence interface. See the
+[published Gold guide](chocolate-gold.md#published-all-eligible-training-snapshot).

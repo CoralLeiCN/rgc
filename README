@@ -206,8 +206,33 @@ uv run python -B scripts/build_chocolate_gold.py --silver-root data/silver/choco
 uv run python -B scripts/train_chocolate_model.py --gold-root data/gold/chocolate/uk/<gold-version> --output data/models/chocolate/uk --group bar
 ```
 
-The raw-to-Silver builder includes reviewed family mappings from the [registry](reviews/chocolate/README.md), with `--family-mappings` overrides and grouped Codex review packets. Every price model uses regular, non-promotional, tax-inclusive consumer price. The current rebuilt corpus has family IDs on 402 candidates and zero eligible model inputs; no real-data regression has fitted. [The published release](docs/data/analysis/gold-modeling-contract-release.md) records the verified contract publication and validation. Existing main features, discovery and proposed LightGBM/SHAP design remain available.
+The raw-to-Silver builder includes reviewed family mappings from the [registry](reviews/chocolate/README.md), with `--family-mappings` overrides and grouped Codex review packets. The current chocolate study uses collected displayed prices as its regular-price proxy; independent regular-price and confirmed-tax evidence are not target requirements. The source Silver has family IDs on 402 candidates and zero eligible model inputs; the user-directed Gold snapshot marks all 2,134 candidates eligible, and current-price preparation derives 630 unit-price targets; no real-data regression has fitted. [The published release](docs/data/analysis/gold-modeling-contract-release.md) records the verified contract publication and validation. Existing main features, discovery and proposed LightGBM/SHAP design remain available.
+
+
+To apply an explicit user instruction making every Gold candidate model eligible,
+run `uv run python -B scripts/make_chocolate_gold_eligible.py --gold-root
+/path/to/gold-snapshot --authorized-by task-user --reason 'Make every entity
+model eligible'`. The new snapshot contains every candidate in both training
+views and retains its complete parent. The loader returns promoted flags while
+checking analytical values against that parent. See
+[the command and provenance](docs/data/chocolate-gold.md#make-every-gold-candidate-model-eligible).
+
+
+For the current chocolate study, append `--current-price-target` to the Gold
+training command. It uses collected displayed prices as the target and records
+promotion, tax and capture-date limitations. A separately verified regular price
+is not required. Actual edible weight remains required for GBP per 100 g.
+See [the specification](docs/data/chocolate-modeling-design.md#1-population-and-price-target)
+and [project limitations](PROJECT.md#limitations).
 
 ## Independent LightGBM with brand
 
-The [LightGBM with brand guide](docs/data/chocolate-lightgbm-with-brand.md) documents `scripts/train_chocolate_lightgbm.py`, frozen supermarket preparation, grouped family validation, native TreeSHAP, retailer calibration and immutable model runs. LightGBM 4.6.0 and SciPy 1.15.3 are pinned in the development lock. Real Gold still has zero eligible rows; the trainer saves readiness blockers. Fixture fitting is explicitly labeled, and real-data release and contract migration remain pending.
+The [LightGBM with brand guide](docs/data/chocolate-lightgbm-with-brand.md) documents `scripts/train_chocolate_lightgbm.py`, frozen supermarket preparation, grouped family validation, native TreeSHAP, retailer calibration and immutable model runs. LightGBM 4.6.0 and SciPy 1.15.3 are pinned in the development lock. Its historical Gold attempts had zero eligible rows. The current published Gold contains 2,134 eligible rows; this frozen trainer still needs migration to the current-price policy and required shared fields. Fixture fitting is explicitly labeled, and real-data release and contract migration remain pending.
+
+The refreshed all-eligible Gold is published at Hugging Face dataset revision
+`95c5fbd0ab5fa9a41fa5333648321d95f16927a7`. The
+[Gold guide](docs/data/chocolate-gold.md#published-all-eligible-training-snapshot)
+records its exact download directory and
+[checksum reference](schemas/chocolate/gold-dataset.json). It contains all
+2,134 candidates in both training views and retains its complete original parent.
+Use the current-price target policy when training this study.

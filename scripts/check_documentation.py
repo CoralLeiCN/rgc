@@ -185,6 +185,12 @@ def check(root=ROOT, changed=None):
         root, "schemas/chocolate/dataset-contract.json", "chocolate", "chocolate",
         root / "data/contract-cache", "docs/data/chocolate-schema.md", errors,
     )
+    current_price_reference = root / "schemas/chocolate/current-price/dataset-contract.json"
+    if current_price_reference.exists():
+        check_dataset_reference(
+            root, "schemas/chocolate/current-price/dataset-contract.json", "chocolate-current-price", "chocolate",
+            root / "data/contract-cache", "docs/data/chocolate-schema.md", errors,
+        )
     for category in PROCESSING_PROFILES:
         check_dataset_reference(
             root, "plugins/category-processing/profiles/" + category + "/dataset-contract.json",

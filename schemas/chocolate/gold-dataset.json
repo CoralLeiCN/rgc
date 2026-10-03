@@ -1,0 +1,108 @@
+{
+  "counts": {
+    "eligible_model_inputs": 2134,
+    "training_candidates": 2134
+  },
+  "current_price_target_reference": "schemas/chocolate/current-price/dataset-contract.json",
+  "dataset_version": "gold-8b897101474becaef946922b",
+  "format_version": "rgc-gold-dataset-reference-1",
+  "managed_files": {
+    "inputs/family-mappings.json": {
+      "byte_length": 1064996,
+      "sha256": "a407f5b280a1d705eae1a39f7133affc3c748cc9652f022a0c759166b638c073"
+    },
+    "inputs/model-design.json": {
+      "byte_length": 20162,
+      "sha256": "ed403304c28b88655f77e0f48f3d4fe745bb22618b965e7ba71de987d7fe325c"
+    },
+    "inputs/parent-gold/inputs/family-mappings.json": {
+      "byte_length": 1064996,
+      "sha256": "a407f5b280a1d705eae1a39f7133affc3c748cc9652f022a0c759166b638c073"
+    },
+    "inputs/parent-gold/inputs/model-design.json": {
+      "byte_length": 20162,
+      "sha256": "ed403304c28b88655f77e0f48f3d4fe745bb22618b965e7ba71de987d7fe325c"
+    },
+    "inputs/parent-gold/inputs/prices.jsonl": {
+      "byte_length": 8734081,
+      "sha256": "f6ddc1b52cae20f312a4166055828af4da7e0da1c30357a85eeef822499b7580"
+    },
+    "inputs/parent-gold/inputs/product.schema.json": {
+      "byte_length": 327514,
+      "sha256": "e61c8d202774a95250d40673f292f68fa743dbec3a6d0948beedcc58e8fec84c"
+    },
+    "inputs/parent-gold/inputs/profile.json": {
+      "byte_length": 65092,
+      "sha256": "881da5b79167bde7c8ac54dce76d39a3962cb5f73540e0e062c34dfde81e6458"
+    },
+    "inputs/parent-gold/inputs/quality-report.json": {
+      "byte_length": 5481,
+      "sha256": "48d9178cf7501b5a0beaf9a38168f369caa0728c898a645c7ce5836fc676783e"
+    },
+    "inputs/parent-gold/inputs/silver-manifest.json": {
+      "byte_length": 1920846,
+      "sha256": "c7195ef6c517c0b37f77802ea3f55ae95586494168233fb763241ff4679782de"
+    },
+    "inputs/parent-gold/inputs/source-mappings.json": {
+      "byte_length": 18698,
+      "sha256": "5084dde12e3b2309f11b33e4a98226005bc6cb877531eb58510d17715f6f0128"
+    },
+    "inputs/parent-gold/manifest.json": {
+      "byte_length": 3541,
+      "sha256": "362a3273f61b5c73de96d27562f232052340c32e33cb984e406c62eda367e277"
+    },
+    "inputs/parent-gold/model-inputs.parquet": {
+      "byte_length": 4650,
+      "sha256": "e16eedcdddee0e4650ce3e63cdd4d594c32cea717c424ffc91db8db560c01eeb"
+    },
+    "inputs/parent-gold/report.json": {
+      "byte_length": 2823,
+      "sha256": "1e4055314f4ec67195578f16e66bfa66d6c5cff3201f7c51ada02c34e2902c3b"
+    },
+    "inputs/parent-gold/training-data.parquet": {
+      "byte_length": 76900,
+      "sha256": "745d8704217b3af0173a1d74e7e5fb740aec566c0c63b5da152141f82e6ab5cf"
+    },
+    "inputs/prices.jsonl": {
+      "byte_length": 8734081,
+      "sha256": "f6ddc1b52cae20f312a4166055828af4da7e0da1c30357a85eeef822499b7580"
+    },
+    "inputs/product.schema.json": {
+      "byte_length": 327514,
+      "sha256": "e61c8d202774a95250d40673f292f68fa743dbec3a6d0948beedcc58e8fec84c"
+    },
+    "inputs/profile.json": {
+      "byte_length": 65092,
+      "sha256": "881da5b79167bde7c8ac54dce76d39a3962cb5f73540e0e062c34dfde81e6458"
+    },
+    "inputs/quality-report.json": {
+      "byte_length": 5481,
+      "sha256": "48d9178cf7501b5a0beaf9a38168f369caa0728c898a645c7ce5836fc676783e"
+    },
+    "inputs/silver-manifest.json": {
+      "byte_length": 1920846,
+      "sha256": "c7195ef6c517c0b37f77802ea3f55ae95586494168233fb763241ff4679782de"
+    },
+    "inputs/source-mappings.json": {
+      "byte_length": 18698,
+      "sha256": "5084dde12e3b2309f11b33e4a98226005bc6cb877531eb58510d17715f6f0128"
+    },
+    "model-inputs.parquet": {
+      "byte_length": 68840,
+      "sha256": "b9d13abd66c53e8753a24b17a04ad1ddece7ec5b6ac89ee3d3f14433d179567d"
+    },
+    "report.json": {
+      "byte_length": 1476,
+      "sha256": "d0dc967f5c4ab51b3a878d8e16d8a5f7c4db80200e1769100a854bdef4016942"
+    },
+    "training-data.parquet": {
+      "byte_length": 68840,
+      "sha256": "b9d13abd66c53e8753a24b17a04ad1ddece7ec5b6ac89ee3d3f14433d179567d"
+    }
+  },
+  "manifest_sha256": "e3a7a1dc3c4a4c4b454b241b3f2738d196eb47897e3169c9c6531e9fdf315d90",
+  "path": "gold/chocolate/uk/gold-8b897101474becaef946922b",
+  "release_ready": false,
+  "repo_id": "CoralLeiCN/rgc-collections",
+  "revision": "95c5fbd0ab5fa9a41fa5333648321d95f16927a7"
+}

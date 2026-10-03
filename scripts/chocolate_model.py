@@ -19,6 +19,19 @@ PRICE_TARGET_POLICY = {
     "promotion_basis": "non_promotional",
     "fallback_policy": "reject",
 }
+CURRENT_PRICE_TARGET_POLICY = {
+    "price_basis_contract_version": "current-consumer-price-1",
+    "price_basis": "current_displayed",
+    "tax_basis": "as_displayed",
+    "promotion_basis": "as_displayed",
+    "fallback_policy": "reject",
+}
+
+
+def target_field_names(target):
+    if target.get("price_basis_contract_version") == "current-consumer-price-1":
+        return "current_price_per_100g_gbp", "log_current_price_per_100g_gbp"
+    return "regular_price_per_100g_gbp", "log_regular_price_per_100g_gbp"
 
 
 class ModelContractError(ValueError):
@@ -26,19 +39,21 @@ class ModelContractError(ValueError):
 
 
 def validate_target_policy(target):
-    """Every model must retain the finalized regular consumer price basis."""
+    """Validate an explicit current-price study or a historical regular-price study."""
     if not isinstance(target, dict):
-        raise ModelContractError("model target requires the finalized regular consumer price policy")
-    for name, expected in PRICE_TARGET_POLICY.items():
+        raise ModelContractError("model target requires an explicit supported consumer price policy")
+    current = target.get("price_basis_contract_version") == "current-consumer-price-1"
+    policy = CURRENT_PRICE_TARGET_POLICY if current else PRICE_TARGET_POLICY
+    for name, expected in policy.items():
         if target.get(name) != expected:
             raise ModelContractError("unsupported model price target policy: " + name)
-    for name, expected in (("name", "log_regular_gbp_per_100g"), ("currency", "GBP"),
+    for name, expected in (("name", "log_current_gbp_per_100g" if current else "log_regular_gbp_per_100g"), ("currency", "GBP"),
                            ("unit", "GBP_per_100g"), ("quantity_attribute", "quantity.total_edible_weight_g")):
         if target.get(name) != expected:
             raise ModelContractError("unsupported chocolate target normalization: " + name)
     if type(target.get("base_quantity")) is not int or target["base_quantity"] != 100:
         raise ModelContractError("unsupported chocolate target normalization: base_quantity")
-    return deepcopy(PRICE_TARGET_POLICY)
+    return deepcopy(policy)
 
 
 def regular_price_basis_supported(price):
@@ -152,11 +167,12 @@ def validate_candidates(rows, design):
     for row in candidates:
         target = row.get("target")
         if not isinstance(target, dict):
-            raise ModelContractError("target must declare the regular GBP/100g basis")
-        price = _number(target.get("regular_price_per_100g_gbp"), "regular GBP/100g price")
-        logged = _number(target.get("log_regular_price_per_100g_gbp"), "log regular GBP/100g price")
+            raise ModelContractError("target must declare its GBP/100g basis")
+        price_field, log_field = target_field_names(design["target"])
+        price = _number(target.get(price_field), price_field)
+        logged = _number(target.get(log_field), log_field)
         if price <= 0:
-            raise ModelContractError("regular GBP/100g price must be positive")
+            raise ModelContractError("GBP/100g price must be positive")
         if not math.isclose(math.log(price), logged, rel_tol=1e-9, abs_tol=1e-9):
             raise ModelContractError("log target is inconsistent with its original price")
         predictors = row.get("predictors")
@@ -276,10 +292,10 @@ def transform_rows(rows, fitted):
                     if level != spec["reference"]:
                         encoded[name + "=" + level] = float(value == level)
         matrix.append([encoded[column] for column in fitted["columns"]])
-        targets.append(row["target"]["log_regular_price_per_100g_gbp"])
+        targets.append(row["target"][target_field_names(design["target"])[1]])
     return {"columns": deepcopy(fitted["columns"]), "X": matrix, "y": targets,
             "observation_ids": [row["observation_id"] for row in candidates],
-            "target_basis": "log_regular_price_per_100g_gbp"}
+            "target_basis": target_field_names(design["target"])[1]}
 
 
 def coefficient_percent(beta, input_change=1.0):

@@ -173,7 +173,7 @@ Gold verification update, another available immutable snapshot,
 real-data workflow. Its current targets and exact variant IDs are entirely
 missing; its 2,134 candidates yield zero eligible inputs. Run
 `lightgbm-run-746f4a1a0b8e82fdf753b987` preserves that concrete failure.
-The dataset at the inspected immutable revision contains no remote Gold files.
+The historical inspected revision `d549ad91d63fb452af605df4a939c4e1f0a59bfa` contains no remote Gold files.
 
 The persistent synthetic run `lightgbm-run-ef4f9838ceafa12e44488f38` has 1,440
 observations in 240 families and a frozen 1,030-tree booster. It supports all 288
@@ -184,3 +184,16 @@ for Waitrose. The complete 392-case suite, Ruff, pinned caches, locked sync,
 documentation and whitespace checks pass. These measured synthetic results
 establish implementation behavior; actual model training and upload remain
 blocked by the current missing real targets and identities.
+
+## Current study migration
+
+The user subsequently made every Gold candidate eligible and selected current
+displayed price as the study target. Published Gold
+`gold-8b897101474becaef946922b` contains all 2,134 eligible candidates at dataset
+revision `95c5fbd0ab5fa9a41fa5333648321d95f16927a7`; see the
+[Gold download and checksums](chocolate-gold.md#published-all-eligible-training-snapshot).
+The [current target specification](chocolate-modeling-design.md#1-population-and-price-target)
+requires collected displayed GBP price and actual edible weight, with no separate
+regular-price requirement. This independent trainer retains its frozen historical
+working experiment. It needs an explicit migration before fitting the current
+study; its previous readiness reports describe their original snapshots.
