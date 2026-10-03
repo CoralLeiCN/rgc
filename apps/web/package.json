@@ -13,6 +13,7 @@
     "typecheck": "next typegen && tsc --noEmit",
     "verify:data": "node scripts/verify-data.mjs",
     "verify:assets": "node scripts/verify-assets.mjs",
+    "verify:terrain": "node --import tsx scripts/verify-terrain-slice.ts",
     "verify:model": "node scripts/verify-pricing-model.mjs",
     "prepare:model": "node scripts/verify-pricing-model.mjs --fetch"
   },

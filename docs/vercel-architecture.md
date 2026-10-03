@@ -3,9 +3,13 @@
 Design recorded before implementation on 2026-10-03 in response to the request to
 use Vercel for both frontend and backend. Application root: `apps/web`.
 
-The [preview](https://rgc-mgr5btzho-ptyyyy-s-projects.vercel.app) is deployed with
-Vercel sign-in protection. The cleaned application passed 27 hosted route/asset
-checks and eight Next.js asset checks; all seven API traces include the snapshot.
+The [preview](https://rgc-9blxl7c79-ptyyyy-s-projects.vercel.app) is deployed with
+Vercel sign-in protection. Its cloud build verified data, vendor assets and all
+seven API snapshot traces. Local Chromium verified the family navigation and
+HTML terrain tooltips, point selection, orbit dragging, price slices and their
+2D sections. Numerical checks verified closed faces and volume conservation.
+Hosted interactions for this deployment remain unverified. The earlier cleaned
+preview passed 27 hosted route/asset checks and eight Next.js asset checks.
 See the [lifecycle proof](lifecycle/plan.md#proof).
 
 ## Deployment and data flow
@@ -137,11 +141,18 @@ Piece of Cake Pricing / FMCG Pricing made easy remains the title/subtitle;
 contextual question-mark controls contain explanations. The visible TRAIT SCORE ·
 DEMO label and errors/status remain on-page.
 
-Family cards navigate member traits and show full coverage breakdowns on
-hover/focus/tap. Each leaf offers Filter and, if compatible, Colour layers or
+Family cards show trait counts and coverage; clicking a card opens its member
+traits. Each leaf offers Filter and, if compatible, Colour layers or
 Height. Selecting Filter opens a typed condition for explicit addition to the
 cohort. Parent cards never become terrain colour layers. Legend buttons toggle
 layer emphasis independently. Matrix display filters/pins do not change data.
+
+Plotly hover events populate a React HTML tooltip with explicit contrasting
+colours. Product details include name, unit price, demo score and the current
+height trait with its unit; layers and selected gaps have their own details.
+The tooltip is bounded to the viewport and ignores pointer events. It clears
+on pointer leave, drag, camera/data changes and resize. Native SVG hover labels
+are disabled while Plotly picking and product selection remain active.
 
 `TerrainViewport` builds a 24 × 24 grid with positive compact smoothing weights,
 leaves unsupported cells open and renders opaque closed meshes. It keeps at most
@@ -149,6 +160,20 @@ eight named layers plus Other, retaining evidence-state groups. Layer order is
 weighted median Z then key. A baseline of min(0, minimum observed Z) allows raw
 negative traits. Smoothing cannot overshoot the local observed Z range. Raw
 products retain their exact price/score/Z, independent of smoothing.
+
+`terrain-slice.ts` clips the existing layer triangles against one vertical price
+plane. Interpolated upper/lower columns preserve the existing surface planes;
+boundary edges supply closed cut faces and SVG section bands. Unsupported gaps
+remain open. The price slider selects GBP/100g and the retained side; Face slice
+points the camera directly at the cut. Reset restores the original
+meshes. The same SVG section is available without WebGL. Clipped points retain
+their exact coordinates and all cohort statistics use the full cohort.
+
+The renderer caches the complete smoothed geometry. A queued slice update clips
+that cache and preserves the camera and full terrain axis domains. Drafts can
+still extend those domains. Slice changes are deferred during chart dragging.
+`npm run verify:terrain` checks volume conservation, closed faces, both sides,
+grid/price boundaries, support gaps, restoration and point inclusion.
 
 The renderer serializes and coalesces updates. Geometry construction occurs
 inside the queue and waits until pointer release. Camera relayout never rebuilds
@@ -300,12 +325,15 @@ and Z counts are disclosed, and raw snapshot eligibility remains zero. The app's
 at the user's request. Current validation uses TypeScript, production compilation,
 asset/data verification and hosted HTTP checks, recorded in the lifecycle plan.
 
+Local Chromium with software WebGL verified family navigation, readable tooltip
+content and bounds, product selection, orbit dragging, price slices and pointer leave. Other
+browsers and the latest preview's hosted interaction flow remain unverified.
+
 Local browser checks verified example selection, custom upload and resizing of
 both original JPEGs, removal/appending, the two-image limit and preservation of
 draft name and price. Extraction reached the API and displayed the expected 503
 for missing provider configuration. This photo-input revision has not been
-deployed; the hosted preview above retains the earlier version. Terrain/WebGL
-interaction still requires browser review.
+deployed; the hosted preview above retains the earlier version.
 
 Earlier sandboxed Codex attempts failed during app-server initialization
 (`Operation not permitted`). Direct local text and two-photo extraction now succeed using

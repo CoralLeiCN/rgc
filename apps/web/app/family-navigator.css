@@ -13,24 +13,6 @@
 .family-nav-meter { display: block; height: 3px; background: #293741; margin-bottom: 8px; border-radius: 2px; overflow: hidden; }
 .family-nav-meter i { display: block; height: 100%; background: var(--family-color); }
 .family-nav-coverage { color: #a6b8c0; font-size: 9px; }
-.family-nav-strip > .family-card-popover { display: flex; align-items: stretch; min-width: 0; }
-.family-card-popover > .family-nav-card { width: 100%; }
-.family-breakdown-summary { color: #99b7c5 !important; font-size: 10px !important; }
-.help-tip-body .family-breakdown-list { list-style: none; padding: 0; margin: 13px 0; }
-.family-breakdown-list > li { padding: 11px 0; border-top: 1px solid #324a56; }
-.family-breakdown-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
-.family-breakdown-row > strong { font-size: 11px; line-height: 1.4; }
-.family-breakdown-row > span { color: var(--family-color); white-space: nowrap; font-size: 10px; font-variant-numeric: tabular-nums; }
-.family-breakdown-meta { display: flex; justify-content: space-between; gap: 10px; color: #97b1bf; font-size: 9px; margin-top: 5px; }
-.family-breakdown-meter { height: 4px; display: flex; background: #314552; overflow: hidden; border-radius: 2px; margin: 8px 0; }
-.family-breakdown-meter > i { display: block; height: 100%; }
-.breakdown-known { background: var(--family-color); }
-.breakdown-unknown { background: #405563; }
-.breakdown-conflict { background: #edb182; }
-.breakdown-na { background: repeating-linear-gradient(120deg,#afbac6 0 2px,#4f6575 2px 4px); }
-.family-breakdown-states { display: block; font-size: 9px; color: #d8bc9e; }
-.help-tip-body .family-breakdown-description { font-size: 10px; line-height: 1.55; color: #a7bdc7; margin-top: 5px; }
-.help-tip-body .family-breakdown-footnote { border-top: 1px solid #3b5563; padding-top: 10px; color: #99b3c0; font-size: 9px; }
 .family-nav-note { padding: 0 24px 17px; color: var(--muted); font-size: 10px; line-height: 1.6; }
 @media (max-width: 650px) {
   .family-nav-heading { align-items: flex-start; padding: 18px 15px; }

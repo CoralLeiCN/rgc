@@ -1,6 +1,6 @@
 /** Serializes renderer work. Orbit events only record the camera; they enqueue no geometry. */
-export type TerrainOperation = "geometry" | "camera" | "appearance" | "selection" | "draft" | "gap" | "resize";
-const priority: TerrainOperation[] = ["geometry", "camera", "appearance", "selection", "draft", "gap", "resize"];
+export type TerrainOperation = "geometry" | "slice" | "camera" | "appearance" | "selection" | "draft" | "gap" | "resize";
+const priority: TerrainOperation[] = ["geometry", "slice", "camera", "appearance", "selection", "draft", "gap", "resize"];
 export class TerrainRenderQueue {
   private pending = new Set<TerrainOperation>();
   private frame: number | null = null;
@@ -21,7 +21,7 @@ export class TerrainRenderQueue {
     if (!operation) return;
     this.pending.delete(operation);
     // A full render reads these values together. Updates arriving during its promise stay queued.
-    if (operation === "geometry") for (const key of ["camera", "appearance", "selection", "draft", "gap"] as const) this.pending.delete(key);
+    if (operation === "geometry" || operation === "slice") for (const key of ["slice", "camera", "appearance", "selection", "draft", "gap"] as const) this.pending.delete(key);
     this.busy = true;
     try { await this.run(operation); } catch (error) { if (!this.disposed) this.fail(error); this.dispose(); }
     finally { this.busy = false; this.schedule(); }

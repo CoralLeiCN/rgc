@@ -1125,8 +1125,17 @@ easy. The four top summary cards are removed. Explanations sit in question-mark
 controls beside headings, accessible on hover, keyboard focus and tap,
 dismissible by Escape/outside click and positioned outside clipping panels.
 Actual values, labels, errors and the prototype-score disclosure remain visible.
-Family hover/focus exposes definitions, types/units and complete evidence
-coverage. Leaf-trait actions configure filters, color or numeric height.
+Family cards show trait counts and evidence coverage. Clicking or activating a
+card with the keyboard opens its member traits; hovering or focusing the card
+does not open a popover. Member traits expose types/units and definition help.
+Leaf-trait actions configure filters, color or numeric height.
+
+Terrain hover details render as HTML with explicit contrasting colours and stay
+inside the chart. Product points show their name, observed or proposed GBP/100g,
+demo trait score and selected height trait with its unit. Layer and gap details
+remain available. Leaving the chart, starting a drag or changing its data/camera
+clears the tooltip. Hover content must not intercept product selection or orbit
+gestures.
 
 #### Primary terrain and shared prototype score
 
@@ -1182,6 +1191,22 @@ model attribution, cost or measured product quality. Exact dots retain their
 original price, calculated score and raw Z; they are never snapped to the smooth
 surface. Legend highlighting preserves the underlying coordinates and cohort.
 A 2D projection with explicit selection provides a fallback when WebGL fails.
+
+A price cut is an optional vertical plane at a selected GBP/100g value. The user
+can move it with a keyboard-accessible slider, keep the higher or lower prices,
+face the slice and restore the full cake. Surface triangles are clipped at that
+plane with linear interpolation of their upper and lower layer boundaries;
+new vertical faces close each layer. Unsupported areas remain gaps. Slicing
+reuses the original smoothed geometry and its layer order rather than refitting
+on the retained products. Camera rotation does not rebuild the geometry.
+
+A matching SVG section shows layer height against demo trait score at the exact
+selected price, also in 2D mode. The chart hides points on the removed side and
+discloses the retained count; their original coordinates, cohort analyses and
+source data are preserved. Price and height scales use the full terrain and
+configured draft, so moving the cut does not rescale the cake. Empty sections
+explain that the selected price lacks surface support. Slider prices stay within
+the displayed price domain, rounded outward to whole pennies.
 
 Retired chart components, the legacy points endpoint and ID-seeded score mode
 are removed. Only the current terrain and its 2D fallback are supported.

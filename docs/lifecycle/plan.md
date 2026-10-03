@@ -13,8 +13,10 @@ unverified; scoring value for money awaits research.
 The Vercel retailer workspace implements a layered trait terrain, typed cohorts,
 product configuration, observed-price analysis and extraction adapters. Its
 published snapshot and disclosed demo recipe have their own verification below.
-Browser checks verify the photo selection and upload flow; terrain/WebGL review
-and configured model extraction remain unverified.
+Local Chromium verified family navigation and terrain hover/selection/orbit
+interactions, including price slices. Browser checks also verified photo selection,
+uploads and applying extraction results from local Codex. Other browsers and
+hosted interactions remain unverified for the combined application.
 
 Canonical requirements: [specification](../spec.md),
 [silver responsibilities](../data/chocolate-silver.md),
@@ -119,6 +121,84 @@ with no Gold directory. The retry audit is saved in
 `data/current-gold-verification-audit.json`; a different verified snapshot's
 location is required for fitting/upload. Eligibility and missing values were
 preserved. These current checks are separate from historical readiness reports.
+
+### Integration of price slices with current main
+
+Committed the price slices, family interaction and terrain tooltip fixes, then
+merged main at `c4a6de4`. Resolved documentation and package script conflicts to
+retain the terrain checks alongside the newer photo uploads, local extraction,
+synthetic pricing demo and matched retailer training work. The existing price
+slice preview predates those upstream features.
+
+Included the generated frontend `AGENTS.md` and its `CLAUDE.md` reference in
+version control at the user's request to commit every remaining changed file.
+
+The combined application passed Node 24 type checks, terrain geometry checks and
+the production build, including five assets, the immutable pricing model and
+all eight API snapshot traces. Local Chromium verified price controls, both
+retained sides, matching sections, the camera facing the cut, mobile controls
+and restoration, with no browser errors or extra terrain requests. The locked
+development environment and four cached contract sets verified; all 515 pytest
+tests and Ruff passed. Documentation coverage against current main and whitespace
+checks passed. Hosted interactions for the combined application remain unverified.
+
+### Price sections through the cake
+
+The user requested cuts at different price points. Implemented a GBP/100g slice
+slider, a choice of retained side, a camera facing the exposed cut and a reset
+to the whole cake. Closed layer faces and an SVG section come from clipping the original
+surface triangles; unsupported regions remain gaps. Observed and draft points
+are hidden on the removed side while their source coordinates and cohort
+statistics remain intact. The SVG section also works in 2D mode. Slice changes
+reuse cached geometry and preserve chart scales and camera orientation.
+
+Node 24 TypeScript, production build, snapshot/asset checks and all seven API
+traces passed. Numerical verification checks volume conservation, closed faces,
+opposite sides, exact grid boundaries, support gaps, original geometry
+preservation and point inclusion. Local Chromium with software WebGL verified
+pointer and keyboard slider controls, both retained sides, fixed scales and
+camera, visible geometry when facing the slice, matching SVG sections in 2D,
+mobile controls and restoration of the original cake. Slicing made no extra
+API requests and produced no browser errors. Hosted interaction checks and
+other browsers remain unverified.
+
+The [price slice preview](https://rgc-9blxl7c79-ptyyyy-s-projects.vercel.app),
+deployment `dpl_EkGu3PAYpEMQTLiYp4MNoZ6MsEDm`, is READY. Its cloud build passed
+TypeScript, data and vendor asset verification, and all seven API snapshot
+traces. Vercel sign-in protection remains enabled. Documentation and whitespace
+checks passed.
+
+### Family card interaction
+
+Removed the family coverage popovers at the user's request. Family cards are
+buttons that open their member traits on click or keyboard activation, with
+trait counts and coverage visible on the cards. Removed the unused breakdown
+component and styles and updated the application guide and specification.
+TypeScript, production build, snapshot/asset integrity, all seven API snapshot
+traces, documentation and whitespace checks passed. Chromium verified that
+family hover opens no popover and clicking still opens member traits.
+
+### Terrain hover rendering and preview packaging
+
+The user's screenshot showed blank SVG hover labels. A local Chromium check
+reproduced the side label's pale text on a pale background; primary text was
+visible in that browser. Replaced native chart labels with a React HTML tooltip
+for product points, layers and gaps, using explicit colours and chart bounds.
+Point names and numbers are rendered as text, with observed and proposed prices
+identified separately. Chromium verified actual point hover content, tooltip
+bounds, product selection, orbit dragging and clearing on pointer leave. The screenshot showed
+readable primary and secondary text, with no browser errors. Other browsers
+remain unverified.
+
+The first preview build failed because `.vercelignore` excluded every README,
+including the vendor README in the asset manifest. Anchored that rule to the
+application root so the required vendor asset is uploaded. Node 24 TypeScript,
+production build, data/asset integrity and all seven API traces passed locally.
+The [replacement preview](https://rgc-4lwz80ftn-ptyyyy-s-projects.vercel.app),
+deployment `dpl_8W6kwAW9KooyPDsByfFfqLL4srH4`, is READY. Its Node 24 cloud build
+verified all three vendor assets, the snapshot and all seven API traces. Hosted
+interaction checks have not been repeated; local browser checks used software
+WebGL. Documentation and whitespace checks passed.
 
 ### Conflict resolution and remote integration
 
@@ -494,7 +574,7 @@ byte-for-byte. Targeted Ruff, TypeScript, production build, data/asset integrity
 all seven API snapshot traces, documentation and whitespace checks passed after
 the merge. Upstream training requirements remain enforced by their own pipeline.
 
-The current web preview, deployment `dpl_2JRVCEdm45vGfxtkPJYiSHDoMy5T`, passed
+The earlier cleaned web preview, deployment `dpl_2JRVCEdm45vGfxtkPJYiSHDoMy5T`, passed
 its Vercel build and all seven API snapshot traces (largest traced dependency
 set 28.5 MiB). Hosted verification checked all active APIs, three vendor assets
 against their hashes, the homepage and eight Next.js assets. The retired

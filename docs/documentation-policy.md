@@ -12,6 +12,10 @@ Data workflow guides, model designs, review evidence and schema proposals live
 under `docs/data/`. Update their links and documentation checker paths when
 changing this structure.
 
+The frontend also keeps Next.js guidance in [its agent instructions](../apps/web/AGENTS.md),
+referenced by [CLAUDE.md](../apps/web/CLAUDE.md). These generated files direct
+application changes to the documentation bundled with the installed Next.js version.
+
 | Document | Owns | Update condition |
 | --- | --- | --- |
 | [Intention](intention.md) | User goals, requested scope, and constraints. | User goals, requested deliverables, scope, or constraints change. |

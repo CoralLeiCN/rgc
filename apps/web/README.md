@@ -24,6 +24,7 @@ Open `http://localhost:3000`. The dashboard is `/`.
 
 ```sh
 npm run typecheck
+npm run verify:terrain
 npm run build
 npm start
 ```
@@ -40,8 +41,8 @@ extraction unless an explicit provider, bridge URL or OpenAI API key is configur
 ## Terrain and product configuration
 
 X is observed GBP/100g, Y is a read-only trait-derived demo score and Z is one
-numeric leaf trait in its original units. Family cards navigate their member
-traits and show full coverage breakdowns on hover/focus/tap. Parent families
+numeric leaf trait in its original units. Family cards show trait counts and
+coverage; clicking a card opens its member traits. Parent families
 cannot supply colour layers or height. Choose a leaf enum, numeric, boolean or
 string-list trait for colour: enums retain categories; numbers use five labelled
 ranges fixed to the whole snapshot. Missing evidence states remain explicit.
@@ -52,6 +53,19 @@ contribution. Unsupported areas remain open; smoothing and layer highlighting
 are adjustable. Rotation defers geometry work, and a 2D projection provides a
 fallback. The default view shows 289 complete observations; excluded counts are
 available in the help control, and incomplete products remain in the matrix.
+
+Chart hover details use an HTML tooltip with explicit text and background colours.
+Product points show the name, observed or proposed unit price, demo trait score
+and selected height value. The tooltip stays within the chart and clears when
+the pointer leaves, dragging starts or the chart data changes.
+
+Enable **Slice the cake by price**, then move the GBP/100g slider to inspect a
+vertical section. Choose which side to keep, use **Face slice** to look directly
+at the cut, and **Restore whole cake** to reset it. The diagram below the chart
+shows the exact interpolated section across demo trait scores, including gaps
+in surface support. It is also available in 2D projection mode. Point coordinates
+and cohort statistics retain their original basis; the view hides points on the
+removed side. The slider is bounded to the displayed price range.
 
 The configurator accepts typed traits, edible mass and a proposed-price slider.
 Its demo score is calculated using the same fixed recipe as observed products:
@@ -224,18 +238,26 @@ reference and regenerate together when selecting a new immutable collection.
 Keep the resulting `snapshot/` and manifest together. A missing/stale manifest
 fails the build. The pinned Plotly bundle and its licence live in `public/vendor/`. Build verifies
 them against `public/asset-manifest.json`; there is no prototype asset-copy step.
+The Vercel ignore rule excludes only the app's root README; the vendor README
+is a required asset included in deployment and integrity checks.
 No raw archives or model training run on page requests.
 
 ## Current preview
 
-The [current preview](https://rgc-mgr5btzho-ptyyyy-s-projects.vercel.app) is READY
-with Vercel sign-in protection. The cloud build verified all seven API traces;
-27 hosted route/asset checks and eight Next.js assets passed. Retired points and
-study URLs return 404, and the removed `scoreMode=demo` parameter returns 400.
-The terrain retains 289 core-range or 338 full-range products. Extraction
-correctly reports missing provider configuration without calling a provider.
-Temporary verification credentials were revoked and deleted. Production and
-earlier previews remain unchanged.
+The [current preview](https://rgc-9blxl7c79-ptyyyy-s-projects.vercel.app) is READY
+with price slices, the family popovers removed and HTML chart tooltips. The cloud build
+verified the data, all three vendor assets and all seven API snapshot traces.
+Local Chromium checks passed for family hover/click, product hover content,
+tooltip bounds, point selection, orbit dragging and pointer leave. Price slice
+checks covered pointer and keyboard input, both retained sides, the camera
+facing the cut, matching 2D sections, mobile controls and restoring the cake.
+Numerical checks passed for closed faces and volume conservation. The preview
+retains Vercel sign-in protection.
+
+The earlier cleaned preview passed 27 hosted route/asset checks and eight Next.js
+asset checks; those checks have not been repeated against this deployment.
+The terrain retains 289 core-range or 338 full-range products. Provider setup
+is still required for extraction.
 
 The example-photo and custom-upload revision is verified locally and has not
 been deployed to this preview.
@@ -248,11 +270,14 @@ readiness remain recorded separately from the current-price training study. The 
 production build and data/asset integrity checks validate the current app.
 See the lifecycle plan for hosted verification.
 
+Local Chromium with software WebGL verified family navigation, terrain tooltips,
+selection, orbit dragging and price slices. Other browsers and the hosted
+interaction flow remain unverified.
 Local browser checks verified example selection, custom uploads, resizing,
 removal and the two-photo limit. Live text and two-photo requests succeeded
 through local Codex with ChatGPT sign-in. Review/Apply populated the draft and
-retained its proposed price. Hosted bridge setup and Terrain/WebGL review remain
-pending. The synthetic pricing fixture is connected locally; a real market
+retained its proposed price. Hosted bridge setup remains pending.
+The synthetic pricing fixture is connected locally; a real market
 pricing benchmark remains unvalidated. The hosted preview predates these features.
 
 ## Synthetic price prediction

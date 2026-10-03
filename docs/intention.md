@@ -26,7 +26,9 @@ internal retailer data or a customer relationship is not assumed.
 
 The retail frontier entry includes the **Piece of Cake Pricing** web workspace.
 Current application work covers evidence exploration, a declared prototype trait
-score, product configuration and candidate extraction. The user subsequently authorized the published LightGBM without brand fixture
+score, product configuration and candidate extraction. Users can cut vertically
+through the cake at selected price points to inspect its layer composition.
+The user subsequently authorized the published LightGBM without brand fixture
 for a clearly labelled synthetic prediction demo. The form should calculate a
 price from supported inputs and show signed SHAP field contributions relative
 to the model reference. Real market benchmarks retain their separate review

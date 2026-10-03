@@ -107,6 +107,11 @@ bands. Complete coordinates determine terrain inclusion; missing values remain
 in the matrix. The current default has 289 core-range products and 338 in Full.
 Observed-price analysis has 892 usable prices regardless of terrain completeness.
 
+The price-slice control clips the client terrain at a selected GBP/100g value and
+renders its layer section. It preserves the pinned snapshot, API cohort, source
+coordinates and observed-price statistics. No additional dataset export or
+server request is needed when moving the cut.
+
 The score recipe and smooth coloured layers are illustrative. They do not supply
 a fitted pricing benchmark or causal trait effects. Extraction candidates require
 explicit review/apply, and the local configured product stays separate from all

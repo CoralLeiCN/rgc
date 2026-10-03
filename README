@@ -20,7 +20,8 @@ The retailer-facing Piece of Cake Pricing app helps category managers, buyers an
 pricing teams inspect observed prices, product traits, assortment gaps and brand
 positioning. It uses a layered terrain: observed GBP/100g, a disclosed trait-derived
 demo score and one raw numeric leaf trait. Parent families organize navigation;
-leaf categories or numeric bands supply colour layers. A local product draft has
+leaf categories or numeric bands supply colour layers. A price slider cuts the
+cake vertically and shows the exposed layers at that price. A local product draft has
 typed traits, a read-only score and a proposed-price slider. Image/text extraction
 returns candidates for explicit review through OpenAI, a Codex bridge or direct
 local Codex using ChatGPT OAuth sign-in. Local development defaults to direct

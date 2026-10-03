@@ -43,13 +43,17 @@ function domain(minimum: number, maximum: number): [number, number] {
   if (maximum > minimum) return [minimum, maximum];
   const padding = Math.max(Math.abs(minimum) * .05, .5); return [minimum - padding, maximum + padding];
 }
+export function terrainPriceDomain(data: Pick<TerrainResponse, "rows" | "priceRange">): [number, number] {
+  const prices = data.rows.map(row => row.price).filter(Number.isFinite);
+  return prices.length ? domain(data.priceRange?.[0] ?? Math.min(...prices), data.priceRange?.[1] ?? Math.max(...prices)) : [0, 1];
+}
 /** Compact positive kernel: weighted heights cannot overshoot observed Z and unsupported cells remain holes. */
-export function buildTerrainGeometry(data: TerrainResponse, options: { resolution?: number; smoothness?: number } = {}): TerrainGeometry {
+export function buildTerrainGeometry(data: Pick<TerrainResponse, "rows" | "categories" | "priceRange">, options: { resolution?: number; smoothness?: number } = {}): TerrainGeometry {
   const resolution = Math.max(8, Math.min(32, Math.round(options.resolution ?? 24)));
   const smoothness = Math.max(0, Math.min(1, options.smoothness ?? .5)); const radius = .085 + smoothness * .16;
   const rows = data.rows.filter(row => [row.price, row.score, row.z].every(Number.isFinite));
   const layers = terrainLayers({ rows, categories: data.categories });
-  const xDomain = rows.length ? domain(data.priceRange?.[0] ?? Math.min(...rows.map(row => row.price)), data.priceRange?.[1] ?? Math.max(...rows.map(row => row.price))) : [0, 1] as [number, number];
+  const xDomain = terrainPriceDomain({ ...data, rows });
   const yDomain: [number, number] = [0, 100];
   const baseline = Math.min(0, ...rows.map(row => row.z)); const nodes: (TerrainNode | null)[] = [];
   const prepared = rows.map(row => ({ row, x: (row.price - xDomain[0]) / (xDomain[1] - xDomain[0]), y: row.score / 100, shares: layers.map(layer => layer.members.reduce((sum, key) => sum + (row.categories[key] || 0), 0)) }));
