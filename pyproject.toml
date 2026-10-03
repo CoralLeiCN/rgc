@@ -8,6 +8,8 @@ dependencies = []
 
 [dependency-groups]
 dev = [
+    "lightgbm==4.6.0",
+    "scipy==1.15.3",
     "pandas==2.2.3",
     "numpy==2.2.6",
     "pyarrow==21.0.0",

@@ -1,6 +1,6 @@
 # UK chocolate pricing model design
 
-Updated: 3 October 2026. Status: consolidated design; models are not yet fitted.
+Updated: 3 October 2026. Status: consolidated design; real-data models are not yet fitted.
 
 Build a median-price baseline, interpretable hedonic models, and LightGBM
 prediction candidates with and without brand. Keep hedonic regression for
@@ -19,7 +19,7 @@ defines training, attribution units, and the narrative contract in detail.
 
 The current [silver workflow](chocolate-silver.md) and
 [schema guide](chocolate-schema.md) implement preparation under
-`chocolate-pricing-design-1`; they do not implement this proposed model comparison.
+`chocolate-pricing-design-3`; they do not implement this proposed model comparison.
 Its 11 required predictors, rejection of missing selected values, and current
 training/validation helpers differ from the brand/no-brand variants,
 optional-feature policy, and calibration design below. Implementing this proposal
@@ -510,3 +510,5 @@ that validated model bundle later.
 Value-for-money scores, consumer willingness to pay, causal brand value, demand,
 and profit-maximizing price remain outside this model design. A later adjusted-
 price indicator must use out-of-fold benchmarks and be labeled price position.
+
+The [independent LightGBM with brand implementation](chocolate-lightgbm-with-brand.md) implements the assigned estimator under a separate unpublished working experiment. Native fitting, calibration and attribution are exercised with synthetic fixtures; the real-data attempt remains blocked by zero eligible inputs and absent shared handoff fields. Other estimators and the common comparison are outside this session.

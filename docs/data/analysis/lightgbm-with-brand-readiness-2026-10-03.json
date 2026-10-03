@@ -1,0 +1,538 @@
+{
+  "branch": "codex/lightgbm-with-brand",
+  "checks": {
+    "documentation": "passed",
+    "git_diff_check": "passed",
+    "pinned_contracts_all_offline": "passed",
+    "pytest_passed": 392,
+    "pytest_skipped": 0,
+    "ruff": "passed",
+    "uv_sync_locked": "passed"
+  },
+  "date": "2026-10-03",
+  "fixture_validation": {
+    "artifact_path": "/Users/coral/.codex/worktrees/d95d/rgc/data/models/chocolate/uk/lightgbm_with_brand/lightgbm-run-ef4f9838ceafa12e44488f38",
+    "blockers": [],
+    "calibrated_synthetic": true,
+    "counts": {
+      "candidates": 1440,
+      "candidates_with_family_id": 1440,
+      "eligible": 1440,
+      "outside_cohort_or_price_window": 0,
+      "selected": 1440,
+      "selected_families": 240
+    },
+    "evaluation": {
+      "baseline_relative_gate": "pending_comparators",
+      "breakdowns": {
+        "brand": {
+          "Fixture Brand A": {
+            "families": 13,
+            "mae_gbp_per_100g": 0.01476475352043732,
+            "mae_gbp_per_pack": 0.010805360805513413,
+            "observations": 78,
+            "signed_bias_gbp_per_100g": -0.00447309763152797,
+            "signed_bias_gbp_per_pack": -0.002995819609685831,
+            "sparse_stratum": true,
+            "weighted_median_ape_percent": 0.5738897150979154
+          },
+          "Fixture Brand B": {
+            "families": 35,
+            "mae_gbp_per_100g": 0.028019400173907506,
+            "mae_gbp_per_pack": 0.022598988587452434,
+            "observations": 210,
+            "signed_bias_gbp_per_100g": -0.001351463959560181,
+            "signed_bias_gbp_per_pack": -0.0015366959901877539,
+            "sparse_stratum": false,
+            "weighted_median_ape_percent": 0.6647854247953923
+          }
+        },
+        "cocoa_basis": {
+          "whole_product_exact": {
+            "families": 48,
+            "mae_gbp_per_100g": 0.024429600038592666,
+            "mae_gbp_per_pack": 0.01940488106317728,
+            "observations": 288,
+            "signed_bias_gbp_per_100g": -0.0021969064123847906,
+            "signed_bias_gbp_per_pack": -0.0019318753038018164,
+            "sparse_stratum": false,
+            "weighted_median_ape_percent": 0.6434592610727963
+          }
+        },
+        "missingness": {
+          "cocoa_missing": {
+            "families": 9,
+            "mae_gbp_per_100g": 0.033133699603537736,
+            "mae_gbp_per_pack": 0.0261234596887532,
+            "observations": 54,
+            "signed_bias_gbp_per_100g": 0.0009231697543454267,
+            "signed_bias_gbp_per_pack": -0.0002068842278927264,
+            "sparse_stratum": true,
+            "weighted_median_ape_percent": 0.876214415327671
+          },
+          "cocoa_observed": {
+            "families": 39,
+            "mae_gbp_per_100g": 0.022420961677451494,
+            "mae_gbp_per_pack": 0.017854439841890533,
+            "observations": 234,
+            "signed_bias_gbp_per_100g": -0.0029169239893225333,
+            "signed_bias_gbp_per_pack": -0.0023299501674731446,
+            "sparse_stratum": false,
+            "weighted_median_ape_percent": 0.6207121493699649
+          }
+        },
+        "optional_unknown_claims": {
+          "0": {
+            "families": 8,
+            "mae_gbp_per_100g": 0.022799408772250472,
+            "mae_gbp_per_pack": 0.01669145390772813,
+            "observations": 48,
+            "signed_bias_gbp_per_100g": -0.0032817152166277667,
+            "signed_bias_gbp_per_pack": -0.0027940452952081732,
+            "sparse_stratum": true,
+            "weighted_median_ape_percent": 0.7797671368621756
+          },
+          "1": {
+            "families": 13,
+            "mae_gbp_per_100g": 0.01715909151198759,
+            "mae_gbp_per_pack": 0.014491987865966215,
+            "observations": 78,
+            "signed_bias_gbp_per_100g": -0.009860120735871163,
+            "signed_bias_gbp_per_pack": -0.008413928661234438,
+            "sparse_stratum": true,
+            "weighted_median_ape_percent": 0.5695820520385368
+          },
+          "2": {
+            "families": 17,
+            "mae_gbp_per_100g": 0.026781937581883693,
+            "mae_gbp_per_pack": 0.021535690151287257,
+            "observations": 102,
+            "signed_bias_gbp_per_100g": 0.00829849911598302,
+            "signed_bias_gbp_per_pack": 0.005483042172684696,
+            "sparse_stratum": true,
+            "weighted_median_ape_percent": 0.6768953215502767
+          },
+          "3": {
+            "families": 7,
+            "mae_gbp_per_100g": 0.03595573817343239,
+            "mae_gbp_per_pack": 0.02809360678311026,
+            "observations": 42,
+            "signed_bias_gbp_per_100g": -0.01411751250239966,
+            "signed_bias_gbp_per_pack": -0.008411763743606426,
+            "sparse_stratum": true,
+            "weighted_median_ape_percent": 0.9037186282363736
+          },
+          "4": {
+            "families": 2,
+            "mae_gbp_per_100g": 0.019890036339189954,
+            "mae_gbp_per_pack": 0.01685136940426384,
+            "observations": 12,
+            "signed_bias_gbp_per_100g": -0.0031297919529312828,
+            "signed_bias_gbp_per_pack": -0.0017914578505711918,
+            "sparse_stratum": true,
+            "weighted_median_ape_percent": 0.6434454318148918
+          },
+          "5": {
+            "families": 1,
+            "mae_gbp_per_100g": 0.02039416323417605,
+            "mae_gbp_per_pack": 0.013042098650940824,
+            "observations": 6,
+            "signed_bias_gbp_per_100g": 0.012991469955826155,
+            "signed_bias_gbp_per_pack": 0.008256965345973437,
+            "sparse_stratum": true,
+            "weighted_median_ape_percent": 0.46702132329583923
+          }
+        },
+        "retailer": {
+          "Ocado": {
+            "families": 48,
+            "mae_gbp_per_100g": 0.02229883265047378,
+            "mae_gbp_per_pack": 0.018214484718678398,
+            "observations": 144,
+            "signed_bias_gbp_per_100g": -0.0026949339516376173,
+            "signed_bias_gbp_per_pack": -0.0029585527338545415,
+            "sparse_stratum": false,
+            "weighted_median_ape_percent": 0.6290249995789998
+          },
+          "Waitrose": {
+            "families": 48,
+            "mae_gbp_per_100g": 0.026560367426711546,
+            "mae_gbp_per_pack": 0.020595277407676166,
+            "observations": 144,
+            "signed_bias_gbp_per_100g": -0.0016988788731319643,
+            "signed_bias_gbp_per_pack": -0.0009051978737490911,
+            "sparse_stratum": false,
+            "weighted_median_ape_percent": 0.6647854247953923
+          }
+        },
+        "size": {
+          "51_to_100g": {
+            "families": 38,
+            "mae_gbp_per_100g": 0.02529947583856811,
+            "mae_gbp_per_pack": 0.018464805597871264,
+            "observations": 216,
+            "signed_bias_gbp_per_100g": -0.00026954843979851514,
+            "signed_bias_gbp_per_pack": 0.0002890657552877214,
+            "sparse_stratum": false,
+            "weighted_median_ape_percent": 0.6637215296957112
+          },
+          "over_100g": {
+            "families": 12,
+            "mae_gbp_per_100g": 0.02004089266265488,
+            "mae_gbp_per_pack": 0.021460921179949702,
+            "observations": 68,
+            "signed_bias_gbp_per_100g": -0.009127282634641092,
+            "signed_bias_gbp_per_pack": -0.009900264662977682,
+            "sparse_stratum": true,
+            "weighted_median_ape_percent": 0.6096948882474361
+          },
+          "up_to_50g": {
+            "families": 2,
+            "mae_gbp_per_100g": 0.010456570123220654,
+            "mae_gbp_per_pack": 0.005228285061610327,
+            "observations": 4,
+            "signed_bias_gbp_per_100g": -0.008179179452662888,
+            "signed_bias_gbp_per_pack": -0.004089589726331444,
+            "sparse_stratum": true,
+            "weighted_median_ape_percent": 0.1491734818004955
+          }
+        },
+        "type": {
+          "dark": {
+            "families": 48,
+            "mae_gbp_per_100g": 0.02388036110400212,
+            "mae_gbp_per_pack": 0.019037824675304876,
+            "observations": 96,
+            "signed_bias_gbp_per_100g": -0.0024801244808007445,
+            "signed_bias_gbp_per_pack": -0.0021271322930026316,
+            "sparse_stratum": false,
+            "weighted_median_ape_percent": 0.6290249995789998
+          },
+          "milk": {
+            "families": 48,
+            "mae_gbp_per_100g": 0.023844905033669095,
+            "mae_gbp_per_pack": 0.018637093850711047,
+            "observations": 96,
+            "signed_bias_gbp_per_100g": -0.0021816989962741493,
+            "signed_bias_gbp_per_pack": -0.0018359477290077642,
+            "sparse_stratum": false,
+            "weighted_median_ape_percent": 0.6434592610727963
+          },
+          "white": {
+            "families": 48,
+            "mae_gbp_per_100g": 0.02556353397810679,
+            "mae_gbp_per_pack": 0.020539724663515925,
+            "observations": 96,
+            "signed_bias_gbp_per_100g": -0.0019288957600794784,
+            "signed_bias_gbp_per_pack": -0.0018325458893950536,
+            "sparse_stratum": false,
+            "weighted_median_ape_percent": 0.6637215296957112
+          }
+        }
+      },
+      "champion_selection": "pending_comparators",
+      "eligible_observations": 288,
+      "family_weighted": {
+        "families": 48,
+        "mae_gbp_per_100g": 0.024429600038592666,
+        "mae_gbp_per_pack": 0.01940488106317728,
+        "observations": 288,
+        "signed_bias_gbp_per_100g": -0.0021969064123847906,
+        "signed_bias_gbp_per_pack": -0.0019318753038018164,
+        "sparse_stratum": false,
+        "weighted_median_ape_percent": 0.6434592610727963
+      },
+      "global_shap": {
+        "family_weighted_mean_absolute_group_log_contribution": {
+          "brand": 0.262983659777144,
+          "claims": 0.001687823936934095,
+          "cocoa": 0.009384216809577208,
+          "recipe_inclusion": 0.016854977244311672,
+          "retailer": 0.05009473397224443,
+          "size": 0.020522546442269623,
+          "type": 0.00013141718935512882
+        },
+        "groups": {
+          "brand": [
+            "identity.brand"
+          ],
+          "claims": [
+            "dietary.vegan_claim",
+            "dietary.dairy_free_claim",
+            "certifications.organic_claim",
+            "certifications.fairtrade_claim",
+            "origin.single_origin_claim"
+          ],
+          "cocoa": [
+            "composition.cocoa_basis",
+            "composition.cocoa_percentage",
+            "composition.cocoa_percentage__missing"
+          ],
+          "recipe_inclusion": [
+            "composition.recipe_class",
+            "composition.inclusion_class"
+          ],
+          "retailer": [
+            "identity.retailer"
+          ],
+          "size": [
+            "quantity.total_edible_weight_g"
+          ],
+          "type": [
+            "composition.chocolate_type"
+          ]
+        },
+        "rule": "sum_signed_within_row_then_absolute_then_family_weighted_mean",
+        "verified_observations": 288
+      },
+      "interval_assessment": {
+        "Ocado": {
+          "coverage": 0.9583333333333334,
+          "coverage_wilson_95": [
+            0.8602434412954456,
+            0.9884981065106133
+          ],
+          "finite_intervals": 48,
+          "median_relative_width": 0.03905640403267946,
+          "supported_representative_families": 48
+        },
+        "Waitrose": {
+          "coverage": 0.9166666666666666,
+          "coverage_wilson_95": [
+            0.8044669820963272,
+            0.9671162431819081
+          ],
+          "finite_intervals": 48,
+          "median_relative_width": 0.03393103039886224,
+          "supported_representative_families": 48
+        }
+      },
+      "listing_weighted_sensitivity": {
+        "families": 48,
+        "mae_gbp_per_100g": 0.024429600038592666,
+        "mae_gbp_per_pack": 0.01940488106317728,
+        "observations": 288,
+        "signed_bias_gbp_per_100g": -0.0021969064123847906,
+        "signed_bias_gbp_per_pack": -0.0019318753038018166,
+        "sparse_stratum": false,
+        "weighted_median_ape_percent": 0.6434592610727963
+      },
+      "release_ready": false,
+      "supported_observations": 288,
+      "test_representative_ids": [
+        "fixture-0003-2",
+        "fixture-0003-5",
+        "fixture-0006-11",
+        "fixture-0006-7",
+        "fixture-0010-8",
+        "fixture-0010-9",
+        "fixture-0011-8",
+        "fixture-0011-9",
+        "fixture-0012-8",
+        "fixture-0012-9",
+        "fixture-0013-10",
+        "fixture-0013-6",
+        "fixture-0015-11",
+        "fixture-0015-8",
+        "fixture-0017-1",
+        "fixture-0017-3",
+        "fixture-0019-10",
+        "fixture-0019-6",
+        "fixture-0025-11",
+        "fixture-0025-7",
+        "fixture-0026-10",
+        "fixture-0026-6",
+        "fixture-0028-11",
+        "fixture-0028-6",
+        "fixture-0030-2",
+        "fixture-0030-4",
+        "fixture-0030-6",
+        "fixture-0030-9",
+        "fixture-0031-10",
+        "fixture-0031-7",
+        "fixture-0033-6",
+        "fixture-0033-9",
+        "fixture-0036-0",
+        "fixture-0036-4",
+        "fixture-0036-6",
+        "fixture-0036-9",
+        "fixture-0037-10",
+        "fixture-0037-7",
+        "fixture-0040-10",
+        "fixture-0040-8",
+        "fixture-0043-11",
+        "fixture-0043-8",
+        "fixture-0046-10",
+        "fixture-0046-8",
+        "fixture-0050-0",
+        "fixture-0050-5",
+        "fixture-0051-10",
+        "fixture-0051-7",
+        "fixture-0054-6",
+        "fixture-0054-9",
+        "fixture-0057-6",
+        "fixture-0057-9",
+        "fixture-0058-7",
+        "fixture-0058-9",
+        "fixture-0061-0",
+        "fixture-0061-4",
+        "fixture-0061-6",
+        "fixture-0061-9",
+        "fixture-0062-6",
+        "fixture-0062-9",
+        "fixture-0067-11",
+        "fixture-0067-6",
+        "fixture-0071-11",
+        "fixture-0071-7",
+        "fixture-0072-1",
+        "fixture-0072-4",
+        "fixture-0077-11",
+        "fixture-0077-7",
+        "fixture-0079-10",
+        "fixture-0079-8",
+        "fixture-0080-6",
+        "fixture-0080-9",
+        "fixture-0084-2",
+        "fixture-0084-5",
+        "fixture-0086-11",
+        "fixture-0086-6",
+        "fixture-0088-10",
+        "fixture-0088-8",
+        "fixture-0091-10",
+        "fixture-0091-7",
+        "fixture-0094-11",
+        "fixture-0094-2",
+        "fixture-0094-3",
+        "fixture-0094-7",
+        "fixture-0095-0",
+        "fixture-0095-3",
+        "fixture-0099-2",
+        "fixture-0099-5",
+        "fixture-0103-1",
+        "fixture-0103-4",
+        "fixture-0107-8",
+        "fixture-0107-9",
+        "fixture-0119-1",
+        "fixture-0119-10",
+        "fixture-0119-4",
+        "fixture-0119-6"
+      ]
+    },
+    "experiment_sha256": "eba730c69b69d96176f4c941a5745b583d77a438add3cb432ff44677ea447ae6",
+    "gold_dataset_version": "gold-98aa8008d74b22b74c48086b",
+    "gold_manifest_sha256": "a53d023e2744c810b01469d114e27b1c2298d02f184cbd9317197fe7776b1a1b",
+    "implementation_sha256": {
+      "scripts/chocolate_cleanup/core.py": "1e344ee3271fd1acbf13cee495255bf1be396ef3ceefd482a91cbc292dc13938",
+      "scripts/chocolate_experiment.py": "e0a8ea71cecc37d35a903c571a1639b396a17d44d5f9acfebae68ce07dd6b5b9",
+      "scripts/chocolate_gold.py": "c85bc82cadeabadeb7ac02a110a2146ac4092154fecfc4f8b7e0bd5c8b849e72",
+      "scripts/chocolate_lightgbm.py": "7147275fdd0538eefb5196841b8079bed9089ee1c012960e6f8f1fb48bee7f85",
+      "scripts/chocolate_lightgbm_fixture.py": "a067553c3642fd5eb1ad1c4850779cf675f6994678dc1cae5e3cd93eb0ce691e",
+      "scripts/chocolate_model.py": "d3e940ec91e5c7c250e972587a4d95c19f3b0aed00abcf118ebcedee205974dd",
+      "scripts/train_chocolate_lightgbm.py": "58b577d2dee1f45aa5fabac2c3980252c6993b6a4ca11f61bfe07fe0b14e1f0c",
+      "scripts/train_chocolate_model.py": "fd7418a1f30b495012cd6a902ce89caec42866219ebad7b681ab42c95ddeeee3"
+    },
+    "package_versions": {
+      "lightgbm": "4.6.0",
+      "numpy": "2.2.6",
+      "pyarrow": "21.0.0",
+      "scipy": "1.15.3"
+    },
+    "run_id": "lightgbm-run-ef4f9838ceafa12e44488f38",
+    "silver_dataset_version": "silver-fixture-lightgbm-4",
+    "synthetic_only": true,
+    "tree_count": 1030
+  },
+  "format_version": "chocolate-lightgbm-session-readiness-1",
+  "model_id": "lightgbm_with_brand",
+  "post_verification_current_gold_attempt": {
+    "artifact_path": "/Users/coral/.codex/worktrees/d95d/rgc/data/models/chocolate/uk/lightgbm_with_brand/lightgbm-run-746f4a1a0b8e82fdf753b987",
+    "blockers": [
+      "Gold contract lacks shared population/feature fields: certifications.fairtrade_claim, certifications.organic_claim, composition.cocoa_basis, composition.cocoa_percentage, composition.inclusion_class, composition.recipe_class, dietary.dairy_free_claim, dietary.vegan_claim, origin.single_origin_claim, study.population",
+      "zero reviewed eligible observations; Gold review cannot supply missing evidence"
+    ],
+    "counts": {
+      "candidates": 2134,
+      "candidates_with_family_id": 402,
+      "eligible": 0,
+      "outside_cohort_or_price_window": 0,
+      "selected": 0,
+      "selected_families": 0
+    },
+    "experiment_sha256": "05b3990e86a348008aeb6a6e6e2163bf47e7bba92a695e861172c73af20e46af",
+    "gold_dataset_version": "gold-56817976905f24210105f069",
+    "gold_manifest_sha256": "362a3273f61b5c73de96d27562f232052340c32e33cb984e406c62eda367e277",
+    "implementation_sha256": {
+      "scripts/chocolate_cleanup/core.py": "1e344ee3271fd1acbf13cee495255bf1be396ef3ceefd482a91cbc292dc13938",
+      "scripts/chocolate_experiment.py": "e0a8ea71cecc37d35a903c571a1639b396a17d44d5f9acfebae68ce07dd6b5b9",
+      "scripts/chocolate_gold.py": "c85bc82cadeabadeb7ac02a110a2146ac4092154fecfc4f8b7e0bd5c8b849e72",
+      "scripts/chocolate_lightgbm.py": "7147275fdd0538eefb5196841b8079bed9089ee1c012960e6f8f1fb48bee7f85",
+      "scripts/chocolate_model.py": "d3e940ec91e5c7c250e972587a4d95c19f3b0aed00abcf118ebcedee205974dd",
+      "scripts/train_chocolate_lightgbm.py": "58b577d2dee1f45aa5fabac2c3980252c6993b6a4ca11f61bfe07fe0b14e1f0c",
+      "scripts/train_chocolate_model.py": "fd7418a1f30b495012cd6a902ce89caec42866219ebad7b681ab42c95ddeeee3"
+    },
+    "package_versions": {
+      "lightgbm": "4.6.0",
+      "numpy": "2.2.6",
+      "pyarrow": "21.0.0",
+      "scipy": "1.15.3"
+    },
+    "run_id": "lightgbm-run-746f4a1a0b8e82fdf753b987",
+    "silver_dataset_version": "silver-485af2f8e7fae127cd73578b"
+  },
+  "post_verification_value_checks": {
+    "candidate_exact_variant_ids_present": 0,
+    "candidate_log_targets_present": 0,
+    "candidate_regular_targets_present": 0,
+    "supported_regular_price_observations": 0
+  },
+  "publication": {
+    "actual_model_upload_authorized": true,
+    "actual_model_uploaded": false,
+    "analytical_contract_migration": "unpublished_working_configuration; aligned upstream migration and completed-release review remain pending",
+    "reason": "No actual real-data fit exists. Synthetic acceptance fits are not real trained models."
+  },
+  "real_data_fitted": false,
+  "rebuilt_real_input_attempt": {
+    "artifact_path": "/Users/coral/.codex/worktrees/d95d/rgc/data/models/chocolate/uk/lightgbm_with_brand/lightgbm-run-64e34a9a917e83313f2d5a9c",
+    "blockers": [
+      "Gold contract lacks shared population/feature fields: composition.cocoa_basis, composition.inclusion_class, composition.recipe_class, dietary.dairy_free_claim, origin.single_origin_claim, quantity.pack_count, study.population",
+      "zero reviewed eligible observations; Gold review cannot supply missing evidence"
+    ],
+    "counts": {
+      "candidates": 2134,
+      "candidates_with_family_id": 402,
+      "eligible": 0,
+      "outside_cohort_or_price_window": 0,
+      "selected": 0,
+      "selected_families": 0
+    },
+    "experiment_sha256": "f4105c926fe13e33654044104459da2fce70138384f1854cd91b1266b8793c0b",
+    "gold_dataset_version": "gold-4939405fcf8724686f9ee32c",
+    "gold_manifest_sha256": "cfc10a09c8685e501e6085c523b7726d9cc75ee60b0ab6a0f970a10db5553d4a",
+    "implementation_sha256": {
+      "scripts/chocolate_cleanup/core.py": "1e344ee3271fd1acbf13cee495255bf1be396ef3ceefd482a91cbc292dc13938",
+      "scripts/chocolate_experiment.py": "e0a8ea71cecc37d35a903c571a1639b396a17d44d5f9acfebae68ce07dd6b5b9",
+      "scripts/chocolate_gold.py": "c85bc82cadeabadeb7ac02a110a2146ac4092154fecfc4f8b7e0bd5c8b849e72",
+      "scripts/chocolate_lightgbm.py": "7147275fdd0538eefb5196841b8079bed9089ee1c012960e6f8f1fb48bee7f85",
+      "scripts/chocolate_model.py": "d3e940ec91e5c7c250e972587a4d95c19f3b0aed00abcf118ebcedee205974dd",
+      "scripts/train_chocolate_lightgbm.py": "58b577d2dee1f45aa5fabac2c3980252c6993b6a4ca11f61bfe07fe0b14e1f0c",
+      "scripts/train_chocolate_model.py": "fd7418a1f30b495012cd6a902ce89caec42866219ebad7b681ab42c95ddeeee3"
+    },
+    "package_versions": {
+      "lightgbm": "4.6.0",
+      "numpy": "2.2.6",
+      "pyarrow": "21.0.0",
+      "scipy": "1.15.3"
+    },
+    "run_id": "lightgbm-run-64e34a9a917e83313f2d5a9c",
+    "silver_dataset_version": "silver-f651a7faea94ed5a7f003e64"
+  },
+  "release_ready": false,
+  "remote_inspection": {
+    "gold_files_found": 0,
+    "repo_id": "CoralLeiCN/rgc-collections",
+    "revision": "d549ad91d63fb452af605df4a939c4e1f0a59bfa"
+  },
+  "status": "implemented_and_fixture_validated_real_data_blocked",
+  "user_confirmed_gold_verification": true
+}

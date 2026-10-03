@@ -15,7 +15,7 @@ and evidence before deriving an analytical schema or fitting a pricing model.
 | [Chocolate schema](docs/data/chocolate-schema.md) | Typed fields, evidence reviews and model handoff. |
 | [Portable processing](docs/data/category-processing.md) | Profiles, mapping maintenance and model preparation. |
 | [Compatibility guides](docs/data/chocolate-deduplication.md), [cleanup](docs/data/chocolate-cleaning.md) | Standalone diagnostic helpers and their distinct contracts. |
-| [Chocolate pricing design](docs/data/chocolate-modeling-design.md), [LightGBM/SHAP explanations](docs/data/analysis/lightgbm-shap-explanation-design.md) | Proposed models, comparisons, calibration and explanations. |
+| [Chocolate pricing design](docs/data/chocolate-modeling-design.md), [LightGBM/SHAP explanations](docs/data/analysis/lightgbm-shap-explanation-design.md) | Model designs, implemented LightGBM with brand and pending comparison. |
 | [Chocolate contract manifest](schemas/chocolate/dataset-contract.json), [dataset contract guide](docs/data/dataset-contracts.md) | Pinned schema, mappings, validator and model design; storage, caches and offline use. |
 | [Collection package](plugins/category-research/README.md), [processing package](plugins/category-processing/README.md) | Agent Plugins 1.0.0 packages, skills, CLI and Python API. |
 | [Lifecycle intent](docs/lifecycle/intent.md), [design](docs/lifecycle/spec.md), [plan](docs/lifecycle/plan.md) | Navigation, implementation status, risks, proof and remaining work. |
@@ -207,3 +207,7 @@ uv run python -B scripts/train_chocolate_model.py --gold-root data/gold/chocolat
 ```
 
 The raw-to-Silver builder includes reviewed family mappings from the [registry](reviews/chocolate/README.md), with `--family-mappings` overrides and grouped Codex review packets. Every price model uses regular, non-promotional, tax-inclusive consumer price. The current rebuilt corpus has family IDs on 402 candidates and zero eligible model inputs; no real-data regression has fitted. [The published release](docs/data/analysis/gold-modeling-contract-release.md) records the verified contract publication and validation. Existing main features, discovery and proposed LightGBM/SHAP design remain available.
+
+## Independent LightGBM with brand
+
+The [LightGBM with brand guide](docs/data/chocolate-lightgbm-with-brand.md) documents `scripts/train_chocolate_lightgbm.py`, frozen supermarket preparation, grouped family validation, native TreeSHAP, retailer calibration and immutable model runs. LightGBM 4.6.0 and SciPy 1.15.3 are pinned in the development lock. Real Gold still has zero eligible rows; the trainer saves readiness blockers. Fixture fitting is explicitly labeled, and real-data release and contract migration remain pending.

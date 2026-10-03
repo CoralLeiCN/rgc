@@ -196,3 +196,7 @@ reviewed-input contract or manufacture facts from missing evidence.
 ## Integration with dataset-owned contracts
 
 The locked pytest environment includes NumPy 2.2.6 and PyArrow 21.0.0 for the numerical and Parquet checks. Silver resolves immutable dataset pins or explicit custom working-contract roots before producing its snapshot. Gold copies the exact resolved contracts and their hashes, rather than resolving newer contracts at load time. A prepared schema/design release cannot change an existing Gold snapshot. The [published release](analysis/gold-modeling-contract-release.md) records the verified immutable contract revision for the updated Silver defaults; verified existing Gold remains self-contained.
+
+## LightGBM with brand trainer
+
+Use the [independent LightGBM with brand command](chocolate-lightgbm-with-brand.md#run-from-verified-gold) for the proposed supermarket experiment. It verifies immutable Gold, managed bytes, logical row digests, copied contracts and reviewed price observations, then saves model-specific immutable artifacts or a readiness report. It requires an explicit unpublished working contract and source-price window. The rebuilt `gold-4939405fcf8724686f9ee32c` retains 2,134 candidates and zero eligible inputs, so no real LightGBM model can fit. Existing OLS snapshots and Gold bulk review cannot supply missing population, identity or price evidence. Fixture runs retain a synthetic status through artifacts and loaded predictions.

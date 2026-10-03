@@ -1,7 +1,7 @@
 # LightGBM, SHAP, and AI explanation design
 
-Updated: 3 October 2026. Status: proposed implementation design; no LightGBM model has
-been fitted and no SHAP results have been generated.
+Updated: 3 October 2026. Status: design with an independent LightGBM with brand implementation; no real-data
+LightGBM model has fitted. Synthetic acceptance checks exercise native TreeSHAP.
 
 This extends the [UK chocolate pricing design](../chocolate-modeling-design.md).
 The pipeline is reviewed product and retailer evidence → frozen LightGBM model
@@ -235,3 +235,5 @@ The first deliverable is a reproducible research report with model comparisons,
 local/global SHAP views, evidence-backed example narratives, and their validation
 status. No model performance or explanation correctness is claimed before these
 checks are implemented and results are reviewed.
+
+The [implemented LightGBM with brand workflow](../chocolate-lightgbm-with-brand.md) uses LightGBM 4.6.0 native exact contributions and independent reconstruction checks, with a deterministic narrative. Its explicit working policy is unpublished, the real-data eligible view is empty, and external AI integration and comparator release decisions remain pending.

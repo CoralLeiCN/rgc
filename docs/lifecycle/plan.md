@@ -214,3 +214,26 @@ record parity, evidence preservation, family identity and Silver/Gold/training
 gates. Ruff, the documentation guard, whitespace checks and all three verified
 contract caches passed. Both parents' existing capabilities and contract pins
 are retained for the local squash landing.
+
+## Independent LightGBM with brand session
+
+Implemented `scripts/chocolate_experiment.py`, `scripts/chocolate_lightgbm.py`, `scripts/train_chocolate_lightgbm.py` and a synthetic fixture builder. The [model guide](../data/chocolate-lightgbm-with-brand.md) records the explicit working contract, common seed 1729, family partitions, fold-specific weights and preprocessing, known-brand identification/support gates, bounded LightGBM tuning, frozen tree count, retailer conformal calibration, native TreeSHAP reconstruction and immutable artifact verification.
+
+Pinned original and both portable contract caches verify offline at dataset revision `d549ad91d63fb452af605df4a939c4e1f0a59bfa`. The available raw archive rebuilt Silver `silver-f651a7faea94ed5a7f003e64` and Gold `gold-4939405fcf8724686f9ee32c` in this worktree: 3,743 seller listings, 4,347 captures, 2,134 candidates and zero eligible inputs. A real training attempt saved a readiness report with exact exclusion counts and missing shared field blockers. No real model or real-data interval is fitted, calibrated, release-ready or uploaded. The existing OLS and portable preparation contracts retain their published pins; a coherent handoff migration and evidence review remain prerequisites.
+
+Final checks passed: `uv sync --locked`, all three pinned caches verified with `python3 -B scripts/fetch_contracts.py --all --offline`, all 392 pytest cases (17 new native estimator checks, no skips), Ruff, documentation guard and whitespace checks. The synthetic run `lightgbm-run-ef4f9838ceafa12e44488f38` fitted 1,030 trees on 1,440 observations in 240 families, split into 144 fitting, 48 calibration and 48 final-test families. Its 288 supported test listings yielded unit MAE £0.02443/100 g, pack MAE £0.01940, median APE 0.6435% and unit signed bias −£0.00220/100 g. Each retailer has 48 calibration representatives; synthetic test coverage is 95.83% for Ocado and 91.67% for Waitrose. These are fixture acceptance results, with release/champion decisions pending.
+
+After the user's confirmation that Gold is verified, the session re-scanned available snapshots and the remote dataset. Remote revision `d549ad91d63fb452af605df4a939c4e1f0a59bfa` has no Gold files. Another available snapshot, `gold-56817976905f24210105f069`, passed current loading/integrity checks and was run through the trainer. It has 2,134 candidates, 402 family assignments, zero exact variants, zero regular/log targets and zero eligible inputs. Current attempt `lightgbm-run-746f4a1a0b8e82fdf753b987` saved those actual failures with experiment `05b3990e86a348008aeb6a6e6e2163bf47e7bba92a695e861172c73af20e46af`. The session's own rebuilt-input attempt is `lightgbm-run-64e34a9a917e83313f2d5a9c`, experiment `f4105c926fe13e33654044104459da2fce70138384f1854cd91b1266b8793c0b`. The [readiness record](../data/analysis/lightgbm-with-brand-readiness-2026-10-03.json) retains exact hashes, source identities, counts, metrics and status. A verified populated snapshot is still needed for actual training and the authorized model upload; source values and eligibility were preserved.
+
+### LightGBM with brand integration with main
+
+Integrated local main `f1ec072` into the committed training branch, preserving
+pandas Silver/schema analysis and the data guides under `docs/data/`. The new
+LightGBM guide and readiness record follow that structure, with canonical and
+lifecycle links updated. The combined lock retains pandas 2.2.3, NumPy 2.2.6 and
+PyArrow 21.0.0 alongside LightGBM 4.6.0 and SciPy 1.15.3. `uv sync --locked` and
+all 408 pytest cases passed, including the 17 native LightGBM acceptance checks.
+All three pinned contract caches verify offline; Ruff, documentation and
+whitespace checks pass. Historical immutable fixture/readiness artifacts retain
+their original data, package and implementation identities. Real-data fitting,
+contract migration, comparator release decisions and model upload remain pending.
