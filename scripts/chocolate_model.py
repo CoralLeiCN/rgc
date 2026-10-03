@@ -11,11 +11,41 @@ import math
 from collections import Counter
 from copy import deepcopy
 
-ENCODER_VERSION = "chocolate-encoder-1"
+ENCODER_VERSION = "chocolate-encoder-2"
+PRICE_TARGET_POLICY = {
+    "price_basis_contract_version": "regular-consumer-price-1",
+    "price_basis": "regular",
+    "tax_basis": "consumer_tax_included",
+    "promotion_basis": "non_promotional",
+    "fallback_policy": "reject",
+}
 
 
 class ModelContractError(ValueError):
     """A reviewed row or model design is outside the supported contract."""
+
+
+def validate_target_policy(target):
+    """Every model must retain the finalized regular consumer price basis."""
+    if not isinstance(target, dict):
+        raise ModelContractError("model target requires the finalized regular consumer price policy")
+    for name, expected in PRICE_TARGET_POLICY.items():
+        if target.get(name) != expected:
+            raise ModelContractError("unsupported model price target policy: " + name)
+    for name, expected in (("name", "log_regular_gbp_per_100g"), ("currency", "GBP"),
+                           ("unit", "GBP_per_100g"), ("quantity_attribute", "quantity.total_edible_weight_g")):
+        if target.get(name) != expected:
+            raise ModelContractError("unsupported chocolate target normalization: " + name)
+    if type(target.get("base_quantity")) is not int or target["base_quantity"] != 100:
+        raise ModelContractError("unsupported chocolate target normalization: base_quantity")
+    return deepcopy(PRICE_TARGET_POLICY)
+
+
+def regular_price_basis_supported(price):
+    """A separate regular-price amount is valid even when the displayed offer is promotional."""
+    amount = price.get("regular_price")
+    return (price.get("currency") == "GBP" and price.get("tax_basis") == "consumer_tax_included"
+            and type(amount) in (int, float) and math.isfinite(amount) and amount > 0)
 
 
 def _number(value, label):
@@ -116,6 +146,7 @@ def validate_candidates(rows, design):
     cannot independently establish that a source supports a review decision.
     """
     definitions = _predictor_definitions(design)
+    validate_target_policy(design.get("target"))
     candidates = list(rows)
     _validate_identity(candidates)
     for row in candidates:
@@ -181,6 +212,7 @@ def fit_encoder(train_rows, design):
         "encoder_version": ENCODER_VERSION,
         "model_design_version": design.get("model_design_version", design.get("design_version")),
         "schema_version": design.get("schema_version"),
+        "target": deepcopy(design["target"]),
         "columns": ["intercept"], "predictors": {}, "dropped_terms": {},
         "training_observation_ids": sorted(row["observation_id"] for row in rows),
         "training_family_ids": sorted({row["family_id"] for row in rows}),
@@ -226,7 +258,7 @@ def transform_rows(rows, fitted):
     """
     if not isinstance(fitted, dict) or fitted.get("encoder_version") != ENCODER_VERSION:
         raise ModelContractError("unsupported fitted encoder")
-    design = {"predictors": fitted.get("predictors")}
+    design = {"predictors": fitted.get("predictors"), "target": fitted.get("target")}
     candidates = validate_candidates(rows, design)
     matrix, targets = [], []
     for row in candidates:

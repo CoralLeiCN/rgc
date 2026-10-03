@@ -71,6 +71,24 @@ class ProfileValidationTests:
             with pytest.raises(ValueError, match="dataset reference metadata: " + field):
                 load_profile(self.profile)
 
+    def test_model_and_recipe_require_shared_regular_consumer_price_policy(self):
+        for filename, path in (("model-design.json", "target"), ("pipeline.json", "price")):
+            for field, value in (("price_basis", "displayed"), ("tax_basis", "unknown"),
+                             ("promotion_basis", "promotional"), ("fallback_policy", "reference"),
+                             ("price_basis_contract_version", None)):
+                def change(document):
+                    target = document[path] if path == "target" else document["price"]["target_policy"]
+                    target[field] = value
+                self.edit(filename, change)
+                with pytest.raises(ValueError, match=field):
+                    load_profile(self.profile)
+                shutil.copyfile(self.packaged_coffee / filename, self.profile / filename)
+
+    def test_missing_recipe_price_policy_is_rejected_before_publication(self):
+        self.edit("pipeline.json", lambda doc: doc["price"].pop("target_policy"))
+        with pytest.raises(ValueError, match="target_policy|target policy"):
+            load_profile(self.profile)
+
     def test_new_canonical_label_requires_matching_validator_before_publication(self):
         self.edit("profile.json", lambda doc: doc["attributes"]["coffee.roast"]["allowed_values"].append("ultra"))
         self.edit("source-mappings.json", lambda doc: doc["aliases"]["coffee.roast"].update({"Ultra Roast": "ultra"}))

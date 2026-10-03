@@ -139,3 +139,9 @@ them from specifications. Use a regenerated report's actual status.
 
 Use existing task authorization for documentation maintenance. Publication,
 deployment and communication require authorization within their own task scope.
+
+## Gold and fixed target maintenance
+
+Changes to Gold build/review/load interfaces require `docs/spec.md`, `docs/chocolate-schema.md`, `docs/chocolate-silver.md`, `docs/chocolate-gold.md`, `README` and `docs/lifecycle/plan.md`. Experimental regression/training and family mapping changes require the schema/spec/Silver guides and lifecycle status; trainer handoff also updates Gold. Canonical contract bodies stay dataset-owned; prepare local versioned releases and update immutable references after approved verified publication. Maintain the finalized regular, non-promotional, tax-inclusive target with reject fallback across bundled and generated profiles.
+
+Locked development dependencies include NumPy 2.2.6 and PyArrow 21.0.0 so pytest exercises numerical and Parquet behavior instead of skipping it. Preserve administrative Gold review provenance separately from evidence-backed Silver eligibility. The schema-release review policy in [agent-led maintenance](decisions/agent-led-schema-maintenance.md) remains authoritative before any Hugging Face commit.

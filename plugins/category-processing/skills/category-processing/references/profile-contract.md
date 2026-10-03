@@ -40,6 +40,12 @@ Counts, validator properties/required fields, aliases and predictors refer to th
 same declared catalog. Version the contract whose meaning changes and rebuild.
 Never edit a generated output's copied contracts to change its meaning.
 
+The bundled chocolate selected model/recipe are
+`chocolate-processing-pricing-design-2` / `chocolate-processing-pipeline-2`;
+coffee uses `coffee-pricing-design-2` / `coffee-processing-pipeline-2`.
+Their existing schema and mapping versions are retained because the tracked
+attribute meanings and aliases are unchanged.
+
 Loading checks category/market constants and each attribute's declared type,
 unit, enum/list vocabulary and numeric bounds against both the nullable value
 branch and the condition for known values in `product.schema.json`. Drift
@@ -96,9 +102,32 @@ preserved.
 
 Model `eligibility.allowed_tax_bases` selects exactly one resolved reviewed basis;
 the default for older designs is `consumer_tax_included`. `target.tax_basis`, when
-present, must match. A separate study may select `consumer_tax_excluded` or
+present, must match. A separate study may select `consumer_tax_included` or
 another evidenced basis. The engine does not normalize taxes or exchange rates
 or pool incompatible price bases.
+
+Every `model-design.json` target and `pipeline.json` `price.target_policy` must
+declare the shared final monetary basis:
+
+```json
+{
+  "price_basis_contract_version": "regular-consumer-price-1",
+  "price_basis": "regular",
+  "tax_basis": "consumer_tax_included",
+  "promotion_basis": "non_promotional",
+  "fallback_policy": "reject"
+}
+```
+
+Profile loading rejects missing or alternative bases. Category targets additionally
+declare `name: log_regular_unit_price`, currency, unit, quantity attribute and
+positive base quantity; quantity attribute/base must match the recipe. A source's
+displayed/reference price cannot become a regular target by default. Reviewers
+may establish that a displayed amount is also the regular non-promotional
+tax-inclusive amount only when the cited source independently supports that
+decision. A separately supported regular amount remains usable during a displayed
+promotion. Do not reconstruct a regular amount from discount arithmetic or assume
+tax inclusion from a taxable flag.
 
 Conversions require declared units or supported source structure: g/kg/mg mass,
 recognized duration/temperature units, currency major/minor units, validated
@@ -197,3 +226,5 @@ Selected features and quantity must cite the price observation's capture with
 supported product scope/qualifiers. The chocolate design requires an exact cocoa
 percentage for the whole product. A pointer resolving successfully is
 necessary, but the reviewer must also verify that it supports the stated decision.
+
+All model targets use `regular-consumer-price-1`: regular, non-promotional, consumer-tax-inclusive price, with reject fallback. Currency and quantity normalization remain category-specific. Custom authoring adds the fixed policy metadata to design and recipe; source amounts and tax inclusion still require independent evidence. Model preparation records the same policy on each target and in the frozen encoder.

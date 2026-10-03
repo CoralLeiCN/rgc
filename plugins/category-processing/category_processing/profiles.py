@@ -5,6 +5,7 @@ import re
 from pathlib import Path
 
 from .archive import positive, read_json, sha256
+from .price_policy import validate_price_policy, validate_target_definition
 from .values import alias_key
 
 PROFILE_FORMAT = "category-processing-profile-1"
@@ -324,6 +325,7 @@ def load_profile(profile_root):
     if definition["type"] not in ("number", "integer") or quantity.get("unit") != definition.get("unit") or positive(quantity.get("base_quantity")) is None:
         raise ValueError("Pipeline quantity needs a numeric attribute, matching unit and positive base_quantity.")
     target = design.get("target")
+    validate_target_definition(target)
     if not isinstance(target, dict) or target.get("quantity_attribute") != quantity["attribute"] or target.get("base_quantity") != quantity["base_quantity"]:
         raise ValueError("Model target quantity_attribute and base_quantity must agree with the pipeline recipe.")
     if not isinstance(target.get("currency"), str) or not target["currency"].strip():
@@ -342,6 +344,7 @@ def load_profile(profile_root):
     price = recipe.get("price", {})
     if not isinstance(price, dict) or price.get("price_unit") not in ("major", "minor"):
         raise ValueError("Pipeline price requires an explicit major/minor representation.")
+    validate_price_policy(price.get("target_policy"), "Pipeline price target_policy")
     if ("minor_unit_factor" in price
             and (isinstance(price["minor_unit_factor"], bool)
                  or not isinstance(price["minor_unit_factor"], (int, float))

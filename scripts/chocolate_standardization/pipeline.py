@@ -11,9 +11,20 @@ import dataset_contracts as contract_module
 from chocolate_cleanup.adapters import extract_capture
 from chocolate_cleanup.core import aware_time, normalized, pointer_value, positive
 from chocolate_cleanup.deduplication import digest, inside, json_bytes
-from chocolate_model import ModelContractError, _predictor_value
+from chocolate_model import (
+    ModelContractError,
+    _predictor_value,
+    regular_price_basis_supported,
+    validate_target_policy,
+)
 from dataset_contracts import SCHEMA_REFERENCE, resolve_contract_root
 
+from .identity import (
+    MAPPING_VERSION,
+    TAXONOMY_VERSION,
+    IdentityMapper,
+    load_identity_mappings,
+)
 from .values import (
     standardize_value,
     unknown_attribute,
@@ -83,6 +94,10 @@ def load_contract(schema_root=None, *, offline=False):
         raise ValueError("Category profile and product validator attribute catalogs disagree.")
     if set(mappings.get("aliases", {})) - set(attributes) or set(design["predictors"]) - set(attributes):
         raise ValueError("Mappings and model predictors must reference declared attributes.")
+    identity_contract = mappings.get("product_identity", {})
+    if identity_contract.get("mapping_format_version") != MAPPING_VERSION or identity_contract.get("taxonomy_version") != TAXONOMY_VERSION:
+        raise ValueError("Source mappings must declare the supported product identity taxonomy.")
+    validate_target_policy(design.get("target"))
     if any(definition.get("standardization_rule") not in profile["standardization_rules"] for definition in attributes.values()):
         raise ValueError("Every tracked attribute needs a declared standardization rule.")
     for name, definition in attributes.items():
@@ -164,7 +179,7 @@ def selected_attribute(name, values, profile):
     return result
 
 
-def build_standardized_dataset(deduplicated_root, output, reviews=None, schema_root=None, offline=False):
+def build_standardized_dataset(deduplicated_root, output, reviews=None, schema_root=None, offline=False, family_mappings=None):
     source = Path(deduplicated_root).expanduser().resolve()
     output = Path(output).expanduser().resolve()
     if inside(output, source) or inside(source, output):
@@ -174,14 +189,18 @@ def build_standardized_dataset(deduplicated_root, output, reviews=None, schema_r
     manifest, manifest_hash = verify_snapshot(source)
     source_report = read_json(source / "quality-report.json") if "quality-report.json" in manifest["managed_files"] else {}
     decisions = load_reviews(reviews)
+    identity_decisions = load_identity_mappings(family_mappings)
+    identity_mapper = IdentityMapper(identity_decisions)
     implementation_paths = [Path(__file__), Path(__file__).with_name("values.py"),
+                            Path(__file__).with_name("identity.py"),
                             ROOT / "scripts/chocolate_cleanup/adapters.py", ROOT / "scripts/chocolate_cleanup/core.py",
                             ROOT / "scripts/chocolate_cleanup/deduplication.py", ROOT / "scripts/chocolate_model.py",
                             ROOT / "scripts/dataset_contracts.py",
                             ROOT / "plugins/category-processing/category_processing/dataset_contracts.py", SCHEMA_REFERENCE]
     implementation = {str(path.relative_to(ROOT)): sha256(path) for path in implementation_paths}
     version = "standardized-" + digest({"input_manifest": manifest_hash, "contracts": contract_hashes,
-                                        "reviews": decisions, "implementation": implementation})[:24]
+                                        "reviews": decisions, "identity_mappings": identity_decisions,
+                                        "implementation": implementation})[:24]
     products, assertions, prices, candidates, queue = [], [], [], [], []
     seen_listings, seen_prices = set(), set()
     errors, unmapped_count = [], 0
@@ -291,6 +310,12 @@ def build_standardized_dataset(deduplicated_root, output, reviews=None, schema_r
             for name, value in (("identity.retailer", row.get("retailer")), ("identity.source_role", row.get("source_role")), ("identity.brand", row.get("brand"))):
                 add(name, value, latest, identity_pointer, "deduplicated_source_context")
             attributes = {name: selected_attribute(name, current.get(name, []), profile) for name in profile["attributes"]}
+            mapped_attributes = identity_mapper.apply(row, captures)
+            attributes.update(mapped_attributes)
+            for name, attribute in mapped_attributes.items():
+                assertions.append({"listing_id": listing, "attribute": name, **deepcopy(attribute),
+                                   "is_current": True, "raw_value": attribute["value"],
+                                   "schema_version": SCHEMA_VERSION, "dataset_version": version})
             decision = decisions.get("products", {}).get(listing)
             if decision:
                 validate_review(decision, captures)
@@ -317,6 +342,8 @@ def build_standardized_dataset(deduplicated_root, output, reviews=None, schema_r
                         raise ValueError("Known attribute review requires a value.")
                     if status != "known" and review.get("value") is not None:
                         raise ValueError("Unresolved attribute review must not select a value.")
+                    if name in mapped_attributes and mapped_attributes[name]["status"] == "known" and (status != "known" or value != mapped_attributes[name]["value"]):
+                        raise ValueError("Attribute review contradicts its registered identity mapping.")
                     attributes[name] = {"value": value, "status": status, "unit": profile["attributes"][name].get("unit"),
                                         "qualifier": review.get("qualifier"), "scope": review.get("scope", profile["attributes"][name].get("scope", "product")),
                                         "evidence": deepcopy(review["evidence"]), "method": "evidence_backed_review",
@@ -327,6 +354,8 @@ def build_standardized_dataset(deduplicated_root, output, reviews=None, schema_r
                 relationship_fields = (("variant_id", "identity.physical_product_id"), ("family_id", "identity.product_family_id"))
                 for field, name in relationship_fields:
                     if field in decision:
+                        if name in mapped_attributes and attributes[name]["status"] == "known" and attributes[name]["value"] != decision[field]:
+                            raise ValueError("Product review contradicts its registered identity mapping.")
                         if name in reviewed_attributes and attributes[name]["value"] != decision[field]:
                             raise ValueError("Reviewed relationship IDs contradict the product attributes.")
                         attributes[name] = {"value": decision[field], "status": "known", "unit": None, "qualifier": None,
@@ -340,12 +369,18 @@ def build_standardized_dataset(deduplicated_root, output, reviews=None, schema_r
                     attributes[name] = {"value": boundary, "status": "known", "unit": None, "qualifier": None,
                                         "scope": "product", "evidence": deepcopy(decision["evidence"]),
                                         "method": "evidence_backed_review", "review_status": "reviewed"}
+            family = attributes["identity.product_family_id"]
+            physical = attributes["identity.physical_product_id"]
+            registered_physical = identity_decisions["physical_products"].get(physical["value"])
+            if family["status"] == "known" and physical["status"] == "known" and registered_physical and registered_physical["family_id"] != family["value"]:
+                raise ValueError("Reviewed identity attributes contradict the registered physical product family.")
             product = {"schema_version": SCHEMA_VERSION, "dataset_version": version,
                        "source_dataset_version": manifest["dataset_version"], "listing_id": listing,
                        "source_listing_ids": row["source_listing_ids"], "source_role": row["source_role"], "source_key": row["source_key"],
                        "brand": row.get("brand"), "retailer": row.get("retailer"), "attributes": attributes,
                        "unmapped_claims": unmapped, "review_status": "reviewed" if decision else "unreviewed"}
             validate_product(product, profile, mappings)
+            identity_mapper.add_packet_member(row, captures, attributes)
             products.append(product)
             unmapped_count += len(unmapped)
             for name, attribute in attributes.items():
@@ -372,7 +407,7 @@ def build_standardized_dataset(deduplicated_root, output, reviews=None, schema_r
                         raise ValueError("Reviewed availability must be boolean.")
                     for key in ("regular_price", "currency", "tax_basis", "observed_at", "available"):
                         if key in review:
-                            price[key] = review[key]
+                            price[key] = positive(review[key]) if key == "regular_price" else review[key]
                 qty = attributes.get("quantity.total_edible_weight_g", {})
                 if qty.get("review_status") == "reviewed" and qty.get("status") == "known":
                     supporting = {ref["capture_id"] for ref in qty["evidence"]}
@@ -380,11 +415,12 @@ def build_standardized_dataset(deduplicated_root, output, reviews=None, schema_r
                         price["total_edible_weight_g"] = qty["value"]
                         price["quantity_status"] = "reviewed"
                 price["displayed_price_per_100g_gbp"] = normalized(price.get("displayed_price"), price["total_edible_weight_g"]) if price.get("currency") == "GBP" else None
-                target = normalized(price.get("regular_price"), price["total_edible_weight_g"]) if price.get("currency") == "GBP" else None
+                target = normalized(price.get("regular_price"), price["total_edible_weight_g"]) if regular_price_basis_supported(price) else None
                 reasons = []
                 if not decision or decision.get("in_scope") is not True:
                     reasons.append("category_scope_unreviewed_or_excluded")
-                if not decision or not decision.get("variant_id") or not decision.get("family_id"):
+                relationship_attributes = [attributes[name] for name in ("identity.physical_product_id", "identity.product_family_id")]
+                if any(item["status"] != "known" or item["review_status"] != "reviewed" for item in relationship_attributes):
                     reasons.append("physical_identity_and_family_unreviewed")
                 if price["quantity_status"] != "reviewed":
                     reasons.append("observation_edible_quantity_unreviewed")
@@ -425,8 +461,8 @@ def build_standardized_dataset(deduplicated_root, output, reviews=None, schema_r
                 prices.append(price)
                 candidate = {"schema_version": SCHEMA_VERSION, "dataset_version": version,
                              "observation_id": pid, "listing_id": listing,
-                             "variant_id": decision.get("variant_id") if decision else None,
-                             "family_id": decision.get("family_id") if decision else None,
+                             "variant_id": attributes["identity.physical_product_id"]["value"],
+                             "family_id": attributes["identity.product_family_id"]["value"],
                              "comparable_group": attributes["identity.product_group"]["value"], "source_role": row["source_role"],
                              "model_eligible": not reasons, "exclusion_reasons": sorted(set(reasons)),
                              "target": {"regular_price_per_100g_gbp": target,
@@ -439,6 +475,8 @@ def build_standardized_dataset(deduplicated_root, output, reviews=None, schema_r
         raise RuntimeError("Deduplicated snapshot changed during standardization.")
     if load_contract(schema_root, offline=offline)[3] != contract_hashes or {str(path.relative_to(ROOT)): sha256(path) for path in implementation_paths} != implementation:
         raise RuntimeError("Standardization contracts or code changed during the build.")
+    if load_identity_mappings(family_mappings) != identity_decisions:
+        raise RuntimeError("Identity mapping decisions changed during the build.")
     eligible = [row for row in candidates if row["model_eligible"]]
     if eligible:
         from chocolate_model import validate_candidates
@@ -454,6 +492,7 @@ def build_standardized_dataset(deduplicated_root, output, reviews=None, schema_r
               "source_role_counts": dict(Counter(row["source_role"] for row in products)),
               "known_attribute_listing_counts": dict(known), "conflicting_attribute_listing_counts": dict(conflicts),
               "exclusion_counts": dict(Counter(reason for row in candidates for reason in row["exclusion_reasons"])),
+              "product_identity_mapping": identity_mapper.summary(),
               "extraction_errors": errors, "release_ready": False,
               "input_status": source_report.get("status", "not_declared"),
               "input_quality_counts": source_report.get("counts", {}),
@@ -466,10 +505,12 @@ def build_standardized_dataset(deduplicated_root, output, reviews=None, schema_r
     candidates.sort(key=lambda row: row["observation_id"])
     queue.sort(key=lambda row: (row["listing_id"], row.get("attribute", ""), row["reason"]))
     files = {"quality-report.json": json_bytes(report), "profile.json": json_bytes(profile),
-             "source-mappings.json": json_bytes(mappings), "model-design.json": json_bytes(design)}
+             "source-mappings.json": json_bytes(mappings), "model-design.json": json_bytes(design),
+             "family-mappings.json": json_bytes(identity_decisions)}
     for name, rows in (("products", products), ("assertions", assertions), ("prices", prices),
                        ("training-candidates", candidates), ("model-inputs", eligible), ("review-queue", queue)):
         files[name + ".jsonl"] = b"".join((json.dumps(row, sort_keys=True, ensure_ascii=True, allow_nan=False) + "\n").encode() for row in rows)
+    files["family-review-packets.jsonl"] = b"".join((json.dumps(row, sort_keys=True, ensure_ascii=True, allow_nan=False) + "\n").encode() for row in identity_mapper.packets())
     for role in ("brand", "retail", "unknown"):
         for name, rows in (("products", products), ("prices", prices)):
             files[role + "/" + name + ".jsonl"] = b"".join((json.dumps(row, sort_keys=True, ensure_ascii=True, allow_nan=False) + "\n").encode() for row in rows if row["source_role"] == role)
@@ -477,6 +518,9 @@ def build_standardized_dataset(deduplicated_root, output, reviews=None, schema_r
                        "dataset_version": version, "source_dataset_version": manifest["dataset_version"],
                        "source_manifest_sha256": manifest_hash, "contract_sha256": contract_hashes,
                        "implementation_sha256": implementation, "reviews": decisions,
+                       "identity_mapping_format_version": MAPPING_VERSION,
+                       "identity_taxonomy_version": TAXONOMY_VERSION,
+                       "identity_mappings_sha256": hashlib.sha256(files["family-mappings.json"]).hexdigest(),
                        "evidence_reference_base": "capture IDs and JSON pointers in the supplied deduplicated products table; its artifact paths use the raw collections root",
                        "managed_files": {name: {"sha256": hashlib.sha256(data).hexdigest(), "byte_length": len(data)} for name, data in files.items()}}
     files["manifest.json"] = json_bytes(output_manifest)

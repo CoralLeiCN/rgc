@@ -51,3 +51,5 @@ Resolve source coverage, study boundaries, extraction evaluation and numerical
 release thresholds before release. Schema and silver builds can proceed while
 these decisions are open. See [requirements and design](spec.md) for contracts
 and [the plan](plan.md) for implementation status.
+
+Gold is the immutable Parquet training interface, initially preserving Silver decisions. Every pricing target uses regular, non-promotional, tax-inclusive consumer price. Codex maintains evidence-backed product-family mappings in raw-to-Silver processing; exact pack identity and other eligibility reviews remain separate. See the [Gold guide](../chocolate-gold.md) and [prepared release](../analysis/gold-modeling-contract-release.md).

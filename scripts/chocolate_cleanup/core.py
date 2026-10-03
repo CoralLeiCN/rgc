@@ -9,11 +9,13 @@ from datetime import datetime
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
 
+from chocolate_model import PRICE_TARGET_POLICY, regular_price_basis_supported
+
 from .adapters import extract_capture
 from .deduplication import confirm_raw_snapshot, deduplicate_listings, load_raw_archive
 from .sources import SOURCES
 
-PROFILE_VERSION = "uk-chocolate-clean-1"
+PROFILE_VERSION = "uk-chocolate-clean-2"
 ARCHIVE_VERSION = "category-research-raw-1"
 REVIEW_VERSION = "chocolate-reviews-1"
 GROUPS = ["bar", "assorted_box", "chocolate_pieces", "baking_chocolate", "hot_chocolate", "other"]
@@ -21,6 +23,7 @@ PROFILE = {
     "profile_version": PROFILE_VERSION, "category": "chocolate", "market": "uk",
     "status": "draft_mappings_pending_classification_validation",
     "currency": "GBP", "target": "regular_consumer_pack_price_per_100g",
+    "price_target_policy": dict(PRICE_TARGET_POLICY),
     "quantity_unit": "g", "normalization": "pack_price / total_edible_weight_g * 100",
     "comparable_groups": GROUPS,
     "identity_rule": "Deduplicate exact source product/variant identifiers within a source and hostname. Listings at different selling sources always remain unique rows. Reviewed variant/family IDs may describe relationships without merging shops.",
@@ -193,6 +196,7 @@ def normalized(price, weight):
 def build_dataset(archive_root, output, reviews=None):
     implementation_paths = tuple(Path(__file__).with_name(name) for name in
                                  ("core.py", "adapters.py", "deduplication.py", "sources.py"))
+    implementation_paths += (Path(__file__).resolve().parents[1] / "chocolate_model.py",)
     implementation = {path.name: hashlib.sha256(path.read_bytes()).hexdigest() for path in implementation_paths}
     root = Path(archive_root).expanduser().resolve()
     output = Path(output).expanduser().resolve()
@@ -356,9 +360,11 @@ def build_dataset(archive_root, output, reviews=None):
                 if "currency" in price_review and price_review["currency"] != "GBP":
                     raise ValueError("This analytical profile supports reviewed GBP prices only.")
                 row.update({k: v for k, v in price_review.items() if k in allowed})
+                if "regular_price" in price_review:
+                    row["regular_price"] = positive(price_review["regular_price"])
                 row.update({"review_status": "reviewed", "review": price_review})
             row["displayed_price_per_100g"] = normalized(row.get("displayed_price"), row["total_edible_weight_g"]) if row.get("currency") == "GBP" else None
-            row["regular_price_per_100g"] = normalized(row.get("regular_price"), row["total_edible_weight_g"]) if row.get("currency") == "GBP" else None
+            row["regular_price_per_100g"] = normalized(row.get("regular_price"), row["total_edible_weight_g"]) if regular_price_basis_supported(row) else None
             reasons = []
             if product["in_scope"] is not True:
                 reasons.append("category_scope_unreviewed" if product["in_scope"] is None else "outside_category_scope")

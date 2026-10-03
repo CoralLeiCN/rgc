@@ -13,6 +13,7 @@ from category_processing.model import (
     transform_rows,
     validate_candidates,
 )
+from category_processing.price_policy import TARGET_PRICE_POLICY
 
 
 class CategoryModelContractTests:
@@ -21,7 +22,7 @@ class CategoryModelContractTests:
             "model_design_version": "coffee-pricing-design-1",
             "schema_version": "coffee-schema-1",
             "category": "coffee", "market": "uk",
-            "target": {"currency": "GBP", "unit": "GBP_per_100g", "base_quantity": 100},
+            "target": {**TARGET_PRICE_POLICY, "name": "log_regular_unit_price", "quantity_attribute": "quantity.net_weight_g", "currency": "GBP", "unit": "GBP_per_100g", "base_quantity": 100},
             "predictors": {
                 "quantity.net_weight_g": {
                     "type": "numeric", "transform": "log", "required": True,
@@ -56,6 +57,7 @@ class CategoryModelContractTests:
             },
         }
         row.update(changes)
+        row["target"] = {**self.design()["target"], **row["target"]}
         return row
 
     def training(self):
@@ -183,14 +185,14 @@ class CategoryModelContractTests:
         rows = self.training()
         fitted = fit_encoder(rows, self.design())
         for row in rows:
-            row["target"] = {"regular_unit_price": 99,
+            row["target"] = {**self.design()["target"], "regular_unit_price": 99,
                              "log_regular_unit_price": math.log(99)}
         assert (fitted) == (fit_encoder(rows, self.design()))
 
     def test_category_and_declared_price_unit_are_saved_without_chocolate_fields(self):
         design = self.design()
         design.update(category="coffee", market="uk", schema_version="coffee-schema-1")
-        design["target"] = {"currency": "GBP", "unit": "GBP_per_100g", "base_quantity": 100}
+        design["target"] = self.design()["target"]
         fitted = fit_encoder(self.training(), design)
         assert (fitted["category"]) == ("coffee")
         assert (fitted["target_definition"]) == (design["target"])

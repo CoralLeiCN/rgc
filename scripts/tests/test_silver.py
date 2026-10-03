@@ -131,6 +131,8 @@ class ChocolateSilverTests:
             "training-candidates.jsonl",
             "model-inputs.jsonl",
             "review-queue.jsonl",
+            "family-mappings.json",
+            "family-review-packets.jsonl",
             "source-listings.jsonl",
             "listing-aliases.jsonl",
         }
@@ -265,7 +267,7 @@ class ChocolateSilverTests:
         assert set(manifest["managed_files"]) == set(self.snapshot(self.output)) - {
             "manifest.json"
         }
-        assert len(manifest["managed_files"]) == 22
+        assert len(manifest["managed_files"]) == 24
         assert set(manifest["contract_sha256"]) == {
             "profile.json",
             "source-mappings.json",

@@ -5,30 +5,30 @@
   "files": {
     "model-design.json": {
       "path": "contracts/chocolate/model-design.json",
-      "sha256": "ff5d0c11d90268ba91899a181c7b0c49bd6cd12f77a108090b855d2d78c16e48",
-      "size_bytes": 20374
+      "sha256": "5ab4317e10f0c7fd5598a99cf46c887c6c047db193b9a3d7d7cae016ab37092b",
+      "size_bytes": 22850
     },
     "product.schema.json": {
       "path": "contracts/chocolate/product.schema.json",
-      "sha256": "555074d78b34295115d815ffd236867f44d5aefc0f5e8364d3ad4d606cd0aa5b",
-      "size_bytes": 327232
+      "sha256": "e61c8d202774a95250d40673f292f68fa743dbec3a6d0948beedcc58e8fec84c",
+      "size_bytes": 327514
     },
     "profile.json": {
       "path": "contracts/chocolate/profile.json",
-      "sha256": "2052755d0602ca684cf77f026a39e75d7b97257903435a70959991145760d8fe",
-      "size_bytes": 64643
+      "sha256": "881da5b79167bde7c8ac54dce76d39a3962cb5f73540e0e062c34dfde81e6458",
+      "size_bytes": 65092
     },
     "source-mappings.json": {
       "path": "contracts/chocolate/source-mappings.json",
-      "sha256": "ca66ee75f49b2d2f6914b956bfe9b1ab48154e5c2b12896cee6fa25e44295ea4",
-      "size_bytes": 17040
+      "sha256": "5084dde12e3b2309f11b33e4a98226005bc6cb877531eb58510d17715f6f0128",
+      "size_bytes": 18698
     }
   },
   "format_version": "rgc-dataset-contract-reference-1",
-  "mapping_version": "chocolate-source-mappings-1",
+  "mapping_version": "chocolate-source-mappings-2",
   "market": "uk",
-  "model_design_version": "chocolate-pricing-design-1",
+  "model_design_version": "chocolate-pricing-design-3",
   "repo_id": "CoralLeiCN/rgc-collections",
-  "revision": "d4ebef3df5ac17145e8dbd2f8a7ae2b10c0afe70",
+  "revision": "d549ad91d63fb452af605df4a939c4e1f0a59bfa",
   "schema_version": "chocolate-schema-1"
 }

@@ -134,8 +134,8 @@ constrain values; it does not execute general JSON Schema.
 
 | Pinned profile | Schema | Mappings | Model design | Pipeline recipe |
 | --- | --- | --- | --- | --- |
-| Chocolate/UK, 103 tracked attributes | `chocolate-processing-schema-1` | `chocolate-source-mappings-1` | `chocolate-processing-pricing-design-1` | `chocolate-processing-pipeline-1` |
-| Coffee/UK, 12 starter attributes | `coffee-schema-1` | `coffee-source-mappings-1` | `coffee-pricing-design-1` | `coffee-processing-pipeline-1` |
+| Chocolate/UK, 103 tracked attributes | `chocolate-processing-schema-1` | `chocolate-source-mappings-1` | `chocolate-processing-pricing-design-2` | `chocolate-processing-pipeline-2` |
+| Coffee/UK, 12 starter attributes | `coffee-schema-1` | `coffee-source-mappings-1` | `coffee-pricing-design-2` | `coffee-processing-pipeline-2` |
 
 Both recipes follow `category-processing-profile-1`. Coffee demonstrates another
 category with explicit structured roast/format/decaf fields. Its extraction is
@@ -154,10 +154,9 @@ prefixes are accepted only with an explicit GBP observation. Invalid derived
 amounts stay null while raw source values remain preserved. No exchange-rate
 conversion is performed.
 
-Each model design selects one reviewed tax basis through
-`eligibility.allowed_tax_bases`; omitted legacy policies use
-`consumer_tax_included`. `target.tax_basis`, when supplied, must match. Other
-studies can use an evidenced excluded-tax basis without modifying the engine.
+Every model design uses reviewed `consumer_tax_included` through
+`eligibility.allowed_tax_bases` and the finalized target policy. Excluded-tax
+source amounts remain preserved and cannot supply a model target.
 There is no automatic tax conversion or mixed-basis normalization. Category-
 specific free-text extraction still requires structured evidence or an adapter;
 configuration does not establish complete extraction for every source.
@@ -318,3 +317,9 @@ builds. The implementation and real chocolate build are verified; native
 installation/execution in multiple harnesses remains unverified. Real chocolate
 has unresolved field mappings and no eligible reviewed model inputs; generated
 quality/batch reports own their counts and evidence.
+
+## Final regular consumer target
+
+All pricing models and newly generated custom profiles use `regular-consumer-price-1`: regular, non-promotional, consumer-tax-inclusive price and reject fallback. Retain source offers and unknown tax evidence without manufacturing a target. Keep category-specific currencies, units, quantity normalization and log transforms. This supersedes earlier excluded-tax model examples; original source evidence remains unchanged.
+
+Published chocolate uses `chocolate-processing-pricing-design-2` and `chocolate-processing-pipeline-2`; coffee uses `coffee-pricing-design-2` and `coffee-processing-pipeline-2`. Attribute schema and source-mapping versions remain unchanged. Model and recipe declare the same target policy, candidates store it, and `category-processing-encoder-2` freezes and verifies it. [The published release](analysis/gold-modeling-contract-release.md) contains publication status and hashes. Canonical chocolate family mapping and the OLS trainer are repository components; the portable package retains generic family-review/preparation behavior.

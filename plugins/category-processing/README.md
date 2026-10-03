@@ -148,3 +148,7 @@ Dataset eligibility is separate from package correctness: unreviewed evidence an
 unresolved price basis remain excluded. Current real chocolate has mapping gaps
 and no eligible reviewed model inputs. Inspect generated reports rather than
 treating successful processing as model readiness. No regression is fitted.
+
+## Final price target
+
+Every category pricing target uses `regular-consumer-price-1`: regular, non-promotional, consumer-tax-inclusive price with reject fallback. Category currencies, quantities and transformations remain declared. Custom profile authoring retains this basis and rejects an excluded-tax target. Observed offers/tax evidence remain preserved; missing support yields no target. The candidate target stores its policy and normalization, and encoder version `category-processing-encoder-2` verifies/fixes that policy. Prepared bundled chocolate/coffee designs and recipes use version 2; dataset manifests update only after approved, verified publication.

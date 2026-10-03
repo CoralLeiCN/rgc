@@ -236,3 +236,13 @@ When silver behavior, identity, schema, mappings, review gates or model design
 changes, update this guide, the applicable contracts and the documents required
 by the [documentation policy](documentation-policy.md). Run
 `python3 -B scripts/check_documentation.py` with the relevant behavioral tests.
+
+## Gold and reviewed family identities
+
+Raw → combined Silver → immutable Parquet [Gold](chocolate-gold.md) is the chocolate training pipeline. Silver owns evidence-backed transformations and eligibility. Gold initially copies candidate and eligible rows without semantic changes. A user-directed bulk review creates a new snapshot with its administrative basis; it does not establish individual evidence review or fill missing targets.
+
+`--family-mappings` accepts `chocolate-family-mappings-1` decisions; without an override the build loads `reviews/chocolate/family-mappings.json` when present. Taxonomy `chocolate-product-identity-1` distinguishes conservative related ranges from exact consumer-pack identities. The [identity registry guide](../reviews/chocolate/README.md) explains exact seller/listing selectors, original-name guards, reviewer/reason/capture evidence and current-task Codex decisions. Keep every seller listing and original capture separate. New or conflicting cases become `family-review-packets.jsonl`; hints do not establish physical equality. `family-mappings.json` preserves the accepted parsed registry and candidate IDs come from its resolved typed attributes. Both files are managed and hashed in the manifest.
+
+A family-only assignment reviews only the family relationship. It does not review scope, price, quantities, predictors or exact physical identity. Exact physical mappings require separate pack evidence review, including changes retaining the same IDs and name. There is no unattended dispatcher. After updating a registry or dataset-owned contract, rebuild Silver into a new destination and produce a new Gold snapshot. Existing `--schema-root` custom directories and `--offline` verified-cache behavior remain supported.
+
+The current default dataset contracts pin verified Hugging Face revision `d549ad91d63fb452af605df4a939c4e1f0a59bfa`, including `chocolate-source-mappings-2` and `chocolate-pricing-design-3`. The [published release](analysis/gold-modeling-contract-release.md) records byte verification, family coverage and the unchanged raw/capture evidence. Historical Silver and Gold keep their exact copied contracts.

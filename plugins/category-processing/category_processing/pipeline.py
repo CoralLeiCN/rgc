@@ -26,6 +26,7 @@ from .archive import (
 )
 from .discovery import discover_fields, discovery_policy
 from .model import ModelContractError, _predictor_value
+from .price_policy import TARGET_NORMALIZATION_FIELDS, TARGET_PRICE_POLICY
 from .profiles import CONTRACT_FILES, load_profile, profile_provenance, resolve_profile
 from .schema_suggestions import render_schema_suggestions
 from .values import (
@@ -392,7 +393,9 @@ def build_silver_dataset(archive_root, output, profile_root, reviews=None):
                 price["quantity_value"] = quantity_attribute["value"]
                 price["quantity_status"] = "reviewed"
             supported_currency = bool(target_currency and price.get("currency") == target_currency)
-            target = normalized_price(price.get("regular_price"), price["quantity_value"], base_quantity) if supported_currency else None
+            price_context_reviewed = bool(review and {"regular_price", "currency", "tax_basis", "observed_at", "available"} <= set(review))
+            supported_price_context = supported_currency and price.get("tax_basis") == "consumer_tax_included"
+            target = normalized_price(price.get("regular_price"), price["quantity_value"], base_quantity) if supported_price_context else None
             price["displayed_unit_price"] = normalized_price(price.get("displayed_price"), price["quantity_value"], base_quantity) if supported_currency else None
             price["regular_unit_price"] = target
             reasons = []
@@ -402,7 +405,7 @@ def build_silver_dataset(archive_root, output, profile_root, reviews=None):
                 reasons.append("physical_identity_and_family_unreviewed")
             if price["quantity_status"] != "reviewed":
                 reasons.append("observation_quantity_unreviewed")
-            if not review or not {"regular_price", "currency", "tax_basis", "observed_at", "available"} <= set(review):
+            if not price_context_reviewed:
                 reasons.append("regular_price_context_review_incomplete")
             if not supported_currency or price.get("tax_basis") not in allowed_tax_bases:
                 reasons.append("currency_or_tax_basis_unsupported")
@@ -443,12 +446,14 @@ def build_silver_dataset(archive_root, output, profile_root, reviews=None):
                 price.update(total_edible_weight_g=price["quantity_value"], displayed_price_per_100g_gbp=price["displayed_unit_price"],
                              regular_price_per_100g_gbp=target)
             prices.append(price)
+            target_basis = {**TARGET_PRICE_POLICY, **{key: design["target"][key] for key in TARGET_NORMALIZATION_FIELDS}}
             candidates.append({**context, "observation_id": pid, "listing_id": listing, "seller_uid": uid,
                                "variant_id": decision.get("variant_id") if decision else None,
                                "family_id": decision.get("family_id") if decision else None,
                                "comparable_group": group.get("value"), "source_role": row["source_role"],
                                "model_eligible": not reasons, "exclusion_reasons": sorted(set(reasons)),
-                               "target": {"regular_unit_price": target, "log_regular_unit_price": math.log(target) if target and target > 0 else None},
+                               "target": {**target_basis, "regular_unit_price": target,
+                                          "log_regular_unit_price": math.log(target) if target is not None else None},
                                "predictors": predictors})
 
     if set(decisions.get("products", {})) - seen_reviews or set(decisions.get("prices", {})) - seen_prices:

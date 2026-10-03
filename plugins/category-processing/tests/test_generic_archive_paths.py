@@ -44,7 +44,7 @@ def definition():
         "model_design": {
             "target": {"name": "log_regular_unit_price", "currency": "USD", "unit": "USD_per_item",
                        "quantity_attribute": "quantity.items", "base_quantity": 1,
-                       "price_basis": "regular", "tax_basis": "consumer_tax_excluded"},
+                       "price_basis": "regular", "tax_basis": "consumer_tax_included"},
             "predictors": {"product.group": {"type": "categorical", "required": True, "missing_policy": "reject",
                                               "transform": "identity", "reference": "training_mode", "allowed_values": ["chair", "table"]}},
         },

@@ -56,3 +56,5 @@ changes, context held fixed, support, fitted uncertainty and limitations.
 Interpret conditional associations without causal premium claims. Testing prices
 for new products and scoring value for money require later validation/release
 decisions. Mapping changes never rewrite an old model's training snapshot.
+
+All model targets use `regular-consumer-price-1`: regular, non-promotional, consumer-tax-inclusive price, with reject fallback. Currency and quantity normalization remain category-specific. Custom authoring adds the fixed policy metadata to design and recipe; source amounts and tax inclusion still require independent evidence. Model preparation records the same policy on each target and in the frozen encoder.

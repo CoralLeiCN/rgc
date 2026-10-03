@@ -7,6 +7,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 
 from .model import _predictor_definitions
+from .price_policy import TARGET_PRICE_POLICY, validate_price_policy
 from .profiles import CONTRACT_FILES, PROFILE_FORMAT, TYPES, load_profile
 from .values import REVIEWS, SCOPES, STATES
 
@@ -183,12 +184,13 @@ def build_contracts(definition):
                     {"target", "predictors", "eligibility", "attribute_policies", "preprocessing", "validation", "interpretation"},
                     {"target", "predictors"})
     target = _object(model["target"], "Model target",
-                     {"name", "currency", "unit", "quantity_attribute", "base_quantity", "price_basis", "tax_basis"},
+                     {"name", "currency", "unit", "quantity_attribute", "base_quantity", "price_basis", "tax_basis"} | set(TARGET_PRICE_POLICY),
                      {"name", "currency", "unit", "quantity_attribute", "base_quantity", "price_basis", "tax_basis"})
     for key in ("name", "currency", "unit", "quantity_attribute", "price_basis", "tax_basis"):
         _text(target[key], "Model target " + key)
     if target["name"] != "log_regular_unit_price" or target["price_basis"] != "regular":
         raise ValueError("Model target currently supports log_regular_unit_price with regular price_basis.")
+    validate_price_policy({**TARGET_PRICE_POLICY, **target})
     _positive(target["base_quantity"], "Model target base_quantity")
     for name, predictor in _object(model["predictors"], "Model predictors").items():
         _object(predictor, "Model predictor " + name,
@@ -229,13 +231,14 @@ def build_contracts(definition):
                "attributes": deepcopy(attributes), "standardization_rules": deepcopy(rules)}
     profile.update({key: deepcopy(definition[key]) for key in optional if key in definition})
     design = {**deepcopy(model), **context, "model_design_version": versions["model_design"], "status": "specified_not_trained"}
+    design["target"] = {**TARGET_PRICE_POLICY, **design["target"]}
     design.setdefault("eligibility", {"allowed_tax_bases": [target["tax_basis"]]})
     return {
         "profile.json": profile,
         "source-mappings.json": {**deepcopy(mappings), "schema_version": versions["schema"], "mapping_version": versions["mapping"]},
         "model-design.json": design,
         "product.schema.json": _product_schema(profile),
-        "pipeline.json": {**deepcopy(pipeline), **context, "pipeline_version": versions["pipeline"],
+        "pipeline.json": {**deepcopy(pipeline), "price": {**deepcopy(price), "target_policy": dict(TARGET_PRICE_POLICY)}, **context, "pipeline_version": versions["pipeline"],
                           "pipeline_format_version": PROFILE_FORMAT, "review_format_version": REVIEW_FORMAT, "adapter": "structured"},
     }
 

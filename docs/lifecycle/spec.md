@@ -43,3 +43,5 @@ while retaining prior data and model versions. The portable chocolate envelope
 uses distinct versions from the established CLI. See the
 [plan](plan.md) for validation, native installation and future work, and the
 [documentation policy](../documentation-policy.md) for required updates.
+
+The [Gold contract](../chocolate-gold.md) defines Parquet pass-through, provenance, optional user-directed bulk review and verified training input. The [schema guide](../chocolate-schema.md) defines reusable family mappings and experimental OLS. All models retain `regular-consumer-price-1`; no displayed/promotional/reference or unknown-tax fallback is supported. The prepared contracts require an approved verified dataset release before updating immutable references.

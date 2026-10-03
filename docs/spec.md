@@ -585,7 +585,7 @@ Stable `seller_uid` derives from category, market, source key, host, source prod
 and variant independently of the canonical listing alias. Different sellers stay
 unique; unresolved identities stay separate. All original captures, aliases and
 brand/retail/unknown partitions are retained. Portable chocolate uses
-`chocolate-processing-schema-1` and `chocolate-processing-pricing-design-1` for its
+`chocolate-processing-schema-1` and `chocolate-processing-pricing-design-2` for its
 seller envelope and generic target contract. Existing `chocolate-schema-1`
 snapshots/CLI retain their own compatible versions; profile substitution must
 preserve those snapshots.
@@ -737,7 +737,7 @@ For an established statistical use of this method, see the
 Applying it to UK chocolate is this specification's proposal and requires its own
 validation.
 
-The current executable preparation contract, `chocolate-pricing-design-1`, is
+The current executable preparation contract, `chocolate-pricing-design-3`, is
 in dataset `contracts/chocolate/model-design.json`, pinned by the
 [dataset manifest](../schemas/chocolate/dataset-contract.json). It selects
 features and preprocessing from the typed schema. Retain useful tracking evidence
@@ -1007,3 +1007,13 @@ category and plugin conformance scenarios apply across supported studies.
   include separately collected consumer utility/quality evidence.
 
 Resolve these decisions before the corresponding implementation or release commitment.
+
+## 10. Gold and the finalized training basis
+
+The canonical chocolate architecture is raw → combined Silver → immutable Parquet Gold. Silver retains seller rows, evidence, reviews and eligibility. Gold copies `training-candidates.jsonl` to `training-data.parquet` and `model-inputs.jsonl` to `model-inputs.parquet`, with typed empty tables, Zstandard compression, manifests, logical row checks and exact contract/price/identity decision provenance. Existing snapshots cannot be overwritten with changed bytes. The [Gold guide](chocolate-gold.md) defines CLI, versions, review annotations and verified trainer handoff.
+
+Every pricing model uses `regular-consumer-price-1`: regular, non-promotional, consumer-tax-inclusive selling price, with `fallback_policy: reject`. Retain displayed/promotional/reference amounts as evidence; none substitutes for the target, and no tax guess or reverse discount is permitted. A separately evidenced regular amount alongside a promotional offer is supported. Chocolate normalizes GBP per 100g and logs it; other categories retain their declared currency and quantity basis. This fixed monetary basis supersedes earlier examples allowing excluded-tax model targets, without changing the preserved observations. Generated custom profiles retain this basis.
+
+`chocolate-source-mappings-2` adds reusable `chocolate-product-identity-1` family taxonomy. Evidence-backed Codex assignments populate product and candidate IDs; related range grouping prevents validation leakage while seller rows and prices stay separate. Unknown/conflicting relationships remain in grouped review packets. Family assignment alone does not confer eligibility. Exact physical pack identity, reviewed scope, price/tax/time/availability, edible quantity and predictors remain separate requirements. [The schema guide](chocolate-schema.md) and [registry guide](../reviews/chocolate/README.md) own mapping details.
+
+The experimental `chocolate-pricing-design-3` trainer reads verified Gold, with Silver compatibility, and saves immutable runs. It implements log-price OLS, family holdout, training-only encoders, support/rank/confounding gates and family-cluster bootstrap coefficient intervals. It validates eligible targets against the copied regular-price observations. Zero eligible rows yield a readiness report and no fitted artifact. This implemented experimental baseline does not establish release readiness or supersede the proposed LightGBM/SHAP research design. [The published contract release](analysis/gold-modeling-contract-release.md) documents the verified publication and exact changes.

@@ -8,6 +8,7 @@ from pathlib import Path
 import pytest
 from category_processing.model import validate_candidates
 from category_processing.pipeline import build_silver_dataset
+from category_processing.price_policy import TARGET_PRICE_POLICY
 from category_processing.profiles import load_profile
 from fixture_archive import import_document
 
@@ -72,7 +73,7 @@ class GenericCategoryEngineTests:
                     "aliases": {}, "unit_conversions": {"m": {"cm": 0.01}}}
         design = {"schema_version": version, "model_design_version": "furniture-design-fixture-1",
                   "category": "furniture", "market": "us",
-                  "target": {"name": "log_regular_unit_price", "currency": currency,
+                  "target": {**TARGET_PRICE_POLICY, "name": "log_regular_unit_price", "currency": currency,
                              "unit": currency + "_per_item", "quantity_attribute": "quantity.item_count",
                              "base_quantity": 1},
                   "predictors": {
@@ -95,7 +96,7 @@ class GenericCategoryEngineTests:
                       {"attribute": "furniture.width_m", "pointer": "/raw_record/information/width_cm", "unit": "cm"},
                   ],
                   "quantity": {"attribute": "quantity.item_count", "unit": "item", "base_quantity": 1},
-                  "price": {"price_unit": price_unit, "amount_pointer": "/raw_record/information/price/amount",
+                  "price": {"target_policy": dict(TARGET_PRICE_POLICY), "price_unit": price_unit, "amount_pointer": "/raw_record/information/price/amount",
                             "regular_price_pointer": "/raw_record/information/price/regular_amount",
                             "reference_price_pointer": "/raw_record/information/price/reference_amount",
                             "currency_pointer": "/raw_record/information/price/currency",
@@ -167,8 +168,8 @@ class GenericCategoryEngineTests:
                 "products": {product["seller_uid"]: decision}, "prices": prices}
 
     def test_nonfood_per_item_dollars_use_reviewed_explicit_tax_basis(self):
-        self.profile(allowed_tax_bases=["consumer_tax_excluded"])
-        self.collect(tax_basis="consumer_tax_excluded")
+        self.profile(allowed_tax_bases=["consumer_tax_included"])
+        self.collect(tax_basis="consumer_tax_included")
         original = {path: path.read_bytes() for path in self.archive.rglob("*") if path.is_file()}
         self.build()
         assert (self.rows("model-inputs")) == ([])
@@ -242,16 +243,16 @@ class GenericCategoryEngineTests:
 
     def test_tax_policy_rejects_unresolved_mixed_and_conflicting_target_bases(self):
         for policy in ([], ["unknown"], ["unresolved"], ["not_applicable"], ["conflict"], [" "],
-                       [True], "consumer_tax_included", ["consumer_tax_included", "consumer_tax_excluded"]):
+                       [True], "consumer_tax_included", ["consumer_tax_excluded", "consumer_tax_included"]):
             self.profile(allowed_tax_bases=policy)
             with pytest.raises(ValueError, match="select one resolved tax basis"):
                 load_profile(self.profile_root)
-        self.profile(allowed_tax_bases=["consumer_tax_excluded"])
+        self.profile(allowed_tax_bases=["consumer_tax_included"])
         path = self.profile_root / "model-design.json"
         design = json.loads(path.read_text())
-        design["target"]["tax_basis"] = "consumer_tax_included"
+        design["target"]["tax_basis"] = "consumer_tax_excluded"
         path.write_text(json.dumps(design) + "\n")
-        with pytest.raises(ValueError, match="tax_basis differs"):
+        with pytest.raises(ValueError, match="tax_basis"):
             load_profile(self.profile_root)
 
     def test_tax_default_missing_item_count_and_partial_reviews_keep_rows_ineligible(self):

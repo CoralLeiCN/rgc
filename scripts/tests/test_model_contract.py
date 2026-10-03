@@ -6,6 +6,7 @@ from pathlib import Path
 
 import pytest
 from chocolate_model import (
+    PRICE_TARGET_POLICY,
     ModelContractError,
     coefficient_percent,
     fit_encoder,
@@ -23,6 +24,7 @@ class ChocolateModelContractTests:
         return {
             "model_design_version": "chocolate-model-design-1",
             "schema_version": "chocolate-schema-1",
+            "target": {**PRICE_TARGET_POLICY, "name": "log_regular_gbp_per_100g", "currency": "GBP", "unit": "GBP_per_100g", "quantity_attribute": "quantity.total_edible_weight_g", "base_quantity": 100},
             "predictors": {
                 "quantity.total_edible_weight_g": {
                     "type": "numeric",

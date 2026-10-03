@@ -553,6 +553,17 @@ class ChocolateCleaningTests:
         assert report["counts"]["eligible_price_observations"] == 0
         assert self.rows("model-inputs") == []
 
+    def test_numeric_price_review_remains_compatible_with_final_target_basis(self):
+        self.collect([self.product()])
+        self.build()
+        reviews = self.reviewed_document()
+        next(iter(reviews["prices"].values()))["regular_price"] = "4.00"
+        self.build(self.write_reviews(reviews))
+        price = self.rows("model-inputs")[0]
+        assert isinstance(price["regular_price"], float)
+        assert price["regular_price_per_100g"] == 2
+        assert price["review"]["regular_price"] == "4.00"
+
     def test_review_rejects_unknown_identity_and_nonresolving_evidence(self):
         self.collect([self.product()])
         self.build()

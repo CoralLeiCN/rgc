@@ -5,13 +5,13 @@
   "files": {
     "model-design.json": {
       "path": "contracts/category-processing/chocolate/model-design.json",
-      "sha256": "f0168aa1afaefefde6a844f3678479b9887e6acd30bbde9e1ed5e99091582d1d",
-      "size_bytes": 20480
+      "sha256": "31036183bf3b51f2292dee46efd44fcfa70289ce711d1fff4a533c7b818ed558",
+      "size_bytes": 21030
     },
     "pipeline.json": {
       "path": "contracts/category-processing/chocolate/pipeline.json",
-      "sha256": "685ef53890a9b3076f1f6db6f6a97f239295d65885de47ece23269ce0dccb73b",
-      "size_bytes": 3987
+      "sha256": "216876b1ba7857e19c8992e8de3b98279bdf277742236526a0b8ad9d6f07183a",
+      "size_bytes": 4237
     },
     "product.schema.json": {
       "path": "contracts/category-processing/chocolate/product.schema.json",
@@ -32,9 +32,9 @@
   "format_version": "rgc-dataset-contract-reference-1",
   "mapping_version": "chocolate-source-mappings-1",
   "market": "uk",
-  "model_design_version": "chocolate-processing-pricing-design-1",
-  "pipeline_version": "chocolate-processing-pipeline-1",
+  "model_design_version": "chocolate-processing-pricing-design-2",
+  "pipeline_version": "chocolate-processing-pipeline-2",
   "repo_id": "CoralLeiCN/rgc-collections",
-  "revision": "d4ebef3df5ac17145e8dbd2f8a7ae2b10c0afe70",
+  "revision": "d549ad91d63fb452af605df4a939c4e1f0a59bfa",
   "schema_version": "chocolate-processing-schema-1"
 }

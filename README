@@ -174,3 +174,14 @@ The exporter discovers all studies under `data/collections/`. Generated files in
 recurring uploads require separate configuration.
 
 Original dataset reference: https://github.com/coveooss/SIGIR-ecom-data-challenge
+
+## Gold, experimental training and product families
+
+The [Gold guide](docs/chocolate-gold.md) defines immutable Parquet training snapshots, provenance and user-directed bulk review. Build and train with the locked development environment:
+
+```sh
+uv run python -B scripts/build_chocolate_gold.py --silver-root data/silver/chocolate/uk --output data/gold/chocolate/uk
+uv run python -B scripts/train_chocolate_model.py --gold-root data/gold/chocolate/uk/<gold-version> --output data/models/chocolate/uk --group bar
+```
+
+The raw-to-Silver builder includes reviewed family mappings from the [registry](reviews/chocolate/README.md), with `--family-mappings` overrides and grouped Codex review packets. Every price model uses regular, non-promotional, tax-inclusive consumer price. The current rebuilt corpus has family IDs on 402 candidates and zero eligible model inputs; no real-data regression has fitted. [The published release](docs/analysis/gold-modeling-contract-release.md) records the verified contract publication and validation. Existing main features, discovery and proposed LightGBM/SHAP design remain available.

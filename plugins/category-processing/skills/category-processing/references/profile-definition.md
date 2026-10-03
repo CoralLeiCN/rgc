@@ -104,9 +104,9 @@ does not establish that every listing contains one item.
       "name": "log_regular_unit_price",
       "currency": "USD", "unit": "USD_per_item",
       "quantity_attribute": "quantity.items", "base_quantity": 1,
-      "price_basis": "regular", "tax_basis": "consumer_tax_excluded"
+      "price_basis": "regular", "tax_basis": "consumer_tax_included"
     },
-    "eligibility": {"allowed_tax_bases": ["consumer_tax_excluded"]},
+    "eligibility": {"allowed_tax_bases": ["consumer_tax_included"]},
     "predictors": {
       "technical.material": {
         "type": "categorical", "required": true, "missing_policy": "reject",
@@ -200,3 +200,5 @@ they cannot install new runtime algorithms. Model preparation still requires
 reviewed comparable groups, seller-specific observations, quantity, predictors,
 regular price context and family decisions. It produces an encoder and family
 holdout, without fitting a regression or establishing release readiness.
+
+All model targets use `regular-consumer-price-1`: regular, non-promotional, consumer-tax-inclusive price, with reject fallback. Currency and quantity normalization remain category-specific. Custom authoring adds the fixed policy metadata to design and recipe; source amounts and tax inclusion still require independent evidence. Model preparation records the same policy on each target and in the frozen encoder.

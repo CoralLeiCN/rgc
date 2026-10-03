@@ -15,7 +15,7 @@ REQUIRED = (
     "AGENTS.md", "README", "docs/intention.md", "docs/spec.md",
     "docs/lifecycle/intent.md", "docs/lifecycle/spec.md", "docs/lifecycle/plan.md",
     "docs/documentation-policy.md", "docs/chocolate-schema.md", "docs/chocolate-silver.md",
-    "docs/category-processing.md", "plugins/category-processing/README.md",
+    "docs/category-processing.md", "plugins/category-processing/README.md", "docs/chocolate-gold.md",
     "docs/dataset-contracts.md",
     "plugins/category-processing/skills/category-processing/SKILL.md",
     "plugins/category-processing/skills/category-processing/references/processing-contract.md",
@@ -30,6 +30,13 @@ PROCESSING_PROFILES = ("chocolate", "coffee")
 def required_updates(changed):
     required = set()
     for path in changed:
+        if path in ("scripts/chocolate_gold.py", "scripts/build_chocolate_gold.py", "scripts/review_chocolate_gold.py"):
+            required.update(("docs/spec.md", "docs/chocolate-schema.md", "docs/chocolate-silver.md",
+                             "docs/chocolate-gold.md", "docs/lifecycle/plan.md", "README"))
+        if path in ("scripts/train_chocolate_model.py", "scripts/chocolate_regression.py"):
+            required.update(("docs/spec.md", "docs/chocolate-schema.md", "docs/chocolate-silver.md", "docs/lifecycle/plan.md"))
+        if path == "scripts/train_chocolate_model.py":
+            required.add("docs/chocolate-gold.md")
         if path in ("scripts/chocolate_silver.py", "scripts/build_chocolate_silver.py"):
             required.update(("docs/spec.md", "docs/chocolate-schema.md", "docs/chocolate-silver.md", "docs/lifecycle/plan.md"))
         if path.startswith("schemas/chocolate/") or path.startswith("scripts/chocolate_standardization/") or path in ("scripts/standardize_chocolate_data.py", "scripts/chocolate_model.py", "scripts/dataset_contracts.py", "scripts/fetch_contracts.py"):

@@ -121,3 +121,5 @@ uv run pytest scripts/tests/test_deduplication.py
 uv run ruff check .
 python3 -B scripts/check_documentation.py
 ```
+
+Current canonical processing leads from raw through combined Silver to immutable Parquet [Gold](chocolate-gold.md). Compatibility cleanup uses `uk-chocolate-clean-2` and the finalized `regular-consumer-price-1` target: reject unsupported regular or tax-inclusive basis without substituting displayed offers. The [schema guide](chocolate-schema.md) owns reusable family mappings; these preserve seller listings and require independent evidence review.

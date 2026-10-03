@@ -11,6 +11,7 @@ from pathlib import Path
 
 import pytest
 from category_processing.adapters import extract_capture
+from category_processing.price_policy import TARGET_PRICE_POLICY
 from category_processing.profile_builder import init_profile
 from category_processing.profiles import CONTRACT_FILES, load_profile
 from category_processing.values import standardize_value
@@ -65,8 +66,8 @@ def stationery_definition():
         "model_design": {
             "target": {"name": "log_regular_unit_price", "currency": "USD", "unit": "USD_per_item",
                        "quantity_attribute": "quantity.items", "base_quantity": 1,
-                       "price_basis": "regular", "tax_basis": "consumer_tax_excluded"},
-            "eligibility": {"allowed_tax_bases": ["consumer_tax_excluded"]},
+                       "price_basis": "regular", "tax_basis": "consumer_tax_included"},
+            "eligibility": {"allowed_tax_bases": ["consumer_tax_included"]},
             "predictors": {"technical.material": {"type": "categorical", "required": True, "missing_policy": "reject",
                                                   "transform": "identity", "reference": "training_mode",
                                                   "allowed_values": ["polymer", "metal"]}},
@@ -89,7 +90,7 @@ class ProfileBuilderTests:
         profile, mappings, design, recipe, fingerprints = load_profile(self.output)
         assert (result["contract_sha256"]) == (fingerprints)
         assert (profile["attributes"]) == (definition["attributes"])
-        assert (design["target"]) == (definition["model_design"]["target"])
+        assert (design["target"]) == ({**TARGET_PRICE_POLICY, **definition["model_design"]["target"]})
         assert (recipe["group_attribute"]) == ("product.group")
         assert (recipe["adapter"]) == ("structured")
         assert (mappings["unit_conversions"]) == (definition["mappings"]["unit_conversions"])
@@ -194,7 +195,7 @@ class ProfileBuilderTests:
                                                                                  "colors": ["blue", "black"]},
                                              "price": {"amount": amount, "regular_amount": amount, "currency": "USD",
                                                        "observed_at": "2026-10-03T10:00:00Z", "available": True,
-                                                       "tax_basis": "consumer_tax_excluded"}},
+                                                       "tax_basis": "consumer_tax_included"}},
                              "source_artifacts": [{"kind": "page", "content": "Preuve originale: stylos bleus.\n"}], "images": []})
         import_document({"study": {"category": "stationery", "market": "us"}, "products": products}, archive)
         before = {path.relative_to(archive).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
@@ -227,7 +228,7 @@ class ProfileBuilderTests:
         for price in prices:
             reviews["prices"][price["observation_id"]] = {
                 **common, "regular_price": price["regular_price"], "currency": "USD",
-                "tax_basis": "consumer_tax_excluded", "available": True, "observed_at": "2026-10-03T10:00:00Z",
+                "tax_basis": "consumer_tax_included", "available": True, "observed_at": "2026-10-03T10:00:00Z",
                 "evidence": deepcopy(price["evidence"]),
             }
         review_path = self.base / "reviews.json"

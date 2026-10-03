@@ -25,6 +25,7 @@ IMPLEMENTATION_FILES = (
     "scripts/chocolate_cleanup/sources.py", "scripts/chocolate_cleanup/adapters.py",
     "scripts/chocolate_cleanup/core.py", "scripts/chocolate_standardization/pipeline.py",
     "scripts/chocolate_standardization/values.py", "scripts/chocolate_model.py",
+    "scripts/chocolate_standardization/identity.py",
     "scripts/dataset_contracts.py", "plugins/category-processing/category_processing/dataset_contracts.py",
     "schemas/chocolate/dataset-contract.json",
 )
@@ -63,7 +64,7 @@ def table_bytes(path, version, source_version):
     return b"".join(lines)
 
 
-def build_silver_dataset(archive_root, output, reviews=None, schema_root=None, offline=False):
+def build_silver_dataset(archive_root, output, reviews=None, schema_root=None, offline=False, family_mappings=None):
     """Deduplicate seller listings, standardize attributes, and gate model inputs.
 
     Intermediate tables are temporary implementation details. Published evidence
@@ -81,7 +82,7 @@ def build_silver_dataset(archive_root, output, reviews=None, schema_root=None, o
         deduplicated, standardized = scratch / "deduplicated", scratch / "standardized"
         dedup_report = build_deduplicated_dataset(source, deduplicated)
         report = build_standardized_dataset(deduplicated, standardized, reviews=reviews,
-                                            schema_root=schema_root, offline=offline)
+                                            schema_root=schema_root, offline=offline, family_mappings=family_mappings)
         dedup_manifest = read_json(deduplicated / "manifest.json")
         standard_manifest = read_json(standardized / "manifest.json")
         source_version = "raw-snapshot-" + digest({
@@ -126,6 +127,9 @@ def build_silver_dataset(archive_root, output, reviews=None, schema_root=None, o
             },
             "contract_sha256": standard_manifest["contract_sha256"], "implementation_sha256": implementation,
             "reviews": standard_manifest["reviews"],
+            "identity_mapping_format_version": standard_manifest["identity_mapping_format_version"],
+            "identity_taxonomy_version": standard_manifest["identity_taxonomy_version"],
+            "identity_mappings_sha256": standard_manifest["identity_mappings_sha256"],
             "evidence_reference_base": "capture IDs and JSON pointers resolve in this silver dataset's source-listings.jsonl; original artifact and history paths resolve against the supplied raw collections root",
             "managed_files": {name: {"sha256": hashlib.sha256(data).hexdigest(), "byte_length": len(data)} for name, data in files.items()},
         }

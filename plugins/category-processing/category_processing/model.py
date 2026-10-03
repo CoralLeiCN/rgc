@@ -11,7 +11,13 @@ import math
 from collections import Counter
 from copy import deepcopy
 
-ENCODER_VERSION = "category-processing-encoder-1"
+from .price_policy import (
+    TARGET_NORMALIZATION_FIELDS,
+    validate_price_policy,
+    validate_target_definition,
+)
+
+ENCODER_VERSION = "category-processing-encoder-2"
 
 
 class ModelContractError(ValueError):
@@ -115,6 +121,10 @@ def validate_candidates(rows, design):
     The eligibility flag represents the upstream evidence review. This function
     cannot independently establish that a source supports a review decision.
     """
+    try:
+        validate_target_definition(design.get("target") if isinstance(design, dict) else None)
+    except ValueError as error:
+        raise ModelContractError(str(error)) from error
     definitions = _predictor_definitions(design)
     candidates = list(rows)
     _validate_identity(candidates)
@@ -122,6 +132,14 @@ def validate_candidates(rows, design):
         target = row.get("target")
         if not isinstance(target, dict):
             raise ModelContractError("target must declare its regular unit-price basis")
+        try:
+            validate_price_policy(target, "Stored row target")
+        except ValueError as error:
+            raise ModelContractError(str(error)) from error
+        for key in TARGET_NORMALIZATION_FIELDS:
+            if (target.get(key) != design["target"][key]
+                    or (key == "base_quantity" and isinstance(target.get(key), bool))):
+                raise ModelContractError("stored row target " + key + " differs from the model design")
         price = _number(target.get("regular_unit_price"), "regular unit price")
         logged = _number(target.get("log_regular_unit_price"), "log regular unit price")
         if price <= 0:
@@ -228,7 +246,7 @@ def transform_rows(rows, fitted):
     """
     if not isinstance(fitted, dict) or fitted.get("encoder_version") != ENCODER_VERSION:
         raise ModelContractError("unsupported fitted encoder")
-    design = {"predictors": fitted.get("predictors")}
+    design = {"predictors": fitted.get("predictors"), "target": fitted.get("target_definition")}
     candidates = validate_candidates(rows, design)
     matrix, targets = [], []
     for row in candidates:

@@ -108,3 +108,5 @@ For an older snapshot, reusing an output directory removes obsolete generated
 files intact. Unsafe write/removal paths are rejected before packet changes.
 Mapping summaries quote and escape source-derived labels and values as bounded
 JSON code spans; full evidence remains in their JSONL batches.
+
+All model targets use `regular-consumer-price-1`: regular, non-promotional, consumer-tax-inclusive price, with reject fallback. Currency and quantity normalization remain category-specific. Custom authoring adds the fixed policy metadata to design and recipe; source amounts and tax inclusion still require independent evidence. Model preparation records the same policy on each target and in the frozen encoder.

@@ -11,9 +11,9 @@ build command, dataset outputs, evidence resolution and current build status.
 | Contract | Version | Responsibility |
 | --- | --- | --- |
 | `profile.json` | `chocolate-schema-1` | Attribute types, units, vocabularies, scope, qualifiers, model roles, standardization rules, and missingness. |
-| `source-mappings.json` | `chocolate-source-mappings-1` | Recognized source aliases, conversion bases, and rules for source scope. |
+| `source-mappings.json` | `chocolate-source-mappings-2` | Recognized source aliases, conversion bases, and rules for source scope. |
 | `product.schema.json` | `chocolate-schema-1` | Required standardized product envelope and typed attribute objects. |
-| `model-design.json` | `chocolate-pricing-design-1` | Selected predictors, target, eligibility, preprocessing, validation, and insight requirements. |
+| `model-design.json` | `chocolate-pricing-design-3` | Selected predictors, target, eligibility, preprocessing, validation, and insight requirements. |
 
 These four files are authoritative under `contracts/chocolate/` in the
 [Hugging Face dataset](https://huggingface.co/datasets/CoralLeiCN/rgc-collections).
@@ -202,7 +202,7 @@ confirmed. Inspect attribute review states and `model_eligible` with its
 
 ## Pricing model handoff and insights
 
-This section documents the executable `chocolate-pricing-design-1` preparation
+This section documents the executable `chocolate-pricing-design-3` preparation
 contract. The [consolidated pricing research design](chocolate-modeling-design.md)
 proposes a subsequent model comparison, optional feature policy and calibration
 workflow. Its variants with and without brand, missing value handling and calibration
@@ -230,7 +230,7 @@ approximate values and percentages of chocolate components remain tracked but
 are excluded from this numeric predictor. Edible mass receives a log transform. The initial
 encoder performs no imputation, scaling or centering; categorical references
 use the most frequent training value, with lexical ties, and are saved with the
-encoder. This is a specified starting design whose support still needs review
+encoder. The experimental OLS trainer implements this design; real-data support still needs review
 and validation before fitting.
 
 Current required predictors must be known and reviewed; unknown, conditional,
@@ -263,7 +263,8 @@ The encoder records selected columns, reference levels, observed level/family
 support, numeric ranges, and dropped constant terms. Under the initial policy
 for supported domains, rows held out of training with unseen levels or values
 outside training ranges are rejected. The helper consumes observed eligible rows with
-targets; an interface for predicting new designs and regression fitting remain
+targets. The experimental trainer fits OLS with family holdout and family-cluster
+bootstrap coefficient intervals; an interface for predicting new designs remains
 subsequent work. Numerical classification/model release thresholds and
 statistical sufficiency remain explicit study decisions.
 
@@ -327,3 +328,79 @@ uv run pytest scripts/tests/test_standardization.py scripts/tests/test_standardi
 uv run ruff check .
 python3 -B scripts/check_documentation.py
 ```
+
+## Family and physical-product mapping
+
+The raw-to-Silver build accepts `--family-mappings <family-mappings.json>` for
+reusable accepted identity relationships, with an empty decision set when the
+default `reviews/chocolate/family-mappings.json` registry is absent. With no
+explicit option, the build loads that checked-in registry when present. Keep
+global identity separate from each seller's source product/variant IDs and the
+broad product-group taxonomy. An exact
+physical-product ID links the same variant across sellers; a family ID groups
+related variants for validation without merging their listing records or prices.
+A supported named manufacturer range may form a conservative validation family
+across flavours, sizes and gift configurations; this does not establish exact
+physical equivalence between those variants.
+
+`chocolate-source-mappings-2` declares the
+`chocolate-product-identity-1` taxonomy and `chocolate-family-mappings-1`
+decision format. A decision file has this envelope:
+
+```json
+{
+ "mapping_format_version": "chocolate-family-mappings-1",
+ "taxonomy_version": "chocolate-product-identity-1",
+ "families": {},
+ "physical_products": {},
+ "assignments": []
+}
+```
+
+Each family definition has a `label` and `definition`. Each exact physical
+product has a `label` and its `family_id`. An assignment identifies a stable
+`mapping_id`, a family ID and an optional exact `variant_id`, plus
+`reviewed_by`, `reason` and valid `capture_id`/`pointer` evidence. Its selector
+uses `source_key`, `source_product_id`, `source_variant_id` and an exact `name`
+guard; a `listing_id` plus exact `name` guard is available when reliable seller
+product identifiers are unavailable. A null source variant is explicit. Listing
+selectors resolve preserved raw-to-canonical aliases. The name guard prevents
+silently applying an old decision to a renamed product. Do not treat a seller's
+local identifiers as global product relationships.
+
+Selectors do not detect consumer-pack changes that retain the same source IDs
+and name. The initial registry contains family-only decisions; any future exact
+physical assignment requires Codex to check changed pack evidence on later
+captures before reusing that relationship.
+
+Accepted mappings populate the existing typed `identity.product_family_id`
+attribute, and an accepted exact variant also populates
+`identity.physical_product_id`. Both use the `reviewed_identity_mapping` rule,
+supporting evidence and identity review provenance. Candidate `family_id` and
+`variant_id` values come from these resolved identities. No extra product
+attribute is added to the 103-field schema. Silver preserves the parsed decision
+file at `family-mappings.json` and fingerprints it in the manifest.
+
+Silver emits unresolved grouped cases in `family-review-packets.jsonl`. Codex
+reads each packet and its original captures in the current authorized task,
+checks the variant-defining evidence, and records supported decisions for the
+next frozen mapping build. Names, brands and category labels alone cannot justify
+exact cross-seller matching. Preserve unresolved cases when evidence conflicts
+or is insufficient; assigning one arbitrary family per seller listing would
+conceal validation leakage. Processing does not dispatch or schedule another
+agent automatically.
+
+A family/physical identity mapping confirms only that relationship. It does not
+review scope, active predictors, edible quantity or regular tax-inclusive price.
+Existing `chocolate-schema-reviews-1` product identity decisions remain supported;
+contradictions between an accepted registry assignment and a product review are
+rejected rather than silently overridden. Older Silver and Gold snapshots keep
+their original identities and contracts; rebuild into a new snapshot to apply
+later mappings. Conflicting registry assignments preserve a `conflict` state
+and require another evidence-backed decision; frequency does not pick a winner.
+
+## Prepared Gold and regression contract release
+
+The published contract release retains `chocolate-schema-1` and its 103 typed fields, changes source mappings to `chocolate-source-mappings-2`, and selects `chocolate-pricing-design-3`. Model helpers use `chocolate-encoder-2` and `chocolate-regression-2`. The finalized `regular-consumer-price-1` target requires regular, non-promotional, consumer-tax-inclusive price with reject fallback; chocolate remains log GBP per 100g. The 11 selected predictors are unchanged. Seller role supplies reviewed context; seller identity supplies fitted seller terms. Training validates target amounts against the copied price observations.
+
+The experimental trainer implements family-held-out OLS, rank/conditioning and confounding gates, and family-cluster bootstrap coefficient intervals. No real-data regression has fitted and no prediction intervals or released domain are established. [Gold](chocolate-gold.md) preserves candidates separately from eligible inputs and carries accepted identity decisions. The [published release](analysis/gold-modeling-contract-release.md) records exact files, hashes, impact and publication status; authoritative manifests now pin verified Hugging Face commit `d549ad91d63fb452af605df4a939c4e1f0a59bfa`.

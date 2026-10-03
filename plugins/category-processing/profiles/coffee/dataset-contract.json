@@ -5,13 +5,13 @@
   "files": {
     "model-design.json": {
       "path": "contracts/category-processing/coffee/model-design.json",
-      "sha256": "70e72313e22eb58d495ded0103dc69048a2f022a763d3eb6be06998e31710189",
-      "size_bytes": 3134
+      "sha256": "72732366ce62120f40f0ec3a5584dd5166657a53c90e20603fe3b50854c68ec7",
+      "size_bytes": 3612
     },
     "pipeline.json": {
       "path": "contracts/category-processing/coffee/pipeline.json",
-      "sha256": "df45518950b119a7c64d0ff65a5d9d12c7f3b6160de69f92e476c3234f32dd17",
-      "size_bytes": 1709
+      "sha256": "829b4cfb642d0bf7ce3798a8131c13f9229e28b1ad3aea3c8c7e926bbed66818",
+      "size_bytes": 1959
     },
     "product.schema.json": {
       "path": "contracts/category-processing/coffee/product.schema.json",
@@ -32,9 +32,9 @@
   "format_version": "rgc-dataset-contract-reference-1",
   "mapping_version": "coffee-source-mappings-1",
   "market": "uk",
-  "model_design_version": "coffee-pricing-design-1",
-  "pipeline_version": "coffee-processing-pipeline-1",
+  "model_design_version": "coffee-pricing-design-2",
+  "pipeline_version": "coffee-processing-pipeline-2",
   "repo_id": "CoralLeiCN/rgc-collections",
-  "revision": "d4ebef3df5ac17145e8dbd2f8a7ae2b10c0afe70",
+  "revision": "d549ad91d63fb452af605df4a939c4e1f0a59bfa",
   "schema_version": "coffee-schema-1"
 }

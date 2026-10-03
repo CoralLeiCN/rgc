@@ -133,3 +133,11 @@ first.
 Author repository content in English, including when prompts are in Chinese.
 Preserve original source evidence verbatim in its original language. Follow the
 writing rules in [AGENTS.md](../AGENTS.md).
+
+## Gold, final price basis and family maintenance
+
+Prepare immutable Parquet Gold from Silver as the ready-to-load training interface, initially preserving its candidates, missing values and reviewed eligibility without new processing. Implement experimental training from verified Gold; distinguish loadable candidates, actual eligible observations and a validated fitted model.
+
+Use regular, non-promotional, tax-inclusive consumer price as the final target basis for every pricing model. Keep each category's declared currency/quantity normalization; chocolate uses log GBP per 100g. Missing regular or tax evidence is not a fallback to displayed offers.
+
+Include reusable product-family taxonomy mappings during raw-to-Silver processing. Codex decides supported new family relationships within the authorized study and persists evidence-backed decisions for later builds. Preserve separate seller listings, original evidence and prior immutable snapshots. Keep exact physical pack identity distinct from broad related product ranges, and defer insufficient or conflicting cases.
