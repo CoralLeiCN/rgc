@@ -12,6 +12,7 @@ published Silver snapshot is not necessarily reviewed or model-ready.
 | Contract set | Dataset path | Git reference |
 | --- | --- | --- |
 | Established chocolate schema | `contracts/chocolate/` | [Chocolate manifest](../../schemas/chocolate/dataset-contract.json) |
+| Current-price study overlay | `contracts/chocolate-current-price/` | [Current-price manifest](../../schemas/chocolate/current-price/dataset-contract.json) |
 | Portable chocolate processing | `contracts/category-processing/chocolate/` | [Portable chocolate manifest](../../plugins/category-processing/profiles/chocolate/dataset-contract.json) |
 | Portable coffee starter | `contracts/category-processing/coffee/` | [Portable coffee manifest](../../plugins/category-processing/profiles/coffee/dataset-contract.json) |
 
@@ -30,6 +31,12 @@ Populate all default caches before offline processing or semantic test runs:
 python3 -B scripts/fetch_contracts.py --all
 python3 -B scripts/fetch_contracts.py --all --offline
 ```
+
+`--all` selects all four sets. `--current-price` selects the established chocolate
+set and the current-price overlay. The overlay uses the established cache root
+and the same immutable-reference and hash checks. Its resolver is
+`resolve_current_price_contract_root`; current-price matched configuration
+preparation requires the verified cache and resolves it offline.
 
 The established chocolate cache is under `data/contract-cache/`; the portable
 package uses `plugins/category-processing/.contract-cache/`. Below each root,
@@ -61,7 +68,8 @@ Keep generated snapshot copies immutable; rebuild under the new reference
 instead of changing an old result.
 
 `scripts/publish_contracts.py` accepts a prepared source tree containing the
-three `contracts/<contract-set>/` directories above. It publishes only their
+three original contract directories (established chocolate and both portable
+profiles). It publishes only their
 14 JSON files, `contracts/manifest.json` and the analytical-contract section of
 the dataset card. It preserves other current dataset files. Publication
 uses Python 3.10 or later and the script's pinned `huggingface_hub` dependency:
@@ -182,3 +190,11 @@ exporter rejects upload interfaces before any side effect. Historical Hub
 commits and old local export READMEs retain their original publication records.
 
 The independent [hedonic implementation](analysis/hedonic-without-brand-implementation.md) materializes an explicit unpublished working experiment policy in an ignored directory. Its new analytical handoff is not supplied by the published producer contracts. Original and portable pins remain unchanged; a future supported producer migration must synchronize all affected contracts and pass the established release review before a Hugging Face contract commit.
+
+The separate current-price overlay pins published commit
+`d743cb8dbca37f5241cccd444a16165523304f6c`, with model design
+`chocolate-pricing-current-price-design-1` and price policy
+`current-consumer-price-1`. Its four payloads were verified against the supplied
+immutable reference. Matched training consumes its target definition through
+shared preparation and retains its own estimator. Existing Gold snapshots keep
+their copied storage contracts; applying this target does not rebuild Gold.

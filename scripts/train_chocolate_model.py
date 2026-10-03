@@ -348,21 +348,28 @@ def main():
             from train_chocolate_lightgbm_without_brand import main as lightgbm_main
             return lightgbm_main(arguments[:index] + arguments[index + 2:])
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--model-id", choices=("experimental_ols", "hedonic_without_brand"), default="experimental_ols")
-    parser.add_argument("--working-contract", type=Path, help="Explicit unpublished historical regular-price hedonic policy")
+    parser.add_argument("--model-id", choices=("experimental_ols", "hedonic_without_brand", "matched_retailer"), default="experimental_ols")
+    parser.add_argument("--working-contract", type=Path, help="Explicit local working policy for the selected estimator")
     parser.add_argument("--prepare-working-contract", type=Path, help="Write the local hedonic policy and exit")
     parser.add_argument("--experiment-manifest", type=Path, help="Require an identical frozen experiment")
     parser.add_argument("--fixture", action="store_true", help="Label synthetic input fits; never report real-data fitting")
     source = parser.add_mutually_exclusive_group()
     source.add_argument("--silver-root", type=Path, help="Compatibility input: a combined silver snapshot")
     source.add_argument("--gold-root", type=Path, help="Input: an immutable Parquet gold snapshot directory")
+    parser.add_argument("--match-review", type=Path, help="Reviewed exact-variant and observation-context evidence bundle")
+    parser.add_argument("--verified-gold-candidates", action="store_true",
+                        help="Use task-authorized verified Gold candidates without changing source eligibility flags")
     parser.add_argument("--output", type=Path, default=ROOT / "data/models/chocolate/uk")
     parser.add_argument("--group", help="One reviewed comparable product group, such as bar")
     parser.add_argument("--current-price-target", action="store_true", help="Use collected displayed prices under current-consumer-price-1")
     parser.add_argument("--target-contract-root", type=Path, help="Prepared local current-price contract root before publication")
     args = parser.parse_args()
     try:
+        if args.model_id != "matched_retailer" and (args.match_review or args.verified_gold_candidates):
+            raise ValueError("Match review and verified Gold candidate options require --model-id matched_retailer")
         if args.prepare_working_contract:
+            if args.model_id == "matched_retailer":
+                raise ValueError("Prepare matched_retailer contracts with scripts/chocolate_matched_retailer.py")
             from chocolate_hedonic import working_contract
             data = json_bytes(working_contract())
             path = args.prepare_working_contract
@@ -374,6 +381,17 @@ def main():
             return 0
         if not args.group:
             raise ValueError("--group is required for training")
+        if args.model_id == "matched_retailer":
+            from chocolate_matched_retailer import build_matched_run
+            if args.gold_root is None or args.silver_root is not None or args.working_contract is None:
+                raise ValueError("matched_retailer requires --gold-root and --working-contract")
+            if args.current_price_target or args.target_contract_root or args.experiment_manifest or args.fixture:
+                raise ValueError("matched_retailer uses its working contract and match review for target and experiment settings")
+            report, destination = build_matched_run(args.gold_root, args.output / "matched_retailer",
+                                                  args.working_contract, args.match_review, args.group,
+                                                  verified_gold_candidates=args.verified_gold_candidates)
+            print(json.dumps({"output": str(destination), **report}, indent=2))
+            return 0 if report["real_data_fitted"] else 2
         if args.model_id == "hedonic_without_brand":
             from chocolate_hedonic import build_run
             if args.gold_root is None or args.working_contract is None or args.group != "bar":

@@ -550,3 +550,18 @@ validated on synthetic fixtures and published with its fixture status. It preser
 its original target, data and working-policy identities. The current-price study
 on main is a distinct experiment; this merge does not relabel the published fit
 or relax its cohort/recipe/pack-count requirements.
+
+## Matched retailer implementation status
+
+The independent [matched retailer diagnostic](chocolate-matched-retailer.md) now
+implements exact-variant/retailer effects with family weights, a persisted random
+60/20/20 family split (seed 1729), matching evidence gates, graph components and
+weak bridges, leave-one-family-out stability and family bootstrap disconnections.
+It fits fitting-partition evidence only, reports descriptive residual diagnostics
+and records unavailable holdout predictions. It fits no comparator or full-sample
+refit. The required local working contract is unpublished. The initial preserved-raw
+rebuild had zero eligible rows. The published Gold now has 2,134 eligible candidates
+and 630 current-price targets, but missing exact variant IDs still block fitting.
+The six-model common feature policy, coordinated portable/dataset migration,
+comparison and release decisions remain pending; this implementation does not
+establish those outcomes.

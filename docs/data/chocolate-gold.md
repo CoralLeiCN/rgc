@@ -319,3 +319,67 @@ source locations and remote deletion provenance.
 ## Independent hedonic training handoff
 
 The assigned estimator is runnable with `--model-id hedonic_without_brand --gold-root <immutable-snapshot> --working-contract <local-policy> --group bar`. Prepare the policy with `--prepare-working-contract <local-policy>`. Its default run root is `data/models/chocolate/uk/hedonic_without_brand/`; the [implementation record](analysis/hedonic-without-brand-implementation.md) defines commands, frozen experiments, fitting/calibration/test partitions and verified model artifacts. Gold verification retains managed hashes, logical row digests and original price/contract provenance. This loader does not promote excluded candidates. The historical regular-price Gold inspected in this session has zero eligible rows and lacks three required handoff declarations, so the actual attempt writes an immutable readiness report and returns status 2. Fixture fitting and calibration validate numerical behavior; no real fit or released interval exists.
+
+## Matched retailer trainer handoff
+
+`train_chocolate_model.py --model-id matched_retailer --gold-root <snapshot>
+--working-contract <local-model-design.json> --group bar` verifies Gold before
+preparing an independent diagnostic. Add `--match-review <bundle.json>` for
+reviewed formulation/flavor/weight/pack and genuine date/context evidence.
+The [matched retailer guide](chocolate-matched-retailer.md) owns the bundle
+interface, immutable run artifacts, matching and uncertainty. Administrative
+Gold review does not establish any of that evidence.
+
+The initial matched session rebuilt and verified `gold-4939405fcf8724686f9ee32c` from Silver
+`silver-f651a7faea94ed5a7f003e64`, preserving all 2,134 candidates and zero eligible
+rows. Real training saves readiness artifacts under
+`data/models/chocolate/uk/matched_retailer/`; it has no fitted parameters or
+calibration. Fitting partitions and held-out domain membership travel with the
+run; exact effects do not predict held-out families.
+
+The task-authorized `--verified-gold-candidates` option accepts the user's
+confirmed Gold verification and uses `training-data.parquet` directly. It does
+not modify or rebuild Gold, or silently rewrite its stored eligibility flags.
+Required price, weight and exact-identity values are checked in memory; optional
+regression features can be omitted. Model artifacts record the authorization
+basis, original flags, missing-value counts and candidate domain membership.
+The historical regular-price inspection found zero regular prices/targets and zero exact-variant
+IDs in the existing 2,134-row snapshot. The [matched guide](chocolate-matched-retailer.md#task-authorized-gold-verification)
+describes the command and concrete current failure.
+
+## Explicit bulk eligibility snapshot loading
+
+`chocolate-gold-bulk-eligibility-1` records the user's instruction that every
+Gold entity is model eligible. `scripts/chocolate_gold_eligibility.py` and
+`scripts/make_chocolate_gold_eligible.py` preserve the complete source under
+`inputs/parent-gold/` and promote candidates into both Parquet views. The rule
+changes only `model_eligible` and `exclusion_reasons`; analytical values, nulls
+and original parent bytes remain intact. `eligibility_provenance` records the
+authorizing user and reason, with evidence validation separately declared.
+
+`verified_gold` dispatches to `verified_eligible_gold`, verifies the embedded
+original/reviewed parent, every managed hash, table logical digest, exact
+promotion, auxiliary copies and report consistency, then returns promoted rows.
+It preserves source Silver provenance while accepting the Gold-specific table
+counts. Source content cannot authorize a bulk eligibility action.
+
+This matched-retailer session uses the already created promoted snapshot
+`gold-8b897101474becaef946922b` at its supplied shared absolute path. Its manifest
+hash is `e3a7a1dc3c4a4c4b454b241b3f2738d196eb47897e3169c9c6531e9fdf315d90`;
+parent `gold-56817976905f24210105f069` and Silver
+`silver-485af2f8e7fae127cd73578b` are independently verified through the retained
+parent. All 2,134 candidates are now in both eligible and candidate views.
+The [matched refresh](chocolate-matched-retailer.md#refresh-from-promoted-gold)
+records actual remaining numeric/identity failures and its exact input contract
+binding. No rebuild was performed in this session.
+
+For the user's current-price proxy study, the matched trainer reads existing
+Gold current/displayed prices and positive edible weights directly. It persists
+derived `model_target` values in model artifacts while retaining original Gold
+rows and price context. No Gold rebuild is required. The [current-price mode](chocolate-matched-retailer.md#current-price-study-policy)
+records the explicit `current-consumer-price-1` assumption and binds the published
+shared target overlay at `d743cb8dbca37f5241cccd444a16165523304f6c`.
+Preparation requires candidate edible weight matching the price observation:
+630 targets are available, with every exact variant ID missing. Promotions and
+unresolved tax are limitations. All 2,134 Gold rows retain their user-authorized
+eligibility and copied original values.

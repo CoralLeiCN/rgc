@@ -20,6 +20,11 @@ SCHEMA_CACHE = ROOT / "data/contract-cache"
 CURRENT_PRICE_REFERENCE = ROOT / "schemas/chocolate/current-price/dataset-contract.json"
 
 
+def resolve_current_price_contract_root(*, offline=False):
+    """Resolve the separate immutable current-price target overlay."""
+    return resolve_contracts(CURRENT_PRICE_REFERENCE, SCHEMA_CACHE, offline=offline)
+
+
 def resolve_contract_root(schema_root=None, *, offline=False):
     """Use the dataset pin by default; preserve explicit custom contract roots."""
     if schema_root is None:

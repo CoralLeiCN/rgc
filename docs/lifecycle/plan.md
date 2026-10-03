@@ -822,3 +822,309 @@ records the same source locations and retained published Silver scope.
 documentation guard and the complete 470-case pytest suite passed after
 integration. Whitespace checks passed. The requested landing uses one squash
 commit; source/target tree equality and clean-worktree checks follow the commit.
+
+## Independent matched retailer session, 3 October 2026
+
+Implemented exactly `matched_retailer` on `codex/matched-retailer` through
+`scripts/chocolate_matched_retailer.py` and the trainer's explicit model selector.
+The [diagnostic guide](../data/chocolate-matched-retailer.md) owns exact matching
+evidence, working-contract preparation, frozen family partitions, weights, graph
+components/bridges, leave-one-family-out stability, bootstrap disconnections,
+residual metrics and immutable run interfaces. Existing experimental OLS remains
+a separate path. No comparator or full-sample refit was trained here.
+
+Verified the three published contract caches offline at revision
+`d549ad91d63fb452af605df4a939c4e1f0a59bfa`. The preserved raw input at the saved
+project checkout produced `raw-snapshot-70239771976a75a48c5d99db`, Silver
+`silver-f651a7faea94ed5a7f003e64` and Gold `gold-4939405fcf8724686f9ee32c`. All
+3,743 listings and 4,347 captures were retained. Gold managed file and logical
+row hashes and copied contracts verified: 2,134 candidates, zero eligible rows.
+The Gold manifest SHA-256 is
+`cfc10a09c8685e501e6085c523b7726d9cc75ee60b0ab6a0f970a10db5553d4a`.
+The real attempt exits 2 with readiness blockers, persisted in
+`data/models/chocolate/uk/matched_retailer/matched-run-7441cfa4a781a697b80b7271/`.
+All candidates lack required scope/identity/quantity/price-tax review; 1,157 also
+lack verified time/availability. Matching reviews and a genuine window are absent.
+No real model fitted, calibrated or released.
+
+A separate synthetic fit at
+`data/models/chocolate/uk/matched_retailer/matched-run-b5cf6a9673773b0e32604da9/`
+uses 40 rows/20 families split 12/4/4, fitting 24 rows from 12 families. It recovers
+the injected 0.2 log contrast (22.1403%) with 200 successful family replicates and
+zero disconnections. Family-weighted fitting residual MAE is approximately
+`8.96e-10` GBP/100 g and `7.17e-10` GBP/pack. Those are fixture diagnostics, not
+measured retailer results. Held-out families receive unavailable predictions.
+23 native pytest tests verify outcome-independent splitting, weights, exact
+variant conflicts, source/time/context gates, leakage prevention, graph/weak
+bridge uncertainty, price policy, corruption and immutable artifact behavior.
+
+The local `chocolate-matched-retailer-design-1` contract is prepared in ignored
+`data/working-contracts/matched_retailer/`. Original/portable production contract
+coordination and the required release review remain pending; no analytical
+contracts were published or pins changed. Actual trained model uploads are now
+authorized under `model/matched_retailer/<run-id>/`, but zero eligible data means
+there is no actual trained model to upload. Synthetic models were not published.
+Common experiment identity must be compared with other sessions before shared
+results or champion decisions.
+
+Verification: `uv sync --locked` passed; `python3 -B
+scripts/fetch_contracts.py --all --offline` verified all three caches. `uv run
+pytest` passed all 398 cases in 9.23 seconds, including the 23 new diagnostic
+cases. `uv run ruff check .`, `python3 -B scripts/check_documentation.py` and
+`git diff --check` passed. Gold emitted sandbox CPU-probe warnings but completed
+and all Parquet integrity tests passed. CI has not run in this session.
+
+The real experiment SHA-256 is
+`1c3d4a468519b9c38e2d92af89dba76507ef8eae67f177e9453d84cb6f4a7b96`;
+its working-contract SHA-256 is
+`7915ff8d4a26f9ff977ab0063c8f66ec15e2cfd28a15f4499b2b2e800673183a`.
+Both the fixture and real attempts use common-policy SHA-256
+`87f82023f06d820965c498825646f64f64e9f759a6acb0425cfa47bdffe4bf83`.
+The fixture experiment has a different synthetic Gold/window/review identity
+and is never pooled with the real attempt.
+
+## Direct training after the user's Gold verification
+
+On 3 October 2026 the user confirmed that all existing Gold data are verified
+and requested training without rebuilding Gold or adding a data layer. Added
+`--verified-gold-candidates` to the matched-retailer trainer. This task-authorized
+path considers existing candidates, selects required matched-model fields,
+records `gold_verification_basis: explicit_task_authorized_candidates`, and
+preserves stored eligibility flags, source values and all Gold bytes. Optional
+regression-feature missingness is not a prerequisite for this estimator. Source
+content cannot authorize the flag. Default stored-eligibility behavior remains
+available for callers without the instruction.
+
+Fresh inspection found only `gold-4939405fcf8724686f9ee32c` across this worktree,
+the parent checkout and saved project. The direct attempt considered all 2,134
+candidates as verified and reached concrete missing-value checks: zero regular
+prices, zero regular unit-price targets and zero exact-variant IDs. Of 2,134
+rows, 1,732 lack family IDs, 1,503 lack candidate edible weight, 997 lack brand
+and 1,289 lack type; all stored tax bases are `unknown`. Displayed prices exist
+on 2,133 observations but do not supply the specified regular-price target.
+Exact formulation/flavor/pack and comparable context fields are also absent
+from copied price observations. These are current value counts, not a repeated
+review requirement. The Gold manifest still hashes to
+`cfc10a09c8685e501e6085c523b7726d9cc75ee60b0ab6a0f970a10db5553d4a`.
+
+Direct model run
+`data/models/chocolate/uk/matched_retailer/matched-run-02561db39aefddea2f22b87f/`
+saves all candidate domain membership and concrete missing-value counts. Its
+experiment SHA-256 is
+`011fd82149ebe5820ad1444a6651b7d3d4426d8819051868ec443d97a3ed54fe`.
+All 21 managed artifacts verify against the model manifest. The CLI command
+appends `--verified-gold-candidates` to the documented real command. It exits 2
+for missing model inputs and produces no fitted model. Neither Gold nor Silver
+was rebuilt. No model was uploaded.
+
+Four new tests establish fitting of task-verified candidates despite historical
+false flags and optional-feature nulls, preservation of source flags/bytes,
+missing-target/identity failures, direct use of existing context, and rejection
+of inconsistent regular targets. `uv sync --locked` and offline verification
+of all pinned contract caches passed. `uv run pytest` passed all 402 tests in
+8.72 seconds; Ruff and whitespace checks passed. Documentation and semantic
+coverage were checked with the updated guides. Production contract publication
+and real fitted model upload remain pending actual inputs and their applicable
+release requirements.
+
+## Refresh from the newly promoted Gold snapshot
+
+On 3 October 2026 the user authorized all Gold entities as eligible and requested
+a fresh assigned-model attempt against the newly supplied snapshot. Integrated
+`scripts/chocolate_gold_eligibility.py`, its CLI and its tests from the supplying
+worktree. The Gold reader now dispatches to `verified_eligible_gold` for
+`chocolate-gold-bulk-eligibility-1`, verifying the complete embedded parent, all
+managed and logical hashes, original analytical values and the exact permitted
+flag/exclusion changes. Model-specific training remains separate.
+
+The supplied absolute snapshot at
+`/Users/coral/.codex/worktrees/bb33/rgc/data/gold/chocolate/uk/gold-8b897101474becaef946922b`
+was verified against the provided manifest SHA-256
+`e3a7a1dc3c4a4c4b454b241b3f2738d196eb47897e3169c9c6531e9fdf315d90`.
+It retains parent `gold-56817976905f24210105f069`, source Silver
+`silver-485af2f8e7fae127cd73578b`, and the established raw snapshot. Both
+Parquet tables contain 2,134 rows with true eligibility and empty exclusions.
+This session used the shared immutable snapshot directly; neither Gold nor
+Silver was rebuilt.
+
+The copied storage contract is a locally prepared
+`chocolate-retailer-median-design-1`, differing from published default bytes.
+Prepared an explicit local `verified_gold_snapshot` input configuration bound
+to the exact supplied Gold manifest and all four copied contract hashes. It
+retains the finalized regular-price target. This is an input/storage binding;
+the assigned estimator remains `matched_retailer` with its own working model
+design. Published original/portable contract pins remain unchanged.
+
+Fresh run
+`data/models/chocolate/uk/matched_retailer/matched-run-f7f9bf7d031040a8599b3721/`
+records the exact Gold manifest, eligibility provenance, parent identity, input
+storage-design identity, required-value counts and all candidate domain
+membership. It reports 2,134 eligible source rows and zero complete matched
+model inputs. Every row still lacks regular price, regular unit-price target
+and exact-variant ID; all tax values remain `unknown`. Missing family, candidate
+edible weight, brand and type counts are 1,732, 1,503, 997 and 1,289 respectively.
+The attempt exits 2 on those current value failures, with no historical Silver
+eligibility blocker. No fit, measured retailer contrast, calibration, release or
+model upload occurred. All 21 saved managed artifacts and the unchanged input
+manifest were verified.
+
+The [matched refresh guide](../data/chocolate-matched-retailer.md#refresh-from-promoted-gold)
+records exact preparation and training commands. Added a meaningful fixture test
+that verifies promoted rows and provenance through the new loader, binds differing
+copied storage contracts, preserves the assigned estimator, and rejects a wrong
+input-manifest binding. The imported eligibility tests cover parent preservation,
+reviewed/empty inputs, replay, authorization, analytical tampering and false
+reports. Locked environment setup, offline pinned-contract verification, Ruff
+and whitespace checks passed. Final `uv run pytest` passed all 411 tests in 9.40 seconds, including the
+count-label refinement. Ruff, the full documentation guard and whitespace checks
+also passed. CI has not run in this session.
+
+The refreshed experiment SHA-256 is
+`335bcca404580ceed424eae7c40c61184c25c06ad29b0ed97c10b165e50de194`;
+the explicit snapshot-bound working-contract SHA-256 is
+`1da798a1caf0aaef6512cef8fa6bc2c40aaec2f96f953e2d74ca6cc477b24489`.
+The model manifest includes the exact user eligibility provenance.
+
+## Interim current-price target instruction
+
+The user superseded separately evidenced regular prices, non-promotional status
+and verified tax inclusion as study prerequisites. Added explicit current study
+working design `chocolate-matched-retailer-design-2` with
+`current-consumer-price-1`, selected by `--current-price-proxy` during configuration
+preparation. Source Gold remains intact. The trainer derives a separate
+`model_target` from actual positive displayed GBP prices and existing edible
+weights, records quantity source and promotion/tax metadata, and persists every
+considered row in `prepared-current-inputs.jsonl`. No regular price or tax
+resolution check blocks this mode. Historical regular-price runs retain their
+original contract identities and validation behavior.
+
+Current-target fixture validation recovers the injected matched retailer
+contrast with promotional observations, unknown tax and absent regular prices.
+Additional cases verify target/source preservation, positive actual quantity,
+missing current price and currency failures, and missing exact identity.
+The quantitative diagnostic now consumes the explicit model target and retains
+its log/unit/pack units. The interim quantity selection uses positive candidate
+edible weight, otherwise an existing positive corresponding price-observation
+edible weight, with conflicting known weights excluded. Common comparison must
+verify alignment with the coordinating task's shared current-price adapter
+before comparing differing normalized domains.
+
+Fresh current-mode run
+`data/models/chocolate/uk/matched_retailer/matched-run-e23c42e088b0da7acf4edb73/`
+uses the exact already verified `gold-8b897101474becaef946922b` manifest, with all
+2,134 rows eligible. It records 2,133 positive current pack prices and 1,210
+normalized targets, with one missing current price and 923 missing usable weights.
+Every exact-variant ID is still absent, so no matched fit is possible. Missing
+family/type/brand counts remain 1,732/1,289/997. Regular-price, promotion and tax
+requirements are absent from the current blockers. No new Gold/Silver build,
+source rewrite, fabricated identity, fitted real model or upload occurred.
+All 22 managed artifacts and the unchanged shared Gold manifest verify.
+
+The shared current-price input contract announced by the coordinating task has
+not yet been delivered at this interim attempt. This local run explicitly
+records its policy and domain; it does not claim fitting on a future shared
+snapshot or publishing an analytical contract. The [current-price guide](../data/chocolate-matched-retailer.md#current-price-study-policy)
+owns the updated preparation and target interfaces.
+
+Current-mode checks: all 417 pytest cases passed in 8.77 seconds, including
+34 matched-model cases. Ruff, documentation and whitespace checks passed.
+The current experiment SHA-256 is
+`fe73e7abad6b617c828f6bd6a4c99d3390fb3637979f5b8079bf0b8496ab3bae`.
+The locked environment and offline published caches were verified in this
+continuous refresh session. No analytical contract or model was published.
+
+## Published shared current-price alignment
+
+Consumed the supplied published current-price contract at immutable dataset
+commit `d743cb8dbca37f5241cccd444a16165523304f6c`. Its separate Git manifest pins
+all four payload hashes and sizes; existing established and portable references
+retain their revision. Added an offline resolver, `fetch_contracts.py
+--current-price` and inclusion in `--all`. Copied and verified the supplied cache
+against the immutable reference. Shared preparation
+`chocolate-current-price-target-1` now owns the actual price/quantity arithmetic.
+Matched working design `chocolate-matched-retailer-design-3` binds published
+`chocolate-pricing-current-price-design-1`, preserves its full target definition
+and records the reference and payloads in each model run. The estimator still
+fits exact variant and retailer effects.
+
+The adapter requires positive candidate edible weight matching the price
+observation; price-only quantity fallback is removed. It retains all considered
+rows, with null unavailable targets and explicit failure counts. Current fields
+and equal `regular_*` compatibility aliases occur only in derived model inputs;
+the aliases represent the current proxy. Original Gold/Silver inputs remain
+copied intact. New tests cover shared arithmetic, promotions/unknown tax,
+quantity/provenance failures and target tampering; matched tests exercise the
+published target binding and persisted input contract.
+
+Fresh assigned-model run
+`data/models/chocolate/uk/matched_retailer/matched-run-1525e48d0fb469cbba36d8a9/`
+uses supplied `gold-8b897101474becaef946922b` directly, with all 2,134 candidates
+eligible and verified under the task instruction. It finds 2,133 positive pack
+prices and 630 current unit-price targets. One current price and 1,503 candidate
+weights are missing or invalid. All 2,134 rows lack exact variant IDs, so no
+matched fit is possible. Family/type/brand missing counts remain
+1,732/1,289/997. Eligibility, regular-price verification, promotion and tax
+metadata do not block this attempt. No Gold rebuild, real fit or model upload
+occurred. The 28 managed artifacts and implementation hashes verify, and the
+Gold manifest remains
+`e3a7a1dc3c4a4c4b454b241b3f2738d196eb47897e3169c9c6531e9fdf315d90`.
+Experiment file SHA-256:
+`df4c6aff20f2fead9e19b782f4adf2d009dcdb89f9a9d3b6e03636068d28d4f8`.
+
+Validation: `uv sync --locked` passed; all four caches verified with
+`python3 -B scripts/fetch_contracts.py --all --offline`; all 425 pytest cases
+passed in 9.94 seconds; Ruff, documentation and whitespace checks passed.
+
+## Latest published Gold pull and assigned-model attempt
+
+The user requested a fresh remote Gold pull and fitting with feature selection
+confined to model preparation. Hugging Face dataset head resolved to
+`bb1c9de580c64cc13aac62b352d58704fe2dd60e`; its latest pointer still selects
+`gold-8b897101474becaef946922b`. Downloaded the manifest and all 23 managed files
+(24,540,810 bytes) into this worktree, verifying every SHA-256 and length against
+the immutable pointer/manifest. The receipt and original pointer are saved in
+ignored `data/model-input-receipts/matched_retailer/`. No Gold transformation,
+schema change or rebuild occurred.
+
+Prepared a separate current-price working configuration and reran only
+`matched_retailer` from the downloaded local Gold. The output is
+`data/models/chocolate/uk/hf-bb1c9de580c64cc13aac62b352d58704fe2dd60e/matched_retailer/matched-run-1525e48d0fb469cbba36d8a9/`.
+All 2,134 rows remain eligible; 630 have current unit-price targets; every exact
+variant ID is null and the attempted fit has zero matching inputs. Raw Parquet
+inspection independently confirms the missing identities. Feature selection
+cannot recover product matching in the assigned estimator. No fitted model or
+upload occurred. Verified all 28 model artifacts and reverified the complete
+Gold loader and downloaded bytes after the attempt. The locked environment and
+all four contract caches verified; documentation and whitespace checks passed.
+No implementation changed, so the previous numerical test results remain
+applicable.
+
+During this latest pull, publication revision
+`95c5fbd0ab5fa9a41fa5333648321d95f16927a7` was announced. Downloaded its 25 Gold
+files at that exact revision and compared every byte with the initial download.
+Its latest pointer, manifest and all 23 managed files are identical. The Gold
+pin read from local main `cd9e7df` matches the manifest/inventory; shared
+current-price preparation and target reference also match that main revision.
+Reran the assigned fit under `data/models/chocolate/uk/hf-95c5fbd0ab5fa9a41fa5333648321d95f16927a7/matched_retailer/`,
+with the same run ID, 630 targets and zero exact matches. The new receipt owns
+the publication revision and all 28 artifacts verify. Gold bytes remain intact.
+
+## Matched retailer integration into main, 3 October 2026
+
+The user requested committing the model training code to local `main`. Integrated
+main `f2e056c` into `codex/matched-retailer`, retaining the current-price OLS,
+LightGBM and hedonic commands and main's data guides under `docs/data/`. The
+matched selector shares the integrated parser, preserves its own working
+contract/review interface and rejects options belonging to the other estimators.
+New CLI tests cover both selector spellings, persisted matched readiness,
+unchanged Gold bytes and rejected incompatible options. The current-price cache
+is selected once by `--all`; `--current-price` remains available independently.
+
+`uv sync --locked` passed. All four immutable contract caches verified with
+`python3 -B scripts/fetch_contracts.py --all --offline`. The combined branch's
+`uv run pytest` passed 508 tests with seven web tests skipped because this
+worktree lacks the web TypeScript runtime and pinned web model cache. Both LightGBM suites, hedonic and
+matched numerical/artifact suites passed. Ruff, documentation checks against
+main and whitespace checks passed. Web implementation matches main; the prior
+web validation remains recorded above. No real matched fit or model publication
+is established: published Gold has 630 current targets and no exact variant IDs.

@@ -535,3 +535,42 @@ source interpretation and user eligibility; it changes no typed product fields.
 ## Local hedonic handoff
 
 The independent `hedonic_without_brand` trainer consumes verified Gold under `chocolate-supermarket-hedonic-working-1`, prepared explicitly in an ignored local file. Its [implementation record](analysis/hedonic-without-brand-implementation.md) specifies family weighting, prediction support, cocoa imputation, claim states and retailer calibration. Published original and portable schema/design pins retain their current versions. Required recipe class, explicit supermarket cohort and exported single-pack count are absent from the published eleven-predictor handoff; cocoa basis also needs an optional export contract. This is a readiness blocker. The working policy does not implement those source mappings or review evidence. Contract publication requires coordinated original/portable contracts and the established release review.
+
+## Matched retailer working contract
+
+The [matched retailer diagnostic](chocolate-matched-retailer.md) implements exact
+physical-variant and retailer effects through an explicit local
+historical `chocolate-matched-retailer-design-1` working contract. It verifies the historical
+Gold contract copies and preserves `regular-consumer-price-1`; matching requires
+reviewed formulation, flavor, edible weight, pack and genuine observation/context
+evidence. Existing published schema, mappings and eligibility remain authoritative.
+Family-only assignments cannot establish exact variants. The local diagnostic
+does not implement the proposed regression optional-feature migration. Common
+feature identification and a coordinated original/portable dataset release remain
+pending before production adoption. The initial real rebuilt input had zero eligible rows.
+
+For task-authorized Gold verification, the matched trainer selects its required
+fields from existing candidates and records the caller's explicit instruction.
+Historical review flags and optional regression features do not block that path.
+It preserves source values, including nulls, and performs target arithmetic and
+identity checks. The [direct Gold path](chocolate-matched-retailer.md#task-authorized-gold-verification)
+records missing current numeric/identity values separately from review status.
+
+The bulk eligibility loader verifies `chocolate-gold-bulk-eligibility-1` by
+comparing promoted tables to the embedded complete parent. It accepts the user's
+eligibility decision while retaining exact analytical values and nulls.
+An explicit snapshot-bound working input configuration can preserve copied
+storage contracts that differ from current published pins; the matched estimator
+is still identified independently. The [matched refresh](chocolate-matched-retailer.md#refresh-from-promoted-gold)
+records the new snapshot and missing current targets/identities. Published
+original/portable references remain unchanged.
+
+Current-study matched design `chocolate-matched-retailer-design-3` selects an
+explicit `current-consumer-price-1` proxy target following the user's updated
+instruction. Model artifacts keep derived current targets separate from original
+Gold fields and retain promotion/tax limitations. Historical regular-price
+contracts remain distinct; no published original/portable pins are changed by
+this local model configuration. A separate immutable current-price overlay at
+`d743cb8dbca37f5241cccd444a16165523304f6c` supplies the published target.
+Shared preparation requires candidate edible weight to match the price quantity;
+it does not infer missing weights. See [current-price preparation](chocolate-matched-retailer.md#current-price-study-policy).

@@ -87,3 +87,9 @@ comparisons and released real-data scenario interfaces remain pending. [Model ma
 owns artifact storage in Hugging Face and immutable receipts in Git.
 
 The independent [hedonic trainer](../data/analysis/hedonic-without-brand-implementation.md) implements family-weighted fitting, calibration and support under a local working policy. The published Gold handoff and reviewed real data are insufficient: no real model or release is established, and aligned producer/portable contract migration remains pending.
+
+The [matched retailer implementation](../data/chocolate-matched-retailer.md) adds a
+separate exact-variant/retailer diagnostic with family weighting, graph support
+and family uncertainty. The published Gold has 2,134 eligible candidates and
+630 current-price targets; missing exact variant IDs block real fitting and release. Its local working contract awaits a coordinated
+dataset/portable release; fixture validation does not establish data readiness.

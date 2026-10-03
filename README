@@ -289,3 +289,34 @@ explicit migration before fitting the current-price study. Follow
 Git publication receipts.
 
 The independent [Hedonic Price Benchmark Without Brand](docs/data/analysis/hedonic-without-brand-implementation.md) is implemented under an explicit local working policy. Run `uv run python scripts/train_chocolate_model.py --model-id hedonic_without_brand --gold-root <snapshot> --working-contract <policy> --group bar`. Its numerical fixtures exercise family weighting, grouped selection, calibration and artifact integrity. This session's historical regular-price Gold rebuild has 2,134 candidates and zero eligible rows. Its fixture is published with synthetic status; no real hedonic fit or release is established. The newer current-price study retains its separate target and Gold identity.
+
+The separate [matched retailer diagnostic](docs/data/chocolate-matched-retailer.md)
+uses `uv run python scripts/train_chocolate_model.py --model-id matched_retailer
+--gold-root <immutable-gold> --working-contract <local-contract> --group bar`.
+It fits exact-variant and retailer fixed effects with family weighting and
+uncertainty. The local working contract and matching evidence are explicit.
+The published Gold has 2,134 eligible candidates and 630 current-price targets,
+but every exact variant ID is missing, so the attempt saves readiness artifacts.
+It provides matched-assortment contrasts without new-product prediction support.
+
+When the calling task explicitly confirms all Gold candidates as verified, append
+`--verified-gold-candidates` to the matched-retailer command. This uses existing
+Gold directly, records the verification basis and preserves stored metadata.
+For the historical regular-price configuration, missing prices and exact identities prevent a fitted
+matched comparison. See the [direct Gold path](docs/data/chocolate-matched-retailer.md#task-authorized-gold-verification).
+
+The Gold loader accepts verified `chocolate-gold-bulk-eligibility-1` snapshots
+through embedded-parent integrity checks. The [matched refresh command](docs/data/chocolate-matched-retailer.md#refresh-from-promoted-gold)
+uses the supplied newer promoted Gold directly and binds its copied contracts
+in an explicit local configuration. Its historical regular-price attempt found
+missing regular targets and exact variant IDs.
+
+The current study now permits collected current/displayed GBP prices as an
+explicit proxy target. Add `--current-price-proxy` when preparing a fresh matched
+working configuration. The [current-price guide](docs/data/chocolate-matched-retailer.md#current-price-study-policy)
+documents source preservation, positive candidate edible weight matching price
+quantity, promotion/tax limitations and the remaining exact-variant requirement.
+Run `python3 -B scripts/fetch_contracts.py --current-price` to cache the published
+target overlay; `--all` now verifies or fetches all four contract sets. The current
+matched design binds this overlay offline and derives 630 targets from the
+2,134-row Gold snapshot. Missing exact variant IDs prevent a matched fit.

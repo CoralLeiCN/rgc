@@ -369,3 +369,27 @@ published. This storage choice supersedes the earlier raw publication policy.
 ## Independent chocolate estimator session
 
 Implement and attempt real-data training for `hedonic_without_brand` independently of other model sessions, preserving regular-consumer-price-1 and family partitions. Save concrete readiness blockers when eligible evidence is absent. Trained real artifacts may be uploaded under `model/hedonic_without_brand/<run-id>/`; fixture fits cannot stand in for real training. Analytical contract releases retain their separate review requirement. The [implementation record](data/analysis/hedonic-without-brand-implementation.md) distinguishes local policy, numerical validation and evidence readiness.
+
+Include reusable product-family taxonomy mappings during raw-to-Silver processing. Codex decides supported new family relationships within the authorized study and persists evidence-backed decisions for later builds. Preserve separate seller listings, original evidence and prior immutable snapshots. Keep exact physical pack identity distinct from broad related product ranges, and defer insufficient or conflicting cases.
+
+The independent matched-retailer session implements and attempts real fitting
+of exactly `matched_retailer`, using reviewed exact physical variants and
+contemporaneous comparable regular-price evidence. Preserve separate seller rows
+and report concrete readiness blockers when evidence is insufficient. Model
+artifact publication is authorized for actual trained models under
+`model/matched_retailer/<run-id>/` in the existing dataset; synthetic fixture fits
+are not real trained models. Analytical contract publication retains the separate
+release review requirement. See [the diagnostic guide](data/chocolate-matched-retailer.md).
+
+The user confirmed all Gold-layer data as verified and requested direct training
+without rebuilding Gold or adding another data layer. The matched-retailer
+trainer records this task instruction, considers existing candidates, selects
+required model fields and preserves source bytes and flags. Actual missing
+values must still be reported without fabrication.
+
+The user superseded the regular-price target: collected current/displayed prices
+serve as the modeling target under an explicit proxy assumption. Separately
+evidenced regular prices, non-promotional status and confirmed tax inclusion
+are no longer prerequisites for this study. Preserve source metadata and record
+those limitations. Positive edible weight and assigned-model identity/statistical
+requirements still apply.

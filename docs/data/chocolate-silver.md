@@ -408,3 +408,39 @@ parent verify; Silver remains its preserved source evidence interface. See the
 ## Handoff to the independent hedonic estimator
 
 Silver continues to own evidence reviews, identities and eligibility for `hedonic_without_brand`. The [local trainer](analysis/hedonic-without-brand-implementation.md) requires explicit supermarket single-pack cohort, recipe class and pack count in its analytical handoff, in addition to eligible regular price and product identity. Existing published Silver exports do not supply that handoff. The historical regular-price rebuild in this session retained 3,743 listings, 4,347 captures, 2,134 candidates and zero eligible rows. Gold and the trainer preserve these exclusions; training and bulk Gold review cannot supply missing facts.
+
+## Matched retailer handoff
+
+Silver remains responsible for evidence review and eligibility when Gold feeds
+the [matched retailer diagnostic](chocolate-matched-retailer.md). The separate
+estimator narrows eligible inputs using reviewed exact variants and comparable
+source-price observations within 48 hours. It preserves separate seller rows and
+rejects conflicting physical identity. Its local working contract does not promote
+Silver candidates or replace published eligibility. This session's preserved raw
+rebuild produced `silver-f651a7faea94ed5a7f003e64`: 3,743 listings, 4,347 captures,
+2,134 candidates and zero eligible rows. No real fitted diagnostic is available.
+
+The user has confirmed all existing Gold data as verified. The matched trainer's
+explicit `--verified-gold-candidates` path considers the existing candidate table
+under that task instruction. It preserves Silver/Gold bytes and stored metadata,
+with no rebuild. It records actual missing price/identity inputs in model artifacts.
+The [matched guide](chocolate-matched-retailer.md#task-authorized-gold-verification)
+owns this trainer-only selection path.
+
+A Gold bulk eligibility decision can promote every candidate under explicit user
+authorization, with the complete parent retained and verified. This does not
+rebuild Silver or rewrite its provenance; Gold owns the additional eligibility
+instruction. The matched refresh uses the supplied newer Silver-derived Gold
+snapshot directly and records both input identities and remaining missing
+values. See [bulk Gold loading](chocolate-gold.md#explicit-bulk-eligibility-snapshot-loading).
+
+The current-price matched study accepts the user's updated target instruction.
+It derives current unit prices from existing Gold displayed-price and edible
+weight values inside the trainer, without rebuilding Silver or rewriting its
+source evidence. Promotion/tax uncertainty is recorded as context. The
+[current-price diagnostic policy](chocolate-matched-retailer.md#current-price-study-policy)
+records quantities, assumptions and exact-matching requirements.
+Shared preparation `chocolate-current-price-target-1` consumes the published
+current-price overlay at `d743cb8dbca37f5241cccd444a16165523304f6c`.
+It requires existing candidate edible weight matching the price observation;
+the matched run derives 630 targets without changing Silver or Gold.

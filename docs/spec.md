@@ -1483,3 +1483,50 @@ historical release records keep their original revision references.
 ## 11. Independent family-weighted hedonic trainer
 
 `--model-id hedonic_without_brand` selects an independent family-weighted log-linear estimator with an explicit local working contract and verified immutable Gold. It supports fitting-only grouped formula selection, known-brand rank probing without fitting another estimator, refitted family-bootstrap uncertainty, retailer-specific split conformal calibration, support rejection and final-test metrics. The existing equal-listing OLS command retains its contract. The [implementation record](data/analysis/hedonic-without-brand-implementation.md) defines the exact cohort, missingness, split, support, artifact and validation rules. The inspected historical regular-price Gold has 2,134 candidates and zero eligible rows; its contract also lacks three required cohort/core fields. No real fit or release is established. A coordinated dataset/portable producer migration and evidence reviews remain necessary before this working handoff can be supplied by the canonical pipeline.
+
+## 12. Independent matched retailer implementation
+
+`--model-id matched_retailer` now dispatches a separate weighted exact-variant
+and retailer fixed-effect estimator from verified immutable Gold. Its explicit
+unpublished working contract, field-level matching evidence, 48-hour rule, frozen
+family splits, overlap/bridge diagnostics and family uncertainty are documented
+in [the matched retailer guide](data/chocolate-matched-retailer.md). The original
+`chocolate-pricing-design-3` OLS path remains separately identified. This diagnostic
+does not supply new-product or regression conformal intervals. The independent
+initial real rebuild had 2,134 candidates and zero eligible rows; readiness reports record
+blockers and no fitted model. Fixture validation establishes implementation
+behavior only. Common comparison/champion gates and coordinated dataset/portable
+contract adoption remain pending.
+
+The user's confirmed Gold verification is accepted through
+`--verified-gold-candidates` for `matched_retailer`. This explicit task option
+considers Gold candidates without editing stored flags or rebuilding layers.
+The run records its authorization basis and checks concrete target/identity
+values. Missing prices or exact variant IDs remain missing inputs. See the
+[direct Gold path](data/chocolate-matched-retailer.md#task-authorized-gold-verification).
+
+Promoted Gold snapshots use `chocolate-gold-bulk-eligibility-1` and persist
+explicit user eligibility provenance with the complete original parent. The
+loader verifies exact flag/exclusion changes and unchanged analytical fields
+before returning the promoted tables. Matched training records the new Gold
+manifest/provenance and can bind an explicit local input contract to copied
+snapshot contracts. The [Gold guide](data/chocolate-gold.md#explicit-bulk-eligibility-snapshot-loading)
+and [matched refresh](data/chocolate-matched-retailer.md#refresh-from-promoted-gold)
+own these interfaces. Eligibility does not supply missing price or identity
+values; the latest 2,134-row promoted snapshot has no regular targets or exact
+variant IDs and the fresh assigned-model attempt cannot fit.
+
+The user has superseded the regular-price requirement for the current study.
+Matched working design `chocolate-matched-retailer-design-3` uses actual
+collected current/displayed GBP prices under `current-consumer-price-1`. It
+records promotions and tax uncertainty as limitations and normalizes using
+positive candidate edible weight matching the price observation. Source regular
+fields remain preserved. Its target binds published design
+`chocolate-pricing-current-price-design-1` at immutable dataset commit
+`d743cb8dbca37f5241cccd444a16165523304f6c`; shared preparation
+`chocolate-current-price-target-1` yields 630 targets from the 2,134-row promoted
+Gold snapshot. Every row lacks an exact variant ID, so the assigned matched model
+has no fitting rows.
+The [current-price diagnostic policy](data/chocolate-matched-retailer.md#current-price-study-policy)
+owns the explicit target, quantity selection, source preservation and verified
+shared-contract binding; exact matching is still required.
