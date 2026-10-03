@@ -75,7 +75,12 @@ The hosted preview recorded above predates this addition.
 `scripts/build_web_snapshot.py` verifies the pinned manifest and all
 required file hashes, loads that snapshot's four chocolate contracts, validates
 every product using the existing schema validator, and derives the application
-snapshot. The original source files remain in ignored `data/hf-snapshot/`.
+snapshot. The default source is the immutable Gold inferred reference in
+`apps/web/collection-dataset.json`. Authoritative complete records come from
+Parquet `record_json`; nested Gold loading verifies training and Silver provenance.
+Accepted inferences preserve source references and per-field review states.
+The original files remain in ignored `data/hf-gold-inferred/`. Build verification
+rejects JSON with a different source pin.
 The deployment includes `apps/web/snapshot/`, the application, verified
 `apps/web/model-cache/` artifacts, public visualization assets and the supplied
 packaging photos used as demo inputs. A generated manifest records hashes for

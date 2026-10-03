@@ -580,6 +580,21 @@ mode remains available; no real baseline fit or upload is claimed.
 
 The independent `hedonic_without_brand` trainer consumes verified Gold under `chocolate-supermarket-hedonic-working-1`, prepared explicitly in an ignored local file. Its [implementation record](analysis/hedonic-without-brand-implementation.md) specifies family weighting, prediction support, cocoa imputation, claim states and retailer calibration. Published original and portable schema/design pins retain their current versions. Required recipe class, explicit supermarket cohort and exported single-pack count are absent from the published eleven-predictor handoff; cocoa basis also needs an optional export contract. This is a readiness blocker. The working policy does not implement those source mappings or review evidence. Contract publication requires coordinated original/portable contracts and the established release review.
 
+## Gold inferred web collection
+
+The web workspace now consumes the published
+`gold-inferred-5b539b9c4adbb011a40d7792` export at immutable dataset revision
+`812a03a5faaced471a2a20f4c389865ed5675826`. Its 3,743 complete product records
+retain all 103 attributes and 2,159 accepted additions supported by source evidence across
+33 attributes. Parquet `record_json` owns complete values and evidence; the
+web adapter validates them with the export's copied contracts and preserves
+per-field review states. Nested training Gold retains 2,134 candidates, zero
+eligible inputs and the historical `regular-consumer-price-1` basis. The separate
+current-price study keeps its own policy. Silver continues to own source
+processing, interpretation, review and eligibility. The app reference pins the
+manifest and revision; [collection integration](../collection-integration.md)
+defines preparation and offline rebuild commands.
+
 ## Matched retailer working contract
 
 The [matched retailer diagnostic](chocolate-matched-retailer.md) implements exact

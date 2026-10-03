@@ -196,9 +196,10 @@ workspace sandbox startup; the direct local mode and its current verification
 are recorded below. No Funnel has been published. Provider setup remains in the
 app README.
 
-The app's immutable snapshot pins Hugging Face revision
-`d4ebef3df5ac17145e8dbd2f8a7ae2b10c0afe70`. Its 3,743 listings, 103 traits and
-zero eligible model rows describe that snapshot. Upstream analytical contracts
+The app's immutable collection now pins Hugging Face revision
+`812a03a5faaced471a2a20f4c389865ed5675826` and Gold inferred dataset
+`gold-inferred-5b539b9c4adbb011a40d7792`. Its 3,743 listings, 103 traits,
+2,159 accepted additions and zero eligible model rows describe that snapshot. Upstream analytical contracts
 now pin `d549ad91d63fb452af605df4a939c4e1f0a59bfa`; their Gold, family-review and
 training progress is recorded in the work table and pipeline proof below.
 The app continues to use its disclosed `trait-demo-1` recipe. Upstream
@@ -924,6 +925,37 @@ documentation guard and the complete 470-case pytest suite passed after
 integration. Whitespace checks passed. The requested landing uses one squash
 commit; source/target tree equality and clean-worktree checks follow the commit.
 
+## Gold inferred app adoption
+
+The requested app data migration is implemented by `scripts/web_gold_inferred.py`
+and `scripts/build_web_snapshot.py`. The committed app reference pins dataset
+revision `812a03a5faaced471a2a20f4c389865ed5675826`, source manifest SHA-256
+`18b1d00b301b1ad7ce7190076614e9c76f84cbb99f3c43a5aa8273f9f4123bfe` and
+`gold-inferred-5b539b9c4adbb011a40d7792`. The downloader verifies every managed
+file. Nested Gold verification authenticates contracts, prices, training rows
+and source Silver provenance; authoritative Parquet product records receive a
+logical hash check and full product validation. The app build rejects stale
+collection references. Original evidence links and curated inference counts are
+available in the workspace.
+
+The regenerated private JSON contains 3,743 listings, 103 traits, 24 evidence
+shards and 33,845 known cells. All 2,159 accepted additions across 33 attributes
+retain evidence and review states. Default terrain retains 289 core or 338 full
+rows, and observed analysis retains 892 usable prices. The export preserves its
+historical `regular-consumer-price-1` contract, 2,134 candidates and zero eligible
+inputs. Current-price study contracts and the synthetic pricing fixture retain
+their independent provenance.
+
+Validation passed: `uv sync --locked`, all four contract caches verified offline,
+all 482 pytest cases, `uv run ruff check .`, documentation contracts and
+`git diff --check`. Node 24.20.0 TypeScript and production builds passed data,
+asset/model verification and all eight API traces (31.5 MiB largest dependency
+set before Vercel packaging). Production localhost checks served the new dataset
+through schema, products, single-listing evidence, comparison, analysis and
+terrain APIs; private collection assets returned 404. Every accepted decision
+matched the app's exported value. The offline rebuild reproduced all 26 JSON
+files byte for byte. This change has not been deployed to the hosted app.
+
 ## Independent matched retailer session, 3 October 2026
 
 Implemented exactly `matched_retailer` on `codex/matched-retailer` through
@@ -1238,3 +1270,16 @@ whitespace checks passed. The complete Python run passed 549 tests; seven
 optional web extraction/serving tests skipped because this model worktree lacks
 npm dependencies and the prepared web model cache. All model training tests
 passed. Generated inspection and model artifacts remain outside Git.
+
+## Gold inferred app landing integration
+
+The app adoption branch incorporated main's matched retailer and retailer median
+training changes before landing. Four documentation conflicts retained both the
+app collection contract and the independent training handoffs. The app's
+historical Gold inferred price basis and zero eligible rows remain distinct from
+the training study's current-price Gold inputs. Combined-tree validation passed:
+`uv sync --locked --offline`, four verified offline contract sets, all 561 pytest
+cases, Ruff, the documentation guard against main and whitespace checks.
+Node 24.20.0 TypeScript and production builds passed source-data, asset/model
+verification and all eight API traces. Main's configured upstream was refreshed
+successfully. The requested landing adds one local squash commit to main.

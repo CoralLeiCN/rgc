@@ -1072,9 +1072,16 @@ hosted-release status belong to the lifecycle plan. A previous deployment's
 checks do not establish that a later local implementation is hosted or visually
 verified.
 
-The application consumes a pinned, validated silver snapshot. The adapter loads
-its schema, profile, mappings and model design and validates every product
-before emitting private server-side JSON. The reader checks the verified
+The application consumes Gold inferred `gold-inferred-5b539b9c4adbb011a40d7792`
+at immutable revision `812a03a5faaced471a2a20f4c389865ed5675826`, pinned by
+`apps/web/collection-dataset.json`. The adapter verifies every managed file,
+the authoritative Parquet `record_json` logical hash and nested Gold training
+provenance. It loads the copied schema, profile, mappings and model design and
+validates every product before emitting private server-side JSON. The 2,159
+accepted trait additions retain source evidence, methods and review states.
+The export retains `regular-consumer-price-1`, with zero eligible inputs;
+the current-price training study has its own policy. The app build rejects
+collection JSON that differs from its immutable pin. The reader checks the verified
 snapshot's schema/catalog and typed constraints independently of current
 training identity and target-policy requirements. A derived manifest hashes
 the server snapshot and evidence shards. Refreshes are explicit preparation and

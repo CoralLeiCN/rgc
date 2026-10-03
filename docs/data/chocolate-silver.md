@@ -420,6 +420,21 @@ mode remains available; no real baseline fit or upload is claimed.
 
 Silver continues to own evidence reviews, identities and eligibility for `hedonic_without_brand`. The [local trainer](analysis/hedonic-without-brand-implementation.md) requires explicit supermarket single-pack cohort, recipe class and pack count in its analytical handoff, in addition to eligible regular price and product identity. Existing published Silver exports do not supply that handoff. The historical regular-price rebuild in this session retained 3,743 listings, 4,347 captures, 2,134 candidates and zero eligible rows. Gold and the trainer preserve these exclusions; training and bulk Gold review cannot supply missing facts.
 
+## Gold inferred web collection
+
+The web workspace now consumes the published
+`gold-inferred-5b539b9c4adbb011a40d7792` export at immutable dataset revision
+`812a03a5faaced471a2a20f4c389865ed5675826`. Its 3,743 complete product records
+retain all 103 attributes and 2,159 accepted additions supported by source evidence across
+33 attributes. Parquet `record_json` owns complete values and evidence; the
+web adapter validates them with the export's copied contracts and preserves
+per-field review states. Nested training Gold retains 2,134 candidates, zero
+eligible inputs and the historical `regular-consumer-price-1` basis. The separate
+current-price study keeps its own policy. Silver continues to own source
+processing, interpretation, review and eligibility. The app reference pins the
+manifest and revision; [collection integration](../collection-integration.md)
+defines preparation and offline rebuild commands.
+
 ## Matched retailer handoff
 
 Silver remains responsible for evidence review and eligibility when Gold feeds

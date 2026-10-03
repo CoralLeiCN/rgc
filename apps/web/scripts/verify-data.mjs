@@ -22,6 +22,13 @@ for (const [relative, expected] of Object.entries(manifest.files)) {
   bytes += content.byteLength;
 }
 const snapshot = JSON.parse(await readFile(path.join(root, "index.json"), "utf8"));
+const reference = JSON.parse(await readFile(new URL("../collection-dataset.json", import.meta.url), "utf8"));
+assert.equal(snapshot.meta.dataLayer, "gold-inferred", "The app requires the Gold inferred collection");
+assert.equal(snapshot.meta.repository, reference.repository, "Collection repository differs");
+assert.equal(snapshot.meta.revision, reference.revision, "Collection revision differs from its pin");
+assert.equal(snapshot.meta.datasetVersion, reference.datasetVersion, "Collection dataset differs from its pin");
+assert.equal(snapshot.meta.snapshotPrefix, reference.snapshotPrefix, "Collection path differs from its pin");
+assert.equal(snapshot.meta.manifestSha256, reference.manifestSha256, "Collection source manifest differs from its pin");
 assert.equal(snapshot.meta.revision, manifest.revision, "Snapshot revision differs");
 assert.equal(snapshot.meta.datasetVersion, manifest.datasetVersion, "Snapshot dataset version differs");
 assert.equal(snapshot.contract.schemaVersion, manifest.schemaVersion, "Snapshot schema version differs");

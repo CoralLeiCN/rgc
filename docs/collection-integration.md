@@ -1,6 +1,6 @@
 # Web snapshot integration
 
-The Vercel app consumes a checksum-verified Hugging Face silver snapshot through
+The Vercel app consumes a verified Hugging Face Gold inferred snapshot through
 `scripts/build_web_snapshot.py`. It exports private JSON for the current app;
 there is no standalone HTML explorer or browser data export.
 See the [architecture](vercel-architecture.md) and
@@ -9,8 +9,11 @@ See the [architecture](vercel-architecture.md) and
 ## Pinned data
 
 Repository: [CoralLeiCN/rgc-collections](https://huggingface.co/datasets/CoralLeiCN/rgc-collections).
-Revision: `d4ebef3df5ac17145e8dbd2f8a7ae2b10c0afe70`.
-Silver dataset: `silver-6e246156b7292dd4bb49ebf0`.
+Revision: `812a03a5faaced471a2a20f4c389865ed5675826`.
+Gold inferred dataset: `gold-inferred-5b539b9c4adbb011a40d7792`.
+Source Silver: `silver-f865cac2a7324d5204b797f4`.
+The [app collection reference](../apps/web/collection-dataset.json) pins the
+immutable revision, dataset path and source manifest SHA-256.
 
 | Published measure | Count |
 | --- | ---: |
@@ -20,26 +23,42 @@ Silver dataset: `silver-6e246156b7292dd4bb49ebf0`.
 | Retail / brand / unknown seller role | 1,173 / 671 / 1,899 |
 | Training candidates | 2,134 |
 | Eligible model inputs | 0 |
+| Accepted inferred trait additions | 2,159 |
+| Traits with accepted additions | 33 |
+| Listings with accepted additions | 1,764 |
+| Known / unknown / conflicting attribute cells | 33,845 / 350,224 / 1,460 |
 
-The published `release_ready` flag is false. Source claims and prices remain
-unreviewed; a successful snapshot build does not establish model readiness.
+The published `release_ready` flag is false. Accepted additions retain curated
+source evidence and per-field review states.
+The export preserves its historical `regular-consumer-price-1` training policy
+and zero eligible inputs; a successful snapshot build does not establish model
+readiness. The separate current-price study retains its own price basis.
 The upstream processing code and immutable published dataset retain their own
 versions. Updating code does not automatically migrate the dataset.
 
 ## Data contract
 
-The downloader resolves the repository revision once, pins every download to it,
-and verifies the latest-pointer/manifest relationship. Ten managed inputs are
-checked by byte size and SHA-256: products, prices, training candidates, model
-inputs, quality report, product schema, profile, model design, source mappings
-and listing aliases. The snapshot reader checks schema versions, the attribute
-catalog, field constraints, mapping/predictor references and standardization
-rules against these verified files, then validates every product. Historical
-display snapshots retain their own contract; current training identity and
-price-policy requirements are enforced by the training pipeline.
+The default downloader reads the app's immutable collection reference and verifies
+its manifest hash before fetching every managed file. Byte sizes and SHA-256
+are checked for the complete Gold inferred export. The loader decodes authoritative
+`record_json` from `products.parquet`, verifies the source logical record hash,
+and loads the nested `training/` snapshot through `verified_gold`. Source Silver
+and training identities, contracts, report counts and inference provenance must
+agree. The app validates all 103 attributes for every complete product against
+the copied profile, mappings and product schema before writing any web assets.
+Accepted values, full evidence, methods and review states are preserved in the
+source shards. The pinned inference provenance also supplies an immutable link
+to original source captures in the evidence inspector.
+
+The historical Silver adapter remains available with `--layer silver` or an
+existing Silver `--snapshot`. It validates that snapshot's own contracts. The
+app build requires Gold inferred JSON matching the committed collection reference.
+Current training identity and price-policy gates belong to their selected training
+pipeline.
 Rows join by listing ID; observation IDs remain separate.
 
-Original downloaded bytes remain in ignored `data/hf-snapshot/`. Raw archives,
+Original downloaded bytes remain in ignored `data/hf-gold-inferred/`; historical
+Silver uses `data/hf-snapshot/`. Raw archives,
 assertions and review queues are not bundled into the app. The export contains
 `index.json`, `evidence/<source>.json` and a derived `manifest.json`, under
 `apps/web/snapshot/`. These are server assets, never public files. The browser
@@ -62,20 +81,22 @@ capture IDs and source pointers. Family coverage measures completeness.
 From the repository root:
 
 ```sh
-# Resolve and download the latest published snapshot, then export private JSON.
-python3 -B scripts/build_web_snapshot.py
+# Download the pinned Gold inferred export and rebuild private JSON.
+uv run python -B scripts/build_web_snapshot.py
 
-# Rebuild the pinned download without network access.
-python3 -B scripts/build_web_snapshot.py --snapshot data/hf-snapshot/d4ebef3df5ac17145e8dbd2f8a7ae2b10c0afe70
+# Rebuild without network access from the verified cache.
+uv run python -B scripts/build_web_snapshot.py --snapshot data/hf-gold-inferred/812a03a5faaced471a2a20f4c389865ed5675826/gold-inferred-5b539b9c4adbb011a40d7792
 
-# Write to a separate directory for comparison or review.
-python3 -B scripts/build_web_snapshot.py --snapshot data/hf-snapshot/d4ebef3df5ac17145e8dbd2f8a7ae2b10c0afe70 --output /tmp/rgc-snapshot-review
+# Compare a historical Silver export in a separate directory.
+uv run python -B scripts/build_web_snapshot.py --layer silver --output /tmp/rgc-silver-review
 ```
 
 Keep the exported JSON and manifest together. Vercel builds verify hashes and
 trace the complete snapshot into every API function. Preparation never changes
-raw evidence, review gates or model eligibility. Python download requires network
-access; the offline rebuild uses only previously downloaded files.
+raw evidence, review gates or model eligibility. Preparation uses the locked
+PyArrow environment. Download requires network
+access; offline rebuilds use the verified cached files. To refresh the deployed
+collection, update the immutable app reference and rebuild its JSON together.
 
 ## Current display
 
@@ -96,7 +117,7 @@ The extraction panel also offers the supplied Well&Truly Fudge & Brownie 30 g
 front and back photos as a selectable example. Original JPEG bytes live in
 `apps/web/public/examples/well-and-truly/front.jpg` and `back.jpg`; they are
 repository demo inputs served as public app assets. They are outside the pinned
-Silver export, training corpus and local raw text-evidence export. Users can
+collection export, training corpus and local raw text-evidence export. Users can
 select these photos or upload up to two of their own PNG/JPEG/WebP images. The
 browser prepares temporary copies within the extraction request limits. Selecting
 the example loads the photos, and **Extract traits** requests candidates from the
@@ -111,7 +132,7 @@ the proposed price and keeps the draft outside observed statistics.
 
 The product configurator now separately uses the published synthetic
 `lightgbm_without_brand` fixture to predict supported single bar packs and
-explain field contributions. Its immutable revision differs from this Silver
+explain field contributions. Its immutable revision differs from this Gold inferred
 web snapshot. Prepare it with `python3 -B scripts/fetch_web_pricing_model.py`;
 Git retains only [the pinned reference](../apps/web/pricing-model.json), while
 the original model and manifest stay in ignored `apps/web/model-cache/`.

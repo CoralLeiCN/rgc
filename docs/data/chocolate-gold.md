@@ -330,6 +330,21 @@ source locations and remote deletion provenance.
 
 The assigned estimator is runnable with `--model-id hedonic_without_brand --gold-root <immutable-snapshot> --working-contract <local-policy> --group bar`. Prepare the policy with `--prepare-working-contract <local-policy>`. Its default run root is `data/models/chocolate/uk/hedonic_without_brand/`; the [implementation record](analysis/hedonic-without-brand-implementation.md) defines commands, frozen experiments, fitting/calibration/test partitions and verified model artifacts. Gold verification retains managed hashes, logical row digests and original price/contract provenance. This loader does not promote excluded candidates. The historical regular-price Gold inspected in this session has zero eligible rows and lacks three required handoff declarations, so the actual attempt writes an immutable readiness report and returns status 2. Fixture fitting and calibration validate numerical behavior; no real fit or released interval exists.
 
+## Gold inferred web collection
+
+The web workspace now consumes the published
+`gold-inferred-5b539b9c4adbb011a40d7792` export at immutable dataset revision
+`812a03a5faaced471a2a20f4c389865ed5675826`. Its 3,743 complete product records
+retain all 103 attributes and 2,159 accepted additions supported by source evidence across
+33 attributes. Parquet `record_json` owns complete values and evidence; the
+web adapter validates them with the export's copied contracts and preserves
+per-field review states. Nested training Gold retains 2,134 candidates, zero
+eligible inputs and the historical `regular-consumer-price-1` basis. The separate
+current-price study keeps its own policy. Silver continues to own source
+processing, interpretation, review and eligibility. The app reference pins the
+manifest and revision; [collection integration](../collection-integration.md)
+defines preparation and offline rebuild commands.
+
 ## Matched retailer trainer handoff
 
 `train_chocolate_model.py --model-id matched_retailer --gold-root <snapshot>

@@ -32,6 +32,11 @@ price from supported inputs and show signed SHAP field contributions relative
 to the model reference. Real market benchmarks retain their separate review
 and validation requirements.
 
+The user requested that the app consume the published Gold inferred collection.
+Use its accepted derived attributes with preserved source evidence, review states,
+missingness and immutable provenance. Dataset adoption does not establish model
+readiness.
+
 ## 1. Category research and a pricing model
 
 The user requested six independent model implementation/training sessions. This

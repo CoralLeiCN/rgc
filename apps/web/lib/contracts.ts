@@ -26,6 +26,10 @@ export interface FieldDefinition {
   modelRole: string | null; modelSelected: boolean; modelDefinition: JsonValue;
 }
 export interface SnapshotMeta {
+  dataLayer?: "silver" | "gold-inferred";
+  sourceSilverDatasetVersion?: string; trainingGoldDatasetVersion?: string; priceBasis?: string;
+  inference?: { acceptedCells: number; affectedAttributes: number; affectedListings: number; basis: string; model: string };
+  evidenceLookup?: { repo_id: string; revision: string; path: string; sha256: string; capture_ids_and_json_pointers_preserved: boolean };
   repository: string; revision: string; datasetVersion: string; sourceDatasetVersion: string;
   lastModified: string | null; schemaVersion: string; modelDesignVersion: string;
   schemaValidatedListings: number; contractHashes: Record<string, string>; snapshotPrefix: string;

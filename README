@@ -59,9 +59,11 @@ npm run dev
 
 Open `http://localhost:3000`. The deployment root is `apps/web`. Collection
 exploration needs no external credentials; image/text extraction requires a
-server-configured provider. The private web snapshot remains pinned to its own
-dataset revision; the upstream Gold and model workflow below has separate
-versioning and readiness. See the app README for current preview and validation.
+server-configured provider. The private web snapshot uses the published Gold inferred collection, pinned
+in `apps/web/collection-dataset.json`, with 2,159 accepted trait additions and
+preserved evidence. Refresh it with `uv run python -B scripts/build_web_snapshot.py`.
+The upstream training and model workflow below retains its own versioning and
+readiness. See the app README for current preview and validation.
 
 The collection package bundles its [manifest](plugins/category-research/plugin.json)
 and [skill](plugins/category-research/skills/category-research/SKILL.md), with a

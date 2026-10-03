@@ -2,7 +2,10 @@
 
 Next.js serves the React dashboard and collection/extraction APIs from one
 Vercel project. The verified immutable collection lives in private `snapshot/`
-files. Browser requests fetch bounded cohorts, terrain rows and selected evidence.
+files, derived from published Gold inferred data. The immutable source revision
+and manifest hash are pinned in [collection-dataset.json](collection-dataset.json).
+The collection includes 2,159 accepted additions across 33 traits with their
+original evidence and review states. Browser requests fetch bounded cohorts, terrain rows and selected evidence.
 See the [architecture](../../docs/vercel-architecture.md),
 [API interfaces](lib/contracts.ts) and [current proof](../../docs/lifecycle/plan.md#proof).
 
@@ -213,6 +216,11 @@ assets. Extraction has a 120-second function budget for the optional laptop hop.
 ## Refresh data and assets
 
 Prepare verified data using the [collection integration commands](../../docs/collection-integration.md).
+From the repository root, `uv run python -B scripts/build_web_snapshot.py`
+downloads the pinned Gold inferred export into the ignored cache and rebuilds
+the private JSON. `--snapshot` rebuilds a verified cache offline. The build
+checks the JSON source identity against `collection-dataset.json`; update the
+reference and regenerate together when selecting a new immutable collection.
 Keep the resulting `snapshot/` and manifest together. A missing/stale manifest
 fails the build. The pinned Plotly bundle and its licence live in `public/vendor/`. Build verifies
 them against `public/asset-manifest.json`; there is no prototype asset-copy step.
@@ -234,7 +242,9 @@ been deployed to this preview.
 
 ## Validation limits
 
-The snapshot has 3,743 listings, 103 traits and zero eligible model rows. The test fixtures added during this demo have been removed. TypeScript,
+The Gold inferred snapshot has 3,743 listings, 103 traits, 33,845 known cells
+and zero eligible model rows. Its historical regular-price training policy and
+readiness remain recorded separately from the current-price training study. The test fixtures added during this demo have been removed. TypeScript,
 production build and data/asset integrity checks validate the current app.
 See the lifecycle plan for hosted verification.
 

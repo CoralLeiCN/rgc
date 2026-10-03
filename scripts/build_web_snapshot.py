@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Download a pinned public silver snapshot and build the private web snapshot.
+"""Build private web JSON from pinned Gold inferred or historical Silver data.
 
 Raw files remain under ignored data/. Vercel receives an explicitly derived
 projection with source statuses, review gates and evidence references preserved.
-No missing attributes are inferred and no pricing model is fitted.
+The default consumes accepted published inferences and their evidence.
 """
 import argparse
 import hashlib
@@ -184,20 +184,41 @@ def write_server_snapshot(directory, payload, evidence_by_source):
 
 
 def build(root, output):
-    latest, metadata, manifest = verify(root)
-    quality = read_json(root / "quality-report.json")
-    schema = read_json(root / "product.schema.json")
-    profile, mappings, design, contract_hashes = load_snapshot_contract(root)
+    inferred = read_json(root / "manifest.json").get("manifest_format_version") == "chocolate-gold-inferred-manifest-1"
+    if inferred:
+        from chocolate_gold import rows as gold_rows
+        from web_gold_inferred import load
+        reference, gold_manifest, manifest, inputs, products, gold_report, provenance = load(root, read_json)
+        contract_root = root / "training/inputs"
+        quality = read_json(contract_root / "quality-report.json")
+        latest = {"snapshot_prefix": reference["snapshotPrefix"], "release_ready": gold_report["release_ready"],
+                  "manifest_sha256": reference["manifestSha256"]}
+        metadata = {"sha": reference["revision"]}
+        candidates_rows = gold_rows(inputs["training-candidates.jsonl"])
+        model_rows = gold_rows(inputs["model-inputs.jsonl"])
+        price_rows = gold_rows(inputs["prices.jsonl"])
+        verified_files = list(gold_manifest["managed_files"])
+    else:
+        latest, metadata, manifest = verify(root)
+        contract_root = root
+        quality = read_json(root / "quality-report.json")
+        products = rows(root / "products.jsonl")
+        candidates_rows = rows(root / "training-candidates.jsonl")
+        model_rows = list(rows(root / "model-inputs.jsonl"))
+        price_rows = rows(root / "prices.jsonl")
+        verified_files = list(FILES)
+    schema = read_json(contract_root / "product.schema.json")
+    profile, mappings, design, contract_hashes = load_snapshot_contract(contract_root)
     fields = schema["properties"]["attributes"]["properties"]
     version = manifest["dataset_version"]
     if quality["dataset_version"] != version:
         raise ValueError("Quality report belongs to another snapshot")
     if manifest.get("schema_version", profile["schema_version"]) != profile["schema_version"]:
         raise ValueError("Manifest and snapshot schema versions disagree")
-    candidates = {r["observation_id"]: r for r in rows(root / "training-candidates.jsonl")}
+    candidates = {r["observation_id"]: r for r in candidates_rows}
     prices = defaultdict(list)
     observation_ids = set()
-    for observation in rows(root / "prices.jsonl"):
+    for observation in price_rows:
         if observation["dataset_version"] != version or observation["observation_id"] in observation_ids:
             raise ValueError("Duplicate or mixed-version price observation")
         observation_ids.add(observation["observation_id"])
@@ -208,7 +229,7 @@ def build(root, output):
         prices[observation["listing_id"]].append(observation)
     listings, ids, known_counts, conflict_counts, numeric_counts = [], set(), Counter(), Counter(), Counter()
     evidence_by_source = defaultdict(dict)
-    for product in rows(root / "products.jsonl"):
+    for product in products:
         listing_id = product["listing_id"]
         if product["dataset_version"] != version or listing_id in ids:
             raise ValueError("Duplicate or mixed-version listing")
@@ -248,7 +269,6 @@ def build(root, output):
                          "sourceListingIds": product["source_listing_ids"]})
     if set(prices) - ids:
         raise ValueError("Price observations reference unknown listings")
-    model_rows = list(rows(root / "model-inputs.jsonl"))
     expected = quality["counts"]
     if (len(listings), len(observation_ids), len(model_rows)) != (expected["listings"], expected["price_observations"], expected["eligible_model_inputs"]):
         raise ValueError("Downloaded row counts do not reconcile with the quality report")
@@ -268,9 +288,24 @@ def build(root, output):
               "schemaValidatedListings": len(listings), "contractHashes": contract_hashes,
               "snapshotPrefix": latest["snapshot_prefix"], "releaseReady": latest["release_ready"],
               "counts": expected, "sourceRoles": quality["source_role_counts"],
-              "exclusionCounts": quality["exclusion_counts"], "verifiedFiles": list(FILES),
+              "exclusionCounts": quality["exclusion_counts"], "verifiedFiles": verified_files,
               "manifestSha256": latest["manifest_sha256"], "omittedHeavyFiles": ["assertions.jsonl", "source-listings.jsonl", "review-queue.jsonl", "raw evidence bundle"],
               "interpretation": "Source listings and unreviewed observations. No fitted pricing model. Latest dated observation selected; undated observations rank last. Same-time price conflicts are excluded from the price plot."}
+    report["dataLayer"] = "gold-inferred" if inferred else "silver"
+    if inferred:
+        if (len(listings), len(observation_ids), len(model_rows), len(fields)) != (
+                gold_report["counts"]["products"], gold_report["counts"]["price_observations"],
+                gold_report["counts"]["eligible_model_inputs"], gold_manifest["attribute_count"]):
+            raise ValueError("Gold inferred counts disagree with the web projection")
+        report.update({"datasetVersion": reference["datasetVersion"], "sourceSilverDatasetVersion": version,
+                       "trainingGoldDatasetVersion": gold_manifest["training_gold_dataset_version"],
+                       "inference": {"acceptedCells": provenance["accepted_attribute_cells"],
+                                     "affectedAttributes": provenance["affected_attributes"],
+                                     "affectedListings": provenance["affected_listings"],
+                                     "basis": provenance["basis"], "model": provenance["model"]},
+                       "evidenceLookup": provenance["public_evidence_lookup"],
+                       "priceBasis": gold_report["regular_price_basis_contract_version"],
+                       "interpretation": "Published Gold inferred traits with curated source evidence and original review states. Training eligibility is preserved. Latest dated observation selected; undated observations rank last. Same-time price conflicts are excluded from the price plot."})
     contract = {"schemaVersion": profile["schema_version"], "modelDesignVersion": design["model_design_version"],
                 "category": profile["category"], "market": profile["market"], "groups": profile["groups"],
                 "states": profile["missing_states"], "reviewStatuses": profile["review_statuses"],
@@ -283,10 +318,17 @@ def build(root, output):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--snapshot", type=Path, help="Build offline from an already downloaded snapshot directory")
-    parser.add_argument("--cache", type=Path, default=ROOT / "data/hf-snapshot")
+    parser.add_argument("--layer", choices=("gold-inferred", "silver"), default="gold-inferred", help="Published collection layer; defaults to the app's pinned Gold inferred reference")
+    parser.add_argument("--cache", type=Path, help="Ignored download cache root")
     parser.add_argument("--output", type=Path, default=ROOT / "apps/web/snapshot")
     args = parser.parse_args()
-    root = args.snapshot or sync(args.cache)
+    if args.snapshot:
+        root = args.snapshot
+    elif args.layer == "gold-inferred":
+        from web_gold_inferred import sync as sync_gold
+        root = sync_gold(args.cache or ROOT / "data/hf-gold-inferred", download, read_json)
+    else:
+        root = sync(args.cache or ROOT / "data/hf-snapshot")
     report = build(root, args.output)
     print(json.dumps({"snapshot": str(root), "server_data": str(args.output),
                       "revision": report["revision"], "counts": report["counts"]}, indent=2))
