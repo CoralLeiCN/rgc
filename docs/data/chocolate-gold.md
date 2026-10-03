@@ -230,6 +230,16 @@ trainer and its immutable run artifacts. Gold creation does not select a split
 or claim predictive validity. See the [schema guide](chocolate-schema.md) for
 the current experimental fitting contract and outstanding release requirements.
 
+## Independent LightGBM without brand
+
+The [without-brand trainer](analysis/lightgbm-without-brand-implementation.md)
+verifies immutable Gold and an explicit local working contract, then freezes
+family partitions and fitting-only transforms. Its original regular-price
+Gold attempt had zero eligible inputs; synthetic fixture fitting is published
+separately. New shared current-price data requires explicit trainer migration
+and required feature evidence. Gold eligibility alone cannot establish fitting
+or market validity.
+
 ## Add processing later
 
 The initial silver-to-gold stage only changes storage. Bulk review changes

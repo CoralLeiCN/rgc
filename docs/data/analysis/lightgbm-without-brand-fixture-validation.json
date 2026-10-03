@@ -1,0 +1,87 @@
+{
+  "calibrated": true,
+  "experiment_sha256": "d12932b6affb6a2766f7880ea31df09258ab6013965ad826e73c811ce0133eb2",
+  "explanations": {
+    "held_out_rows": 216,
+    "maximum_absolute_log_reconstruction_error": 5.329070518200751e-15,
+    "reconstructed_rows": 216
+  },
+  "family_weighted_metrics": {
+    "MAE_GBP_per_100g": 0.09774610392006777,
+    "MAE_GBP_per_pack": 0.0903007039211147,
+    "families": 36,
+    "rows": 216,
+    "signed_bias_GBP_per_100g": 0.0021531040695174346,
+    "signed_bias_GBP_per_pack": 0.006852907055168628,
+    "weighted_median_absolute_percentage_error": 1.9686234939143121
+  },
+  "fixture": true,
+  "gold_dataset_version": "gold-9f2352e00b984fc9437b23f2",
+  "gold_manifest_sha256": "a353e3d9ddfaec5d79e915edb8fe88134f8dc394f9eeec339252d7465a0e02d1",
+  "interpretation": "Synthetic implementation validation only; these metrics do not measure UK chocolate market performance.",
+  "intervals": {
+    "Ocado": {
+      "coverage": 0.9166666666666666,
+      "finite_intervals": 36,
+      "median_relative_width": 0.07744113510240237,
+      "one_sided_95_wilson_lower": 0.8088780761905122,
+      "selected_families": 36
+    },
+    "Waitrose": {
+      "coverage": 1.0,
+      "finite_intervals": 36,
+      "median_relative_width": 0.08601450809287235,
+      "one_sided_95_wilson_lower": 0.9300993291231223,
+      "selected_families": 36
+    }
+  },
+  "listing_weighted_metrics": {
+    "MAE_GBP_per_100g": 0.09774610392006779,
+    "MAE_GBP_per_pack": 0.09030070392111471,
+    "families": 36,
+    "rows": 216,
+    "signed_bias_GBP_per_100g": 0.0021531040695174355,
+    "signed_bias_GBP_per_pack": 0.006852907055168628,
+    "weighted_median_absolute_percentage_error": 1.9686234939143121
+  },
+  "minimum_training_leaf_families": 7,
+  "model_id": "lightgbm_without_brand",
+  "partition_counts": {
+    "calibration": {
+      "families": 36,
+      "rows": 216
+    },
+    "fitting": {
+      "families": 108,
+      "rows": 648
+    },
+    "testing": {
+      "families": 36,
+      "rows": 216
+    }
+  },
+  "publication": {
+    "bytes": 10356266,
+    "commit_url": "https://huggingface.co/datasets/CoralLeiCN/rgc-collections/commit/bb1c9de580c64cc13aac62b352d58704fe2dd60e",
+    "files": 52,
+    "kind": "fixtures",
+    "path": "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212",
+    "publication_manifest_sha256": "72404f99ef1a2e88e7028b046c2bf77592d0619aeed27394055f4dfa8a613d28",
+    "repo_id": "CoralLeiCN/rgc-collections",
+    "revision": "bb1c9de580c64cc13aac62b352d58704fe2dd60e",
+    "run_id": "model-run-643f7148c9f44c42e5f42212"
+  },
+  "real_data_fitted": false,
+  "release_ready": false,
+  "run_id": "model-run-643f7148c9f44c42e5f42212",
+  "run_manifest_sha256": "067b1b50e9c32b183aa6911ee7c8ee0d2a8e789b2a8bea5560a37f3d378bb6d9",
+  "selected_features": [
+    "quantity.total_edible_weight_g",
+    "composition.chocolate_type",
+    "composition.recipe_class",
+    "composition.nuts_presence",
+    "identity.retailer"
+  ],
+  "tree_count": 722,
+  "uploaded": true
+}

@@ -1,0 +1,17 @@
+{
+  "audit_date": "2026-10-03",
+  "gold_directory_present": false,
+  "repo_id": "CoralLeiCN/rgc-collections",
+  "revision": "d549ad91d63fb452af605df4a939c4e1f0a59bfa",
+  "root_entries": [
+    "analysis",
+    "contracts",
+    "evidence",
+    "silver",
+    ".gitattributes",
+    "README.md",
+    "export-manifest.json",
+    "products.jsonl"
+  ],
+  "scope": "Read-only root inventory at the immutable revision; no publication."
+}

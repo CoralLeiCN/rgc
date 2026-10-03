@@ -1,0 +1,23 @@
+{
+  "audit_date": "2026-10-03",
+  "automated_integrity_verification": "passed_current_reload",
+  "cli_attempt_after_user_confirmation": "exit_2_current_input_readiness_failure",
+  "contract_revision": "d549ad91d63fb452af605df4a939c4e1f0a59bfa",
+  "current_counts": {
+    "candidates": 2134,
+    "eligible_rows": 0,
+    "null_log_targets": 2134,
+    "null_regular_unit_targets": 2134,
+    "resolved_family_ids": 402
+  },
+  "current_training_run": "model-run-ffff17f6eca01c6dd1d782dc",
+  "gold_dataset_version": "gold-4939405fcf8724686f9ee32c",
+  "gold_manifest_sha256": "cfc10a09c8685e501e6085c523b7726d9cc75ee60b0ab6a0f970a10db5553d4a",
+  "outcome": "Current input checks prevent real fitting. User verification is preserved as status and does not rewrite targets or eligibility.",
+  "silver_dataset_version": "silver-f651a7faea94ed5a7f003e64",
+  "source_dataset_version": "raw-snapshot-70239771976a75a48c5d99db",
+  "tax_basis_counts": {
+    "unknown": 2134
+  },
+  "user_status": "The human confirmed all Gold data are verified and requested training."
+}

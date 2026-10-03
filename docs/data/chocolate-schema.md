@@ -285,6 +285,14 @@ workflow. Its variants with and without brand, missing value handling and calibr
 require aligned versioned contracts and implementation, with regenerated reviewed
 inputs. Existing contracts and snapshots retain their own preparation rules.
 
+The independent [LightGBM without brand implementation](analysis/lightgbm-without-brand-implementation.md)
+now has an explicit local working configuration and synthetic validation. It
+requires selected cohort, pack-count, recipe and cocoa-basis fields absent from
+the published 11-predictor design, plus the proposed optional evidence states.
+It records these as readiness blockers. Local configuration does not add source
+evidence or change published schema/portable rules. Dataset/portable alignment,
+reviewed regeneration and the separate contract release review remain pending.
+
 The initial target is the natural logarithm of regular consumer GBP per 100 g:
 
 ```text

@@ -16,6 +16,7 @@ and evidence before deriving an analytical schema or fitting a pricing model.
 | [Portable processing](docs/data/category-processing.md) | Profiles, mapping maintenance and model preparation. |
 | [Compatibility guides](docs/data/chocolate-deduplication.md), [cleanup](docs/data/chocolate-cleaning.md) | Standalone diagnostic helpers and their distinct contracts. |
 | [Chocolate pricing design](docs/data/chocolate-modeling-design.md), [LightGBM/SHAP explanations](docs/data/analysis/lightgbm-shap-explanation-design.md) | Model designs, implemented LightGBM with brand and pending comparison. |
+| [Model maintenance](docs/model-maintenance.md) | Hugging Face model artifacts, Git receipts, verification and retraining. |
 | [Chocolate contract manifest](schemas/chocolate/dataset-contract.json), [dataset contract guide](docs/data/dataset-contracts.md) | Pinned schema, mappings, validator and model design; storage, caches and offline use. |
 | [Collection package](plugins/category-research/README.md), [processing package](plugins/category-processing/README.md) | Agent Plugins 1.0.0 packages, skills, CLI and Python API. |
 | [Lifecycle intent](docs/lifecycle/intent.md), [design](docs/lifecycle/spec.md), [plan](docs/lifecycle/plan.md) | Navigation, implementation status, risks, proof and remaining work. |
@@ -236,3 +237,21 @@ records its exact download directory and
 [checksum reference](schemas/chocolate/gold-dataset.json). It contains all
 2,134 candidates in both training views and retains its complete original parent.
 Use the current-price target policy when training this study.
+
+## Independent LightGBM without brand
+
+The [implementation guide](docs/data/analysis/lightgbm-without-brand-implementation.md)
+documents the separate historical regular-price trainer, selected features,
+family splits, calibration, TreeSHAP and immutable run loading. Use
+`scripts/train_chocolate_model.py --model-id lightgbm_without_brand` with
+`--gold-root` and `--working-contract`; prepare a configuration with
+`--prepare-working-contract` and declare an evidenced price window. Its module
+is `scripts/train_chocolate_lightgbm_without_brand.py`. The integrated lock
+uses SciPy 1.15.3, matching the with-brand trainer.
+
+The [published synthetic fixture](https://huggingface.co/datasets/CoralLeiCN/rgc-collections/tree/bb1c9de580c64cc13aac62b352d58704fe2dd60e/model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212)
+retains its original source and SciPy 1.16.2 lock for exact reproduction. It
+establishes synthetic implementation behavior only. This trainer requires
+explicit migration before fitting the current-price study. Follow
+[model maintenance](docs/model-maintenance.md) for Hugging Face artifacts and
+Git publication receipts.

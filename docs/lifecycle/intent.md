@@ -5,6 +5,14 @@ reusable collection and classification of product features, an interpretable
 pricing model and price testing for a brand's proposed product. Chocolate sold
 in the UK is the first study; scoring value for money awaits scientific research.
 
+One independent assignment implements and attempts real training for
+`lightgbm_without_brand`. Actual fitted model artifact
+upload is authorized, while fixture fits remain labeled and analytical contract
+publication retains its separate review. [Canonical intention](../intention.md)
+records the complete six-session scope and subsequent request to store saved
+model artifacts under `model/*`. The published fixture remains explicitly
+synthetic.
+
 The team has selected Track 2, Retail Futures, for EAT_HACK on 3 October 2026.
 The [hackathon brief](../eat-hack-track-two.md) covers the Track 2 challenge,
 submission requirements and judging criteria, including disclosure of substantial

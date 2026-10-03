@@ -51,3 +51,14 @@ uses distinct versions from the established CLI. See the
 [documentation policy](../documentation-policy.md) for required updates.
 
 The [Gold contract](../data/chocolate-gold.md) defines Parquet pass-through, provenance, optional user-directed bulk review and verified training input. The [schema guide](../data/chocolate-schema.md) defines reusable family mappings and experimental OLS. The current chocolate study uses `current-consumer-price-1`: displayed prices normalized to GBP per 100 g, with no separate regular-price or confirmed-tax requirement. Historical regular-price contracts retain `regular-consumer-price-1`. The prepared contracts require an approved verified dataset release before updating immutable references.
+
+## Independent LightGBM without brand
+
+The [without-brand implementation](../data/analysis/lightgbm-without-brand-implementation.md)
+provides its own regular-price working experiment, seeded family partitions,
+family balancing, fitting-only grouped tuning, retailer calibration and native
+raw-log TreeSHAP reconstruction. It saves immutable runs and supports verified
+run loading. Synthetic validation is published separately from real fitting.
+Current-price migration, full comparisons and released product scenario
+interfaces remain pending. [Model maintenance](../model-maintenance.md)
+owns artifact storage in Hugging Face and immutable receipts in Git.

@@ -270,6 +270,15 @@ Adoption requires aligned versioned contracts and implementation, with newly
 generated reviewed inputs; current silver gates and preparation helpers retain
 their existing rules.
 
+The independent [LightGBM without brand trainer](analysis/lightgbm-without-brand-implementation.md)
+consumes verified immutable Gold downstream of these gates. It implements local
+experimental family weights/splits, fitting-only tuning, retailer calibration
+and native TreeSHAP, with fixture checks. It requires an explicit working
+configuration and reports absent shared fields; its historical regular-price
+attempt had zero eligible rows. The refreshed current-price Gold requires
+explicit migration in this trainer. Silver remains responsible for evidence, target and family decisions,
+and its canonical 11-predictor contract has not been migrated to that policy.
+
 ## Maintain mappings
 
 The established chocolate CLI described in this guide emits versioned assertions,

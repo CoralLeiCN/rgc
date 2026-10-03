@@ -14,6 +14,80 @@ Canonical requirements: [specification](../spec.md),
 
 ## Current work and files
 
+Model maintenance and without-brand integration checks passed against main
+`cd9e7df8eb7f50aee33d3fce5ca9f0509aff8deb`: `uv sync --locked`, all four
+pinned contract sets verified offline, all 438 pytest cases, Ruff, documentation
+checks including `--base main`, whitespace checks, local documentation links
+and the without-brand command route. Existing with-brand modules, dependencies,
+current-price policy and published Gold reference were preserved. The
+without-brand estimator has separate module names and uses the shared SciPy
+1.15.3 lock; its published fixture retains its exact earlier source and lock.
+No new model fit or remote publication is claimed by this integration.
+
+[Model maintenance](../model-maintenance.md) now owns model artifact storage,
+immutable publication receipts, verification and retraining requirements.
+Generated model/data artifacts stay in ignored local directories and Hugging
+Face; Git retains code, dependencies, tests, documentation and small receipts.
+The current publication is a synthetic fixture. General remote model fetching
+and automatic maintenance are not implemented by this documentation change.
+
+The independent `lightgbm_without_brand` session implements a native categorical
+LightGBM estimator, family balancing and deterministic seeded fitting/calibration/
+testing, fitting-only grouped tuning, retailer conformal calibration and exact
+raw-output TreeSHAP with reconstruction/fallback. Its
+[implementation record](../data/analysis/lightgbm-without-brand-implementation.md)
+owns commands, local working policy and remaining interfaces. Integration
+uses independent without-brand module names and the shared SciPy 1.15.3 lock;
+the published fixture retains its original source and SciPy 1.16.2 lock.
+Current-price migration is pending for this trainer. The session's pinned regular-price data blocks
+real fitting; fixture fits and actual fitted/release status are distinct.
+
+The session rebuilt Silver `silver-f651a7faea94ed5a7f003e64` from the saved checkout
+with 3,743 listings, 4,347 captures, 2,134 candidates and zero eligible rows, and
+created verified Gold `gold-4939405fcf8724686f9ee32c`. Existing snapshots and raw
+evidence were preserved. The real-data readiness report records four missing
+selected shared fields, unresolved source-price window and no fitting families.
+No real-data fitted model exists in this session; aligned analytical/portable contract
+migration, release review, reviewed inputs and comparison gates remain pending.
+
+Original pre-integration verification for this session: `uv sync --locked`, all three pinned caches
+verified with `python3 -B scripts/fetch_contracts.py --all --offline`, `uv run pytest`
+(387 passed, including 12 new estimator cases), `uv run ruff check .`,
+`python3 -B scripts/check_documentation.py` and `git diff --check` passed.
+Synthetic run `model-run-643f7148c9f44c42e5f42212` fitted 722 trees on 648 rows/
+108 families, with 216 rows/36 families in each held-out partition. Test MAE was
+GBP 0.09775/100 g and GBP 0.09030/pack; weighted median percentage error was
+1.96862%. All 216 native TreeSHAP decompositions reconstructed within
+`5.33e-15` log units. Retailer representative coverage was 33/36 for Ocado and
+36/36 for Waitrose. Wilson lower bounds were 0.8089/0.9301; Ocado falls below
+the proposed 0.85 gate. Listing sensitivity is unchanged because every synthetic
+family has the same row count; the weighting test also covers unequal counts.
+These are synthetic measurements, with no market-performance or release claim.
+The [fixture proof](../data/analysis/lightgbm-without-brand-fixture-validation.json)
+records full metrics and hashes. The user requested storage under `model/*`;
+the [synthetic model bundle](https://huggingface.co/datasets/CoralLeiCN/rgc-collections/tree/bb1c9de580c64cc13aac62b352d58704fe2dd60e/model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212) was published at
+`bb1c9de580c64cc13aac62b352d58704fe2dd60e`. All 53 published files matched their prepared
+bytes, all 99 existing dataset files were preserved, and a portable replay
+reproduced the run and 23 managed artifacts apart from the historical local
+command. The [publication receipt](../data/analysis/lightgbm-without-brand-model-publication.json)
+records per-file hashes. Real readiness inputs remain local after automatic
+approval review rejected their inclusion in the initial payload. This fixture
+publication establishes no real-data model or release claim. Its parent
+`95c5fbd0ab5fa9a41fa5333648321d95f16927a7` includes refreshed Gold from another session;
+the earlier regular-price audit below does not evaluate that newer snapshot.
+
+After the human confirmed all Gold data are verified and requested training,
+the session reloaded current Gold and searched the designated/saved worktrees
+and the remote dataset. The [current audit](../data/analysis/lightgbm-without-brand-current-gold-audit.json)
+records successful integrity verification, 2,134 null regular unit/log targets,
+2,134 unknown tax bases and zero eligible rows at the exact current manifest
+hash. The [remote root inventory](../data/analysis/lightgbm-without-brand-remote-availability.json)
+at `d549ad91d63fb452af605df4a939c4e1f0a59bfa` contains no Gold directory.
+Readiness run `model-run-ffff17f6eca01c6dd1d782dc` therefore records a current input
+failure, while preserving the human verification status and requesting the
+location of any different verified snapshot. It does not rely solely on older
+documentation or rewrite eligibility/targets.
+
 | Work | Files | Status |
 | --- | --- | --- |
 | Demonstrate the built retail frontier workflow. | `PROJECT.md`, intention, lifecycle intent and `README` | Project description focuses on implemented collection, processing, evidence review and model preparation, with a brief description of the chocolate data, a runnable collection demo and explicit modelling limits. Event information, judging criteria and submission fields were removed from the project description. |

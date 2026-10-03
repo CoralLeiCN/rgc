@@ -1,7 +1,10 @@
 # LightGBM, SHAP, and AI explanation design
 
 Updated: 3 October 2026. Status: design with an independent LightGBM with brand implementation; no real-data
-LightGBM model has fitted. Synthetic acceptance checks exercise native TreeSHAP.
+LightGBM model has fitted. Synthetic acceptance checks exercise native TreeSHAP. The independent
+[without-brand implementation](lightgbm-without-brand-implementation.md) also
+provides a separate trainer and published synthetic fixture; its current-price
+migration and market evaluation remain pending.
 
 This extends the [UK chocolate pricing design](../chocolate-modeling-design.md).
 The pipeline is reviewed product and retailer evidence → frozen LightGBM model

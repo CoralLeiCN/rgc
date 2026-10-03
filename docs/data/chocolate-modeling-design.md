@@ -2,6 +2,10 @@
 
 Updated: 3 October 2026. Status: consolidated design; real-data models are not yet fitted.
 
+The independent [without-brand trainer](analysis/lightgbm-without-brand-implementation.md)
+implements a separate historical regular-price experiment with published
+synthetic validation. Current-price migration and market validation remain pending.
+
 Build a median-price baseline, interpretable hedonic models, and LightGBM
 prediction candidates with and without brand. Keep hedonic regression for
 coefficient comparisons; select the prediction model through grouped validation.

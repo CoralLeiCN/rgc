@@ -97,6 +97,13 @@ The current executable preparation contracts remain distinct from the
 does not implement LightGBM, optional-feature imputation, calibrated prediction
 intervals or a new model contract.
 
+## Model artifacts
+
+Published model artifacts use `model/` in the same dataset. Follow the
+[model maintenance guide](../model-maintenance.md) for immutable run directories,
+Git references, remote byte verification and retraining. Generated model files
+stay outside Git; analytical contract ownership and release review still apply.
+
 ## Current contract release
 
 On 2026-10-03, the user-approved Gold/modeling release was published at immutable commit `d549ad91d63fb452af605df4a939c4e1f0a59bfa`. All 16 managed files were downloaded and verified byte for byte; the three Git references now pin that revision. The release preserves the intervening published Silver and analysis files. [The release record](analysis/gold-modeling-contract-release.md) lists exact hashes, versions and corpus impact. Existing snapshots retain their copied historical contracts.

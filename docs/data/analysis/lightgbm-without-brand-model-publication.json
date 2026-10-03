@@ -1,0 +1,241 @@
+{
+  "bundles": [
+    {
+      "bytes": 10356266,
+      "files": 52,
+      "kind": "fixtures",
+      "path": "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212",
+      "publication_manifest_sha256": "72404f99ef1a2e88e7028b046c2bf77592d0619aeed27394055f4dfa8a613d28",
+      "run_id": "model-run-643f7148c9f44c42e5f42212"
+    }
+  ],
+  "commit_url": "https://huggingface.co/datasets/CoralLeiCN/rgc-collections/commit/bb1c9de580c64cc13aac62b352d58704fe2dd60e",
+  "existing_objects_preserved": 99,
+  "fixture_model_published": true,
+  "format": "rgc-model-publication-receipt-1",
+  "parent_revision": "95c5fbd0ab5fa9a41fa5333648321d95f16927a7",
+  "portable_replay": {
+    "expected_exit_code": 0,
+    "managed_files_equal_except_historical_reproduce_command": 23,
+    "observed_exit_code": 0,
+    "run_id": "model-run-643f7148c9f44c42e5f42212"
+  },
+  "real_data_model_published": false,
+  "release_ready": false,
+  "repo_id": "CoralLeiCN/rgc-collections",
+  "revision": "bb1c9de580c64cc13aac62b352d58704fe2dd60e",
+  "verified_files": {
+    "model/lightgbm_without_brand/README.md": {
+      "byte_length": 805,
+      "sha256": "308e6a60fc487e9960056b7d3e5d629a62b2e8078c13eab6f3163c74f188c466"
+    },
+    "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212/README.md": {
+      "byte_length": 1125,
+      "sha256": "f10f01769956f4a875092fc7073ea9b7198668c0340304be8ee261ae40c030fa"
+    },
+    "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212/gold/inputs/model-design.json": {
+      "byte_length": 22490,
+      "sha256": "212e4ea324a4f6651e29435ac79894ca9bd52f4a1d0e70f1f6b26df3b73d6252"
+    },
+    "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212/gold/inputs/prices.jsonl": {
+      "byte_length": 560051,
+      "sha256": "349d5c1817a0971519ead8f8263986905aba92719fed3481cdd145b921c54eeb"
+    },
+    "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212/gold/inputs/product.schema.json": {
+      "byte_length": 327514,
+      "sha256": "e61c8d202774a95250d40673f292f68fa743dbec3a6d0948beedcc58e8fec84c"
+    },
+    "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212/gold/inputs/profile.json": {
+      "byte_length": 65092,
+      "sha256": "881da5b79167bde7c8ac54dce76d39a3962cb5f73540e0e062c34dfde81e6458"
+    },
+    "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212/gold/inputs/quality-report.json": {
+      "byte_length": 170,
+      "sha256": "193df405f986e6291b4a5a3707f6e5b868f8767e20d65595351ffeb5c1fbde72"
+    },
+    "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212/gold/inputs/silver-manifest.json": {
+      "byte_length": 1800,
+      "sha256": "7a066fc68d9e289ba7a2a4afb51a86154ec1d720c08939e86a9574d4fd928103"
+    },
+    "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212/gold/inputs/source-mappings.json": {
+      "byte_length": 18698,
+      "sha256": "5084dde12e3b2309f11b33e4a98226005bc6cb877531eb58510d17715f6f0128"
+    },
+    "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212/gold/manifest.json": {
+      "byte_length": 3359,
+      "sha256": "a353e3d9ddfaec5d79e915edb8fe88134f8dc394f9eeec339252d7465a0e02d1"
+    },
+    "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212/gold/model-inputs.parquet": {
+      "byte_length": 38715,
+      "sha256": "032efcfd44b6cccfe4acaf56863d4b69c7696c7b0e32e21a3763c8f0774e58e3"
+    },
+    "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212/gold/report.json": {
+      "byte_length": 1005,
+      "sha256": "fb018bd26c530893aa09e6ae717b02399154150c15baf3a47e2946ccff9b9e58"
+    },
+    "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212/gold/training-data.parquet": {
+      "byte_length": 38715,
+      "sha256": "032efcfd44b6cccfe4acaf56863d4b69c7696c7b0e32e21a3763c8f0774e58e3"
+    },
+    "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212/publication-manifest.json": {
+      "byte_length": 8495,
+      "sha256": "72404f99ef1a2e88e7028b046c2bf77592d0619aeed27394055f4dfa8a613d28"
+    },
+    "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212/reproduce-portable.json": {
+      "byte_length": 455,
+      "sha256": "7af1b0518f6204c2596ef9d454038c759373aece91a8cc7608f70ad3a1c4373d"
+    },
+    "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212/run/booster.txt": {
+      "byte_length": 626004,
+      "sha256": "8fa8e6cbc3cb968b59ff01b95e4a6c8229c5993542a461767ab00c2e3b328bcf"
+    },
+    "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212/run/calibration.json": {
+      "byte_length": 7310,
+      "sha256": "fce0607e3016d6569e451c6dbcc734ca8f0b00dd19ac1dafb487fe6e31bb288c"
+    },
+    "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212/run/evaluation.json": {
+      "byte_length": 15941,
+      "sha256": "a1e4d10fb887b53ef33371b71d638def67af557e9b16c9ada34ac2f4cef710ad"
+    },
+    "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212/run/experiment.json": {
+      "byte_length": 51486,
+      "sha256": "7d281f30147bda932077f094788021af55c3608de69e678b6f4885263e708767"
+    },
+    "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212/run/inputs/gold-manifest.json": {
+      "byte_length": 3359,
+      "sha256": "a353e3d9ddfaec5d79e915edb8fe88134f8dc394f9eeec339252d7465a0e02d1"
+    },
+    "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212/run/inputs/model-design.json": {
+      "byte_length": 22490,
+      "sha256": "212e4ea324a4f6651e29435ac79894ca9bd52f4a1d0e70f1f6b26df3b73d6252"
+    },
+    "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212/run/inputs/model-inputs.jsonl": {
+      "byte_length": 1230664,
+      "sha256": "cacbf77a7c153be73680a36cbf69f6ddebe5678d766a76be1225c10c2d93fca0"
+    },
+    "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212/run/inputs/prices.jsonl": {
+      "byte_length": 560051,
+      "sha256": "349d5c1817a0971519ead8f8263986905aba92719fed3481cdd145b921c54eeb"
+    },
+    "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212/run/inputs/product.schema.json": {
+      "byte_length": 327514,
+      "sha256": "e61c8d202774a95250d40673f292f68fa743dbec3a6d0948beedcc58e8fec84c"
+    },
+    "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212/run/inputs/profile.json": {
+      "byte_length": 65092,
+      "sha256": "881da5b79167bde7c8ac54dce76d39a3962cb5f73540e0e062c34dfde81e6458"
+    },
+    "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212/run/inputs/quality-report.json": {
+      "byte_length": 170,
+      "sha256": "193df405f986e6291b4a5a3707f6e5b868f8767e20d65595351ffeb5c1fbde72"
+    },
+    "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212/run/inputs/silver-manifest.json": {
+      "byte_length": 1800,
+      "sha256": "7a066fc68d9e289ba7a2a4afb51a86154ec1d720c08939e86a9574d4fd928103"
+    },
+    "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212/run/inputs/source-mappings.json": {
+      "byte_length": 18698,
+      "sha256": "5084dde12e3b2309f11b33e4a98226005bc6cb877531eb58510d17715f6f0128"
+    },
+    "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212/run/inputs/training-candidates.jsonl": {
+      "byte_length": 1230664,
+      "sha256": "cacbf77a7c153be73680a36cbf69f6ddebe5678d766a76be1225c10c2d93fca0"
+    },
+    "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212/run/manifest.json": {
+      "byte_length": 5739,
+      "sha256": "067b1b50e9c32b183aa6911ee7c8ee0d2a8e789b2a8bea5560a37f3d378bb6d9"
+    },
+    "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212/run/model.json": {
+      "byte_length": 1504993,
+      "sha256": "85d109fa2c3cc03115fb1352893b664a305bb0b81c6aaa256a05c4659bb36ed6"
+    },
+    "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212/run/predictions/calibration.jsonl": {
+      "byte_length": 494574,
+      "sha256": "8b97e8f1755092239396a3cb9f8f05a02db2d85c8204f22dea15ec8b0c9c38bb"
+    },
+    "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212/run/predictions/fitting.jsonl": {
+      "byte_length": 1484222,
+      "sha256": "aa15ec04cd473d1cd208df73eae96dc5579e8c0132dda2c0dc79b0435bd073ab"
+    },
+    "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212/run/predictions/testing.jsonl": {
+      "byte_length": 494968,
+      "sha256": "8ac4a298664bf0d79936398e2f0a6c037d0778087ff409c433d17c8e6c1f7ba5"
+    },
+    "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212/run/preprocessing.json": {
+      "byte_length": 21202,
+      "sha256": "001be8118b0708f55288d6a1a01fe900ec41cd4525a73b8db7a26cdd8e05b1fb"
+    },
+    "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212/run/report.json": {
+      "byte_length": 18163,
+      "sha256": "86b43bd661d1b233a95f393b819258aca1d99568ae440137ca58a2d2ef1f6900"
+    },
+    "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212/run/reproduce.json": {
+      "byte_length": 543,
+      "sha256": "3a9fa958664ab4c28fec6b11c5d7410bc461fcfd49dd2ef4e1da41fa43682b94"
+    },
+    "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212/run/support.json": {
+      "byte_length": 112363,
+      "sha256": "07470139627513f1d811b5cea4d8511341222f0ce30723ea561f8621d6ff7677"
+    },
+    "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212/run/tuning.json": {
+      "byte_length": 720843,
+      "sha256": "33e82848889b61bb50d758dd61649a483eac432fed80bb9809a3ec1718083faa"
+    },
+    "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212/run/working-contract.json": {
+      "byte_length": 2722,
+      "sha256": "cb3ac3ead53daed27173a3e876113b4bc842a875399110f1657b6434bdd16a8f"
+    },
+    "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212/source/README": {
+      "byte_length": 12649,
+      "sha256": "81dcd2851f3dec4eeccccb575e3f187760a72e05b64abc527a5e756ba943f297"
+    },
+    "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212/source/pyproject.toml": {
+      "byte_length": 821,
+      "sha256": "40963656b1f5a438d874d22eabbbe55fb4a1d11333de26b043969404d453efb7"
+    },
+    "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212/source/scripts/chocolate_cleanup/__init__.py": {
+      "byte_length": 228,
+      "sha256": "758b82bc561f1eb19a0e0cb7146583d36d0b2739f06f8e51f4186243ab9e5011"
+    },
+    "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212/source/scripts/chocolate_cleanup/adapters.py": {
+      "byte_length": 29459,
+      "sha256": "e2b1c83204b596649aec5c4eff7d5d53e338b6c75450b50b498dad838523f3f2"
+    },
+    "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212/source/scripts/chocolate_cleanup/core.py": {
+      "byte_length": 32847,
+      "sha256": "1e344ee3271fd1acbf13cee495255bf1be396ef3ceefd482a91cbc292dc13938"
+    },
+    "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212/source/scripts/chocolate_cleanup/deduplication.py": {
+      "byte_length": 14750,
+      "sha256": "1595c8c146aea951782be5d3142062b8a7a66176d0efc77dfe707f902956526b"
+    },
+    "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212/source/scripts/chocolate_cleanup/sources.py": {
+      "byte_length": 672,
+      "sha256": "070c9fe2c824c681bafbf1fcf19e0fd7d7f39d0d99e26b7272666171cf17ff19"
+    },
+    "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212/source/scripts/chocolate_gold.py": {
+      "byte_length": 33582,
+      "sha256": "c85bc82cadeabadeb7ac02a110a2146ac4092154fecfc4f8b7e0bd5c8b849e72"
+    },
+    "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212/source/scripts/chocolate_lightgbm.py": {
+      "byte_length": 33793,
+      "sha256": "19894382d2fb376c08597b02f6e5bdfff571f15ae0089dbf543a292495f8a270"
+    },
+    "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212/source/scripts/chocolate_model.py": {
+      "byte_length": 16646,
+      "sha256": "d3e940ec91e5c7c250e972587a4d95c19f3b0aed00abcf118ebcedee205974dd"
+    },
+    "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212/source/scripts/train_chocolate_lightgbm.py": {
+      "byte_length": 14059,
+      "sha256": "69af51c43e53be70161c38810398b28e95ab9425a80b53cd7764e03b0a4e0af0"
+    },
+    "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212/source/scripts/train_chocolate_model.py": {
+      "byte_length": 20044,
+      "sha256": "b2a7891e07c54c2bf5a83d02e31dc67013b4656d58c9e58dfd2879551d230e6c"
+    },
+    "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212/source/uv.lock": {
+      "byte_length": 37457,
+      "sha256": "9bb645fe880718d02437c595e1867d29485d8b23b81d80648697e3121d49dd37"
+    }
+  }
+}

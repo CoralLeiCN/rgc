@@ -334,6 +334,18 @@ def build_model_run(silver_root, output, group, *, gold_root=None, current_price
 
 
 def main():
+    if any(a == "--model-id" or a.startswith("--model-id=") for a in sys.argv):
+        arguments = sys.argv[1:]
+        for i, value in enumerate(arguments):
+            if value.startswith("--model-id="):
+                arguments[i:i + 1] = ["--model-id", value.split("=", 1)[1]]
+                break
+        index = arguments.index("--model-id")
+        if index + 1 >= len(arguments) or arguments[index + 1] != "lightgbm_without_brand":
+            print("This session implements only lightgbm_without_brand.", file=sys.stderr)
+            return 1
+        from train_chocolate_lightgbm_without_brand import main as lightgbm_main
+        return lightgbm_main(arguments[:index] + arguments[index + 2:])
     parser = argparse.ArgumentParser(description=__doc__)
     source = parser.add_mutually_exclusive_group()
     source.add_argument("--silver-root", type=Path, help="Compatibility input: a combined silver snapshot")

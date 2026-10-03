@@ -20,6 +20,18 @@ The team confirms that no substantial project work existed before EAT_HACK.
 
 ## 1. Category research and a pricing model
 
+The user requested six independent model implementation/training sessions. This
+independent without-brand session owns `lightgbm_without_brand` and must complete an implementation,
+meaningful fixture validation and attempted real-data workflow independently of
+other fitted artifacts. Model artifact publication is authorized under
+`model/<model-id>/<run-id>/` in the existing Hugging Face dataset when an actual
+real-data fit exists. Fixture fits cannot serve as real trained models; analytical
+contract publication retains its separate release review. The user later requested
+model storage under `model/*`; the saved synthetic run is published under
+`model/lightgbm_without_brand/fixtures/<run-id>/`, with its synthetic status
+retained. See the
+[implementation record](data/analysis/lightgbm-without-brand-implementation.md).
+
 For a chosen product category and market, collect enough product data to fit a
 regression model. Chocolate sold in the United Kingdom is one example study.
 

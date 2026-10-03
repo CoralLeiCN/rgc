@@ -796,7 +796,13 @@ from the model. Save the fitted design under section 5.3; standardization alone
 cannot establish coefficients or a price premium. The consolidated research
 design proposes a subsequent version for separate models with and without brand,
 handling of optional features and calibration. Existing preparation commands
-do not implement these extensions.
+retain the published OLS preparation rules. The independent
+[`lightgbm_without_brand` implementation](data/analysis/lightgbm-without-brand-implementation.md)
+adds local experimental training, calibration and native TreeSHAP with an explicit
+working configuration. It has fixture validation; its historical regular-price
+Gold attempt had zero eligible rows and lacked four selected shared fields.
+The refreshed current-price Gold needs explicit migration in this trainer. Full comparison, aligned contract
+migration and real-data validation remain pending.
 
 The proposed comparison includes LightGBM candidates with and without brand,
 using the same target of log price, reviewed features, retailer contexts, family
@@ -1169,3 +1175,14 @@ full original parent. Immutable dataset revision
 in the [Gold reference](../schemas/chocolate/gold-dataset.json). All 25 files
 were downloaded and byte/loader verified. Publication and fitting are separate;
 current-price preparation remains the explicitly versioned training operation.
+
+## Independent LightGBM without brand
+
+The [without-brand implementation](data/analysis/lightgbm-without-brand-implementation.md)
+provides its own regular-price working experiment, seeded family partitions,
+family balancing, fitting-only grouped tuning, retailer calibration and native
+raw-log TreeSHAP reconstruction. It saves immutable runs and supports verified
+run loading. Synthetic validation is published separately from real fitting.
+Current-price migration, full comparisons and released product scenario
+interfaces remain pending. [Model maintenance](model-maintenance.md)
+owns artifact storage in Hugging Face and immutable receipts in Git.
