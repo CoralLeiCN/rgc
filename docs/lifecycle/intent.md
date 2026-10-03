@@ -8,9 +8,10 @@ provides setup instructions.
 The two-person team is entering EAT_HACK on 3 October 2026 in Track 2, Retail
 Futures, under the project name **retail frontier**. The
 [hackathon brief](../eat-hack-track-two.md) owns challenge, submission and judging
-requirements; the [project description](../../PROJECT.md) records the entry and
-submission fields. The team confirms no substantial project work existed before
-EAT_HACK. Preserve time for the video of at most two minutes and the 17:30 London
+requirements; the [project description](../../PROJECT.md) records implemented
+capabilities and a runnable collection workflow. The team confirms no substantial
+project work existed before EAT_HACK. Preserve time for the video of at most two
+minutes and the 17:30 London
 submission deadline. Submitted repository/video links must be publicly
 accessible, with a README explaining how to run the product; the three-brand
 Best Brand vote is separate from judging.

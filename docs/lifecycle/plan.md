@@ -3,10 +3,12 @@
 The raw, combined Silver and immutable Parquet Gold architecture, chocolate
 schema, model preparation, documentation maintenance and standalone processing
 package have passed implementation checks. Experimental training code and
-reviewed family assignments are available. Real Gold still has zero eligible
-observations; model fitting, validation and supported price testing await evidence
-review. Native installation across harnesses is unverified; scoring value for
-money awaits research.
+reviewed family assignments are available. The published Gold snapshot contains
+2,134 candidates marked eligible under the user's instruction; current-price
+preparation derives 630 unit-price targets. Missing inputs and model requirements
+still block real fitting and supported price testing. Historical regular-price
+attempts retain their recorded blockers. Native installation across harnesses is
+unverified; scoring value for money awaits research.
 
 The Vercel retailer workspace implements a layered trait terrain, typed cohorts,
 product configuration, observed-price analysis and extraction adapters. Its
@@ -21,6 +23,25 @@ Canonical requirements: [specification](../spec.md),
 [documentation policy](../documentation-policy.md).
 
 ## Current work and files
+
+### Conflict resolution and remote integration
+
+On 2026-10-03, resolved the interrupted rebase onto `a147e12`, preserving the
+web application, model implementations, immutable contract references and
+historical validation records. Reconciled current-price requirements, Gold
+eligibility status and links to the data guides across the merged documents.
+The six pending local commits replayed successfully.
+
+Validation passed: `uv sync --locked`, verification of all four pinned contract
+sets online and offline, Ruff, documentation checks including `--base origin/main`,
+whitespace checks, web TypeScript checks and the production build. The build
+verified 3,743 listings, 103 traits, 24 evidence shards, visualization assets
+and snapshot inclusion in all seven API traces. `uv run pytest` stopped during
+collection because the local LightGBM installation lacked `libomp.dylib`.
+The user requested an immediate push while that dependency installation was in
+progress; the complete Python suite has not passed in this checkout.
+
+### Application and model status
 
 The current hackathon app is `apps/web`, with a Vercel frontend/backend, private
 snapshot, leaf-colour terrain, typed filters, product configurator, gap finder and
@@ -135,7 +156,6 @@ documentation or rewrite eligibility/targets.
 | Serve bounded schema, product, terrain, evidence, comparison and analysis data, plus trait extraction adapters. | `apps/web/app/api/`, `apps/web/lib/server/`, `apps/web/lib/contracts.ts` | Implemented with typed queries and a 4 MB response cap; live extraction awaits provider configuration. |
 | Validate pinned snapshot contracts and derive private JSON plus an integrity manifest. | `scripts/build_web_snapshot.py`, `apps/web/snapshot/` | Implemented for the app's immutable revision; all 3,743 listings validate and evidence references are retained. |
 | Package the Vercel application with pinned dependencies and snapshot/asset verification. | `apps/web/package.json`, lockfile, Next/Vercel configuration and verification scripts | Node 24 London functions use Vercel Authentication; cleanup verifies all seven API snapshot traces; hosted checks passed on the protected preview recorded below. |
-| Explain retail frontier using the hackathon submission and judging structure. | `PROJECT.md`, intention, lifecycle intent and `README` | Description, capability status, collection demo and submission fields added and reviewed; documentation checks and the offline demo passed. Team names, video, brand votes and public access verification remain pending. |
 | Demonstrate the built retail frontier workflow. | `PROJECT.md`, intention, lifecycle intent and `README` | Project description focuses on implemented collection, processing, evidence review and model preparation, with a brief description of the chocolate data, a runnable collection demo and explicit modelling limits. Event information, judging criteria and submission fields were removed from the project description. |
 | Diagram the data processing workflow. | `docs/data/chocolate-silver.md`, `PROJECT.md` and `README` | Added a Mermaid diagram for source collection, raw preservation, silver processing, review, eligible model inputs and portable model preparation, with purpose, output and status descriptions for bronze/raw, Silver and immutable Parquet Gold inside the diagram and its companion table. Export and the experimental trainer are implemented; real fitting, validated pricing and explanations remain pending. Documentation tests, Ruff and documentation/whitespace checks passed; diagram stages were reviewed against the silver and portable guides. |
 | Integrate data documentation with current main. | Data guides, diagram, `PROJECT.md`, Gold guide, analysis evidence, checker/tests and lifecycle documents | Reconciled newer pandas, Gold and trait contribution work; all 17 data artifacts are grouped under `docs/data/`. All 391 tests, offline pinned-cache verification, Ruff, documentation checks and a 262-link audit passed. Runtime and contract bytes match main apart from documentation checker paths. |
@@ -162,9 +182,9 @@ documentation or rewrite eligibility/targets.
 | Use pytest for tests and Ruff for Python linting. | `pyproject.toml`, `uv.lock`, native pytest tests, plugin `pytest.ini` files, `.github/workflows/validation.yml`, development documentation | Implemented with locked development dependencies and CI commands. All 304 tests and Ruff checks passed after test consolidation; prior isolated package verification is recorded below. |
 
 | Export immutable Parquet Gold and annotate all rows on the user instruction without changing eligibility. | `scripts/chocolate_gold.py`, Gold CLIs, `docs/data/chocolate-gold.md` | Implemented and locally verified, including integrity checks, pass-through values, immutable snapshots and user-review provenance. |
-| Use regular, non-promotional, tax-inclusive consumer prices in every model. | Price-policy helpers, generated profiles, published original/portable contracts, specification and schema guides | Implemented, published with user authorization, and verified against immutable dataset pins; the complete 375-case suite passes. |
+| Preserve the regular consumer-price basis for historical studies and portable profiles. | Price-policy helpers, generated profiles, published original/portable contracts, specification and schema guides | Published and verified against immutable dataset pins; the original 375-case suite passed. The current chocolate study uses the separate current-price contract recorded below. |
 | Map captured product names to reviewed families while preserving raw evidence. | `scripts/chocolate_standardization/identity.py`, `reviews/chocolate/family-mappings.json`, Silver CLI and contracts | 31 families and 1,285 family-only assignments verified. Exact physical identities remain unresolved. |
-| Train experimental OLS from verified Gold with family holdout and bootstrap uncertainty. | `scripts/chocolate_regression.py`, `scripts/train_chocolate_model.py`, model design and tests | Implemented and fixture fits/failure gates verified. Real Gold has zero eligible observations; no model fitted or released. |
+| Train experimental OLS from verified Gold with family holdout and bootstrap uncertainty. | `scripts/chocolate_regression.py`, `scripts/train_chocolate_model.py`, model design and tests | Implemented and fixture fits/failure gates verified. Current Gold has 2,134 eligible candidates and 630 current-price targets; identity and repeated-listing blockers prevent a real fitted model. Historical attempts retain their original input status. |
 | Reconcile Gold/modeling work with main and prepare the dataset contract release before landing. | `docs/data/analysis/gold-modeling-contract-release.md`, integration code/tests and dataset references | Combined-main checks and corpus rebuild complete. User approved the refreshed exact release, published at `d549ad91d63fb452af605df4a939c4e1f0a59bfa` with all 16 remote files verified. Real-pin tests, offline caches, Ruff and documentation checks pass; landing uses one local main squash commit. |
 
 | Use pandas for canonical chocolate grouping, partitions, counts and row envelopes. | `scripts/chocolate_tables.py`, shared components, silver CLI and tests | Implemented; integrated with main's family mappings, fixed-price target, Gold and locked pytest/Ruff development environment. Integration verification is recorded below. |

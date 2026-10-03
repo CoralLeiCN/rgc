@@ -310,8 +310,9 @@ release or model artifact.
 
 Upstream research retains experimental training from verified Gold and reviewed
 family mappings. Remaining readiness work includes unresolved identities,
-regular consumer-price and tax evidence, other feature reviews, and evaluation
-against a baseline. Supported price testing requires validated benchmarks and
+missing quantities, other feature reviews, and evaluation against a baseline.
+Historical regular-price studies retain their separate price and tax evidence
+requirements. Supported price testing requires validated benchmarks and
 uncertainty, including held-out or out-of-fold results for training products.
 If validation remains inadequate, the demo must remain an evidence explorer and
 explicit prototype score, without claiming optimal pricing, value for money or

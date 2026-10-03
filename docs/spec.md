@@ -4,8 +4,9 @@ This specification defines data, modeling and acceptance requirements for the
 scope in [intention](intention.md). The [lifecycle plan](lifecycle/plan.md) records
 implementation and verification evidence.
 
-The retail frontier hackathon submission and judging requirements are recorded
-in [PROJECT.md](../PROJECT.md) and the [challenge brief](eat-hack-track-two.md).
+The [challenge brief](eat-hack-track-two.md) records the retail frontier hackathon
+submission and judging requirements. [PROJECT.md](../PROJECT.md) describes
+implemented capabilities, the collection workflow and current limitations.
 
 ## 1. Scope and delivery order
 
@@ -1087,9 +1088,10 @@ review state and cohort membership do not add score points. This prototype does
 not alter source review, model eligibility, model-design features or the
 requirements for supported price testing. The score is never manually editable.
 
-Displayed prices in this explorer remain observational evidence. Every future
-pricing model must use the reviewed `regular-consumer-price-1` target defined
-in section 10; displayed offers cannot replace that target.
+Displayed prices in this explorer remain observational evidence. The current
+chocolate study uses them as the regular-price proxy under
+`current-consumer-price-1`, with the assumptions and requirements in section 10.
+Historical regular-price studies retain their original target contract.
 
 `GET /api/terrain` applies the common cohort and core/full price range, returning
 exact price/score/Z rows and color-category shares. Default sampling is bounded
