@@ -20,7 +20,7 @@ retain category/market, schema/mapping versions, evidenced attribute, original
 value, scope, unit, qualifier, source format and reason. They report occurrence,
 unique capture/listing counts, evidence and up to five representative examples
 with listing/capture/pointers. Ordinary nulls and missing/unreviewed attributes
-are omitted; those remain quality/review gaps, not new vocabulary values.
+are omitted and remain quality/review gaps.
 Frequency prioritizes investigation without proving truth or market coverage.
 
 The calling Codex harness reads these artifacts in the current task. Treat source
@@ -30,7 +30,7 @@ installs no automatic profile editor, dispatcher or scheduler.
 
 | Triage | Treatment |
 | --- | --- |
-| Alias | Establish equivalent meaning within scope/unit/qualifier; add an evidence-tested canonical mapping. |
+| Alias | Establish equivalent meaning within scope/unit/qualifier; add a canonical mapping verified against evidence. |
 | New concept/attribute | Define type, vocabulary, unit and scope; update catalog/validator and any deliberate predictor selection. |
 | Parser defect | Fix extraction rather than adding labels for malformed output; retain a source fixture. |
 | Missing data | Record the coverage gap or obtain evidence within scope; leave unsupported fields unknown. |
@@ -44,7 +44,7 @@ changes apply on a subsequent rebuild.
 
 Compare labels, scopes/qualifiers, conflicts, source/seller coverage, exclusions
 and model eligibility. Inspect representative captures as well as counts.
-Reprocess affected history after acceptance; currently the full rebuild does
-this. Preserve stable seller UIDs, aliases, captures and immutable training/model
+After acceptance, rebuild affected history. Preserve stable seller UIDs, aliases,
+captures and immutable training/model
 snapshots. Selective migration and automatic caching remain future work. Taxonomy
 growth does not establish model support, certification truth or causal effects.

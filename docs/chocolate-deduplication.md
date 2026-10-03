@@ -1,22 +1,17 @@
 # UK chocolate deduplication compatibility helper
 
-The standalone deduplication helper groups repeated listings from the same selling source
-while preserving their original product information and capture history. It
-writes a separate dataset and leaves the raw archive unchanged. Prices,
-quantities, claims, source fields, and original source text remain as collected.
+The standalone deduplication helper groups repeated listings from the same
+selling source into a separate dataset, preserving original product information
+and capture history. Prices, quantities, claims, source fields and original
+source text remain as collected.
 
-The canonical architecture is [raw plus silver](chocolate-silver.md). The silver
-build combines this exact deduplication operation with schema standardization,
-price normalization, evidence review and model-input eligibility. It retains
-these raw seller groups in `source-listings.jsonl` and does not require a
-separately persisted deduplicated layer.
-
-The standalone CLI described below remains a compatibility and diagnostic
-helper. Its `data/deduplicated/chocolate/uk` snapshot can be inspected or supplied
-to the standalone standardization helper when needed; it is not an additional
-required dataset layer. The earlier [cleanup](chocolate-cleaning.md) remains a
-separate compatibility implementation. Deduplication alone does not establish
-reviewed feature classifications or model readiness.
+The canonical [silver build](chocolate-silver.md) applies this same deduplication
+operation and retains seller groups in `source-listings.jsonl`. This standalone
+CLI supports compatibility and diagnostics; inspect its
+`data/deduplicated/chocolate/uk` snapshot or supply it to the standalone
+standardization helper. The earlier [cleanup](chocolate-cleaning.md) has its own
+compatibility contract. Feature classification and model eligibility require
+subsequent review.
 
 ## Build the deduplicated dataset
 
@@ -34,16 +29,16 @@ from this root. Use explicit paths when the archive or output lives elsewhere.
 Keep the supplied collections root available to resolve preserved history and
 artifact references.
 
-An unchanged raw archive and unchanged implementation produce the same
-content-based dataset version. Rebuild the snapshot after importing additional
+An unchanged raw archive and implementation produce the same dataset version,
+derived from content. Rebuild the snapshot after importing additional
 captures. The command validates indexed captures against their immutable
 history records and checks that the input files do not change during the build.
 
-The exact seller-listing identity and `source_key` must also remain consistent
+The exact identity of the seller listing and `source_key` must remain consistent
 across captures within each raw folder. A change makes the folder an invalid
 archive record; exclude it from the accepted snapshot and report the reason and
 partial status. Preserve its raw evidence, and use separate raw listings for
-different sellers/products/variants rather than reassigning historical captures.
+different sellers/products/variants so historical captures retain their identity.
 
 ## Deduplication rule
 
@@ -61,9 +56,9 @@ prevent a merge.
 
 The rule applies within one selling source. The hostname prevents unrelated
 websites that use the same source label from merging. Listings without enough
-source identity remain separate. A matching name, product brand, GTIN, weight,
-or recipe does not cause a merge. The canonical listing ID is the first raw
-listing folder name in sorted order; `source_listing_ids` retains all member
+source identity remain separate. Merge only on the source identifiers,
+regardless of name, product brand, GTIN, weight or recipe. The canonical listing
+ID is the first raw listing folder name in sorted order; `source_listing_ids` retains all member
 folder IDs.
 
 The same product sold by two retailers remains two unique listings. A product
@@ -77,11 +72,11 @@ the product's `brand` is a separate field. Unresolved source roles remain
 | File | Meaning |
 | --- | --- |
 | `products.jsonl` | All canonical seller listings, their source identifiers and role, original captures, and latest capture ID. |
-| `brand/products.jsonl` | Listings sold by direct brand-store sources. |
+| `brand/products.jsonl` | Listings sold by direct brand store sources. |
 | `retail/products.jsonl` | Listings sold by retailer sources. |
-| `unknown/products.jsonl` | Listings with an unresolved selling-source role. |
+| `unknown/products.jsonl` | Listings with an unresolved role of the selling source. |
 | `listing-aliases.jsonl` | Each accepted raw listing folder ID mapped to its canonical listing ID. |
-| `quality-report.json` | Input and canonical listing counts, source-role coverage, duplicate groups, and unsupported, in-progress, or invalid archive records. |
+| `quality-report.json` | Input and canonical listing counts, coverage of source roles, duplicate groups, and unsupported or invalid archive records and imports in progress. |
 | `manifest.json` | Dataset format/version, implementation and input hashes, and generated file hashes. |
 
 Read JSONL files one JSON object per line. The combined product file includes
@@ -98,21 +93,22 @@ available in those capture objects.
 This layer does not extract, normalize, or deduplicate price observations.
 Repeated imports remain represented by their original capture histories. The
 later analytical cleanup may consolidate identical price observations while
-retaining their evidence. Neither operation merges products across shops.
+retaining their evidence. Both operations keep seller listings separate across
+shops.
 
 ## Evidence and coverage
 
 Source artifacts, images, and immutable history files remain in the raw archive;
 the snapshot retains references to them instead of copying or replacing their
 bytes. Manifest input hashes cover the product indexes and referenced history
-records. They do not constitute a new verification of every source or image
-artifact.
+records. Full verification of source/image artifacts requires the archive
+integrity tools.
 
 Unsupported formats, imports in progress, and invalid archive records are
-reported for review rather than interpreted as valid products. The quality
-report distinguishes accepted raw listing folders from canonical seller
+reported for review and excluded from valid products. The quality report distinguishes accepted raw listing folders from canonical seller
 listings and records the exact duplicate groups. Those counts describe source
-listings, not verified distinct physical products or exhaustive market coverage.
+listings. Distinct physical products and exhaustive market coverage require
+separate verification.
 
 The CLI exits with 0 for a complete snapshot, 1 for a partial snapshot with
 reported gaps, and 2 when the build cannot complete.

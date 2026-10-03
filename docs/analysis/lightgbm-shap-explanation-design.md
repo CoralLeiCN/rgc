@@ -1,6 +1,6 @@
 # LightGBM, SHAP, and AI explanation design
 
-Updated: 3 October 2026. Status: implementation design; no LightGBM model has
+Updated: 3 October 2026. Status: proposed implementation design; no LightGBM model has
 been fitted and no SHAP results have been generated.
 
 This extends the [UK chocolate pricing design](../chocolate-modeling-design.md).

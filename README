@@ -1,162 +1,137 @@
-You can find more information on this dataset at
-https://github.com/coveooss/SIGIR-ecom-data-challenge
+# Product features and pricing
 
-This repository explores product-feature classification and pricing across many
-categories. The current collection study is chocolate sold in the UK. Original
-product information and evidence are preserved before designing the analytical
-schema or fitting a pricing model.
+This repository studies how product features relate to prices across categories.
+Chocolate sold in the UK is the current example. Preserve original information
+and evidence before deriving an analytical schema or fitting a pricing model.
 
-Project documents and implementation:
+| Document | Purpose |
+| --- | --- |
+| [Intention](docs/intention.md) | Goals, delivery order and constraints. |
+| [Specification](docs/spec.md) | Contracts, pricing methodology and acceptance requirements. |
+| [Chocolate silver](docs/chocolate-silver.md) | Raw/silver workflow, outputs, evidence resolution and reproducibility. |
+| [Chocolate schema](docs/chocolate-schema.md) | Typed fields, evidence reviews and model handoff. |
+| [Portable processing](docs/category-processing.md) | Profiles, mapping maintenance and model preparation. |
+| [Compatibility guides](docs/chocolate-deduplication.md), [cleanup](docs/chocolate-cleaning.md) | Standalone diagnostic helpers and their distinct contracts. |
+| [Chocolate pricing design](docs/chocolate-modeling-design.md), [LightGBM/SHAP explanations](docs/analysis/lightgbm-shap-explanation-design.md) | Proposed models, comparisons, calibration and explanations. |
+| [Chocolate contract manifest](schemas/chocolate/dataset-contract.json), [dataset contract guide](docs/dataset-contracts.md) | Pinned schema, mappings, validator and model design; storage, caches and offline use. |
+| [Collection package](plugins/category-research/README.md), [processing package](plugins/category-processing/README.md) | Agent Plugins 1.0.0 packages, skills, CLI and Python API. |
+| [Lifecycle intent](docs/lifecycle/intent.md), [design](docs/lifecycle/spec.md), [plan](docs/lifecycle/plan.md) | Navigation, implementation status, risks, proof and remaining work. |
+| [Documentation policy](docs/documentation-policy.md), [agent rules](AGENTS.md) | Document ownership, update conditions, language and writing style. |
 
-- Intention: docs/intention.md
-- Specification: docs/spec.md
-- Chocolate pricing model design: docs/chocolate-modeling-design.md
-- LightGBM, SHAP, and AI explanations: docs/analysis/lightgbm-shap-explanation-design.md
-- UK chocolate raw and silver workflow: docs/chocolate-silver.md
-- UK chocolate schema, reviews, and pricing handoff: docs/chocolate-schema.md
-- Portable processing, mapping maintenance, and model preparation: docs/category-processing.md
-- Compatibility deduplication and cleanup guides: docs/chocolate-deduplication.md, docs/chocolate-cleaning.md
-- Pinned chocolate dataset contracts: schemas/chocolate/dataset-contract.json
-- Dataset contract storage, caches and offline use: docs/dataset-contracts.md
-- Documentation maintenance rules: docs/documentation-policy.md
-- Agent Plugins 1.0.0 collection package: plugins/category-research/README.md
-- Agent Plugins 1.0.0 processing package: plugins/category-processing/README.md
-- Plugin manifest: plugins/category-research/plugin.json
-- Discoverable skill: plugins/category-research/skills/category-research/SKILL.md
-- Raw collection guide and coverage: collections/chocolate/uk/README.md
+The collection package bundles its [manifest](plugins/category-research/plugin.json)
+and [skill](plugins/category-research/skills/category-research/SKILL.md), with a
+Python CLI/API using the standard library. Packaging follows
+https://agent-plugins.org/specification. Native installation and execution across
+harnesses require verification.
 
-Project lifecycle documents:
-docs/lifecycle/intent.md - problem, intended outcome, and constraints
-docs/lifecycle/spec.md - requirements and design
-docs/lifecycle/plan.md - files, work order, risks, and proof
+Import a prepared collection from the repository root; this example writes to
+`collections`:
 
-The category-research plugin bundles a skill, a standard-library Python CLI, and
-a callable Python API. Another plugin can use those entry points directly.
-Packaging follows https://agent-plugins.org/specification. Native installation
-and execution in multiple harnesses still need verification.
+```sh
+python3 -B plugins/category-research/cli.py import --input <collection.json> --output collections --download-images --workers 4
+```
 
-Each source product/variant has its own folder with a broad product.json index,
-original source artifacts where accessible, original downloaded images, and
-immutable capture history. Unknown fields and raw source prices are retained.
-Discovery catalogues, source failures, cached-text limitations, unavailable
-products, and ingredient gaps remain inspectable. Source listing counts are not
-deduplicated market-wide product counts or proof of exhaustive UK coverage.
+The CLI reports the path to its run report and appends captures while preserving
+earlier history. Read the [import contract](plugins/category-research/skills/category-research/references/import-contract.md)
+for inputs, source/image preservation and archive/report semantics. Study records
+retain broad product/variant indexes, arbitrary fields and raw prices, discovery
+catalogues, source failures, cached text limitations, unavailable products and
+ingredient gaps. They include their own guide and coverage; the earlier path is
+`collections/chocolate/uk/README.md`. Listing counts describe selling sources and
+require separate analysis to establish distinct products or market coverage.
+The legacy `scripts/archive_product_sources.py` reproduces only the initial
+exploratory sample of five products.
 
-Import a prepared collection through the plugin from the repository root:
+The canonical chocolate workflow preserves raw evidence in
+`data/collections/chocolate/uk` and builds one silver dataset in
+`data/silver/chocolate/uk`. Silver combines deduplication within each seller,
+typed schema/unit/vocabulary standardization, price normalization, evidence
+review and model eligibility. Build directly from raw:
 
-    python3 -B plugins/category-research/cli.py import --input <collection.json> --output collections --download-images --workers 4
+```sh
+python3 -B scripts/build_chocolate_silver.py --archive-root data/collections --output data/silver/chocolate/uk
+```
 
-The CLI reports a run-report path. Subsequent imports append evidence and retain
-earlier captures. The import contract is documented inside the plugin skill.
-The legacy script scripts/archive_product_sources.py reproduces only the initial
-five-product exploratory sample.
+Silver preserves each shop's listings, separates brand from seller identity/role,
+and links typed products to unchanged raw evidence through source listings and
+aliases. See the [silver guide](docs/chocolate-silver.md) for the complete outputs
+and seller partitions. Add `--reviews <reviews.json>` for
+`chocolate-schema-reviews-1` decisions described in the
+[schema guide](docs/chocolate-schema.md). That guide also owns `chocolate-schema-1` with 103 attributes, the 11 selected
+predictors and model helpers.
+The [plan](docs/lifecycle/plan.md) records current review, price/tax, extraction
+and model validation gaps. Standalone deduplication, standardization and cleanup
+CLIs serve compatibility and diagnostics.
 
-The canonical UK chocolate workflow has two dataset layers:
+Analytical JSON contracts are authoritative in the
+[Hugging Face dataset](https://huggingface.co/datasets/CoralLeiCN/rgc-collections)
+under `contracts/chocolate/` and `contracts/category-processing/<category>/`.
+Git retains human documentation and `dataset-contract.json` manifests with
+immutable commit pins, per-file SHA-256 hashes and versions. Loaders download
+missing pinned files into ignored caches and verify them before use. Cached runs
+can be offline; the [dataset contract guide](docs/dataset-contracts.md) defines
+cache and publication behavior.
 
-- Raw: data/collections/chocolate/uk preserves original product indexes,
-  arbitrary source fields, immutable captures, source artifacts and images.
-- Silver: data/silver/chocolate/uk combines exact within-seller deduplication,
-  typed schema/vocabulary/unit standardization, price normalization, evidence
-  review and model-input eligibility in one build.
+The standalone processing package includes its runtime, five contract references,
+stable seller UIDs, ledger, evidence batches, harness skill and model preparation.
+Chocolate tracks 103 attributes; coffee demonstrates reuse with structured inputs.
+Copy the entire package to use it independently of repository siblings or a
+collection plugin installation. Run its workflow from the repository root:
 
-Analytical JSON contracts are authoritative in the Hugging Face dataset
-CoralLeiCN/rgc-collections, under contracts/chocolate/ and
-contracts/category-processing/<category>/. Git retains only dataset-contract.json
-references with an immutable dataset commit, per-file SHA-256 hashes and version
-metadata. Loaders download missing pinned files into ignored caches and verify
-every file before use; cached runs can be offline. Human documentation remains
-in Git. See docs/chocolate-schema.md and docs/category-processing.md for versions
-and cache behavior.
+```sh
+python3 -B plugins/category-processing/cli.py process --archive-root data/collections --profile plugins/category-processing/profiles/chocolate --output data/silver/category-processing/chocolate/uk
+python3 -B plugins/category-processing/cli.py summarize --silver-root data/silver/category-processing/chocolate/uk --output data/review-packets/chocolate/uk
+python3 -B plugins/category-processing/cli.py prepare-model --silver-root data/silver/category-processing/chocolate/uk --output data/model-preparation/chocolate/uk
+```
 
-Build silver directly from the raw collections root:
+The [portable guide](docs/category-processing.md) and package references cover
+versions, review examples, outputs and mapping changes. Processing rebuilds fully;
+the ledger reports input/rule changes. The harness maintains mappings within the
+current task using evidence, versioned diffs, tests and impact review. Incremental processing caches,
+external dispatch and scheduling are future work. `prepare-model` requires
+reviewed eligible rows and at least two families, and writes frozen inputs and an
+encoder. Current chocolate inputs are ineligible; regression fitting and model
+validation remain future work. The original chocolate CLI keeps its established versions.
 
-    python3 -B scripts/build_chocolate_silver.py --archive-root data/collections --output data/silver/chocolate/uk
+Run the documentation guard and relevant tests under the policy:
 
-Silver keeps different shops' listings unique and product brand separate from
-seller role/identity. source-listings.jsonl retains every original capture in
-canonical seller groups, and listing-aliases.jsonl maps raw folders to those
-seller listings. products.jsonl applies the 103-attribute chocolate-schema-1
-contract. Separate assertions, prices, training candidates, eligible model
-inputs, a review queue, versioned contracts, quality reports and a manifest
-complete the dataset. brand/, retail/ and unknown/ expose products, prices and
-source listings by seller role. Preserved source/image bytes remain in raw.
+```sh
+python3 -B scripts/fetch_contracts.py --all
+python3 -B scripts/check_documentation.py
+python3 -B -m unittest discover -s scripts/tests -v
+python3 -B -m unittest discover -s plugins/category-processing/tests -v
+```
 
-An optional --reviews <reviews.json> uses chocolate-schema-reviews-1, documented
-in docs/chocolate-schema.md. The initial pricing design uses log regular GBP per
-100 g, 11 selected reviewed predictors, family-grouped validation and
-preprocessing learned only from training rows. scripts/chocolate_model.py
-provides validation, splitting, frozen encoding and interpretation helpers; it
-does not fit a regression. Unreviewed facts and unresolved price/tax basis keep
-current model inputs empty. Comprehensive extraction evaluation and model
-validation remain outstanding.
+The [validation workflow](.github/workflows/validation.yml) runs checks on pull
+requests and pushes. The lifecycle plan records verification and limitations.
 
-See docs/chocolate-silver.md for each layer's responsibilities, outputs, evidence
-resolution and reproducibility. Separate deduplication and standardization CLIs,
-and the earlier cleanup, remain compatibility/diagnostic helpers; creating
-persistent intermediate layers is not required for the canonical workflow.
+Publish raw text evidence across categories under the policy in
+[specification section 3.1.1](docs/spec.md#311-public-dataset-publication-policy).
+Exports preserve original product records, text/HTML/JSON, histories, catalogues,
+discovery/run evidence and coverage in losslessly compressed category/market
+bundles with a product JSONL index and manifests. Images and HTTP transfer caches
+stay local, with recorded references disclosed as omitted. Build and inspect the
+export without network access:
 
-The standalone category-processing plugin packages the full post-collection
-methodology with its own runtime, five-contract dataset references, stable seller UIDs,
-processing ledger, grouped mapping-review batches, calling-harness skill and
-model-preparation CLI. Chocolate tracks 103 attributes; the coffee starter
-demonstrates a second category with explicit structured inputs. Copying the
-package requires no repository sibling modules or collection-plugin install.
-It targets Agent Plugins 1.0.0; native client installation and execution across
-harnesses remain unverified.
+```sh
+python3 -B scripts/publish_collections.py
+```
 
-Run its portable workflow from the repository root:
+Upload to a public Hugging Face dataset using cached login or `HF_TOKEN`;
+`uv` installs the script's pinned client dependency:
 
-    python3 -B plugins/category-processing/cli.py process --archive-root data/collections --profile plugins/category-processing/profiles/chocolate --output data/silver/category-processing/chocolate/uk
-    python3 -B plugins/category-processing/cli.py summarize --silver-root data/silver/category-processing/chocolate/uk --output data/review-packets/chocolate/uk
-    python3 -B plugins/category-processing/cli.py prepare-model --silver-root data/silver/category-processing/chocolate/uk --output data/model-preparation/chocolate/uk
-
-See docs/category-processing.md and the package skill for profile versions,
-review examples, outputs and mapping changes. The process command rebuilds the
-full snapshot; ledger comparisons record input/rule changes without providing an
-incremental cache. Mapping improvements use evidence, versioned diffs, tests and
-impact review within the current task, with no external dispatch or scheduler.
-prepare-model requires reviewed eligible rows and at least two families; current
-unreviewed chocolate data does not pass. It writes frozen training/validation
-inputs and an encoder, and fits no regression. The original chocolate CLI and
-schema remain compatible under their established versions.
-
-Documentation changes with behavioral/schema/model changes in the same change.
-AGENTS.md and docs/documentation-policy.md name the canonical documents and sync
-conditions. Run the drift guard and relevant tests before finishing:
-
-    python3 -B scripts/fetch_contracts.py --all
-    python3 -B scripts/check_documentation.py
-    python3 -B -m unittest discover -s scripts/tests -v
-    python3 -B -m unittest discover -s plugins/category-processing/tests -v
-
-.github/workflows/validation.yml runs the tests and documentation guard on pull
-requests and pushes. docs/lifecycle/plan.md records implementation status,
-verification commands, limitations, and remaining work.
-
-Raw collection publication uses the category-independent text-evidence policy in
-docs/spec.md, section 3.1.1. It includes product records, original text/HTML/JSON
-evidence, capture histories, catalogues, discovery/run evidence, and coverage.
+```sh
+uv run --script scripts/publish_collections.py --upload --repo-id CoralLeiCN/rgc-collections
+```
 
 The dataset also contains separately published silver snapshots and analytical
-contracts. Contract publication uses scripts/publish_contracts.py and immutable
-reference manifests; it preserves raw exports and silver files. See
-docs/dataset-contracts.md. Published silver does not establish reviewed or
-model-ready inputs.
-Image files and HTTP transfer caches remain local; their recorded references
-are disclosed as omitted. Accepted source bytes are preserved in losslessly
-compressed category/market bundles, with a product JSONL index and manifests.
+contracts. `scripts/publish_contracts.py` publishes contracts with immutable
+reference manifests while preserving raw exports and silver files. Published
+silver requires separate evidence of review and model readiness. See the
+[dataset contract guide](docs/dataset-contracts.md).
 
-Build and inspect the export without network access:
+The exporter discovers all studies under `data/collections/`. Generated files in
+`data/huggingface-export/` are ignored by Git. Publication is a single run;
+recurring uploads require separate configuration.
 
-    python3 -B scripts/publish_collections.py
-
-Publish the export to a public Hugging Face dataset using a cached login or
-HF_TOKEN (uv installs the script's pinned client dependency):
-
-    uv run --script scripts/publish_collections.py --upload --repo-id CoralLeiCN/rgc-collections
-
-The exporter discovers all category/market studies under data/collections/.
-Generated files under data/huggingface-export/ remain ignored by Git. No
-recurring upload job is configured; the current publication is a one-time run.
-
-All repository content must be written in English, regardless of prompt language.
+Original dataset reference: https://github.com/coveooss/SIGIR-ecom-data-challenge

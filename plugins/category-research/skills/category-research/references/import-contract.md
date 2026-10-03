@@ -1,7 +1,7 @@
 # Raw collection import contract
 
 The envelope below is sufficient to begin collection. `information` and any
-additional product fields remain free JSON; they are not a feature taxonomy.
+additional product fields accept free JSON independently of a feature taxonomy.
 `contract_version` is a required nonempty label preserved from the sender.
 
 ```json
@@ -57,7 +57,7 @@ additional product fields remain free JSON; they are not a feature taxonomy.
 
 An artifact can provide `local_path` or `content` instead of requesting a fetch.
 Local bytes are copied unchanged. String `content` is preserved as UTF-8;
-non-string JSON content is serialized and labeled accordingly. If both are
+JSON content other than strings is serialized and labeled accordingly. If both are
 supplied, local bytes are the archived artifact and the entire descriptor still
 remains in the record. Artifact kind labels are extensible. Recognized examples
 are `page`, `json`, `text`, `derived_text`, and `fetch_error`. Derived text is
@@ -66,7 +66,7 @@ Unfamiliar kinds and fields remain preserved. Compression, source retrieval time
 original URLs, and arbitrary descriptor metadata are retained.
 
 `source_catalogs` may be supplied at the document root. A product's
-`source_catalog` may be an artifact object, a local-path string, or an array of
+`source_catalog` may be an artifact object, a string containing a local path, or an array of
 these. Exact catalog bytes are copied once per run into shared artifacts, with
 links from each product capture. Relative local paths resolve from `--input-base`
 or the import JSON's directory. Images may also supply `local_path` for existing
@@ -74,9 +74,9 @@ original image files.
 
 The CLI requires `--input` and `--output`. `--download-images` fetches all supplied
 image URLs by default; `--image-limit N` limits fetched references per product.
-`--fetch-pages` retrieves URL-only artifacts, or the product's `source_url` when
+`--fetch-pages` retrieves artifacts supplied only as URLs, or the product's `source_url` when
 no artifact list is provided. `--workers`, `--timeout`, and `--max-bytes` configure
-parallel imports and transfers. Per-product progress goes to stderr; use
+parallel imports and transfers. Progress for each product goes to stderr; use
 `--quiet-progress` to suppress it. Stdout contains a concise summary and the path
 of the full run report.
 
@@ -102,17 +102,17 @@ Transfers are cached by URL per run; original bytes are copied into each product
 folder. Shared catalogs, original import JSON values, and full run reports are
 retained alongside the product folders.
 
-Raw-section presence reports explicit source fields. Ingredient presence requires
+Presence reports for raw sections record explicit source fields. Ingredient presence requires
 substantive source text, lists, or candidate data; metadata, status fields, and
 unknown placeholders do not count. An ingredient field can be
 `source_field_present` or `unknown`; neither means its text or composition is
 complete or independently verified. The CLI's `ingredient_fields_unknown` count
-uses this conservative field-key heuristic; it is not an authoritative ingredient
+uses this conservative heuristic based on field names; it is not an authoritative ingredient
 coverage measurement. Original page text or unfamiliar field names require
 separate evidence review. Previously archived presence reports retain the
 heuristic used at capture time. `status: saved` describes
 artifact storage; `source_retrieval_status` and HTTP status describe retrieval.
-Failed/truncated responses, reference-only artifacts, and image limits produce
+Failed/truncated responses, artifacts containing only references, and image limits produce
 partial capture/report status. Even a fully stored supplied record remains
-`completeness: not_verified`. No category-wide coverage claim, feature regression,
+`completeness: not_verified`. No claim of coverage across the category, feature regression,
 certification audit, or schema design is performed by importing records.

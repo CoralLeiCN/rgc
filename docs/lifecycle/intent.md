@@ -1,53 +1,33 @@
 # Project intent
 
-Status: maintained project view. The canonical scope is
-[docs/intention.md](../intention.md).
+[Canonical intention](../intention.md) owns goals, scope and constraints. Build
+reusable collection and classification of product features, an interpretable
+pricing model and price testing for a brand's proposed product. Chocolate sold
+in the UK is the first study; scoring value for money awaits scientific research.
 
-## Problem and outcome
+The workflow preserves original raw evidence and combines deduplication,
+standardization, price normalization, review and model eligibility in silver.
+The standalone [processing package](../category-processing.md) supplies category
+profiles, mapping maintenance and model preparation with stable seller identity
+and immutable training snapshots.
 
-Collected product evidence is too inconsistent for dependable pricing analysis
-without source preservation, seller-specific deduplication, standardization,
-and review. Build reusable category research and feature classification, then
-support an interpretable pricing model and a brand's new-product price test.
-Chocolate sold in the UK is the first study.
+Keep these constraints in view:
 
-The requested chocolate workflow has raw and one combined silver layer. Raw
-preserves original evidence. Silver performs seller-specific deduplication,
-versioned schema/unit/vocabulary standardization, price normalization, evidence
-review and model-input eligibility in one build. It tracks broad source-supported
-product information and supplies a consistent contract for pricing inputs and
-interpreted insights; persistent intermediate layers are not required.
+- Preserve captures and source wording. Follow the language and writing rules in
+  [AGENTS.md](../../AGENTS.md).
+- Deduplicate within each seller; retain listings from different shops and
+  distinct data for direct brand stores and retailers.
+- Distinguish claims, derived interpretations, reviewed facts and model inputs.
+  Missing evidence is unknown.
+- Store analytical contracts in the authoritative Hugging Face dataset; retain
+  human documentation and immutable revision/hash manifests in Git, with verified
+  ignored caches.
+- Validate support and uncertainty before price testing; interpret regression
+  associations within the sampled market context.
+- Maintain documents with behavior under the
+  [documentation policy](../documentation-policy.md).
 
-Package the whole post-collection method in a self-contained
-[category-processing plugin](../category-processing.md), with category profiles,
-stable seller identity, typed processing, a capture/rules ledger, grouped mapping
-gaps, a calling-harness maintenance skill and model-input preparation. Normalize
-under frozen versions first, propose evidence-backed improvements, then rebuild
-affected history while preserving raw evidence and immutable training snapshots.
-
-## Constraints
-
-- Preserve original captures and evidence. Author repository content in English;
- retain original source wording in its original language.
-- Deduplicate only within a selling source. Keep products sold by different
- shops unique, and expose direct brand-store and retail data separately.
-- Keep source claims, derived interpretations, reviewed facts, and model inputs
- distinguishable. Unknown evidence cannot establish absence.
-- Store analytical contracts in the authoritative Hugging Face dataset; keep
- immutable revision/hash manifests and human documentation in Git, with ignored
- verified local caches.
-- Validate model support and uncertainty before supported price testing;
- regression associations do not establish causal effects.
-- Keep value-for-money scoring deferred pending the research in the canonical
- [specification](../spec.md). Maintain documentation in the same change as
- behavior under the [documentation policy](../documentation-policy.md).
-
-## Remaining decisions
-
-Source coverage, reviewed study boundaries, extraction evaluation thresholds,
-and numerical model release thresholds remain to be resolved before release.
-The schema and combined silver dataset can be built now while these data and
-validation decisions remain visible. The [silver guide](../chocolate-silver.md)
-documents each layer's responsibilities.
-
-Next document: [Requirements and design](spec.md).
+Resolve source coverage, study boundaries, extraction evaluation and numerical
+release thresholds before release. Schema and silver builds can proceed while
+these decisions are open. See [requirements and design](spec.md) for contracts
+and [the plan](plan.md) for implementation status.

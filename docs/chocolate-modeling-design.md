@@ -10,7 +10,7 @@ supported domain is standard chocolate bars sold by UK supermarkets. The outputs
 associations and retailer-specific market price benchmarks. Add a matched-product
 retailer diagnostic to distinguish retailer pricing from assortment differences.
 
-This design implements the modeling direction in [the specification](spec.md),
+This design specifies the modeling direction in [the specification](spec.md),
 sections 3–7. The [data review](analysis/chocolate-data-review-2026-10-03.json)
 records the inspected 1,844 source records and 2,445 captures. Eligibility and
 identity resolution will determine the actual analytical sample.

@@ -1,47 +1,45 @@
 # Documentation maintenance policy
 
-The repository records user intention, implemented contracts, and current
-validation separately. Documentation must change with the behavior it describes.
-The [repository instructions](../AGENTS.md) apply this policy to future work.
+Update documentation with the behavior it describes. Record user intention,
+implemented contracts and validation status distinctly. The
+[repository instructions](../AGENTS.md) apply this policy and own the writing
+rules, including preservation of original source evidence.
 
 ## Canonical documents and ownership
 
 | Document | Owns | Update condition |
 | --- | --- | --- |
 | [Intention](intention.md) | User goals, requested scope, and constraints. | User goals, requested deliverables, scope, or constraints change. |
-| [Specification](spec.md) | Cross-layer contracts, supported behavior, readiness, training, interpretation, and release requirements. | Any behavior, interface, eligibility gate, model basis, or acceptance requirement changes. |
-| [Silver guide](chocolate-silver.md) | Canonical raw/silver responsibilities, combined pipeline, source-listing/alias preservation, outputs, evidence resolution, manifest and CLI. | Silver behavior, identity, output, provenance, CLI, schema/review application or eligibility changes. |
-| [Portable processing guide](category-processing.md) | Self-contained processing plugin, profile versions, stable seller envelope, generic targets, ledger/batches, calling-harness maintenance and model-preparation commands. | Portable engine, package, profile, ledger/batch, review/eligibility, model handoff or public CLI changes. |
-| [Processing package README](../plugins/category-processing/README.md), [skill](../plugins/category-processing/skills/category-processing/SKILL.md) and its references | Standalone use, decisions, archive/profile contracts, evidence triage and model handoff without repository siblings. | Package behavior or usable workflow changes; keep progressive references accurate and copied-package use self-contained. |
+| [Specification](spec.md) | Contracts across layers, supported behavior, readiness, training, interpretation and release requirements. | Behavior, interface, eligibility, model basis or acceptance requirements change. |
+| [Silver guide](chocolate-silver.md) | Raw/silver responsibilities, combined pipeline, preservation of source listings and aliases, outputs, evidence resolution, manifest and CLI. | Silver behavior, identity, output, provenance, CLI, schema/review application or eligibility changes. |
+| [Portable processing guide](category-processing.md) | Standalone processing package, profile versions, stable seller envelope, generic targets, ledger/batches, harness maintenance and model preparation commands. | Portable engine, package, profile, ledger/batch, review/eligibility, model handoff or public CLI changes. |
+| [Processing package README](../plugins/category-processing/README.md), [skill](../plugins/category-processing/skills/category-processing/SKILL.md) and its references | Standalone use, decisions, archive/profile contracts, evidence triage and model handoff. | Package behavior or workflow changes; preserve complete use after copying the package without repository siblings. |
 | [Deduplication guide](chocolate-deduplication.md) | Standalone deduplication helper identity, snapshot outputs and CLI. | Shared deduplication identity, helper partitions/provenance or CLI changes; update the silver contract too. |
-| [Cleanup guide](chocolate-cleaning.md) | Earlier direct-from-raw compatibility cleanup and its distinct review contract. | That helper implementation, profile, review format or CLI changes; keep its compatibility relationship to silver accurate. |
+| [Cleanup guide](chocolate-cleaning.md) | Earlier compatibility cleanup directly from raw and its distinct review contract. | Helper implementation, profile, review format or CLI changes; keep its relationship to silver accurate. |
 | [Chocolate schema guide](chocolate-schema.md) | Typed fields, standardization rules, evidence reviews, training handoff and insight interpretation within silver. | Chocolate schema, vocabulary, source mappings, review/eligibility, model design or related behavior changes. |
-| [Chocolate dataset manifest](../schemas/chocolate/dataset-contract.json) | Immutable dataset revision, paths, hashes and version metadata for executable contracts stored in Hugging Face. | Typed attributes, vocabulary, units, mapping behavior, record shape, feature selection, or model design changes. Publish affected contracts and update the manifest and documented versions together. |
+| [Chocolate dataset manifest](../schemas/chocolate/dataset-contract.json) | Immutable dataset revision, paths, hashes and versions for executable contracts. | Typed attributes, vocabulary, units, mapping behavior, record shape, feature selection or model design changes. Publish affected contracts and synchronize manifest, versions and documentation. |
+| [Dataset contract guide](dataset-contracts.md) | Dataset ownership, immutable pins, caches, offline use and publication. | Manifest format, resolver, cache behavior or publication workflow changes. |
 | [README](../README) | Entry points, usable commands, and implementation overview. | A public entry point, layer, usable command, or implementation status changes. |
-| [Dataset contract guide](dataset-contracts.md) | Dataset ownership, manifest pins, cache/offline behavior and storage maintenance. | Reference format, resolver, cache behavior or contract publication workflow changes. |
 | [Lifecycle intent](lifecycle/intent.md) and [lifecycle specification](lifecycle/spec.md) | Short navigation views of canonical intention and specification. | Their summarized scope or status would become inaccurate. Keep detail in canonical documents. |
 | [Lifecycle plan](lifecycle/plan.md) | Implementation work, current status, risks, proof, and remaining work. | Every behavioral, schema, pipeline, or modeling change; update affected progress and proof in the same change. |
 
-The authoritative machine contracts are in the
+The authoritative contracts are in the
 [Hugging Face dataset](https://huggingface.co/datasets/CoralLeiCN/rgc-collections).
 `contracts/chocolate/` contains `profile.json`, `source-mappings.json`,
-`product.schema.json` and `model-design.json`.
+`product.schema.json` and `model-design.json`;
 `contracts/category-processing/<category>/` adds `pipeline.json` for each
 portable profile. Git retains `schemas/chocolate/dataset-contract.json` and
 `plugins/category-processing/profiles/<category>/dataset-contract.json`, with
-immutable dataset commit pins, per-file SHA-256 hashes and version metadata.
-Analytical contract bodies and generated output copies are not authoritative
-Git source. Runtime caches are ignored; dataset snapshots retain the exact
-contracts used by their builds.
+immutable commit pins, per-file SHA-256 hashes and version metadata. Runtime
+caches are ignored; generated snapshots retain exact contract copies/provenance.
 
-Publish changed contracts to a new immutable dataset revision before updating
-the manifest. Verify hashes and profile alignment, update affected semantic
-versions and documentation, then rebuild. A storage-only move preserves existing
-machine versions and bytes. The five portable contracts must agree on
-schema/catalog and have explicit mapping, model-design and recipe versions. Keep
-the portable guide's version table synchronized. Portable chocolate's stable
-seller envelope uses its own schema/design versions; do not rewrite established
-chocolate snapshots or edit generated copies.
+Publish changed contracts to a new immutable revision before updating manifests.
+Verify hashes and profile alignment, synchronize affected semantic versions and
+documentation, then rebuild. Moving storage alone preserves bytes and versions.
+All five portable contracts must agree on schema/catalog and declare mapping,
+model design and recipe versions. Synchronize the portable guide's version table.
+Portable chocolate's stable seller envelope uses distinct schema/design versions.
+Preserve established snapshots and rebuild from authoritative contracts.
 
 ## Mechanically required change coverage
 
@@ -60,11 +58,11 @@ documents when their meaning or public entry points are affected.
 | `scripts/publish_collections.py`, `scripts/archive_product_sources.py`, `scripts/verify_product_archive.py` | `docs/spec.md`, `README`, `docs/lifecycle/plan.md` |
 | `AGENTS.md`, `scripts/check_documentation.py`, `.github/workflows/validation.yml` | `docs/documentation-policy.md`, `docs/lifecycle/plan.md` |
 
-## Same-change requirements
+## Requirements for each change
 
 1. Identify the affected contracts and update their canonical documents with
    the implementation. Update intention only when intent has changed.
-2. Keep schema/profile, source-mapping, record-format, and model-design version
+2. Keep schema/profile, source mapping, record format and model design version
    references aligned. Change the relevant version when its meaning changes;
    retain old dataset manifests as the record of older builds.
 3. Update lifecycle plan status and proof. Distinguish implemented code, reviewed
@@ -92,33 +90,25 @@ documents when their meaning or public entry points are affected.
    ```
 
 The guard checks required documents, local references, lifecycle placeholders,
-contract/version alignment, and whether tracked or untracked behavioral changes
-have corresponding documentation updates. It cannot prove that prose is correct
-or that a source assertion was reviewed. Review the changed contracts and
-generated quality report for those questions.
-It also checks that both pinned portable profiles have aligned five-file
-manifest references and documented schema/mapping/model-design/recipe versions,
-plus required package skill/reference links. Structural checking works offline
-in a clean clone: no live dataset access or downloaded schema is required.
-When cached contracts are available, the checker additionally verifies their
-hashes, versions and schema/catalog alignment; missing cache files are not
-missing repository source. Copied-package behavior
-and native client installation require their own verification.
+contract/version alignment and documentation coverage for tracked or untracked
+changes. It checks both portable profiles' five contract references, documented
+versions and required skill/reference links. Structural checks work offline in a
+clean clone without cached contracts. Available cached files receive hash/version
+checks, with schema/catalog alignment checked for complete caches. Review the
+prose, changed contracts and
+generated quality report for semantic accuracy and evidence review. Verify
+execution after copying a package and native client installation independently.
 
 The [validation workflow](../.github/workflows/validation.yml) runs the guard and
 behavioral tests for pull requests and pushes. Its explicit `--base <git-ref>`
-compares against the pull-request base or previous push revision; local checks
-include current tracked and untracked changes. Change coverage checks that the
-applicable documents changed, rather than proving that those changes describe
-the implementation correctly. Review their substance as part of the same work.
+compares against the pull request base or previous push revision; local checks
+include current tracked and untracked changes.
 
 ## Completion record
 
 Record runnable verification commands and material limitations in the lifecycle
-plan. Do not store volatile counts in several specifications: dataset manifests
-and quality reports own build-specific counts. If a report is regenerated, use
-its actual status rather than assuming previous results still apply.
+plan. Dataset manifests and quality reports own counts for each build; reference
+them from specifications. Use a regenerated report's actual status.
 
-This policy requires documentation maintenance within authorized work. It does
-not add a user approval gate, require a separate planning conversation, or
-authorize unrelated publication, deployment, or communication.
+Use existing task authorization for documentation maintenance. Publication,
+deployment and communication require authorization within their own task scope.
