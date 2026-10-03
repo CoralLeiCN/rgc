@@ -68,7 +68,9 @@ export async function handleExtractTraits(request: Request, dependencies: Depend
   let acquired = false;
   try {
     const origin = request.headers.get("origin");
-    if (origin && origin !== new URL(request.url).origin) throw new ApiError(403, "INVALID_ORIGIN", "Use the extractor from this workspace.");
+    const url = new URL(request.url);
+    const expectedOrigin = `${url.protocol}//${request.headers.get("host") || url.host}`;
+    if (origin && origin !== expectedOrigin) throw new ApiError(403, "INVALID_ORIGIN", "Use the extractor from this workspace.");
     const input = await readExtractionInput(request);
     const settings = dependencies.settings || { provider: process.env.TRAIT_EXTRACTOR_PROVIDER, apiKey: process.env.OPENAI_API_KEY, model: process.env.OPENAI_EXTRACTION_MODEL, bridgeUrl: process.env.CODEX_EXTRACTOR_URL, bridgeToken: process.env.CODEX_EXTRACTOR_TOKEN };
     const local = extractionProvider(settings) === "codex-local";

@@ -164,6 +164,15 @@ Invalid price/mass/traits suppress the marker; missing Z prompts for that trait.
 Out-of-range drafts extend display bounds without changing observed statistics.
 Source evidence remains under a disclosure; drafts are not persisted or trained on.
 
+Extraction and prediction use distinct component keys for each draft session.
+Ordinary draft edits retain one extraction panel and its selected photos. Copy
+and reset actions start new sessions for both panels, clearing stale inputs and
+results without duplicating upload controls.
+The extraction origin check uses the request protocol and Host header, falling
+back to the request URL host. This accepts the matching browser address when
+Next.js constructs an internal URL with a different hostname, while rejecting
+foreign origins before calling the provider.
+
 The extraction panel offers **Use example photos** for the front and back of
 Well&Truly Fudge & Brownie Oat M!lk Chocolate, 30 g. Their original JPEG bytes are
 repository demo assets in `apps/web/public/examples/well-and-truly/`. Selection

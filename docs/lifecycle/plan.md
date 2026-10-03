@@ -239,6 +239,45 @@ sellers in validation. Missing evidence cannot justify new taxonomy values.
 
 ### Web application verification
 
+#### Pricing label update
+
+On 2026-10-03 the user requested removal of the “SYNTHETIC DEMO” text.
+The price prediction panel no longer renders that badge, and its unused CSS
+rule was removed. The generated-training-data disclosure remains visible.
+The local browser confirmed the badge was absent. TypeScript, the documentation
+guard and whitespace checks passed.
+
+#### Custom photo upload repair
+
+On 2026-10-03 the local browser exposed repeated extraction panels and duplicate
+React keys after draft updates. Extraction and pricing shared the same numeric
+session key. Their keys now include distinct panel prefixes, retaining selected
+photos across ordinary draft edits and remounting both panels on copy/reset.
+The browser rendered one upload panel after reload; uploading the two original
+JPEGs through the file chooser produced two resized previews. Editing name and
+pack price retained both photos and an enabled extraction button.
+
+The live request then exposed a 403 because Next.js used an internal localhost
+URL while the browser requested 127.0.0.1. Extraction now compares Origin with
+the request protocol and Host header, using the URL host only when Host is
+absent, as the price prediction route already does. The new route regression
+test covers matching hosts, absent Origin/Host, foreign origins, different
+ports and a misleading forwarded host; rejected requests never call a provider.
+
+`uv sync --locked`, all 476 existing pytest cases, and the subsequent seven
+extraction/pricing route tests passed. TypeScript, Ruff, production build,
+snapshot/asset/model verification, all eight API traces and offline contract
+verification passed. The repair is local; the hosted preview has not been
+updated.
+
+The corrected browser request returned HTTP 200 in 71 seconds with 33
+reviewable candidates. One manufacture-country candidate contradicted the
+response's own warning and was unchecked before Apply. Applying the remaining
+32 candidates set edible weight to 30 g and retained the manually entered GBP
+2.25 price. Both photo previews and one upload panel remained after applying.
+This verifies the workflow, not the factual accuracy of generated candidates.
+The documentation guard and whitespace check also passed.
+
 #### Local Codex trait extraction
 
 The 2026-10-03 local extraction update adds `codex-local` to the Next.js API.

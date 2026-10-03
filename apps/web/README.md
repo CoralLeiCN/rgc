@@ -73,6 +73,12 @@ Copying a selected listing/resetting the draft clears stale extraction review.
 Drafts stay local and never enter observed gap, brand or training analyses.
 Original source evidence remains under a disclosure in the configurator.
 
+The upload and pricing panels have distinct component identities. Draft edits
+retain selected photos in one upload panel; copying a listing or resetting the
+draft clears both panels' prior sessions.
+Extraction checks the browser origin against the requested host, so both
+`localhost` and `127.0.0.1` work when opened at their matching local address.
+
 The original JPEGs are preserved in `public/examples/well-and-truly/front.jpg`
 and `back.jpg` as repository demo data, with hashes checked through
 `public/asset-manifest.json`. Image preparation creates temporary browser copies.

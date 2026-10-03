@@ -1069,6 +1069,13 @@ operation. It sends explicitly submitted inputs to a configured provider but
 performs no dataset, evidence-review or draft persistence writes. The application
 requires no database. Provider configuration is required only for extraction.
 
+The configurator renders one extraction panel and one prediction panel with
+distinct component identities. Draft edits preserve selected photos. Explicit
+listing-copy and reset actions clear both panels' prior session state.
+Extraction compares a supplied Origin to the request protocol and Host header,
+falling back to the URL host when Host is absent. A foreign origin receives 403
+before inputs are dispatched to a provider.
+
 #### Cohort, families and evidence
 
 Schema-driven conditions use types, units, vocabulary, numeric bounds and

@@ -64,8 +64,10 @@ Responses report fixture/run/revision identity, the historical
 `regular-consumer-price-1` target basis, geometric GBP/100 g, converted GBP/pack,
 model reference, raw field SHAP, signed price allocations, family totals,
 reconstruction errors and reached-leaf support. Intervals are `null`: fixture
-calibration does not establish uncertainty for real products. The UI labels the
-estimate as synthetic and lists all excluded schema fields as not modeled.
+calibration does not establish uncertainty for real products. The UI describes
+the generated training data and illustrative estimates, and lists all excluded
+schema fields as not modeled. The separate “SYNTHETIC DEMO” badge was removed
+at the user's request.
 The model excludes cocoa percentage, certifications and brand.
 
 Requests are bounded to 4 KiB; malformed input returns 400, excess bytes 413,

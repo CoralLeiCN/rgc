@@ -54,7 +54,6 @@ export function ProductPricing({ draft, fields, onChange }: { draft: ProductDraf
 
   return <section className="config-pricing" aria-labelledby="config-pricing-title">
     <div className="heading-with-help"><h3 id="config-pricing-title">Predict a price</h3><HelpTip label="About the synthetic pricing demo"><p>This LightGBM model was trained on generated test data. Its prices and SHAP contributions illustrate the prediction workflow. Accuracy on real products has not been established.</p><p>The model accepts five fields for a single standard chocolate bar pack: 50–150 g, dark/milk/white, plain/inclusion/filled, nuts evidence and Waitrose/Ocado. Proposed price is excluded from prediction. Extraction and other trait inputs are available separately.</p><p>The historical fixture uses regular-consumer-price-1. It retains that basis; it has no validated current-market prediction interval.</p></HelpTip></div>
-    <span className="pricing-demo-tag">SYNTHETIC DEMO</span>
     <p className="pricing-disclosure">Trained on generated test data. These estimates are illustrative.</p>
     <label className="pricing-scope"><input type="checkbox" checked={scopeConfirmed} onChange={event => setScopeConfirmed(event.target.checked)} /><span>This is one standard chocolate bar pack.</span></label>
     <p className="pricing-weight">Uses edible weight above: {draft.weightGrams || "Unspecified"} g · supported range 50–150 g</p>
