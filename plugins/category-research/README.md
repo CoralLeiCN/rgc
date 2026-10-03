@@ -28,6 +28,14 @@ ingredient fields remain visible.
 The skill, CLI, and Python API are bundled under this plugin root. Other plugins
 can read its skill, call its script, or import the core directly without a server.
 
+Collection and post-collection processing are separate responsibilities. The
+standalone category-processing package consumes this preserved archive format to
+build seller-specific silver data, apply category profiles, summarize mapping
+gaps and prepare reviewed model inputs. It does not need this collection package
+installed, and collection does not require a complete analytical taxonomy.
+Within this repository, see [portable processing](../../docs/category-processing.md)
+for composition and the processing package's self-contained CLI/skill.
+
 Run the behavioral tests from the repository root:
 
 ```text

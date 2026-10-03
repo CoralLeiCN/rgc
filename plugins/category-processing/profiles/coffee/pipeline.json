@@ -1,0 +1,57 @@
+{
+  "pipeline_version": "coffee-processing-pipeline-1",
+  "schema_version": "coffee-schema-1",
+  "category": "coffee",
+  "market": "uk",
+  "adapter": "structured",
+  "fields": [
+    {
+      "attribute": "identity.name",
+      "pointer": "/raw_record/identity/name"
+    },
+    {
+      "attribute": "identity.brand",
+      "pointer": "/raw_record/identity/brand"
+    },
+    {
+      "attribute": "identity.product_group",
+      "pointer": "/raw_record/information/product_group"
+    },
+    {
+      "attribute": "quantity.net_weight_g",
+      "pointer": "/raw_record/information/net_weight_g",
+      "unit": "g"
+    }
+  ],
+  "sections": {
+    "/raw_record/information/coffee": "coffee",
+    "/raw_record/information/origin": "origin",
+    "/raw_record/information/packaging": "packaging"
+  },
+  "price": {
+    "amount_pointer": "/raw_record/information/price/amount",
+    "regular_price_pointer": "/raw_record/information/price/regular_amount",
+    "currency_pointer": "/raw_record/information/price/currency",
+    "price_unit": "major",
+    "observed_at_pointer": "/raw_record/information/price/observed_at",
+    "available_pointer": "/raw_record/information/price/available",
+    "tax_basis_pointer": "/raw_record/information/price/tax_basis"
+  },
+  "quantity": {
+    "attribute": "quantity.net_weight_g",
+    "unit": "g",
+    "base_quantity": 100
+  },
+  "source_roles": {
+    "fixture-roaster": {
+      "source_role": "brand",
+      "retailer": "Fixture Roaster Shop"
+    },
+    "fixture-retailer": {
+      "source_role": "retail",
+      "retailer": "Fixture Coffee Retailer"
+    }
+  },
+  "review_format_version": "category-processing-reviews-1",
+  "pipeline_format_version": "category-processing-profile-1"
+}

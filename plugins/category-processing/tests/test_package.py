@@ -1,0 +1,109 @@
+"""Check portable package metadata against the published plugin/skill constraints."""
+
+import ast
+from copy import deepcopy
+import hashlib
+import json
+from pathlib import Path
+import re
+import unittest
+
+
+PLUGIN_ROOT = Path(__file__).resolve().parents[1]
+
+
+def validate_schema(value, schema):
+    """Validate the keywords used by the official v1.0.0 manifest schema."""
+    supported = {"$schema", "$id", "title", "description", "type", "properties", "required", "additionalProperties", "items", "const", "minLength", "maxLength", "pattern"}
+    unknown = set(schema) - supported
+    if unknown:
+        raise AssertionError("Unsupported schema keywords: " + repr(unknown))
+    if "const" in schema and value != schema["const"]:
+        raise ValueError("Schema constant mismatch.")
+    expected = schema.get("type")
+    types = {"string": str, "object": dict, "array": list}
+    if expected and not isinstance(value, types[expected]):
+        raise ValueError("Schema type mismatch.")
+    if isinstance(value, str):
+        if len(value) < schema.get("minLength", 0) or len(value) > schema.get("maxLength", float("inf")):
+            raise ValueError("Schema string length mismatch.")
+        if "pattern" in schema and re.search(schema["pattern"], value) is None:
+            raise ValueError("Schema pattern mismatch.")
+    if isinstance(value, dict):
+        for required in schema.get("required", []):
+            if required not in value:
+                raise ValueError("Required schema field is missing: " + required)
+        properties = schema.get("properties", {})
+        for key, item in value.items():
+            if key in properties:
+                validate_schema(item, properties[key])
+            else:
+                additional = schema.get("additionalProperties", True)
+                if additional is False:
+                    raise ValueError("Unknown schema field: " + key)
+                if isinstance(additional, dict):
+                    validate_schema(item, additional)
+    if isinstance(value, list) and "items" in schema:
+        for item in value:
+            validate_schema(item, schema["items"])
+
+
+class CategoryProcessingPackageTests(unittest.TestCase):
+    def test_manifest_matches_agent_plugins_1_0_schema_constraints(self):
+        official_bytes = (PLUGIN_ROOT / "tests/fixtures/plugin.schema.json").read_bytes()
+        self.assertEqual(hashlib.sha256(official_bytes).hexdigest(),
+                         "0a4aad95ce337878ad38802ebf0daa3fde76abe3f65400c86bcbb1ec0b3ab883")
+        schema = json.loads(official_bytes)
+        self.assertEqual(schema["$id"], "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json")
+        manifest = json.loads((PLUGIN_ROOT / "plugin.json").read_text())
+        validate_schema(manifest, schema)
+        invalid = deepcopy(manifest)
+        invalid["entrypoints"] = {"cli": "./cli.py"}
+        with self.assertRaises(ValueError):
+            validate_schema(invalid, schema)
+
+    def test_discoverable_skill_frontmatter_and_local_references_resolve(self):
+        # Primary constraints: https://agentskills.io/specification
+        skill = PLUGIN_ROOT / "skills/category-processing/SKILL.md"
+        source = skill.read_text()
+        self.assertTrue(source.startswith("---\n"))
+        frontmatter = source.split("---", 2)[1]
+        fields = dict(re.findall(r"^([a-z-]+):\s*(.+)$", frontmatter, flags=re.MULTILINE))
+        self.assertEqual(fields["name"], skill.parent.name)
+        self.assertRegex(fields["name"], r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+        self.assertTrue(1 <= len(fields["name"]) <= 64)
+        self.assertTrue(1 <= len(fields["description"]) <= 1024)
+        for target in re.findall(r"\]\(([^)]+)\)", source):
+            if "://" not in target and not target.startswith("#"):
+                self.assertTrue((skill.parent / target.split("#")[0]).exists(), target)
+
+    def test_runtime_imports_are_standard_library_or_local_to_the_plugin(self):
+        forbidden = {"category_research", "chocolate_cleanup", "chocolate_standardization", "chocolate_model", "chocolate_silver"}
+        for path in (PLUGIN_ROOT / "category_processing").glob("*.py"):
+            for node in ast.walk(ast.parse(path.read_text())):
+                if isinstance(node, ast.Import):
+                    imported = {alias.name.split(".")[0] for alias in node.names}
+                elif isinstance(node, ast.ImportFrom) and node.module:
+                    imported = {node.module.split(".")[0]}
+                else:
+                    continue
+                self.assertFalse(imported & forbidden, str(path))
+
+    def test_coffee_contracts_are_consistent_without_chocolate_attributes(self):
+        root = PLUGIN_ROOT / "profiles/coffee"
+        documents = {name: json.loads((root / name).read_text()) for name in
+                     ("profile.json", "source-mappings.json", "model-design.json", "product.schema.json", "pipeline.json")}
+        version = documents["profile.json"]["schema_version"]
+        for name in ("source-mappings.json", "model-design.json", "pipeline.json"):
+            self.assertEqual(documents[name]["schema_version"], version)
+        self.assertEqual(documents["product.schema.json"]["properties"]["schema_version"]["const"], version)
+        attributes = documents["profile.json"]["attributes"]
+        self.assertEqual(len(attributes), 12)
+        self.assertEqual(documents["profile.json"]["category"], "coffee")
+        self.assertFalse(any("cocoa" in name or "nuts" in name for name in attributes))
+        self.assertFalse(set(documents["model-design.json"]["predictors"]) - set(attributes))
+        self.assertEqual(set(documents["product.schema.json"]["properties"]["attributes"]["required"]), set(attributes))
+
+
+if __name__ == "__main__":
+    unittest.main()

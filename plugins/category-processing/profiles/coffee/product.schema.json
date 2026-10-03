@@ -1,0 +1,1816 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:category-processing:coffee-product:1",
+  "title": "Coffee standardized seller listing",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "dataset_version",
+    "source_dataset_version",
+    "listing_id",
+    "source_listing_ids",
+    "source_role",
+    "source_key",
+    "brand",
+    "retailer",
+    "attributes",
+    "unmapped_claims",
+    "review_status",
+    "seller_uid"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "coffee-schema-1"
+    },
+    "dataset_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_dataset_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "category": {
+      "const": "coffee"
+    },
+    "market": {
+      "const": "uk"
+    },
+    "listing_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_listing_ids": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "source_role": {
+      "enum": [
+        "brand",
+        "retail",
+        "unknown"
+      ]
+    },
+    "source_key": {
+      "type": "string",
+      "minLength": 1
+    },
+    "brand": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "retailer": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "attributes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "identity.name",
+        "identity.brand",
+        "identity.product_group",
+        "identity.source_role",
+        "identity.retailer",
+        "quantity.net_weight_g",
+        "coffee.roast",
+        "coffee.format",
+        "coffee.decaf_claim",
+        "coffee.arabica_percentage",
+        "origin.countries",
+        "packaging.type"
+      ],
+      "properties": {
+        "identity.name": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "value",
+            "status",
+            "unit",
+            "qualifier",
+            "scope",
+            "evidence",
+            "method",
+            "review_status"
+          ],
+          "properties": {
+            "value": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "string",
+                  "minLength": 1
+                }
+              ]
+            },
+            "status": {
+              "enum": [
+                "known",
+                "unknown",
+                "conflict",
+                "not_applicable"
+              ]
+            },
+            "unit": {
+              "const": null
+            },
+            "qualifier": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "scope": {
+              "enum": [
+                "product",
+                "ingredient",
+                "brand",
+                "packaging",
+                "packaging_component",
+                "observation"
+              ]
+            },
+            "evidence": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/evidence"
+              }
+            },
+            "method": {
+              "type": "string",
+              "minLength": 1
+            },
+            "review_status": {
+              "enum": [
+                "unreviewed",
+                "reviewed",
+                "needs_review"
+              ]
+            }
+          },
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "status": {
+                    "const": "known"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "value": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "evidence": {
+                    "minItems": 1
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "status": {
+                    "enum": [
+                      "unknown",
+                      "conflict",
+                      "not_applicable"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "value": {
+                    "type": "null"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "status": {
+                    "enum": [
+                      "conflict",
+                      "not_applicable"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "evidence": {
+                    "minItems": 1
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "identity.brand": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "value",
+            "status",
+            "unit",
+            "qualifier",
+            "scope",
+            "evidence",
+            "method",
+            "review_status"
+          ],
+          "properties": {
+            "value": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "string",
+                  "minLength": 1
+                }
+              ]
+            },
+            "status": {
+              "enum": [
+                "known",
+                "unknown",
+                "conflict",
+                "not_applicable"
+              ]
+            },
+            "unit": {
+              "const": null
+            },
+            "qualifier": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "scope": {
+              "enum": [
+                "product",
+                "ingredient",
+                "brand",
+                "packaging",
+                "packaging_component",
+                "observation"
+              ]
+            },
+            "evidence": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/evidence"
+              }
+            },
+            "method": {
+              "type": "string",
+              "minLength": 1
+            },
+            "review_status": {
+              "enum": [
+                "unreviewed",
+                "reviewed",
+                "needs_review"
+              ]
+            }
+          },
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "status": {
+                    "const": "known"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "value": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "evidence": {
+                    "minItems": 1
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "status": {
+                    "enum": [
+                      "unknown",
+                      "conflict",
+                      "not_applicable"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "value": {
+                    "type": "null"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "status": {
+                    "enum": [
+                      "conflict",
+                      "not_applicable"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "evidence": {
+                    "minItems": 1
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "identity.product_group": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "value",
+            "status",
+            "unit",
+            "qualifier",
+            "scope",
+            "evidence",
+            "method",
+            "review_status"
+          ],
+          "properties": {
+            "value": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "whole_bean",
+                    "ground",
+                    "instant"
+                  ]
+                }
+              ]
+            },
+            "status": {
+              "enum": [
+                "known",
+                "unknown",
+                "conflict",
+                "not_applicable"
+              ]
+            },
+            "unit": {
+              "const": null
+            },
+            "qualifier": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "scope": {
+              "enum": [
+                "product",
+                "ingredient",
+                "brand",
+                "packaging",
+                "packaging_component",
+                "observation"
+              ]
+            },
+            "evidence": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/evidence"
+              }
+            },
+            "method": {
+              "type": "string",
+              "minLength": 1
+            },
+            "review_status": {
+              "enum": [
+                "unreviewed",
+                "reviewed",
+                "needs_review"
+              ]
+            }
+          },
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "status": {
+                    "const": "known"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "value": {
+                    "type": "string",
+                    "enum": [
+                      "whole_bean",
+                      "ground",
+                      "instant"
+                    ]
+                  },
+                  "evidence": {
+                    "minItems": 1
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "status": {
+                    "enum": [
+                      "unknown",
+                      "conflict",
+                      "not_applicable"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "value": {
+                    "type": "null"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "status": {
+                    "enum": [
+                      "conflict",
+                      "not_applicable"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "evidence": {
+                    "minItems": 1
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "identity.source_role": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "value",
+            "status",
+            "unit",
+            "qualifier",
+            "scope",
+            "evidence",
+            "method",
+            "review_status"
+          ],
+          "properties": {
+            "value": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "brand",
+                    "retail"
+                  ]
+                }
+              ]
+            },
+            "status": {
+              "enum": [
+                "known",
+                "unknown",
+                "conflict",
+                "not_applicable"
+              ]
+            },
+            "unit": {
+              "const": null
+            },
+            "qualifier": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "scope": {
+              "enum": [
+                "product",
+                "ingredient",
+                "brand",
+                "packaging",
+                "packaging_component",
+                "observation"
+              ]
+            },
+            "evidence": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/evidence"
+              }
+            },
+            "method": {
+              "type": "string",
+              "minLength": 1
+            },
+            "review_status": {
+              "enum": [
+                "unreviewed",
+                "reviewed",
+                "needs_review"
+              ]
+            }
+          },
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "status": {
+                    "const": "known"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "value": {
+                    "type": "string",
+                    "enum": [
+                      "brand",
+                      "retail"
+                    ]
+                  },
+                  "evidence": {
+                    "minItems": 1
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "status": {
+                    "enum": [
+                      "unknown",
+                      "conflict",
+                      "not_applicable"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "value": {
+                    "type": "null"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "status": {
+                    "enum": [
+                      "conflict",
+                      "not_applicable"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "evidence": {
+                    "minItems": 1
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "identity.retailer": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "value",
+            "status",
+            "unit",
+            "qualifier",
+            "scope",
+            "evidence",
+            "method",
+            "review_status"
+          ],
+          "properties": {
+            "value": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "string",
+                  "minLength": 1
+                }
+              ]
+            },
+            "status": {
+              "enum": [
+                "known",
+                "unknown",
+                "conflict",
+                "not_applicable"
+              ]
+            },
+            "unit": {
+              "const": null
+            },
+            "qualifier": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "scope": {
+              "enum": [
+                "product",
+                "ingredient",
+                "brand",
+                "packaging",
+                "packaging_component",
+                "observation"
+              ]
+            },
+            "evidence": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/evidence"
+              }
+            },
+            "method": {
+              "type": "string",
+              "minLength": 1
+            },
+            "review_status": {
+              "enum": [
+                "unreviewed",
+                "reviewed",
+                "needs_review"
+              ]
+            }
+          },
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "status": {
+                    "const": "known"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "value": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "evidence": {
+                    "minItems": 1
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "status": {
+                    "enum": [
+                      "unknown",
+                      "conflict",
+                      "not_applicable"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "value": {
+                    "type": "null"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "status": {
+                    "enum": [
+                      "conflict",
+                      "not_applicable"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "evidence": {
+                    "minItems": 1
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "quantity.net_weight_g": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "value",
+            "status",
+            "unit",
+            "qualifier",
+            "scope",
+            "evidence",
+            "method",
+            "review_status"
+          ],
+          "properties": {
+            "value": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "number",
+                  "minimum": 0
+                }
+              ]
+            },
+            "status": {
+              "enum": [
+                "known",
+                "unknown",
+                "conflict",
+                "not_applicable"
+              ]
+            },
+            "unit": {
+              "const": "g"
+            },
+            "qualifier": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "scope": {
+              "enum": [
+                "product",
+                "ingredient",
+                "brand",
+                "packaging",
+                "packaging_component",
+                "observation"
+              ]
+            },
+            "evidence": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/evidence"
+              }
+            },
+            "method": {
+              "type": "string",
+              "minLength": 1
+            },
+            "review_status": {
+              "enum": [
+                "unreviewed",
+                "reviewed",
+                "needs_review"
+              ]
+            }
+          },
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "status": {
+                    "const": "known"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "value": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "evidence": {
+                    "minItems": 1
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "status": {
+                    "enum": [
+                      "unknown",
+                      "conflict",
+                      "not_applicable"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "value": {
+                    "type": "null"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "status": {
+                    "enum": [
+                      "conflict",
+                      "not_applicable"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "evidence": {
+                    "minItems": 1
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "coffee.roast": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "value",
+            "status",
+            "unit",
+            "qualifier",
+            "scope",
+            "evidence",
+            "method",
+            "review_status"
+          ],
+          "properties": {
+            "value": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "light",
+                    "medium",
+                    "dark"
+                  ]
+                }
+              ]
+            },
+            "status": {
+              "enum": [
+                "known",
+                "unknown",
+                "conflict",
+                "not_applicable"
+              ]
+            },
+            "unit": {
+              "const": null
+            },
+            "qualifier": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "scope": {
+              "enum": [
+                "product",
+                "ingredient",
+                "brand",
+                "packaging",
+                "packaging_component",
+                "observation"
+              ]
+            },
+            "evidence": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/evidence"
+              }
+            },
+            "method": {
+              "type": "string",
+              "minLength": 1
+            },
+            "review_status": {
+              "enum": [
+                "unreviewed",
+                "reviewed",
+                "needs_review"
+              ]
+            }
+          },
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "status": {
+                    "const": "known"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "value": {
+                    "type": "string",
+                    "enum": [
+                      "light",
+                      "medium",
+                      "dark"
+                    ]
+                  },
+                  "evidence": {
+                    "minItems": 1
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "status": {
+                    "enum": [
+                      "unknown",
+                      "conflict",
+                      "not_applicable"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "value": {
+                    "type": "null"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "status": {
+                    "enum": [
+                      "conflict",
+                      "not_applicable"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "evidence": {
+                    "minItems": 1
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "coffee.format": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "value",
+            "status",
+            "unit",
+            "qualifier",
+            "scope",
+            "evidence",
+            "method",
+            "review_status"
+          ],
+          "properties": {
+            "value": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "whole_bean",
+                    "ground",
+                    "instant"
+                  ]
+                }
+              ]
+            },
+            "status": {
+              "enum": [
+                "known",
+                "unknown",
+                "conflict",
+                "not_applicable"
+              ]
+            },
+            "unit": {
+              "const": null
+            },
+            "qualifier": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "scope": {
+              "enum": [
+                "product",
+                "ingredient",
+                "brand",
+                "packaging",
+                "packaging_component",
+                "observation"
+              ]
+            },
+            "evidence": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/evidence"
+              }
+            },
+            "method": {
+              "type": "string",
+              "minLength": 1
+            },
+            "review_status": {
+              "enum": [
+                "unreviewed",
+                "reviewed",
+                "needs_review"
+              ]
+            }
+          },
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "status": {
+                    "const": "known"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "value": {
+                    "type": "string",
+                    "enum": [
+                      "whole_bean",
+                      "ground",
+                      "instant"
+                    ]
+                  },
+                  "evidence": {
+                    "minItems": 1
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "status": {
+                    "enum": [
+                      "unknown",
+                      "conflict",
+                      "not_applicable"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "value": {
+                    "type": "null"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "status": {
+                    "enum": [
+                      "conflict",
+                      "not_applicable"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "evidence": {
+                    "minItems": 1
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "coffee.decaf_claim": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "value",
+            "status",
+            "unit",
+            "qualifier",
+            "scope",
+            "evidence",
+            "method",
+            "review_status"
+          ],
+          "properties": {
+            "value": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "present",
+                    "absent"
+                  ]
+                }
+              ]
+            },
+            "status": {
+              "enum": [
+                "known",
+                "unknown",
+                "conflict",
+                "not_applicable"
+              ]
+            },
+            "unit": {
+              "const": null
+            },
+            "qualifier": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "scope": {
+              "enum": [
+                "product",
+                "ingredient",
+                "brand",
+                "packaging",
+                "packaging_component",
+                "observation"
+              ]
+            },
+            "evidence": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/evidence"
+              }
+            },
+            "method": {
+              "type": "string",
+              "minLength": 1
+            },
+            "review_status": {
+              "enum": [
+                "unreviewed",
+                "reviewed",
+                "needs_review"
+              ]
+            }
+          },
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "status": {
+                    "const": "known"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "value": {
+                    "type": "string",
+                    "enum": [
+                      "present",
+                      "absent"
+                    ]
+                  },
+                  "evidence": {
+                    "minItems": 1
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "status": {
+                    "enum": [
+                      "unknown",
+                      "conflict",
+                      "not_applicable"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "value": {
+                    "type": "null"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "status": {
+                    "enum": [
+                      "conflict",
+                      "not_applicable"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "evidence": {
+                    "minItems": 1
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "coffee.arabica_percentage": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "value",
+            "status",
+            "unit",
+            "qualifier",
+            "scope",
+            "evidence",
+            "method",
+            "review_status"
+          ],
+          "properties": {
+            "value": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                }
+              ]
+            },
+            "status": {
+              "enum": [
+                "known",
+                "unknown",
+                "conflict",
+                "not_applicable"
+              ]
+            },
+            "unit": {
+              "const": "percent"
+            },
+            "qualifier": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "scope": {
+              "enum": [
+                "product",
+                "ingredient",
+                "brand",
+                "packaging",
+                "packaging_component",
+                "observation"
+              ]
+            },
+            "evidence": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/evidence"
+              }
+            },
+            "method": {
+              "type": "string",
+              "minLength": 1
+            },
+            "review_status": {
+              "enum": [
+                "unreviewed",
+                "reviewed",
+                "needs_review"
+              ]
+            }
+          },
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "status": {
+                    "const": "known"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "value": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "evidence": {
+                    "minItems": 1
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "status": {
+                    "enum": [
+                      "unknown",
+                      "conflict",
+                      "not_applicable"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "value": {
+                    "type": "null"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "status": {
+                    "enum": [
+                      "conflict",
+                      "not_applicable"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "evidence": {
+                    "minItems": 1
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "origin.countries": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "value",
+            "status",
+            "unit",
+            "qualifier",
+            "scope",
+            "evidence",
+            "method",
+            "review_status"
+          ],
+          "properties": {
+            "value": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              ]
+            },
+            "status": {
+              "enum": [
+                "known",
+                "unknown",
+                "conflict",
+                "not_applicable"
+              ]
+            },
+            "unit": {
+              "const": null
+            },
+            "qualifier": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "scope": {
+              "enum": [
+                "product",
+                "ingredient",
+                "brand",
+                "packaging",
+                "packaging_component",
+                "observation"
+              ]
+            },
+            "evidence": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/evidence"
+              }
+            },
+            "method": {
+              "type": "string",
+              "minLength": 1
+            },
+            "review_status": {
+              "enum": [
+                "unreviewed",
+                "reviewed",
+                "needs_review"
+              ]
+            }
+          },
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "status": {
+                    "const": "known"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "value": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "evidence": {
+                    "minItems": 1
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "status": {
+                    "enum": [
+                      "unknown",
+                      "conflict",
+                      "not_applicable"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "value": {
+                    "type": "null"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "status": {
+                    "enum": [
+                      "conflict",
+                      "not_applicable"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "evidence": {
+                    "minItems": 1
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "packaging.type": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "value",
+            "status",
+            "unit",
+            "qualifier",
+            "scope",
+            "evidence",
+            "method",
+            "review_status"
+          ],
+          "properties": {
+            "value": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "bag",
+                    "tin",
+                    "jar",
+                    "capsule_box",
+                    "other"
+                  ]
+                }
+              ]
+            },
+            "status": {
+              "enum": [
+                "known",
+                "unknown",
+                "conflict",
+                "not_applicable"
+              ]
+            },
+            "unit": {
+              "const": null
+            },
+            "qualifier": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "scope": {
+              "enum": [
+                "product",
+                "ingredient",
+                "brand",
+                "packaging",
+                "packaging_component",
+                "observation"
+              ]
+            },
+            "evidence": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/evidence"
+              }
+            },
+            "method": {
+              "type": "string",
+              "minLength": 1
+            },
+            "review_status": {
+              "enum": [
+                "unreviewed",
+                "reviewed",
+                "needs_review"
+              ]
+            }
+          },
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "status": {
+                    "const": "known"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "value": {
+                    "type": "string",
+                    "enum": [
+                      "bag",
+                      "tin",
+                      "jar",
+                      "capsule_box",
+                      "other"
+                    ]
+                  },
+                  "evidence": {
+                    "minItems": 1
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "status": {
+                    "enum": [
+                      "unknown",
+                      "conflict",
+                      "not_applicable"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "value": {
+                    "type": "null"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "status": {
+                    "enum": [
+                      "conflict",
+                      "not_applicable"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "evidence": {
+                    "minItems": 1
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "unmapped_claims": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/unmapped"
+      }
+    },
+    "review_status": {
+      "enum": [
+        "unreviewed",
+        "reviewed",
+        "needs_review"
+      ]
+    },
+    "seller_uid": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "$defs": {
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "capture_id",
+        "pointer"
+      ],
+      "properties": {
+        "capture_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "pointer": {
+          "type": "string",
+          "pattern": "^(?:/(?:[^~/]|~[01])*)*$"
+        }
+      }
+    },
+    "unmapped": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "evidence",
+        "reason"
+      ],
+      "properties": {
+        "attribute": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "value": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/evidence"
+          }
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "scope": {
+          "enum": [
+            "product",
+            "ingredient",
+            "brand",
+            "packaging",
+            "packaging_component",
+            "observation"
+          ]
+        }
+      }
+    }
+  }
+}

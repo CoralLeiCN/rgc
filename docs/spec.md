@@ -1,18 +1,23 @@
 # Product Feature Classification and Pricing Specification
 
-Status: the raw collection plugin and a UK chocolate corpus are implemented.
-The analytical schema, pricing model, brand price-testing application, and
-value-for-money scoring remain proposed.
+Status: raw collection, the combined chocolate silver workflow, initial schema,
+model-preparation helpers and documentation maintenance are implemented and
+verified. A self-contained category-processing plugin now packages the workflow,
+with package, isolated-copy and real-data validation passed. Reviewed
+classification coverage, pricing model fitting/validation and
+the brand price-testing application remain outstanding. Value-for-money scoring
+remains deferred.
 
 The [intention](intention.md) records the requested product scope. This document
-turns that scope into proposed data, modeling, and acceptance requirements.
-Implementation choices below are proposals, not additional statements of intent.
+turns that scope into data, modeling, and acceptance requirements, distinguishing
+implemented contracts from proposed capabilities. Implementation choices do not
+add user goals beyond the recorded intention.
 
 ## 1. Scope and delivery order
 
 | Stage | Requested outcome | Implementation status |
 | --- | --- | --- |
-| 1 | Collect and preserve broad original product information, images, and prices through a portable agent plugin; derive a feature schema from the collected products, then fit a regression model explaining feature contributions. | Raw collection implemented; analytical schema and model remain proposed. |
+| 1 | Collect and preserve broad original product information, images, and prices through a portable collection plugin; package seller-specific processing, category profiles, mapping maintenance and model preparation separately; then fit a regression model explaining feature contributions. | Raw collection, chocolate silver/schema, standalone processing package and preparation components implemented and verified; classification review/evaluation and model fitting/validation remain outstanding. |
 | 2 | Let a brand test the price of a newly designed product using that model. | Follows a validated category model. |
 | 3 | Score category value for money and assess brand premium. | Research only; scoring implementation is deferred. |
 
@@ -57,17 +62,23 @@ application copy must use English, regardless of the prompt language.
    images, with a broad product JSON covering relevant source information,
    prices, packaging, and promotional material. Retain unfamiliar fields and
    claims without forcing them into a predetermined taxonomy.
-4. After collecting many products, review the corpus and derive the analytical
-   category schema. Classify features from the preserved evidence, resolve
-   duplicates, and review ambiguous or missing data.
-5. Define comparable groups, price basis, normalization, and model eligibility;
+4. Within one silver build, verify raw captures/histories and group exact
+   duplicate listings within each selling source; retain all original captures
+   and keep different shops' listings unique.
+5. After collecting many products, review the corpus and derive the analytical
+   category schema. Apply its versioned types, units and vocabularies after
+   deduplication within that same silver dataset. Classify features from preserved
+   evidence and review ambiguous, missing or conflicting data.
+6. Define comparable groups, price basis, normalization, and model eligibility;
    produce a coverage and quality report before fitting a model.
 
 Collection aims for as many distinct products and varieties as practicable.
 There is no invented fixed product-count requirement. Report the number found,
 the sources searched, coverage gaps, failed extraction, and excluded products.
-Multiple listings of one product increase price observations, not unique product
-coverage. An incomplete search must not be described as the entire target market.
+Multiple listings of one physical product remain distinct analytical records
+when sold by different sources. Report source listing counts separately from
+verified physical-product coverage. An incomplete search must not be described
+as the entire target market.
 
 ### 2.2 Fit and inspect a pricing model
 
@@ -169,8 +180,10 @@ installation and execution in multiple harnesses have not yet been tested.
 Collection uses a minimal common envelope and extensible product information.
 It preserves sources before committing to the complete analytical schema.
 Source-reported facts, later interpretations, and normalized model inputs must
-remain distinguishable. A product can have multiple sources and prices across
-retailers and dates without becoming multiple distinct products.
+remain distinguishable. A physical product can have multiple sources and prices
+across retailers and dates. Each selling source's listing remains a distinct
+analytical product record, with optional reviewed variant/family relationships
+that do not merge rows across sources.
 
 ### 3.1 Per-product raw archive
 
@@ -300,6 +313,55 @@ omissions, and checksums before publication, then verify the remote managed file
 and public visibility. Upload cadence is independent of this policy: the current
 request authorizes one upload, with no scheduled job.
 
+### 3.1.2 Raw and combined silver responsibilities
+
+The canonical chocolate workflow has two layers:
+
+| Layer | Responsibility |
+| --- | --- |
+| Raw, `data/collections/chocolate/uk` | Preserve original source-driven product indexes, arbitrary fields, source/image artifacts, immutable capture histories, and collection evidence. Collection does not require the complete analytical taxonomy. |
+| Silver, `data/silver/chocolate/uk` | Verify raw index/history consistency; deduplicate exact seller listings; apply schema/unit/vocabulary standardization; normalize supported price observations; apply evidence-backed reviews and model-input eligibility; report provenance, missingness, exclusions and readiness. |
+
+`scripts/build_chocolate_silver.py --archive-root data/collections` builds silver
+in one command. Deduplication and standardization are internal operations of
+this layer; callers need not persist or supply separate intermediate datasets.
+The [silver guide](chocolate-silver.md) owns its CLI, output contract and evidence
+resolution; the [schema guide](chocolate-schema.md) owns attribute meanings,
+reviews and the pricing handoff.
+
+Deduplicate exact `source_key` + source URL hostname + `source_product_id` +
+`source_variant_id` matches within one selling source. Missing source identity
+does not justify a match, and names, brands, GTINs or weights do not cause a
+merge. Different shops retain unique listings and prices. Choose the first
+member raw folder ID in sorted order as the canonical listing ID, retain all
+members in `source_listing_ids`, and emit `listing-aliases.jsonl`.
+
+The exact seller-listing identity and `source_key` must stay consistent across
+captures in one raw folder. Reject a changed-identity folder from accepted
+inputs, report the invalid record and partial snapshot, and preserve its raw
+evidence. Separate raw listings are required rather than assigning historical
+captures to a different seller or product/variant. The shared integrity rule also
+applies to standalone deduplication and cleanup helpers.
+
+Silver `source-listings.jsonl` retains every original capture object, original
+`raw_record.product_id`, source value, timestamp and history/artifact reference.
+`products.jsonl` supplies the typed analytical interpretation rather than
+replacing those captures. `brand/`, `retail/` and `unknown/` each expose products,
+prices and source listings, independently of product brand identity.
+
+Source/image bytes and immutable history files remain in raw. Resolve silver
+assertions/prices through capture IDs and pointers in `source-listings.jsonl`,
+then follow artifact/history paths against the raw collections root. Raw
+snapshot and silver dataset versions remain distinct; the silver manifest
+records input, contract, implementation, review and output fingerprints. Input
+index/history consistency does not newly verify every original artifact byte.
+
+The standalone deduplication and standardization CLIs, and the earlier cleanup,
+remain compatibility/diagnostic helpers. Their historical directories do not
+constitute additional required layers in the canonical raw/silver architecture.
+Counts describe seller records, not verified distinct physical products or
+exhaustive market coverage.
+
 ### 3.2 Later analytical schema and feature classification
 
 After broad collection, derive a complete schema for the information and
@@ -317,7 +379,7 @@ to the later analytical dataset, not as a prerequisite for collection:
 | --- | --- |
 | Category profile | Category ID and profile version, typed attribute definitions, applicable units, identity and product-family rules, comparable-group definitions, extraction guidance, and supported price/normalization bases. |
 | Category study | Category/profile version, market, included/excluded product forms, comparable groups, collection window, currency and price definition, quantity/normalization basis, source coverage. |
-| Product variant | Internal ID, category/profile version, source identifiers where available, product name, brand, variant, product form, and applicable selling-unit/quantity information. Edible weight and pack count belong to profiles where relevant. |
+| Product variant | Unique source listing ID, category/profile version, source identifiers where available, source role and seller identity separate from product brand, optional reviewed variant/family relationships, product name, variant, product form, and applicable selling-unit/quantity information. Edible weight and pack count belong to profiles where relevant. |
 | Product information | Derived category-specific attributes with types, units, raw source references, and mapping/schema version. Ingredients, cocoa percentage, nutrition, and dietary information are chocolate examples. Missing information remains missing. |
 | Source evidence | References to preserved source/image artifacts, source URL, collection time, and the location supporting each extracted feature. |
 | Classified feature | Feature name, normalized value, value type, evidence reference, extraction method, review status, and schema version. |
@@ -327,8 +389,17 @@ to the later analytical dataset, not as a prerequisite for collection:
 Analytical identity resolution must follow the derived category profile. For
 chocolate, distinguish flavor, ingredients, weight, and pack configuration.
 Other categories use their own variant-defining attributes. Use source
-identifiers when available and review ambiguous matches. Preserve the relationship between related sizes
-or variants for validation grouping.
+identifiers when available and review ambiguous matches. Deduplicate only exact
+`source_key` + source URL hostname + `source_product_id` + `source_variant_id`
+matches within the same source. Different selling sources always retain unique
+analytical listing rows, even when they sell the same physical product. Optional reviewed `variant_id`
+and `family_id` relationships can link designs and related sizes for validation
+grouping without merging those rows.
+
+Keep the product's brand separate from the seller/retailer identity. Classify
+selling sources with `source_role: brand`, `retail`, or `unknown` and expose
+direct brand-store and retail records separately. An unresolved source role
+must remain unknown rather than be guessed from the product's brand name.
 
 Use an extensible category-specific vocabulary, with feature types, units,
 allowed values, and unknown-value rules defined by the derived profile. Each
@@ -361,6 +432,184 @@ retrieval. Later analytical extraction may combine text extraction, image/OCR
 extraction, classification, and manual review. Preserve the originals throughout.
 The exact tools remain undecided. Classification accuracy must be evaluated
 against a reviewed sample; a confidence score alone is insufficient.
+
+#### Compatibility UK chocolate cleanup implementation
+
+The earlier `scripts/clean_chocolate_data.py` remains a compatibility/diagnostic
+CLI. It reads the preserved archive and writes a separate helper dataset using
+profile `uk-chocolate-clean-1`; it is not a required intermediate silver layer. Its implementation
+in `scripts/chocolate_cleanup/` keeps source listings, feature assertions, and
+price observations separate, with evidence references, review states, typed
+quantities, and a content-based dataset version. The
+[cleanup guide](chocolate-cleaning.md) describes the CLI and review contract.
+
+The generated dataset contains `products.jsonl`, `features.jsonl`,
+`prices.jsonl`, `review-queue.jsonl`, `quality-report.json`, `manifest.json`,
+`profile.json`, `study.json`, `model-inputs.jsonl`, `capture-evidence.jsonl`, and
+`artifacts.jsonl`. Assertions use capture IDs and JSON pointers; shared capture
+and artifact metadata tables resolve the preserved evidence without embedding
+complete source records into every assertion. Feature `is_current` flags
+distinguish assertions supported by the latest capture from historical ones.
+Root `products.jsonl` and `prices.jsonl` combine all source roles. The dataset
+also always emits
+`brand/products.jsonl`, `brand/prices.jsonl`, `retail/products.jsonl`,
+`retail/prices.jsonl`, `unknown/products.jsonl`, and `unknown/prices.jsonl`,
+including empty files where a role has no records.
+
+Within-source deduplication uses exact source, hostname, product, and variant
+identifiers and is recorded in the quality report. Repeated imports of the same price
+observation retain their evidence together. Different shops' listings and price
+observations remain separate analytical records; canonical variant and family
+relationships remain proposals until reviewed and never merge those rows.
+Source listing counts do not establish a count of distinct physical products.
+
+The optional `chocolate-reviews-1` review file supplies evidence-backed product
+identity, scope, group, quantity, and price decisions. The initial
+`model-inputs.jsonl` accepts only reviewed eligible regular GBP consumer prices
+on the confirmed `consumer_tax_included` basis, with a timezone-aware observed
+time and positive edible mass. Price review must explicitly confirm
+`regular_price`, `currency`, `tax_basis`, and `observed_at`; partial price
+decisions remain excluded. Unknowns, unsupported source shapes, legacy
+records, and unresolved decisions remain visible in coverage and review outputs.
+The command rejects overlapping raw and output directories and does not rewrite
+raw artifacts or fit a regression.
+
+These mappings are a draft starting point for the collected sources. They do
+not establish a complete chocolate taxonomy, evaluated extraction accuracy, or
+release readiness. The quality report keeps `release_ready` false pending
+actual classification evaluation and modeling validation. Additional mappings,
+reviewed features, missing-value rules, and supported comparisons must satisfy
+sections 3.2–5 before a model release.
+
+#### Defined chocolate schema inside silver
+
+The initial schema is `chocolate-schema-1`, implemented in
+[schemas/chocolate/profile.json](../schemas/chocolate/profile.json).
+[source-mappings.json](../schemas/chocolate/source-mappings.json) defines source
+aliases and normalization rules;
+[product.schema.json](../schemas/chocolate/product.schema.json) defines the
+standardized product shape; and
+[model-design.json](../schemas/chocolate/model-design.json) defines the initial
+training and insight contract. The
+[schema guide](chocolate-schema.md) documents their application and extension.
+
+The schema tracks over 100 attributes across identity, composition, dietary claims,
+certification claims, nutrition, origin, packaging, processing, storage,
+marketing, and quantity. It defines types, units, controlled values, scope,
+qualifiers, and standardization rules. This is a broad initial tracking schema,
+not a claim that all fields can already be extracted accurately or used as
+independent predictors.
+
+Profile/validator attribute types, units, enum/list vocabularies and numeric
+bounds must agree in nullable and known-status value branches. The runtimes
+support the explicit bundled typed template and reject unsupported value
+constraints; they do not execute arbitrary JSON Schema. A known category-valid
+value outside the selected model domain remains in silver, with its candidate
+excluded as `model_predictor_outside_design_domain:<attribute>` rather than
+aborting the build or coercing the value into a reference category.
+
+The combined silver build verifies raw evidence, applies exact seller-listing
+deduplication and then standardizes the resulting records using these contracts.
+Seller listing IDs and all capture references remain traceable through silver's
+source-listing and alias tables. Brand, retail and unknown seller roles remain
+separate partitions; different sellers' listings remain unique. The standalone
+`standardize_chocolate_data.py` helper still accepts a verified deduplicated
+snapshot for compatibility/diagnostics, without defining another required layer.
+
+Every attribute has a typed value and explicit `known`, `unknown`,
+`not_applicable`, or `conflict` status, declared unit/scope/qualifier, extraction
+method, evidence references, and review status. Unknown and conflict values are
+null. Presence and absence are supported values only when evidence establishes
+them; missing source copy remains unknown. Source assertions, unmapped claims,
+and history remain available for review instead of being silently dropped.
+
+Standardization must distinguish nut ingredients from cross-contact warnings,
+named certification claims from generic ethical wording, cocoa minimums from
+exact percentages, chocolate-component percentages from whole-product
+percentages, edible mass from shipping weight, source origin claims from the
+sales market, and reference prices from regular selling prices. Unknown or
+conflicting mappings enter the review queue. Production and packaging facts
+require supporting evidence rather than deductions from quality adjectives.
+
+Silver emits schema-conforming products, unchanged source-listing captures,
+raw-to-canonical aliases, evidence-linked assertions, price observations,
+candidate training rows, eligible model inputs, review items, quality and
+reproducibility reports, and copies of the exact contracts used.
+Build-specific field coverage, source coverage, and exclusion reasons belong in
+the quality report. Schema changes must update the applicable contracts,
+versions, [intention](intention.md) when scope changes, this specification,
+schema/silver guides, and lifecycle plan under the
+[documentation policy](documentation-policy.md).
+
+Candidate features are selected through the model design, rather than adding
+all tracked fields as dummy regressors. Training inputs require reviewed scope,
+comparison group, edible quantity, physical/family relationships, feature
+interpretations, and regular GBP consumer prices with confirmed tax basis and
+observation time. Selected predictor and mass reviews must cite evidence from
+the price observation's capture, with supported product scope and qualifiers;
+later recipe or claim statements do not automatically classify historical
+observations. The `chocolate-schema-reviews-1` review format supplies
+these decisions with reviewer, reason, and valid capture/pointer evidence.
+Current source-derived facts remain unreviewed and tax basis is unresolved, so
+the initial build has no eligible training rows. A populated candidate file is
+not an instruction to fit a model.
+
+#### Portable processing and capture-to-mapping maintenance
+
+The self-contained [category-processing plugin](../plugins/category-processing/README.md)
+packages the post-collection workflow under Agent Plugins 1.0.0. Python 3.9+
+standard-library processing accepts a compatible raw category/market archive and
+five aligned profile contracts. It verifies raw evidence, deduplicates exact
+seller identities, standardizes typed data, normalizes observations, applies
+reviews/eligibility and writes one silver dataset. No repository sibling imports
+or collection-plugin installation are required. Chocolate and a small structured
+coffee starter demonstrate category configuration; broad extraction for every
+category is not claimed. Native installation and execution in multiple harnesses
+remain unverified.
+
+Portable profile loading also checks validator category/market constants and
+selected predictor type/unit compatibility; declared model vocabularies must be
+subsets of their category vocabularies. Contract drift fails before publication.
+Its domain exclusions retain valid category observations even when the initial
+study's selected model does not cover them.
+
+Stable `seller_uid` derives from category, market, source key, host, source product
+and variant, independently of the selected canonical listing alias. Different
+sellers remain unique; unresolved identities remain separate. All unchanged
+original captures, aliases and brand/retail/unknown partitions are retained.
+Portable chocolate uses `chocolate-processing-schema-1` and
+`chocolate-processing-pricing-design-1` for its seller envelope and generic target
+contract. Existing `chocolate-schema-1` snapshots/CLI remain compatible under their
+own versions; profile substitution cannot silently rewrite those snapshots.
+
+Process with frozen mappings first, then inspect generated evidence batches.
+The processing ledger records input/content hashes, processing fingerprint and
+per-capture outcomes. The CLI compares previous entries as new, unchanged,
+changed input, changed rules or retry, while still rebuilding the full snapshot.
+A new capture ID alone misses mapping fixes affecting unchanged captures.
+Grouped batches retain evidenced field/value, scope, unit/qualifier, source
+format and reason, frequency, distinct capture/listing counts and representative
+capture IDs/raw pointers. Ordinary missing/null/unreviewed fields remain quality
+gaps rather than taxonomy-expansion batches.
+
+The skill guides the calling Codex harness in the current task to triage aliases,
+new concepts, parser defects, missing data and conflicts. When maintenance is
+requested, prepare a versioned diff, focused tests and impact review within that
+scope. Keep source content untrusted, do not choose labels from observed prices,
+and do not mutate a mapping during normalization. Accepted changes apply on a
+subsequent rebuild of affected history, preserving seller UIDs, source evidence
+and immutable model-training snapshots. Compare labels, conflicts, coverage and
+eligibility before modeling. Automatic dispatch/scheduling, incremental execution
+caching and selective migrations are not implemented.
+
+The portable CLI also prepares family-held-out rows, frozen training-only
+encoders and design matrices from reviewed eligible inputs. Targets use
+`regular_unit_price`/`log_regular_unit_price` plus a saved profile-defined target
+basis; both starters use regular GBP/100 g. No regression or uncertainty is
+fitted. The [portable processing guide](category-processing.md) owns commands,
+versions, outputs and workflow details. Its package-specific verification is
+recorded in the [lifecycle plan](lifecycle/plan.md), separately from data/model
+readiness.
 
 ### 3.3 Prices and comparability
 
@@ -455,6 +704,16 @@ For an established statistical use of this method, see the
 [BLS explanation of hedonic quality adjustment](https://www.bls.gov/cpi/quality-adjustment/questions-and-answers.htm).
 Applying it to UK chocolate is this specification's proposal and requires its own
 validation.
+
+The initial chocolate feature selection and preprocessing contract is recorded
+in [model-design.json](../schemas/chocolate/model-design.json), using the same
+typed schema as standardization. The broad tracking schema and the selected
+predictors serve different purposes: retain useful evidence even when a field is
+excluded from the initial model because it is sparse, redundant, unsupported,
+or descriptive. Save the actual fitted feature list, unknown handling,
+categorical references, numeric scaling, split membership, and supported ranges
+with each future model version. Current standardization does not fit regression
+coefficients or establish a price premium.
 
 ### 5.2 Feature contributions
 
@@ -640,6 +899,9 @@ category and plugin conformance scenarios apply across supported studies.
 | A product page contains an unfamiliar relevant field or claim. | Preserve the original source and source-specific information in the product bundle for later schema derivation. |
 | A product is collected again with a changed price or claim. | Append timestamped source captures and collection history; preserve earlier evidence and identify the current JSON index. |
 | A later schema normalizes a source field differently. | Create a versioned derived interpretation with evidence references; retain the original reported value and artifact. |
+| A chocolate schema field cannot be supported by the available capture. | Emit its explicit unknown state and coverage/review information; do not infer absence or a feature value from missing evidence. |
+| Raw chocolate records are processed into silver. | Verify the raw snapshot, deduplicate exact seller listings and standardize them in one build; retain original captures/aliases, preserve separate sellers and roles, and emit candidate rows separately from reviewed eligible inputs. |
+| A schema, mapping, pricing gate, or model interpretation changes. | Update the affected machine contracts, version references, specification, schema/silver guides, and lifecycle plan together; run the documentation drift check. |
 | A study uses a category whose comparison basis is price per item. | Preserve its original quantities and prices during collection; derive its analytical profile without requiring cocoa percentage, edible weight, or GBP per 100 g. |
 | Another category is added. | Reuse the minimal collection/evidence envelope, then derive its own analytical profile, dataset, and validated model domain from collected information. |
 | Any category is published as a public dataset. | Apply `rgc-text-evidence-1`: include original product records, text evidence, history, catalogues, collection reports, and coverage; omit image bytes, transfer caches, and runtime files while retaining metadata and explicit omission manifests. |
@@ -647,7 +909,10 @@ category and plugin conformance scenarios apply across supported studies.
 | A public record references an omitted image or cache file. | Preserve the historical reference and provide its omission entry; do not claim the file is downloadable or that local archive verification verifies the public subset. |
 | The same study request and evidence fixture are supplied through two supported harness adapters. | Both return valid collection envelopes and preserved raw bundles with compatible provenance meanings, original image/page handling, and explicit missingness; arbitrary source-specific fields remain supported. |
 | A harness cannot retrieve packaging images requested by the study. | Preserve packaging attributes supported by available text, mark unsupported attributes unknown, and declare the missing image capability/evidence and coverage limitation. |
-| The same variant appears at two retailers. | One product identity and two sourced price observations; no duplicate product-coverage claim. |
+| The same source product/variant is imported through multiple raw listing records. | Deduplicate the exact source_key + source URL hostname + source_product_id + source_variant_id match within that source; retain evidence and record the decision. |
+| Silver groups duplicate raw listing folders. | Retain every original capture object, product ID, timestamp, source value and history/artifact reference in source-listings.jsonl, emit aliases, and keep typed interpretations and prices separate from those original captures. |
+| The same physical variant appears at two retailers. | Preserve two unique analytical source listing records and their separate prices, even if an optional reviewed variant/family relationship links the design. |
+| A brand's product is sold both directly and by a retailer. | Preserve distinct source listings and prices; expose direct brand-store and retail partitions while retaining product brand separately from seller identity. |
 | A 200 g pack costs GBP 4.00. | Retain GBP 4.00 pack price and calculate GBP 2.00 per 100 g. |
 | A listing supplies only a promotional price. | Preserve it as displayed price; do not invent a regular price. |
 | Packaging is unavailable and retailer text omits Fairtrade. | Classify certification status as unknown. |
@@ -671,8 +936,8 @@ category and plugin conformance scenarios apply across supported studies.
 - Which sources are accessible and suitable, and what evidence can be retained
   under their access and usage conditions.
 - The collection window and source/retailer coverage.
-- The analytical category schema derived after broad collection, comparable
-  groups, and exact quantity/consumer-price basis before modeling.
+- Further chocolate schema extensions and extraction coverage, reviewed
+  comparable groups, and confirmed quantity/consumer-price basis before modeling.
 - Coverage targets, extraction review plan, and numerical model release criteria.
 - The delivery surface and implementation stack.
 - Whether stage 3 will define value for money as an adjusted-price comparison or

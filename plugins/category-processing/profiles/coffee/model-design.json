@@ -1,0 +1,113 @@
+{
+  "schema_version": "coffee-schema-1",
+  "model_design_version": "coffee-pricing-design-1",
+  "category": "coffee",
+  "market": "uk",
+  "status": "specified_not_trained",
+  "target": {
+    "name": "log_regular_unit_price",
+    "currency": "GBP",
+    "unit": "GBP_per_100g",
+    "quantity_attribute": "quantity.net_weight_g",
+    "base_quantity": 100,
+    "price_basis": "regular",
+    "tax_basis": "consumer_tax_included"
+  },
+  "predictors": {
+    "identity.product_group": {
+      "type": "categorical",
+      "required": true,
+      "missing_policy": "reject",
+      "transform": "identity",
+      "reference": "training_mode",
+      "allowed_values": [
+        "whole_bean",
+        "ground",
+        "instant"
+      ]
+    },
+    "identity.source_role": {
+      "type": "categorical",
+      "required": true,
+      "missing_policy": "reject",
+      "transform": "identity",
+      "reference": "training_mode",
+      "allowed_values": [
+        "brand",
+        "retail"
+      ]
+    },
+    "identity.brand": {
+      "type": "categorical",
+      "required": true,
+      "missing_policy": "reject",
+      "transform": "identity",
+      "reference": "training_mode"
+    },
+    "identity.retailer": {
+      "type": "categorical",
+      "required": true,
+      "missing_policy": "reject",
+      "transform": "identity",
+      "reference": "training_mode"
+    },
+    "coffee.roast": {
+      "type": "categorical",
+      "required": true,
+      "missing_policy": "reject",
+      "transform": "identity",
+      "reference": "training_mode",
+      "allowed_values": [
+        "light",
+        "medium",
+        "dark"
+      ]
+    },
+    "coffee.format": {
+      "type": "categorical",
+      "required": true,
+      "missing_policy": "reject",
+      "transform": "identity",
+      "reference": "training_mode",
+      "allowed_values": [
+        "whole_bean",
+        "ground",
+        "instant"
+      ]
+    },
+    "coffee.decaf_claim": {
+      "type": "presence",
+      "required": true,
+      "missing_policy": "reject",
+      "transform": "identity",
+      "reference": "training_mode",
+      "allowed_values": [
+        "present",
+        "absent"
+      ]
+    },
+    "quantity.net_weight_g": {
+      "type": "numeric",
+      "required": true,
+      "missing_policy": "reject",
+      "transform": "log",
+      "unit": "g",
+      "minimum": 0
+    }
+  },
+  "preprocessing": {
+    "missing": "Required inputs are rejected; no imputation.",
+    "fit_scope": "Training families only; freeze references, levels, and ranges.",
+    "references": "Most frequent reviewed known training level; lexical tie break.",
+    "transforms": "Declared identity or log only; no implicit scaling."
+  },
+  "validation": {
+    "split_unit": "Reviewed physical-product family across sellers.",
+    "uncertainty": "Dependence-aware uncertainty and held-out price error must be established before release."
+  },
+  "interpretation": {
+    "association": "Conditional price association, never a causal effect.",
+    "retransformation": "Exponentiated log prediction is a conditional median under the declared log-error model.",
+    "regression_fitted": false
+  }
+}

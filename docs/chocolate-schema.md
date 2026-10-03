@@ -1,0 +1,308 @@
+# Chocolate schema, reviews and pricing handoff in silver
+
+The defined initial schema, `chocolate-schema-1`, tracks broad chocolate
+information within the combined silver layer. Silver performs exact
+seller-listing deduplication before applying schema, unit and vocabulary
+standardization in the same build. No separate persisted deduplicated or
+standardized layer is required.
+
+This guide owns field meanings, standardization, evidence-backed reviews and
+pricing-model handoff. The [silver guide](chocolate-silver.md) owns raw/silver
+responsibilities, the build command, dataset outputs and evidence resolution.
+The schema is implemented; complete extraction coverage, reviewed classification
+and a fitted/validated pricing model remain outstanding.
+
+## Machine contracts
+
+| Contract | Version | Responsibility |
+| --- | --- | --- |
+| [profile.json](../schemas/chocolate/profile.json) | `chocolate-schema-1` | Attribute types, units, vocabularies, scope, qualifiers, model roles, standardization rules, and missingness. |
+| [source-mappings.json](../schemas/chocolate/source-mappings.json) | `chocolate-source-mappings-1` | Recognized source aliases, conversion bases, and source-scope rules. |
+| [product.schema.json](../schemas/chocolate/product.schema.json) | `chocolate-schema-1` | Required standardized product envelope and typed attribute objects. |
+| [model-design.json](../schemas/chocolate/model-design.json) | `chocolate-pricing-design-1` | Selected predictors, target, eligibility, preprocessing, validation, and insight requirements. |
+
+Machine contracts own the complete field list and precise allowed values. This
+guide explains their intent and use; it does not define a competing field list.
+The [project specification](spec.md) owns cross-layer and release requirements.
+
+Loading rejects drift between each profile attribute and the product validator's
+type, unit, enum/list vocabulary and numeric bounds in both nullable and
+known-status value branches. The runtime supports the explicit bundled template;
+unsupported value-constraint keywords fail rather than being silently ignored.
+It does not implement a general JSON Schema executor.
+
+## What the schema tracks
+
+The initial profile contains 103 attributes, organized as follows. Every
+product tracks each field once, even when its evidence state is unknown.
+
+| Family | Information retained |
+| --- | --- |
+| Identity and scope | Source product/variant IDs, name, SKU, GTIN, brand, manufacturer, retailer and seller role, variant/flavour name, product group, study boundary, and reviewed physical/family relationships. |
+| Composition | Chocolate type; cocoa, cocoa butter and milk-solids percentages; original ingredients/allergen sections; ingredient labels; nuts and nut types; cross-contact warnings; fruit, palm oil, alcohol, salt, sweeteners, flavour, filling and inclusions. |
+| Dietary claims | Vegan, vegetarian, gluten-free, dairy-free, nut-free, soy-free, palm-oil-free, sugar-free, no-added-sugar, and non-GMO claims. |
+| Certification claims | Specifically named schemes and scoped Fairtrade, generic fair-trade, organic, Rainforest Alliance, kosher, halal, FSC packaging, and B Corp claims. |
+| Nutrition | Original nutrition section and basis, energy, fat, saturates, carbohydrate, sugars, fibre, protein, salt and serving mass. |
+| Origin | Cocoa countries, regions, estates and varieties; manufacture country; single-origin and single-estate claims. |
+| Packaging | Type, components, materials and recyclable, compostable, reusable, plastic-free and gift-pack claims. |
+| Processing | Bean-to-bar, handmade, roasting, conching, raw-product claims and source description. |
+| Storage | Instructions, declared temperature range, shelf life and best-before date. |
+| Marketing | Original claims, tasting notes, awards, ethical and sustainability statements, seasonal/occasion themes and premium-position claims. |
+| Quantity | Total and per-unit edible mass, pack count and piece count. |
+
+Seller/price context is a separate observation contract: preserve displayed,
+regular, promotional and reference prices; currency and original representation;
+availability, observation time, tax basis, offer mechanics and source evidence.
+A product attribute does not overwrite its historical price context.
+
+These fields describe what the system can track. Current extractors support a
+subset of the vocabulary and source formats. A predefined field does not mean
+that every product has it, that its classification has been verified, or that it
+is usable as an independent predictor.
+
+Automatic extraction currently reuses supported source adapters for basic
+identity, proposed product groups, explicit edible quantities, prices, a subset
+of chocolate/ingredient/dietary/certification assertions, and retained ingredient,
+allergen, nutrition and promotional text. Selected variant fields and recognized
+structured composition, nutrition, dietary, certification, origin, packaging,
+processing, storage and marketing fields can also be standardized. This does
+not implement broad OCR, comprehensive ingredient
+parsing, nutrition-table extraction, or automatic production/packaging review.
+Source product types, tags and unfamiliar keys in supported structured sections
+remain available as unmapped information rather than being forced into a
+product feature. Other source-specific information remains in the input captures
+even when no current extractor creates an assertion or review item for it.
+
+## How standardization works
+
+Each attribute has `value`, `status`, `unit`, `qualifier`, `scope`, `evidence`,
+`method`, and `review_status`. Evidence contains a `capture_id` and JSON
+`pointer` into the retained capture. Resolve that capture through silver's
+`source-listings.jsonl`, which retains the unchanged original capture objects.
+Artifact/history paths continue to resolve against the raw collections root.
+Silver verifies the raw index/capture histories and uses their deduplicated
+snapshot internally; derived interpretations do not modify raw evidence.
+
+Selected product attributes describe the latest capture, supplemented by explicit
+review decisions. Compatible latest assertions retain their combined evidence;
+incompatible values, scopes or qualifiers produce a conflict. The separate
+assertions table retains historical source assertions, with `is_current` marking
+latest-capture support and current review assertions. Price observations retain
+their own capture context rather than automatically adopting the latest pack
+quantity.
+
+| State | Meaning |
+| --- | --- |
+| `known` | A valid typed value has supporting evidence; review status separately states whether the interpretation was reviewed. |
+| `unknown` | Available evidence does not establish a value; `value` is null. |
+| `not_applicable` | Evidence-backed determination that the field does not apply; `value` is null. |
+| `conflict` | Supported statements disagree or their bases cannot be reconciled; no selected value is silently chosen. |
+
+A presence field has `present` or `absent` only when the evidence establishes
+that claim. Missing copy is an unknown state. Automatic extraction remains
+unreviewed until an evidence-backed decision confirms it.
+
+Standardization checks the declared type and range, converts supported units to
+canonical units, maps recognized aliases to controlled values, retains source
+scope and qualifiers, and rejects unfamiliar or conflicting values for review.
+Original text and evidence remain available; interpreted token normalization
+never rewrites source bytes. Representative rules include:
+
+- Edible mass uses grams, with explicit supported unit conversions and pack
+ basis. Shipping weight and nutrition quantities do not establish pack mass.
+- Percentage values retain exact/minimum/approximate meaning and whole-product
+ versus chocolate-component scope. Do not average incompatible percentages.
+- Product nut ingredients and “may contain” allergen statements are different
+ fields. An incomplete ingredient section cannot establish ingredient absence.
+- A named Fairtrade claim stays separate from generic fair-trade or direct-trade
+ wording. A source certification claim remains a claim, rather than an
+ independent verification of certification status.
+- Origin roles stay separate: cocoa origin, manufacture country, and the UK sales
+ market do not substitute for each other. A manufacturer's address alone does
+ not establish manufacture origin.
+- Nutrition requires a declared comparable basis; per-serving or prepared values
+ do not silently become per 100 g as sold. Salt and sodium remain distinct.
+- Packaging and production statements need product-scoped evidence. Global
+ navigation, footer claims and general advice cannot establish product features.
+- Price conversion follows the source's currency representation. Pence and
+ pounds use different conversion factors; a compare-at/reference price cannot
+ silently become a regular price.
+
+The typed conversion API also validates supported GTIN lengths/check digits
+without removing leading zeroes, maps only declared country aliases, and accepts
+unambiguous valid `YYYY-MM-DD` dates. Supported declared quantity units convert
+to grams; declared day/week durations convert to days; declared Fahrenheit
+temperatures convert to Celsius. The unit/basis must be supplied explicitly to
+the converter. These rules do not extract missing units, guess ambiguous dates,
+convert unspecified month lengths, or imply that every source exposes fields
+that the current adapters can use.
+
+Unmapped claims remain attached to records and review outputs. Add a mapping
+only when the source meaning and scope support the canonical value. Extending
+a vocabulary does not make an old unknown value known until the dataset is
+rebuilt with the new versioned rule.
+
+## Build silver with this schema
+
+Run from the repository root with Python 3.9 or later:
+
+```sh
+python3 -B scripts/build_chocolate_silver.py \
+  --archive-root data/collections \
+  --output data/silver/chocolate/uk
+```
+
+Silver combines raw snapshot verification, exact seller deduplication,
+standardization, price normalization and reviewed eligibility in one command.
+See the [silver output contract](chocolate-silver.md) for products, source
+listings/captures, aliases, assertions, prices, candidate/eligible inputs,
+partitions, reports and reproducibility metadata.
+
+The standalone `scripts/standardize_chocolate_data.py --deduplicated-root ...`
+helper remains available for compatibility or diagnostics with an explicit
+persisted deduplicated snapshot. Its former `data/standardized/chocolate/uk`
+output is not an additional required layer in the canonical raw/silver workflow.
+
+## Evidence-backed reviews
+
+Use a review file with a separate format from the earlier cleanup reviews:
+
+```json
+{
+ "review_format_version": "chocolate-schema-reviews-1",
+ "products": {},
+ "prices": {}
+}
+```
+
+Pass it with `--reviews <reviews.json>`. Use `listing_id` from `products.jsonl`
+and `observation_id` from `prices.jsonl` as the review-map keys.
+Every decision needs a named `reviewed_by`, substantive `reason`, and evidence
+entries containing valid `capture_id`/`pointer` locations from this listing's
+retained captures. A resolvable pointer is necessary; the reviewer must also
+check that its contents substantiate the decision.
+
+| Review location | Decisions |
+| --- | --- |
+| `products[listing_id]` | `variant_id`, `family_id`, and `in_scope`; accompanying reviewer/reason/evidence must support the relationships and scope. |
+| `products[listing_id].attributes[attribute_name]` | Canonical `value`, `status`, optional `qualifier` and `scope`, plus reviewer/reason/evidence; use the dotted field name and declared type/vocabulary. |
+| `prices[observation_id]` | `regular_price`, `currency`, `tax_basis`, `observed_at` and `available`, plus reviewer/reason/evidence. |
+
+Confirm the comparable group through `identity.product_group`, edible pack mass
+through `quantity.total_edible_weight_g`, and selected feature meanings through
+their attribute reviews. The initial price gate requires positive ordinary GBP
+consumer pack price, `consumer_tax_included`, a timezone-aware observation time,
+and confirmed availability. Capture/import time does not automatically establish
+price observation time. Reviewed mass and every active predictor must have
+supporting evidence in the price observation's capture. A later pack weight,
+recipe or claim cannot silently classify an earlier observation. Top-level
+scope, physical-variant and family decisions also populate the corresponding
+schema attributes; contradictory attribute decisions are rejected.
+
+Partial decisions remain visible with exclusion reasons. Do not populate absent
+or negative values merely to make a candidate eligible. Rebuild after reviews
+change so the decision file and resulting dataset version remain reproducible.
+A row's `review_status: reviewed` records that a review decision exists; it
+does not establish that every attribute or price-context requirement was
+confirmed. Inspect attribute review states and `model_eligible` with its
+`exclusion_reasons` for the actual training boundary.
+
+## Pricing-model handoff and insights
+
+The initial target is natural-log regular consumer GBP per 100 g:
+
+```text
+regular_price_per_100g_gbp = regular_pack_price_gbp / edible_pack_mass_g * 100
+log_target = log(regular_price_per_100g_gbp)
+```
+
+The model design selects a supported subset of the tracked attributes and
+seller/brand context. It excludes prices, computed unit prices, price bands and
+any derived price score from predictors. This prevents encoding the target as
+its own explanation. Pack mass is independently evidenced and may remain a
+size predictor after unit-price normalization.
+
+The initial design has 11 required predictors: product group, seller role,
+product brand, seller identity, chocolate type, cocoa percentage, nut-ingredient
+presence, vegan claim, Fairtrade claim, organic claim, and total edible mass.
+Cocoa percentage must be an exact whole-product value: minimums, approximate
+values and percentages of chocolate components remain tracked but are excluded
+from this numeric predictor. Edible mass receives a log transform. The initial
+encoder performs no imputation, scaling or centering; categorical references
+use the most frequent training value, with lexical ties, and are saved with the
+encoder. This is a specified starting design whose support still needs review
+and validation before fitting.
+
+Current required predictors must be known and reviewed; unknown, conditional,
+conflicting or unsupported interpretations remain excluded. Each must have
+product scope and an unconditional meaning: non-cocoa qualifiers may be null,
+`exact` or `unconditional`, while cocoa requires `exact`. Record missingness
+explicitly, and use a versioned model design if an optional missing-level or
+imputation policy is later introduced. Do not map an unknown label to a known
+reference category.
+
+The selected model domain can be narrower than the schema's category vocabulary.
+A known, category-valid value outside that selected domain remains in products
+and assertions; the candidate records
+`model_predictor_outside_design_domain:<attribute>` and is excluded. Such a value
+does not abort the silver build or become an unknown/reference value. Keep this
+declared study-domain check distinct from support learned later by the encoder.
+
+[scripts/chocolate_model.py](../scripts/chocolate_model.py) provides helpers to
+validate eligible rows, split by reviewed `family_id`, learn a frozen encoder
+from training rows, and transform held-out rows with that encoder. It records
+selected columns, reference levels, observed level/family support, numeric
+ranges, and dropped constant terms. Held-out unseen levels or values outside
+training ranges are rejected under the initial supported-domain policy. Seller
+rows remain unique while shared physical/family designs stay in one split.
+The helper consumes observed eligible rows with targets; a new-design prediction
+interface and regression fitting remain subsequent work.
+
+Preprocessing must learn from training data only; apply the same fitted
+transform to held-out data. This follows the
+[scikit-learn guidance on leakage](https://scikit-learn.org/stable/common_pitfalls.html).
+Keeping related families in separate folds follows the grouped-validation
+principle illustrated by
+[GroupKFold](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GroupKFold.html).
+The helper does not establish numerical classification/model release thresholds
+or statistical sufficiency; those remain explicit study decisions.
+
+For a future supported log-price indicator coefficient, the conditional
+percentage contrast is `100 * (exp(beta) - 1)` relative to its stated reference.
+For a continuous predictor, state the unit and change; for interactions, compute
+the contrast in the actual product context. Interpretation helpers also convert
+two supplied log predictions into conditional median-price and percentage
+contrasts. They do not estimate coefficients or supply uncertainty by themselves.
+
+Every released insight must identify target units and price basis, both compared
+profiles, categorical reference, conditioning terms, observation/family support,
+uncertainty, validation, and domain limits. Distinguish coefficient intervals
+from new-product prediction intervals and median retransformation from mean
+price estimation. An adjusted association or unexplained residual does not
+establish a causal feature effect, isolated brand premium, product quality, or
+consumer willingness to pay.
+
+The current build has no eligible training observations: source-derived values
+are unreviewed and price/tax context is unresolved. Keep silver as a standardized
+candidate dataset until evidence review, extraction evaluation, support checks,
+and the [specification's release gates](spec.md) pass.
+
+## Extending the schema and keeping documentation current
+
+1. Inspect an original capture and retain the unfamiliar statement/evidence.
+2. Add or amend typed definitions, allowed values, source aliases, scope and unit
+  rules in the checked-in contracts; bump affected version identifiers when
+  semantics change.
+3. Implement evidence-scoped extraction/validation and add tests for the actual
+  ambiguity or conversion, including unknown/conflict behavior where relevant.
+4. Rebuild silver and inspect coverage, exclusions and review changes. Leave
+  preserved raw evidence intact; deduplication and standardization run together.
+5. Update this guide, the [silver guide](chocolate-silver.md),
+  [specification](spec.md), affected [intention](intention.md), and
+  [lifecycle plan](lifecycle/plan.md) in the same change. Follow the full
+  [documentation policy](documentation-policy.md) and run
+  `python3 -B scripts/check_documentation.py`.
+
+Document the broad tracking contract separately from evaluated extraction and
+supported predictors. A new tracked field may remain unknown or excluded from
+the model until evidence, review and support justify its use.

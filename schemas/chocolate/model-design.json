@@ -1,0 +1,488 @@
+{
+  "schema_version": "chocolate-schema-1",
+  "model_design_version": "chocolate-pricing-design-1",
+  "status": "specified_not_trained",
+  "purpose": "Explain conditional regular consumer pack-price associations and support new-product price comparisons within a validated chocolate category domain.",
+  "target": {
+    "name": "log_regular_gbp_per_100g",
+    "expression": "log(regular_price_gbp / total_edible_weight_g * 100)",
+    "currency": "GBP",
+    "unit": "GBP_per_100g",
+    "price_basis": "Regular consumer tax-inclusive selling-pack price; displayed, promotional and reference/compare-at prices remain separate.",
+    "exclude_from_predictors": [
+      "displayed_price",
+      "regular_price",
+      "reference_price",
+      "unit_price",
+      "normalized_price",
+      "target",
+      "price_band",
+      "value_for_money_score"
+    ]
+  },
+  "eligibility_gates": [
+    {
+      "id": "identity",
+      "requirement": "Reviewed seller-specific listing and exact physical-product/family relationships; unresolved duplicates/variants excluded."
+    },
+    {
+      "id": "classification",
+      "requirement": "Reviewed in-scope product and supported comparable group; mixtures/boundary/bundled non-chocolate goods excluded or modeled separately."
+    },
+    {
+      "id": "quantity",
+      "requirement": "Reviewed positive total edible mass for the priced consumer pack, with unambiguous multipack basis and no unresolved conflict; no shipping-weight or count-only substitution."
+    },
+    {
+      "id": "price",
+      "requirement": "Reviewed positive regular GBP pack price from a supported source representation; displayed/reference/promotional price alone is insufficient."
+    },
+    {
+      "id": "tax",
+      "requirement": "Reviewed consumer tax-inclusive basis; taxable flag alone does not establish tax inclusion."
+    },
+    {
+      "id": "source_time",
+      "requirement": "Timezone-aware time of price/source observation; ingestion, product updated_at or derivation time does not replace observation time."
+    },
+    {
+      "id": "availability",
+      "requirement": "Reviewed source-listed availability for the price observation; source stock is not a test of regional delivery stock."
+    },
+    {
+      "id": "feature_review",
+      "requirement": "Predictor classifications reviewed with resolvable original evidence and supported unconditional scope; conditional, conflicting and unreviewed claims excluded or explicitly missing."
+    },
+    {
+      "id": "support",
+      "requirement": "Training-only support, rank and coverage checks establish a validated group/domain; sparse/unidentifiable effects cannot be reported as reliable premiums."
+    }
+  ],
+  "observation_policy": {
+    "unit": "One eligible seller listing at a defined observed time.",
+    "duplicates": "Repeated identical price evidence is consolidated; same physical product across different sellers remains separate.",
+    "repeats": "For a cross-sectional study use one declared observation window/rule per listing; if repeated times are used, group dependency and avoid implicit weighting by number of captures.",
+    "partitions": "Publish brand-shop and retail inputs separately; pooled modeling requires source_role context and validation stratified by source_role.",
+    "weights": "Document any family/seller/repeated-observation weighting before fitting."
+  },
+  "candidate_predictors": [
+    "identity.brand",
+    "identity.retailer",
+    "composition.chocolate_type",
+    "composition.cocoa_percentage",
+    "composition.milk_solids_percentage",
+    "composition.cocoa_butter_percentage",
+    "composition.nuts_presence",
+    "composition.may_contain_nuts_presence",
+    "composition.palm_oil_presence",
+    "composition.alcohol_presence",
+    "composition.salt_added_presence",
+    "composition.fruit_presence",
+    "composition.nut_types",
+    "composition.allergen_ingredients",
+    "composition.may_contain_allergens",
+    "composition.flavour_labels",
+    "composition.inclusions",
+    "composition.sweeteners",
+    "composition.filling_type",
+    "dietary.vegan_claim",
+    "dietary.vegetarian_claim",
+    "dietary.gluten_free_claim",
+    "dietary.dairy_free_claim",
+    "dietary.nut_free_claim",
+    "dietary.soy_free_claim",
+    "dietary.palm_oil_free_claim",
+    "dietary.sugar_free_claim",
+    "dietary.no_added_sugar_claim",
+    "dietary.non_gmo_claim",
+    "certifications.fairtrade_claim",
+    "certifications.fair_trade_claim",
+    "certifications.organic_claim",
+    "certifications.rainforest_alliance_claim",
+    "certifications.kosher_claim",
+    "certifications.halal_claim",
+    "nutrition.energy_kj_per_100g",
+    "nutrition.energy_kcal_per_100g",
+    "nutrition.fat_g_per_100g",
+    "nutrition.saturates_g_per_100g",
+    "nutrition.carbohydrate_g_per_100g",
+    "nutrition.sugars_g_per_100g",
+    "nutrition.fibre_g_per_100g",
+    "nutrition.protein_g_per_100g",
+    "nutrition.salt_g_per_100g",
+    "origin.cocoa_countries",
+    "origin.single_origin_claim",
+    "origin.single_estate_claim",
+    "packaging.type",
+    "packaging.materials",
+    "packaging.recyclable_claim",
+    "packaging.compostable_claim",
+    "packaging.reusable_claim",
+    "packaging.plastic_free_claim",
+    "packaging.gift_pack_claim",
+    "processing.bean_to_bar_claim",
+    "processing.handmade_claim",
+    "marketing.seasonal_occasions",
+    "marketing.premium_claim",
+    "quantity.total_edible_weight_g"
+  ],
+  "default_predictor_subset": [
+    "identity.product_group",
+    "identity.source_role",
+    "identity.brand",
+    "identity.retailer",
+    "composition.chocolate_type",
+    "composition.cocoa_percentage",
+    "composition.nuts_presence",
+    "dietary.vegan_claim",
+    "certifications.fairtrade_claim",
+    "certifications.organic_claim",
+    "quantity.total_edible_weight_g"
+  ],
+  "feature_selection": {
+    "rule": "Select a predeclared supported subset from candidate_predictors using training-only coverage, variance, collinearity and domain review; the full catalog is not an instruction to include 100 regressors.",
+    "text": "Original ingredients, marketing/tasting text, images and identity identifiers excluded from the baseline feature regression.",
+    "qualifiers": "Model only comparable qualifiers; cocoa exact/minimum and ingredient/product claims must not silently share a numeric/indicator meaning.",
+    "nutrition": "Predeclare any supported nutrition subset; exclude redundant energy measures and unreviewed serving/as-prepared values.",
+    "multilabel": "Reviewed recognized labels may use separate binary indicators; unknown/incomplete lists are missing, never all-zero absence."
+  },
+  "model": {
+    "baseline": "Interpretable linear regression of log regular GBP/100g within a supported product group.",
+    "brand_effect": "Product brand effect, separate from selling-source effect; interpreted conditionally with support/confounding diagnostics.",
+    "seller_effect": "Retailer/brand-shop selling-source effect, separate from product brand; source_role retained.",
+    "confounding": "When brand and seller are inseparable, do not label a coefficient as an isolated brand premium; pool/restrict or report non-identifiability.",
+    "regularization": "If needed, predeclare ridge regularization and tune within training folds; publish penalty, effect interpretation and uncertainty method.",
+    "interactions": "Use only predeclared interactions with sufficient training support; no automatic high-order interaction expansion.",
+    "size_effect": "Reviewed total edible pack mass enters as natural log grams; it may explain price/100g size effects and is never recovered from target price.",
+    "active_predictors": [
+      "identity.product_group",
+      "identity.source_role",
+      "identity.brand",
+      "identity.retailer",
+      "composition.chocolate_type",
+      "composition.cocoa_percentage",
+      "composition.nuts_presence",
+      "dietary.vegan_claim",
+      "certifications.fairtrade_claim",
+      "certifications.organic_claim",
+      "quantity.total_edible_weight_g"
+    ]
+  },
+  "preprocessing": {
+    "fit_scope": "Fit category encoding, references and observed numeric domains only on each training fold. Any future pooling/selection/tuning must also fit only training data.",
+    "active_missing_policy": "Every active predictor is required and missing_policy=reject. The initial executable baseline does not impute or scale; unknown/conflict/not_applicable/unreviewed values fail eligibility.",
+    "numeric": "Use declared identity/log transforms preserving interpretable units. Save training minimum/maximum and refuse out-of-domain prediction values.",
+    "categorical": "Only reviewed known training-supported levels are encoded. Unknown/unseen levels are unsupported, and cannot be references.",
+    "constant_terms": "Record constant columns as dropped; a constant presence/absence feature has no estimable price association.",
+    "reference_policy": {
+      "name": "training_mode",
+      "rule": "For each categorical/presence predictor, choose the most frequent supported reviewed known training level; ties resolve by sorted canonical label. Save chosen level and support counts; unknown/conflict/not_applicable cannot be a reference.",
+      "brand_and_seller": "Choose and save product-brand and selling-source references independently.",
+      "numeric": "Identity terms use the declared unit without scaling; log terms explicitly use natural logarithm of that unit.",
+      "prediction": "Use saved fitted references and transforms; never choose new references from test or prediction inputs."
+    },
+    "future_extension": "Optional predictors, missingness indicators, imputation, centering, rare-level pooling or penalties require an explicit versioned design change and train-only fit; the broad catalog does not enable them silently."
+  },
+  "validation": {
+    "split_unit": "Reviewed physical product/family relationship group across all sellers, with every listing/capture of that group kept in one fold; relationships group validation without merging records.",
+    "family_unknown": "Unresolved family/physical-product relationship prevents a credible family-held-out score; do not assume seller listing IDs establish independence.",
+    "time": "When source times span a meaningful period, additionally evaluate a forward holdout; transformations are trained on past observations only.",
+    "source": "Report held-out errors and coverage separately for brand shops and retailers, and supported product groups/brands/sellers.",
+    "metrics": [
+      "MAE_GBP_per_100g",
+      "RMSE_GBP_per_100g",
+      "MAE_log_price",
+      "prediction_interval_coverage"
+    ],
+    "baseline_comparison": "Compare against a declared training-only group median or other simple baseline.",
+    "uncertainty": "Choose and document grouped bootstrap or another dependence-aware coefficient/prediction uncertainty method; distinguish coefficient confidence intervals from prediction intervals.",
+    "support": "Publish training/test group and listing counts, missingness, exclusions, level counts, rank/confounding diagnostics and tested domain."
+  },
+  "retransformation": {
+    "median": "exp(predicted_log_price) estimates a conditional median under the log-error formulation; label it median.",
+    "mean": "A conditional mean requires a documented training-only bias correction, such as an estimated smearing factor; do not label exp(log_prediction) as mean.",
+    "interval": "Transform log prediction interval bounds and document how residual/dependence uncertainty was estimated.",
+    "pack_price": "Multiply predicted GBP/100g by reviewed proposed edible pack mass / 100; retain the pack-size predictor context."
+  },
+  "insight_contract": {
+    "association": "Describe estimates as conditional price associations, never proof that an ingredient/claim causes a price change.",
+    "categorical_effect": "Relative percentage = 100*(exp(coefficient)-1), compared with the saved reference, conditional on specified covariates and scope.",
+    "continuous_effect": "For an identity-transformed term, declared change delta gives 100*(exp(coefficient*delta)-1). For a log-transformed term, compare positive quantities x1/x0 using 100*((x1/x0)**coefficient-1). Cocoa percentage points and relative percentage changes are distinct.",
+    "required_outputs": [
+      "feature name and standardized meaning",
+      "reference level/value and unit",
+      "coefficient and transformed price association",
+      "confidence interval and uncertainty method",
+      "training support and missingness",
+      "brand/seller/source-role context",
+      "held-out error and validated domain",
+      "confounding and extrapolation limitations",
+      "schema/mapping/dataset/model versions"
+    ],
+    "new_product": "Require supported group/market/source context and reviewed feature definitions; flag unknown or out-of-domain inputs and report a prediction interval plus optional proposed-price comparison.",
+    "deferred": "Demand, profit, causal effects, optimal price and value-for-money scoring are outside the current training contract."
+  },
+  "artifact_requirements": [
+    "schema_version",
+    "mapping_version",
+    "source_dataset_version",
+    "dataset_version",
+    "model_design_version",
+    "feature_subset",
+    "eligibility_rules",
+    "training_observation_window",
+    "split_groups",
+    "random_seed",
+    "fitted_preprocessing",
+    "reference_levels",
+    "training_support",
+    "coefficients",
+    "uncertainty",
+    "validation_results",
+    "retransformation_method",
+    "prediction_domain",
+    "limitations",
+    "numeric_training_domains",
+    "dropped_constant_terms"
+  ],
+  "candidate_fields": [
+    "identity.name",
+    "identity.source_product_id",
+    "identity.source_variant_id",
+    "identity.sku",
+    "identity.variant_name",
+    "identity.brand",
+    "identity.manufacturer_name",
+    "identity.retailer",
+    "identity.flavour_name",
+    "identity.gtin",
+    "identity.product_group",
+    "identity.boundary_status",
+    "identity.product_family_id",
+    "identity.physical_product_id",
+    "composition.chocolate_type",
+    "composition.cocoa_percentage",
+    "composition.milk_solids_percentage",
+    "composition.cocoa_butter_percentage",
+    "composition.ingredients_text",
+    "composition.ingredients",
+    "composition.nuts_presence",
+    "composition.may_contain_nuts_presence",
+    "composition.palm_oil_presence",
+    "composition.alcohol_presence",
+    "composition.salt_added_presence",
+    "composition.fruit_presence",
+    "composition.nut_types",
+    "composition.allergen_ingredients",
+    "composition.may_contain_allergens",
+    "composition.flavour_labels",
+    "composition.inclusions",
+    "composition.sweeteners",
+    "composition.filling_type",
+    "dietary.vegan_claim",
+    "dietary.vegetarian_claim",
+    "dietary.gluten_free_claim",
+    "dietary.dairy_free_claim",
+    "dietary.nut_free_claim",
+    "dietary.soy_free_claim",
+    "dietary.palm_oil_free_claim",
+    "dietary.sugar_free_claim",
+    "dietary.no_added_sugar_claim",
+    "dietary.non_gmo_claim",
+    "certifications.fairtrade_claim",
+    "certifications.fair_trade_claim",
+    "certifications.organic_claim",
+    "certifications.rainforest_alliance_claim",
+    "certifications.kosher_claim",
+    "certifications.halal_claim",
+    "certifications.fsc_packaging_claim",
+    "certifications.b_corp_claim",
+    "certifications.named_schemes",
+    "nutrition.energy_kj_per_100g",
+    "nutrition.energy_kcal_per_100g",
+    "nutrition.fat_g_per_100g",
+    "nutrition.saturates_g_per_100g",
+    "nutrition.carbohydrate_g_per_100g",
+    "nutrition.sugars_g_per_100g",
+    "nutrition.fibre_g_per_100g",
+    "nutrition.protein_g_per_100g",
+    "nutrition.salt_g_per_100g",
+    "nutrition.serving_size_g",
+    "nutrition.declared_basis",
+    "origin.cocoa_countries",
+    "origin.manufacture_country",
+    "origin.cocoa_regions",
+    "origin.cocoa_estates",
+    "origin.cocoa_varieties",
+    "origin.single_origin_claim",
+    "origin.single_estate_claim",
+    "packaging.type",
+    "packaging.materials",
+    "packaging.recyclable_claim",
+    "packaging.compostable_claim",
+    "packaging.reusable_claim",
+    "packaging.plastic_free_claim",
+    "packaging.gift_pack_claim",
+    "packaging.components",
+    "processing.bean_to_bar_claim",
+    "processing.handmade_claim",
+    "processing.roasted_claim",
+    "processing.conched_claim",
+    "processing.raw_claim",
+    "processing.description",
+    "storage.instructions",
+    "storage.temperature_min_c",
+    "storage.temperature_max_c",
+    "storage.shelf_life_days",
+    "storage.best_before_date",
+    "marketing.claim_text",
+    "marketing.tasting_notes",
+    "marketing.awards",
+    "marketing.ethical_claims",
+    "marketing.sustainability_claims",
+    "marketing.seasonal_occasions",
+    "marketing.premium_claim",
+    "quantity.total_edible_weight_g",
+    "quantity.unit_edible_weight_g",
+    "quantity.pack_count",
+    "quantity.piece_count",
+    "composition.allergen_text",
+    "nutrition.source_text",
+    "identity.source_role"
+  ],
+  "predictors": {
+    "identity.product_group": {
+      "type": "categorical",
+      "transform": "identity",
+      "required": true,
+      "reference": "training_mode",
+      "missing_policy": "reject",
+      "allowed_values": [
+        "bar",
+        "assorted_box",
+        "chocolate_pieces",
+        "baking_chocolate",
+        "hot_chocolate",
+        "other"
+      ]
+    },
+    "identity.source_role": {
+      "type": "categorical",
+      "transform": "identity",
+      "required": true,
+      "reference": "training_mode",
+      "missing_policy": "reject",
+      "allowed_values": [
+        "brand",
+        "retail"
+      ]
+    },
+    "identity.brand": {
+      "type": "categorical",
+      "transform": "identity",
+      "required": true,
+      "reference": "training_mode",
+      "missing_policy": "reject"
+    },
+    "identity.retailer": {
+      "type": "categorical",
+      "transform": "identity",
+      "required": true,
+      "reference": "training_mode",
+      "missing_policy": "reject"
+    },
+    "composition.chocolate_type": {
+      "type": "categorical",
+      "transform": "identity",
+      "required": true,
+      "reference": "training_mode",
+      "missing_policy": "reject",
+      "allowed_values": [
+        "dark",
+        "milk",
+        "white",
+        "blonde",
+        "ruby",
+        "mixed"
+      ]
+    },
+    "composition.cocoa_percentage": {
+      "type": "numeric",
+      "transform": "identity",
+      "required": true,
+      "missing_policy": "reject",
+      "minimum": 0,
+      "maximum": 100,
+      "unit": "%"
+    },
+    "composition.nuts_presence": {
+      "type": "presence",
+      "transform": "identity",
+      "required": true,
+      "reference": "training_mode",
+      "missing_policy": "reject",
+      "allowed_values": [
+        "present",
+        "absent"
+      ]
+    },
+    "dietary.vegan_claim": {
+      "type": "presence",
+      "transform": "identity",
+      "required": true,
+      "reference": "training_mode",
+      "missing_policy": "reject",
+      "allowed_values": [
+        "present",
+        "absent"
+      ]
+    },
+    "certifications.fairtrade_claim": {
+      "type": "presence",
+      "transform": "identity",
+      "required": true,
+      "reference": "training_mode",
+      "missing_policy": "reject",
+      "allowed_values": [
+        "present",
+        "absent"
+      ]
+    },
+    "certifications.organic_claim": {
+      "type": "presence",
+      "transform": "identity",
+      "required": true,
+      "reference": "training_mode",
+      "missing_policy": "reject",
+      "allowed_values": [
+        "present",
+        "absent"
+      ]
+    },
+    "quantity.total_edible_weight_g": {
+      "type": "numeric",
+      "transform": "log",
+      "required": true,
+      "missing_policy": "reject",
+      "minimum": 0,
+      "unit": "g"
+    }
+  },
+  "cocoa_percentage_policy": {
+    "supported_scopes": [
+      "product"
+    ],
+    "supported_qualifiers": [
+      "exact"
+    ],
+    "meaning": "Exact whole-product cocoa percentage; product scope must mean the complete edible pack/product, not an individual chocolate component or ingredient.",
+    "excluded": [
+      "minimum",
+      "approximate",
+      "ingredient",
+      "component",
+      "conditional",
+      "unknown qualifier"
+    ]
+  }
+}
