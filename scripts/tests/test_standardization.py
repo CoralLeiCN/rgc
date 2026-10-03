@@ -148,7 +148,8 @@ class ChocolateStandardizationTests(ChocolateArchiveFixture):
         }
 
     def test_standardization_preserves_raw_and_deduplicated_original_bytes(self):
-        self.prepare()
+        self.collect([self.product()])
+        build_deduplicated_dataset(self.archive, self.deduplicated)
         archive_before, dedup_before = (
             self.snapshot(self.archive),
             self.snapshot(self.deduplicated),
@@ -213,9 +214,8 @@ class ChocolateStandardizationTests(ChocolateArchiveFixture):
         assert self.rows("model-inputs") == []
 
     def test_rebuild_is_deterministic_and_manifest_hashes_outputs(self):
-        self.prepare()
+        first_report = self.prepare()
         before = self.snapshot(self.output)
-        first_report = self.build()
         second_report = self.build()
         assert first_report == second_report
         assert self.snapshot(self.output) == before

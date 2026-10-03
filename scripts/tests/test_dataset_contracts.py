@@ -150,7 +150,7 @@ class DatasetContractTests:
         assert b"Older description." not in updated
         assert update_dataset_card(updated) == updated
 
-    def test_publication_inventory_excludes_unrelated_files_and_preserves_bytes(self):
+    def publication_sources(self):
         for group in [
             "chocolate",
             "category-processing/chocolate",
@@ -188,6 +188,9 @@ class DatasetContractTests:
             for filename, value in documents.items():
                 (directory / filename).write_text(json.dumps(value) + "\n")
             (directory / "unrelated.json").write_text('{"do_not_publish": true}\n')
+
+    def test_publication_inventory_excludes_unrelated_files_and_preserves_bytes(self):
+        self.publication_sources()
         payloads, references = build_contract_bundle(self.root)
         assert len(payloads) == 15
         assert len(references) == 3
@@ -197,7 +200,7 @@ class DatasetContractTests:
                 assert body == (self.root / path).read_bytes()
 
     def test_publication_rejects_version_drift_before_upload(self):
-        self.test_publication_inventory_excludes_unrelated_files_and_preserves_bytes()
+        self.publication_sources()
         path = self.root / "contracts/chocolate/model-design.json"
         document = json.loads(path.read_text())
         document["schema_version"] = "wrong-schema"

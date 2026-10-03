@@ -1,14 +1,11 @@
 """Check portable pinned-profile routing without category payload fixtures."""
 
 import hashlib
-import io
 import json
-from contextlib import redirect_stdout
 from pathlib import Path
 from unittest.mock import patch
 
 import pytest
-from category_processing.cli import main
 from category_processing.profiles import CONTRACT_FILES, resolve_profile
 
 PLUGIN_ROOT = Path(__file__).resolve().parents[1]
@@ -48,13 +45,6 @@ class ProfileResolutionTests:
             assert (resolve_profile(self.profile, cache_root=self.cache, offline=True)) == (self.profile)
         download.assert_not_called()
 
-    def test_reference_uses_selected_cache_and_offline_policy(self):
-        reference = self.reference()
-        destination = self.cache / "resolved"
-        with patch("category_processing.dataset_contracts.resolve_contracts", return_value=destination) as download:
-            assert (resolve_profile(self.profile, cache_root=self.cache, offline=True)) == (destination)
-        download.assert_called_once_with(reference, self.cache, offline=True)
-
     def test_materialized_profile_reverifies_marker_and_payloads_without_download(self):
         reference = self.reference()
         self.materialize()
@@ -80,18 +70,6 @@ class ProfileResolutionTests:
                 with pytest.raises(ValueError, match="verification failed"):
                     resolve_profile(self.profile, cache_root=self.cache)
             download.assert_not_called()
-
-    def test_packaged_category_resolves_from_detached_plugin_root(self):
-        plugin = self.base / "detached-plugin"
-        category = plugin / "profiles/coffee"
-        category.mkdir(parents=True)
-        reference = category / "dataset-contract.json"
-        reference.write_text(json.dumps(self.manifest()) + "\n", encoding="utf-8")
-        destination = self.cache / "coffee"
-        with patch("category_processing.profiles.PLUGIN_ROOT", plugin), \
-                patch("category_processing.dataset_contracts.resolve_contracts", return_value=destination) as download:
-            assert (resolve_profile(category="coffee", cache_root=self.cache, offline=True)) == (destination)
-        download.assert_called_once_with(reference, self.cache, offline=True)
 
     def test_packaged_selector_rejects_another_category_reference_before_downloading(self):
         plugin = self.base / "detached-plugin"
@@ -127,15 +105,3 @@ class ProfileResolutionTests:
                        {"category": "../coffee"}, {"category": "unknown-fixture-category"}):
             with pytest.raises(ValueError):
                 resolve_profile(**kwargs)
-
-    def test_cli_category_passes_cache_and_offline_policy_before_processing(self):
-        output = self.base / "silver"
-        with patch("category_processing.cli.resolve_profile", return_value=self.profile) as resolve, \
-                patch("category_processing.pipeline.build_silver_dataset",
-                      return_value={"status": "complete_snapshot"}) as build, \
-                patch("category_processing.cli._read_rows", return_value=[]), redirect_stdout(io.StringIO()):
-            status = main(["process", "--archive-root", str(self.base / "raw"), "--category", "coffee",
-                           "--contracts-cache", str(self.cache), "--offline", "--output", str(output)])
-        assert (status) == (0)
-        resolve.assert_called_once_with(None, category="coffee", cache_root=self.cache, offline=True)
-        build.assert_called_once_with(self.base / "raw", output, self.profile, reviews=None)

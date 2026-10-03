@@ -22,6 +22,16 @@ the user did not ask about. Avoid invented compound labels such as "exact-head
 checks" and "editorial-row layouts," vague qualifiers, and canned transitions.
 Use plain verbs and prepositions to state the actual relationship directly.
 
+# Testing
+
+Do not write tests for reversible, low-impact changes that mirror the
+implementation. If you do choose to verify your work with tests, make sure that
+the tests are meaningful and necessary to verify implementation.
+
+Run tests appropriate to the change and complete required checks. Once those
+pass, broaden or repeat testing only when new changes, failures, or unresolved
+concerns justify it; otherwise, continue toward completing the task.
+
 # Documentation maintenance
 
 Update canonical documents and `docs/lifecycle/plan.md` with behavioral, schema,

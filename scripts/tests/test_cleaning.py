@@ -19,13 +19,6 @@ class ChocolateCleaningTests:
             with pytest.raises(ValueError):
                 pointer_value({"values": ["first", "last"]}, pointer)
 
-    def test_profile_types_match_emitted_feature_assertions(self):
-        self.collect([self.product()])
-        self.build()
-        profile = json.loads((self.output / "profile.json").read_text())
-        for row in self.rows("features"):
-            assert profile["feature_types"][row["name"]] == row["value_type"]
-
     @pytest.fixture(autouse=True)
     def setup(self, tmp_path):
         self.base = tmp_path
@@ -192,6 +185,9 @@ class ChocolateCleaningTests:
             "study.json",
         }
         assert expected.issubset(first)
+        profile = json.loads((self.output / "profile.json").read_text())
+        for row in self.rows("features"):
+            assert profile["feature_types"][row["name"]] == row["value_type"]
         assert self.snapshot(self.archive) == original
         second_report = self.build()
         assert second_report == first_report
@@ -412,25 +408,12 @@ class ChocolateCleaningTests:
         assert self.rows("prices") == []
         assert self.snapshot(self.archive) == original
 
-    def test_evidence_json_pointers_resolve_to_preserved_capture_values(self):
-        self.collect([self.product()])
-        self.build()
-        captures = self.capture_lookup()
-        for name in ("products", "features", "prices"):
-            for row in self.rows(name):
-                for reference in row.get("evidence", []):
-                    assert reference["capture_id"] in captures
-                    self.pointer_value(
-                        captures[reference["capture_id"]], reference["pointer"]
-                    )
-        assert self.rows("prices")[0]["evidence"]
-        assert self.feature("ingredients_text")["evidence"]
-
     def test_normalized_evidence_tables_join_rows_to_capture_history_and_artifact_metadata(
         self,
     ):
         self.collect([self.product()])
         report = self.build()
+        captures = self.capture_lookup()
         capture_rows = {row["capture_id"]: row for row in self.rows("capture-evidence")}
         artifacts = {row["artifact_id"]: row for row in self.rows("artifacts")}
         assert len(capture_rows) == 1
@@ -440,6 +423,10 @@ class ChocolateCleaningTests:
                 for reference in row.get("evidence", []) + row.get(
                     "quantity_evidence", []
                 ):
+                    assert reference["capture_id"] in captures
+                    self.pointer_value(
+                        captures[reference["capture_id"]], reference["pointer"]
+                    )
                     assert (
                         reference["artifact_metadata_table"] == "capture-evidence.jsonl"
                     )
@@ -470,6 +457,8 @@ class ChocolateCleaningTests:
                             == artifact["archive_relative_path"]
                         )
                         assert artifact["sha256"] == original["sha256"]
+        assert self.rows("prices")[0]["evidence"]
+        assert self.feature("ingredients_text")["evidence"]
 
     def test_reference_only_image_without_local_path_has_deterministic_evidence_metadata(
         self,

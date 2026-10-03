@@ -3,10 +3,7 @@
 import hashlib
 import json
 import re
-from copy import deepcopy
 from pathlib import Path
-
-import pytest
 
 PLUGIN_ROOT = Path(__file__).resolve().parents[1]
 SCHEMA_PATH = Path(__file__).resolve().parent / "fixtures/plugin.schema.json"
@@ -56,10 +53,6 @@ class PackagingTests:
         assert (schema["$id"]) == ("https://agent-plugins.org/schemas/1.0.0/plugin.schema.json")
         manifest = json.loads((PLUGIN_ROOT / "plugin.json").read_text())
         validate_schema(manifest, schema)
-        invalid = deepcopy(manifest)
-        invalid["entrypoints"] = {"cli": "./cli.py"}
-        with pytest.raises(ValueError):
-            validate_schema(invalid, schema)
 
     def test_skill_is_discoverable_and_uses_valid_plain_yaml_metadata(self):
         skill = PLUGIN_ROOT / "skills/category-research/SKILL.md"

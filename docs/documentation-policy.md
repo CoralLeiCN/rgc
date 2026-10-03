@@ -3,7 +3,8 @@
 Update documentation with the behavior it describes. Record user intention,
 implemented contracts and validation status distinctly. The
 [repository instructions](../AGENTS.md) apply this policy and own the writing
-rules, including preservation of original source evidence.
+rules, including preservation of original source evidence, and test selection
+rules.
 
 ## Canonical documents and ownership
 
@@ -73,7 +74,11 @@ documents when their meaning or public entry points are affected.
 4. Update commands and links when files or entry points move. Do not leave an
    alternate contract in a lifecycle summary or README.
 5. Use the locked development environment, run Ruff and the structural guard,
-   then run relevant behavioral tests with pytest before finishing:
+   then run tests appropriate to the change with pytest before finishing.
+   Follow the test selection rules in `AGENTS.md`: create tests when they are
+   meaningful and necessary, and broaden or repeat testing after required checks
+   pass only when new changes, failures or unresolved concerns justify it.
+   Choose the relevant commands below for the affected behavior:
 
    ```sh
    uv sync --locked
@@ -94,6 +99,16 @@ documents when their meaning or public entry points are affected.
    ```sh
    uv run pytest plugins/category-processing/tests
    ```
+
+   Select a test module when it covers the affected behavior, for example:
+
+   ```sh
+   uv run pytest scripts/tests/test_documentation.py
+   ```
+
+   Run the complete affected suites when reviewing coverage across modules or
+   changing shared fixtures. Consolidate duplicate coverage and setup while
+   preserving distinct observable behavior and failure cases.
 
 The guard checks required documents, local references, lifecycle placeholders,
 contract/version alignment and documentation coverage for tracked or untracked

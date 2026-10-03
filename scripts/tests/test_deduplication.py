@@ -18,11 +18,19 @@ class ChocolateDeduplicationTests:
         empty = self.build()
         self.collect([self.product()])
         folder = self.archive / "chocolate/uk/products/example"
-        (folder / ".import.lock").touch()
+        (folder / ".import.lock").write_text(
+            "fixture import in progress\n", encoding="utf-8"
+        )
+        original = self.snapshot(self.archive)
         pending = self.build()
         assert empty["dataset_version"] != pending["dataset_version"]
         assert pending["status"] == "partial"
         assert pending["counts"]["source_listings"] == 0
+        assert self.rows() == []
+        assert any(
+            error["code"] == "import_in_progress" for error in pending["archive_errors"]
+        )
+        assert self.snapshot(self.archive) == original
 
     def test_invalid_json_remains_hashed_and_reported(self):
         folder = self.archive / "chocolate/uk/products/invalid"
@@ -276,18 +284,6 @@ class ChocolateDeduplicationTests:
         report = self.build()
         assert self.rows() == []
         assert report["unsupported_records"]
-        assert self.snapshot(self.archive) == original
-
-    def test_import_in_progress_is_reported_and_skipped(self):
-        self.collect([self.product()])
-        lock = self.archive / "chocolate/uk/products/example/.import.lock"
-        lock.write_text("fixture import in progress\n", encoding="utf-8")
-        original = self.snapshot(self.archive)
-        report = self.build()
-        assert self.rows() == []
-        assert any(
-            error["code"] == "import_in_progress" for error in report["archive_errors"]
-        )
         assert self.snapshot(self.archive) == original
 
     def test_outputs_are_deterministic_and_manifest_hashes_match_saved_bytes(self):

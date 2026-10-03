@@ -295,64 +295,42 @@ class DocumentationMaintenanceTests:
             ), errors
         assert guard.check(self.root, changed=required | changed) == []
 
-    def test_dataset_resolver_and_manifest_changes_require_guides(self):
-        for name in ("scripts/dataset_contracts.py", REFERENCES[0]):
-            assert "docs/chocolate-silver.md" in guard.required_updates({name})
-            assert "docs/lifecycle/plan.md" in guard.required_updates({name})
+    def test_tests_and_unrelated_changes_do_not_require_behavior_documentation(self):
+        changed = {
+            "scripts/tests/test_documentation.py",
+            "plugins/category-processing/tests/test_model.py",
+            "unrelated.txt",
+        }
+        assert guard.check(self.root, changed=changed) == []
 
-    def test_silver_builder_and_cli_require_their_guides_in_the_same_change(self):
-        required = {
+    def test_component_changes_require_their_canonical_documents(self):
+        silver = {
             "docs/spec.md",
             "docs/chocolate-schema.md",
             "docs/chocolate-silver.md",
             "docs/lifecycle/plan.md",
         }
-        for name in (
-            "scripts/chocolate_silver.py",
-            "scripts/build_chocolate_silver.py",
-        ):
-            assert guard.required_updates({name}) == required
-            assert guard.check(self.root, changed=required | {name}) == []
-
-    def test_shared_schema_and_cleanup_changes_require_silver_documentation(self):
-        for name in (
-            REFERENCES[0],
-            "scripts/chocolate_standardization/pipeline.py",
-            "scripts/chocolate_cleanup/deduplication.py",
-            "scripts/chocolate_model.py",
-        ):
-            assert "docs/chocolate-silver.md" in guard.required_updates({name})
-
-    def test_tests_and_unrelated_changes_do_not_require_behavior_documentation(self):
-        assert (
-            guard.check(
-                self.root,
-                changed={"scripts/tests/test_documentation.py", "unrelated.txt"},
-            )
-            == []
-        )
-
-    def test_processing_behavior_requires_portable_plugin_documentation(self):
-        changed = {"plugins/category-processing/category_processing/pipeline.py"}
-        required = {
+        cleanup = {
             "docs/spec.md",
-            "docs/category-processing.md",
-            "plugins/category-processing/README.md",
+            "docs/chocolate-cleaning.md",
+            "docs/chocolate-deduplication.md",
+            "docs/chocolate-silver.md",
             "docs/lifecycle/plan.md",
         }
-        assert guard.required_updates(changed) == required
-        assert guard.check(self.root, changed=changed | required) == []
-        assert (
-            guard.required_updates({"plugins/category-processing/tests/test_model.py"})
-            == set()
-        )
-
-    def test_component_policies_cover_collection_cleanup_publication_and_governance(
-        self,
-    ):
         cases = (
             (
-                {"plugins/category-research/category_research/archive.py"},
+                "scripts/dataset_contracts.py",
+                silver | {"docs/dataset-contracts.md", "README"},
+            ),
+            (REFERENCES[0], silver),
+            ("scripts/chocolate_silver.py", silver),
+            ("scripts/build_chocolate_silver.py", silver),
+            ("scripts/chocolate_standardization/pipeline.py", silver),
+            ("scripts/chocolate_model.py", silver),
+            ("scripts/chocolate_cleanup/deduplication.py", cleanup),
+            ("scripts/chocolate_cleanup/adapters.py", cleanup),
+            (
+                "plugins/category-research/category_research/archive.py",
                 {
                     "docs/spec.md",
                     "plugins/category-research/README.md",
@@ -360,26 +338,25 @@ class DocumentationMaintenanceTests:
                 },
             ),
             (
-                {"scripts/chocolate_cleanup/adapters.py"},
+                "plugins/category-processing/category_processing/pipeline.py",
                 {
                     "docs/spec.md",
-                    "docs/chocolate-cleaning.md",
-                    "docs/chocolate-deduplication.md",
-                    "docs/chocolate-silver.md",
+                    "docs/category-processing.md",
+                    "plugins/category-processing/README.md",
                     "docs/lifecycle/plan.md",
                 },
             ),
             (
-                {"scripts/publish_collections.py"},
+                "scripts/publish_collections.py",
                 {"docs/spec.md", "README", "docs/lifecycle/plan.md"},
             ),
             (
-                {"scripts/check_documentation.py"},
+                "scripts/check_documentation.py",
                 {"docs/documentation-policy.md", "docs/lifecycle/plan.md"},
             ),
         )
-        for changed, expected in cases:
-            assert guard.required_updates(changed) == expected
+        for path, expected in cases:
+            assert guard.required_updates({path}) == expected, path
 
     def test_structural_cli_returns_success_without_git_comparison(self):
         output, errors = io.StringIO(), io.StringIO()
