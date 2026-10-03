@@ -188,6 +188,30 @@ class ChocolateStandardizationTests(ChocolateArchiveFixture):
         assert not report["release_ready"]
         assert self.rows("model-inputs") == []
 
+    @pytest.mark.parametrize("name,expected", [
+        ("Blonde Chocolate Bar 200g", "blonde"),
+        ("Milk Chocolate and Dark Chocolate Selection 200g", "mixed"),
+    ])
+    def test_title_type_reaches_silver_with_original_evidence_and_review_gate(self, name, expected):
+        original = self.product()
+        original["identity"]["name"] = name
+        self.prepare([original])
+        row = self.rows()[0]
+        attribute = row["attributes"]["composition.chocolate_type"]
+        assert attribute["value"] == expected
+        assert attribute["status"] == "known"
+        assert attribute["review_status"] == "unreviewed"
+        assert attribute["scope"] == "product"
+        source = self.source_listing()
+        capture = source["captures"][0]
+        assert capture["raw_record"] == original
+        assert attribute["evidence"] == [{"capture_id": capture["capture_id"],
+                                         "pointer": "/raw_record/identity/name"}]
+        candidate = self.rows("training-candidates")[0]
+        assert candidate["predictors"]["composition.chocolate_type"] == expected
+        assert not candidate["model_eligible"]
+        assert self.rows("model-inputs") == []
+
     def test_same_product_remains_unique_at_brand_and_retail_sellers(self):
         first = self.product("brand-listing", "montezumas")
         second = self.product("retail-listing", "chocolate-shop")

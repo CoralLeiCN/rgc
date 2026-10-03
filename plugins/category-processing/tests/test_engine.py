@@ -308,11 +308,16 @@ class CategoryProcessingEngineTests:
             with pytest.raises(ValueError):
                 self.build(output=output)
 
-    def test_chocolate_profile_uses_the_same_generic_engine(self):
+    @pytest.mark.parametrize("name,expected", [
+        ("Fixture Dark Chocolate Bar 200g", "dark"),
+        ("Fixture Blonde Chocolate Bar 200g", "blonde"),
+        ("Fixture Milk Chocolate and Dark Chocolate Selection 200g", "mixed"),
+    ])
+    def test_chocolate_profile_uses_the_same_generic_engine(self, name, expected):
         chocolate = {
             "product_id": "chocolate-example", "source_key": "chocolate-shop",
             "source_url": "https://chocolate-shop.example.test/products/chocolate",
-            "identity": {"name": "Fixture Dark Chocolate Bar 200g", "brand": "Fixture Maker",
+            "identity": {"name": name, "brand": "Fixture Maker",
                          "source_product_id": "chocolate-product", "source_variant_id": "200g"},
             "information": {"selected_variant": {"id": "200g", "price": "4.00", "available": True, "title": "Default Title"},
                             "product_type": "Bar", "catalogue_retrieval_currency": "GBP",
@@ -327,6 +332,15 @@ class CategoryProcessingEngineTests:
         assert (len(row["attributes"])) == (103)
         assert ("composition.cocoa_percentage") in (row["attributes"])
         assert ("coffee.roast") not in (row["attributes"])
+        attribute = row["attributes"]["composition.chocolate_type"]
+        assert attribute["value"] == expected
+        assert attribute["review_status"] == "unreviewed"
+        assert attribute["scope"] == "product"
+        captured = self.rows("source-listings")[0]["captures"][0]
+        assert captured["raw_record"] == chocolate
+        assert attribute["evidence"] == [{"capture_id": captured["capture_id"],
+                                         "pointer": "/raw_record/identity/name"}]
+        assert self.rows("model-inputs") == []
 
     def test_copied_plugin_processes_coffee_in_isolated_python_without_sibling_modules(self):
         self.collect([self.product()])

@@ -103,6 +103,13 @@ to future pricing outputs marks the remaining validation and explanation work.
 
 ## Layer responsibilities
 
+Silver's shared source adapter recognizes explicit blonde chocolate names and
+coordinated selections of multiple chocolate types as `mixed`, retaining the
+original name evidence and unreviewed status. The
+[chocolate type rules](chocolate-schema.md#chocolate-type-from-product-names)
+define wording and scope limits; an implementation change produces a new build
+identity when Silver is rebuilt.
+
 | Responsibility | Raw: `data/collections/chocolate/uk` | Silver: `data/silver/chocolate/uk` |
 | --- | --- | --- |
 | Collect and preserve | Original product records collected from sources, arbitrary fields, source/image artifacts and capture histories that only append records. | Read preserved records; retain every accepted original capture in canonical seller groups with its original values. |
@@ -274,16 +281,27 @@ The schema guide defines map keys, decision fields, reviewer/reason/evidence
 requirements and eligibility gates. Price and active feature reviews must
 support the same price observation capture.
 
+For batched agent inference, cache the input revision, assignments, prompts,
+model receipts, proposals and review decisions before applying a review document.
+An exact source quote and valid type establish traceability, but semantic review
+must also check negation, product/component/brand scope and nutrition columns.
+For example, a per-100 g energy value must come from the matching table column;
+an adult reference intake in the same row is a different quantity. Apply the
+accepted subset through `--reviews`, then compare the new snapshot with the
+baseline for changed attributes, original captures, seller rows and price gates.
+The local five-reviewer investigation is recorded in the
+[implementation plan](../lifecycle/plan.md#proof).
+
 Silver emits normalized pricing candidates and reviewed eligible inputs under
 the [schema's model handoff](chocolate-schema.md#pricing-model-handoff-and-insights).
 That guide owns the selected target and predictors, schema/model domain
 distinctions, validation and preparation helpers, and interpretation limits.
 Follow the [specification](../spec.md) for model release requirements.
 
-The current values extracted from sources remain unreviewed and price/tax basis
-is unresolved, so eligible model inputs remain empty and `release_ready` is
-false. Use the report and review queue to plan evidence review and extraction
-evaluation before fitting.
+Many source attributes and the price/tax basis still require review. Local
+attribute reviews improve coverage while eligible model inputs remain empty
+and `release_ready` is false. Use the snapshot report and review queue to plan
+evidence review and extraction evaluation before fitting.
 
 The [consolidated pricing research design](chocolate-modeling-design.md) proposes
 subsequent hedonic/LightGBM comparisons, optional feature handling, calibration
@@ -370,6 +388,15 @@ by the [documentation policy](../documentation-policy.md). Run
 
 Raw → combined Silver → immutable Parquet [Gold](chocolate-gold.md) is the chocolate training pipeline. Silver owns evidence-backed transformations and eligibility. Gold projects every candidate into one population without selection fields. A user-directed bulk review creates a new snapshot with administrative manifest provenance; it does not establish individual evidence review or fill missing targets.
 
+An optional inferred export packages curated decisions and provenance beside a
+historical-format Gold snapshot. It reads an explicit Silver snapshot and review
+artifacts, exposes accepted values in its typed view and preserves complete
+Silver records and decision evidence. The version 1 wrapper verifies the nested
+`training/` snapshot under its original storage contract. The current Gold loader
+exposes every candidate from that child without selection fields; see the
+[Gold guide](chocolate-gold.md#build-a-separate-inferred-export) for the interface
+and separate publication prefix.
+
 `--family-mappings` accepts `chocolate-family-mappings-1` decisions; without an override the build loads `reviews/chocolate/family-mappings.json` when present. Taxonomy `chocolate-product-identity-1` distinguishes conservative related ranges from exact consumer-pack identities. The [identity registry guide](../../reviews/chocolate/README.md) explains exact seller/listing selectors, original-name guards, reviewer/reason/capture evidence and current-task Codex decisions. Keep every seller listing and original capture separate. New or conflicting cases become `family-review-packets.jsonl`; hints do not establish physical equality. `family-mappings.json` preserves the accepted parsed registry and candidate IDs come from its resolved typed attributes. Both files are managed and hashed in the manifest.
 
 A family-only assignment reviews only the family relationship. It does not review scope, price, quantities, predictors or exact physical identity. Exact physical mappings require separate pack evidence review, including changes retaining the same IDs and name. There is no unattended dispatcher. After updating a registry or dataset-owned contract, rebuild Silver into a new destination and produce a new Gold snapshot. Existing `--schema-root` custom directories and `--offline` verified-cache behavior remain supported.
@@ -421,9 +448,10 @@ The web workspace now consumes the published
 retain all 103 attributes and 2,159 accepted additions supported by source evidence across
 33 attributes. Parquet `record_json` owns complete values and evidence; the
 web adapter validates them with the export's copied contracts and preserves
-per-field review states. Nested training Gold retains 2,134 candidates, zero
-eligible inputs and the historical `regular-consumer-price-1` basis. The separate
-current-price study keeps its own policy. Silver continues to own source
+per-field review states. The immutable nested training files retain 2,134 candidates, zero
+source-eligible inputs and the historical `regular-consumer-price-1` basis. The
+current Gold loader exposes all 2,134 candidates without selection fields; the
+current-price study applies its own target policy. Silver continues to own source
 processing, interpretation, review and eligibility. The app reference pins the
 manifest and revision; [collection integration](../collection-integration.md)
 defines preparation and offline rebuild commands.

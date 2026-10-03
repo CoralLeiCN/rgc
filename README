@@ -254,7 +254,13 @@ uv run python -B scripts/build_chocolate_gold.py --silver-root data/silver/choco
 uv run python -B scripts/train_chocolate_model.py --gold-root data/gold/chocolate/uk/<gold-version> --output data/models/chocolate/uk --group bar
 ```
 
-The raw-to-Silver builder includes reviewed family mappings from the [registry](reviews/chocolate/README.md), with `--family-mappings` overrides and grouped Codex review packets. The current chocolate study uses collected displayed prices as its regular-price proxy; independent regular-price and confirmed-tax evidence are not target requirements. The source Silver has family IDs on 402 candidates and zero eligible model inputs; the Gold loader includes all 2,134 candidates automatically, and current-price preparation derives 630 unit-price targets; no real-data regression has fitted. [The published release](docs/data/analysis/gold-modeling-contract-release.md) records the verified contract publication and validation. Existing main features, discovery and proposed LightGBM/SHAP design remain available.
+Curated inference decisions can also be packaged in a separate immutable
+[Gold inferred bundle](docs/data/chocolate-gold.md#build-a-separate-inferred-export).
+It preserves full Silver records and the decision/source audit. Its version 1
+`training/` child retains historical storage and source review flags; the current
+Gold loader exposes every candidate for the selected study.
+
+The raw-to-Silver builder includes reviewed family mappings from the [registry](reviews/chocolate/README.md), with `--family-mappings` overrides and grouped Codex review packets. The current chocolate study uses collected displayed prices as its regular-price proxy; independent regular-price and confirmed-tax evidence are not target requirements. The source Silver has family IDs on 402 candidates and zero eligible model inputs; the Gold loader includes all 2,134 candidates automatically, and current-price preparation derives 630 unit-price targets; the experimental OLS baseline has no real-data fit. [The published release](docs/data/analysis/gold-modeling-contract-release.md) records the verified contract publication and validation. Existing main features, discovery and proposed LightGBM/SHAP design remain available.
 
 
 Gold now treats every row as part of the training population. New snapshots use

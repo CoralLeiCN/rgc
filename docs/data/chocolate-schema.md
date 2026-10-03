@@ -120,6 +120,26 @@ unfamiliar keys in supported structured sections remain unmapped information.
 Other information specific to a source remains in the input captures even when
 no current extractor creates an assertion or review item for it.
 
+## Chocolate type from product names
+
+The published vocabulary includes `dark`, `milk`, `white`, `blonde`, `ruby`
+and `mixed`. Product names explicitly stating "Blonde Chocolate" or "Blond
+Chocolate" yield `blonde`. Coordinated types in a selection, assortment,
+collection, mix, bundle, set or gift bag/box yield `mixed`: "Milk Chocolate and
+Dark Chocolate Selection" and "Milk & Dark Chocolate Selection" describe the
+same type mixture. Shared wording also covers "Milk, Dark & White Chocolate
+Selection". Repeating one type retains that type.
+
+The rule preserves the complete original name and its capture pointer as
+evidence. Multiple chocolate mentions without an explicit coordinated selection,
+including a bar with chocolate chips, remain unresolved. A generic selection
+name does not establish its chocolate types. These extracted assertions remain
+unreviewed. Both canonical and portable adapters implement the rule using the
+existing schema, mappings, validators and model vocabularies. Implementation
+hashes change rebuilt snapshot identities; historical coverage reports retain
+their original results. The verified corpus rebuild contains 24 blonde and 18 mixed listings, with
+1,467 known chocolate-type values; 12 ambiguous prior labels became unknown.
+
 ## How standardization works
 
 Each attribute has `value`, `status`, `unit`, `qualifier`, `scope`, `evidence`,
@@ -523,6 +543,16 @@ The published contract release retains `chocolate-schema-1` and its 103 typed fi
 The experimental trainer implements family-held-out OLS, rank/conditioning and confounding gates, and family-cluster bootstrap coefficient intervals. No real-data regression has fitted and no prediction intervals or released domain are established. [Gold](chocolate-gold.md) exports every candidate into one population without eligibility columns and carries accepted identity decisions. The [published release](analysis/gold-modeling-contract-release.md) records exact files, hashes, impact and publication status; authoritative manifests now pin verified Hugging Face commit `d549ad91d63fb452af605df4a939c4e1f0a59bfa`.
 
 
+The separate inferred export is an interchange layer over existing Silver
+records and supplied accepted decisions. Its typed attribute columns use this
+profile to expose the already applied decisions and existing Silver values,
+while `record_json` preserves the complete Silver record, evidence and states.
+Accepted decisions and their source/model audit remain under `inference/`.
+Version 1 preserves and verifies the historical storage contract of its nested
+`training/` child. Current training loaders then expose all candidates without
+selection fields. The export preserves the schema and Silver source review;
+model preparation applies the selected study target.
+
 ## User eligibility in Gold
 
 Gold population membership now follows the user's instruction to include every
@@ -588,9 +618,10 @@ The web workspace now consumes the published
 retain all 103 attributes and 2,159 accepted additions supported by source evidence across
 33 attributes. Parquet `record_json` owns complete values and evidence; the
 web adapter validates them with the export's copied contracts and preserves
-per-field review states. Nested training Gold retains 2,134 candidates, zero
-eligible inputs and the historical `regular-consumer-price-1` basis. The separate
-current-price study keeps its own policy. Silver continues to own source
+per-field review states. The immutable nested training files retain 2,134 candidates, zero
+source-eligible inputs and the historical `regular-consumer-price-1` basis. The
+current Gold loader exposes all 2,134 candidates without selection fields; the
+current-price study applies its own target policy. Silver continues to own source
 processing, interpretation, review and eligibility. The app reference pins the
 manifest and revision; [collection integration](../collection-integration.md)
 defines preparation and offline rebuild commands.

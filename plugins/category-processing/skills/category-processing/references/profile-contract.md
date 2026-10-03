@@ -136,6 +136,18 @@ shipping weights and unfamiliar sections are retained rather than silently
 coerced. Keep unsupported values, product types/tags and structured fields as
 unmapped claims with evidence. Chocolate uses conservative source-specific
 parsing; coffee demonstrates structured extraction, not broad coffee coverage.
+
+For chocolate names, "Blonde Chocolate" and "Blond Chocolate" yield `blonde`.
+Coordinated distinct types in selections, assortments, collections, mixes,
+bundles, sets or gift bags/boxes yield `mixed`; supported examples include "Milk
+Chocolate and Dark Chocolate Selection", "Milk & Dark Chocolate Selection"
+and "Milk, Dark & White Chocolate Selection". Repeated mentions of one type
+retain that type. Ambiguous component/chip mentions and selections without
+explicit types remain unresolved. Assertions retain the original name and
+capture pointer and remain unreviewed. The existing profile, aliases, validator
+and model design already permit `blonde` and `mixed`; rebuilt processing
+fingerprints record the changed adapter implementation.
+
 Known-field gap detection reaches configured pointers/sections and supported
 parser cases. Structural discovery also records meaningful source subtrees
 outside that coverage, preserving their full typed values and evidence pointers.

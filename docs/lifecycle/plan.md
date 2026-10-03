@@ -432,11 +432,20 @@ documentation or rewrite eligibility/targets.
 | Map captured product names to reviewed families while preserving raw evidence. | `scripts/chocolate_standardization/identity.py`, `reviews/chocolate/family-mappings.json`, Silver CLI and contracts | 31 families and 1,285 family-only assignments verified. Exact physical identities remain unresolved. |
 | Train experimental OLS from verified Gold with family holdout and bootstrap uncertainty. | `scripts/chocolate_regression.py`, `scripts/train_chocolate_model.py`, model design and tests | Implemented and fixture fits/failure gates verified. Current Gold has 2,134 eligible candidates and 630 current-price targets; identity and repeated-listing blockers prevent a real fitted model. Historical attempts retain their original input status. |
 | Reconcile Gold/modeling work with main and prepare the dataset contract release before landing. | `docs/data/analysis/gold-modeling-contract-release.md`, integration code/tests and dataset references | Combined-main checks and corpus rebuild complete. User approved the refreshed exact release, published at `d549ad91d63fb452af605df4a939c4e1f0a59bfa` with all 16 remote files verified. Real-pin tests, offline caches, Ruff and documentation checks pass; landing uses one local main squash commit. |
-
 | Use pandas for canonical chocolate grouping, partitions, counts and row envelopes. | `scripts/chocolate_tables.py`, shared components, silver CLI and tests | Implemented; integrated with main's family mappings, fixed-price target, Gold and locked pytest/Ruff development environment. Integration verification is recorded below. |
 | Analyze every chocolate schema attribute and publish verified derived output. | `scripts/analyze_chocolate_schema.py`, reports and publication receipt | Verified original pandas snapshot and 103-field analysis published at immutable revisions. Current contracts retain the subsequent Gold/family/target release. |
+| Recognize blonde chocolate and explicit mixed selections from names. | Canonical/portable adapters, adapter and Silver tests, schema guide and portable references | Implemented and verified against existing pinned vocabularies. The restored corpus rebuild has 24 blonde and 18 mixed listings; ambiguous component descriptions remain unknown. |
+| Review all chocolate fields using five reviewers and cache evidence for batched inference. | Ignored investigation cache, source receipts, field reports and inference packets | Latest origin and public Hugging Face revision `bb1c9de580c64cc13aac62b352d58704fe2dd60e` synchronized. Five reviewers covered all 103 fields with exhaustive coverage counts and sampled semantic review. Five GPT-6 Luna workers completed Codex OAuth extraction in local batches of 500. The verified local review adds 2,159 values across 33 attributes; broader machine proposals remain unadopted pending semantic review. |
+| Export and publish curated inference as a separate Gold layer. | Inferred Gold builder/CLI/tests, Gold/spec/schema/Silver guides, `README`, immutable dataset release receipt | Implemented and published `gold-inferred-5b539b9c4adbb011a40d7792` at Hugging Face revision `812a03a5faaced471a2a20f4c389865ed5675826`. All 47 release files passed downloaded-byte verification; existing Silver/Gold pointers and all 140 prior remote paths remain. Full product records, accepted decisions and ordinary Gold training tables are preserved. |
 
 ## Risks and controls
+
+The user requested recognition of blonde chocolate and `mixed` for explicit milk
+and dark selections. Both published chocolate schemas, mappings, validators and
+selected models already allow these values. Canonical and portable adapters now
+recognize blonde/blond names and coordinated selections, preserving name
+evidence and review gates. Verification and full corpus impact are recorded
+below; historical field reports retain their original counts.
 
 Preserve raw evidence and seller identity independently of brand. Keep unsupported
 fields unknown and distinguish source claims from independent verification.
@@ -635,6 +644,10 @@ readiness; `complete_snapshot` establishes accepted input consistency.
 
 | Verification | Recorded result and evidence |
 | --- | --- |
+| Blonde and mixed chocolate extraction | `uv sync --locked` installed the locked environment; all three pinned caches passed `python3 -B scripts/fetch_contracts.py --all --offline`. `uv --cache-dir /private/tmp/rgc-uv-cache run --locked pytest` passed all 429 cases in 18.31 seconds. Checks cover both adapters, blonde/blond names, coordinated/shared type wording, repeated types, component/chip ambiguity, canonical and portable Silver evidence, preserved source records and unreviewed eligibility gates. Ruff, documentation and whitespace checks passed. No analytical contract bytes or immutable references changed because both schema/validator/model vocabularies and aliases already support the labels. The subsequent corpus rebuild is recorded below. |
+| Restored corpus and five field reviewers | All 152 public dataset files (3,539,612,644 bytes) were downloaded at revision `bb1c9de580c64cc13aac62b352d58704fe2dd60e` and verified against remote hashes; all 22,372 raw archive members were verified. Local `silver-5a662182f9d2fdcb35355453` retains 3,743 listings and 4,347 captures with no archive/extraction errors. Chocolate type has 1,467 known cells, including 24 blonde and 18 mixed; 12 ambiguous former labels became unknown. Existing family decisions restore 1,285 family IDs. Eligible model inputs remain zero under the pinned regular-price contract. Five reviewer reports cover all 103 fields; the completed local inference adoption is recorded below. |
+| Curated Luna inference and corrected Silver | Five OAuth workers processed all 3,743 listings using model-authored source extraction rules in batches of 500, generating 25,179 proposals. Independent review and parent validation accepted 2,159 values across 33 attributes and 1,764 listings: 1,618 explicit SKUs, eight pack counts, 494 nutrition values and 39 other source declarations. Exhaustive accepted nutrition column checks corrected two adult reference-intake values to 2,413 kJ and 582 kcal per 100 g. Final local `silver-f865cac2a7324d5204b797f4` preserves all seller rows, 4,347 exact capture objects and 2,134 price observations; all 24 managed hashes pass. Exactly the accepted attribute cells change. There are 53 attributes with known values, 50 with none and 1,460 conflicting cells. Eligible inputs remain zero under `regular-consumer-price-1`. Inputs, proposals, reviews, corrections, superseded output and hash-verified checkpoint archives are cached under ignored `data/investigation/2026-10-03-field-review/`; publication of the inferred wrapper is recorded in the following row. |
+| Gold inferred export and publication | [Publication receipt](../data/analysis/chocolate-gold-inferred-publication-2026-10-03.json) records parent `06680d7248ccc4487726b9a97e59aa8f586fb54e`, immutable release `812a03a5faaced471a2a20f4c389865ed5675826` and all 47 file hashes. Latest source comparison verified 23 unchanged published Silver files. All 3,743 decoded product records and 385,529 typed attribute cells match reviewed Silver; accepted-decision bytes, prices and 2,134 training rows are preserved. The original on-disk Gold child retains zero source-eligible inputs under `regular-consumer-price-1`; current loaders expose all 2,134 candidates for model preparation. Eight new tests cover evidence matching, typed/null/conflict preservation, eligible-source preservation, symlinks, replay and tamper rejection. The full locked suite passed 437 tests in 9.20 seconds; Ruff, documentation and whitespace checks passed. Dataset configurations select inferred products or training separately from the existing default. |
 | Trait contribution and family percentage specification | On 2026-10-03, `uv sync --locked`, `uv run pytest scripts/tests/test_documentation.py` (26 cases), `uv run ruff check .`, `python3 -B scripts/check_documentation.py` and `git diff --check` passed. Direct arithmetic checks verified reference-plus-trait reconciliation for positive, negative, cancelling, zero and near-zero log contributions, and identical unit/pack shares. Semantic review kept trait families distinct from product identity families and the allocation distinct from price effects and global importance. This validates the documentation and formula only; model contracts, runtime explanations and fitted-data results remain pending. |
 | Data documentation integration with main | `uv sync --locked`, `python3 -B scripts/fetch_contracts.py --all`, `uv run --no-sync pytest` (391 passed), `uv run --no-sync ruff check .`, `python3 -B scripts/fetch_contracts.py --all --offline`, `python3 -B scripts/check_documentation.py` and `git diff --check` passed. Audited 262 local links and all five relocated JSON evidence files against main. Verified 94 runtime/test/contract/identity/dependency files against main; only documentation checker paths and their existing tests differ. Updated the diagram and project description to distinguish implemented Parquet Gold/export/training helpers from zero eligible real chocolate inputs and pending validated pricing/explanations. |
 | Data flow diagram | `uv sync --locked`, `uv run pytest scripts/tests/test_documentation.py` (26 passed), `uv run ruff check .`, `python3 -B scripts/check_documentation.py` and `git diff --check` passed. Reviewed the Mermaid stages against the documented collection import boundary, combined silver build, seller preservation, review gates and portable model preparation. Bronze labels the existing raw archive; after main integration, Gold describes the implemented immutable Parquet training interface and experimental trainer. Stage purposes, retained data and implementation status appear directly in the Mermaid nodes; current chocolate eligibility and planned model fitting are explicit. |
@@ -662,7 +675,7 @@ readiness; `complete_snapshot` establishes accepted input consistency.
 
 | Gold/modeling contract publication and final checks | On 2026-10-03 the user approved the refreshed publication parent/card. Guarded Hugging Face commit `d549ad91d63fb452af605df4a939c4e1f0a59bfa` has parent `db32e43635793a0edd1308df4bd0dee112ddbe44`. All 16 uploaded files matched their approved bytes, preserving newer Silver/analysis sections and remote snapshots. Three Git manifests pin the verified revision, all caches verify offline, and `uv sync --locked` remains valid. The actual repository suite passed all 375 cases against these published pins in 8.04 seconds. Ruff, full documentation/change-coverage checks and whitespace checks passed. CI has not run here; corpus data/model snapshots remain local and no real model has fitted. |
 
-Current chocolate source values are unreviewed and price/tax basis is unresolved:
+Many chocolate source values still need review and price/tax basis is unresolved:
 `model-inputs.jsonl` is empty and `release_ready` is false. Unsupported mappings
 and evidence batches remain available in quality/review/batch artifacts. Package
 correctness and reproducibility need separate evidence for extraction completeness,
@@ -1558,3 +1571,27 @@ predictions, all evaluation metrics and the 84-tree selection exactly.
 Both the original complete run and the published subset payload passed the
 verified loader. This local verification fit has a new implementation-bound
 identity; the published immutable model remains the completed publication.
+
+
+## Inferred export integration with current main
+
+The inferred exporter and its publication record are integrated with the data
+guide relocation, current-price study and Gold population contract. Version 1
+builds and verifies its nested child through the explicit legacy storage APIs,
+preserving the published source flags and historical regular-price basis.
+Current loaders and the inferred model adapter expose every candidate and use
+the selected study target. The immutable publication receipt is relocated to
+`docs/data/analysis/` with its original bytes. Cached review and inference
+artifacts remain under `data/investigation/2026-10-03-field-review/`.
+
+Integration with main `96415842` passed locked dependency installation, all four
+offline contract caches, Ruff, the documentation guard and whitespace checks.
+The full Python suite passed 611 cases; eight documentation cases initially
+failed on links affected by the guide relocation. After correcting those links,
+all 27 documentation cases passed. The final focused run after main's validation
+update passed all 65 documentation and matched-retailer cases. Seven web cases
+were skipped because this worktree lacks Node dependencies and the web model
+fixture. The published inferred snapshot also passed verification with the
+merged loaders: 3,743 products, 2,134 stored candidates and zero stored eligible
+rows; the current training loader exposes all 2,134 candidates. Earlier
+publication and test results above describe their recorded revisions.

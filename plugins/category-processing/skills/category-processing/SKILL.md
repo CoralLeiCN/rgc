@@ -48,6 +48,11 @@ can track more fields than current extractors establish. Missing evidence stays
 unknown; per-item pricing still needs an observed, reviewed count rather than an
 assumed one.
 
+For chocolate, the adapter recognizes blonde chocolate names and coordinated
+selections of several chocolate types as `mixed`. Follow
+[profile-contract.md](references/profile-contract.md) for wording and scope
+limits; extracted names remain evidence for an unreviewed interpretation.
+
 Inspect the report, processing ledger, mapping-review batches and summary.
 For fields beyond configured extraction, inspect `discovered-fields.jsonl` and
 `schema-extension-review.md`; read

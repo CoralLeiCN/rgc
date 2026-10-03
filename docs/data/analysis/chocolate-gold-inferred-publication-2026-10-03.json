@@ -1,0 +1,268 @@
+{
+  "commit_url": "https://huggingface.co/datasets/CoralLeiCN/rgc-collections/commit/812a03a5faaced471a2a20f4c389865ed5675826",
+  "counts": {
+    "accepted_inference_cells": 2159,
+    "attributes": 103,
+    "eligible_model_inputs": 0,
+    "products": 3743,
+    "training_candidates": 2134
+  },
+  "dataset_version": "gold-inferred-5b539b9c4adbb011a40d7792",
+  "existing_remote_files_preserved": 140,
+  "file_count": 47,
+  "files": {
+    "README.md": {
+      "byte_length": 5616,
+      "sha256": "3b53c1fb2496a6d9637bfa8805199ab9cac50547dc03ff9e2c3dbe7166df33d4"
+    },
+    "gold-inferred/chocolate/uk/README.md": {
+      "byte_length": 2001,
+      "sha256": "ac76a49ea3f60139664d67b7086ec5ddc33f7b775e586c13250f094e615880b1"
+    },
+    "gold-inferred/chocolate/uk/gold-inferred-5b539b9c4adbb011a40d7792/inference/accepted-decisions.jsonl": {
+      "byte_length": 1414033,
+      "sha256": "e19472feadcbbd6e52e0b60e556c8b7fdb4e4a959c4a37aa647e1bd77be90d22"
+    },
+    "gold-inferred/chocolate/uk/gold-inferred-5b539b9c4adbb011a40d7792/inference/provenance.json": {
+      "byte_length": 5653,
+      "sha256": "b4c7a66958165637dcc61f7f418c19ea3bae15b3d2c53d88cc61ef13adbe002c"
+    },
+    "gold-inferred/chocolate/uk/gold-inferred-5b539b9c4adbb011a40d7792/inputs/silver-manifest.json": {
+      "byte_length": 4430184,
+      "sha256": "c6be326fe7f5c9e53b1311ae0beb263c4931c78c420e0401cd45821ec9d33527"
+    },
+    "gold-inferred/chocolate/uk/gold-inferred-5b539b9c4adbb011a40d7792/manifest.json": {
+      "byte_length": 8516,
+      "sha256": "18b1d00b301b1ad7ce7190076614e9c76f84cbb99f3c43a5aa8273f9f4123bfe"
+    },
+    "gold-inferred/chocolate/uk/gold-inferred-5b539b9c4adbb011a40d7792/products.parquet": {
+      "byte_length": 1008291,
+      "sha256": "15608e71328ffb442fa5362ca00a27c0c53abd5b633b03b0eaefed15b6ab374c"
+    },
+    "gold-inferred/chocolate/uk/gold-inferred-5b539b9c4adbb011a40d7792/report.json": {
+      "byte_length": 4832,
+      "sha256": "d6eed22eca0e6f9e95128c2ef3ec88d686593aa918d2ebd01add32f1024f7cb4"
+    },
+    "gold-inferred/chocolate/uk/gold-inferred-5b539b9c4adbb011a40d7792/training/inputs/family-mappings.json": {
+      "byte_length": 1064996,
+      "sha256": "a407f5b280a1d705eae1a39f7133affc3c748cc9652f022a0c759166b638c073"
+    },
+    "gold-inferred/chocolate/uk/gold-inferred-5b539b9c4adbb011a40d7792/training/inputs/model-design.json": {
+      "byte_length": 22850,
+      "sha256": "5ab4317e10f0c7fd5598a99cf46c887c6c047db193b9a3d7d7cae016ab37092b"
+    },
+    "gold-inferred/chocolate/uk/gold-inferred-5b539b9c4adbb011a40d7792/training/inputs/prices.jsonl": {
+      "byte_length": 9413857,
+      "sha256": "40bcb1b52c8f5295696c54daa814dbf9307d7e17bdcb9073758a4ee3e3f63307"
+    },
+    "gold-inferred/chocolate/uk/gold-inferred-5b539b9c4adbb011a40d7792/training/inputs/product.schema.json": {
+      "byte_length": 327514,
+      "sha256": "e61c8d202774a95250d40673f292f68fa743dbec3a6d0948beedcc58e8fec84c"
+    },
+    "gold-inferred/chocolate/uk/gold-inferred-5b539b9c4adbb011a40d7792/training/inputs/profile.json": {
+      "byte_length": 65092,
+      "sha256": "881da5b79167bde7c8ac54dce76d39a3962cb5f73540e0e062c34dfde81e6458"
+    },
+    "gold-inferred/chocolate/uk/gold-inferred-5b539b9c4adbb011a40d7792/training/inputs/quality-report.json": {
+      "byte_length": 6938,
+      "sha256": "e571c051884c0e340505938d7bff96568c4f43a7fa0e589be0d9339b9b3ad4a0"
+    },
+    "gold-inferred/chocolate/uk/gold-inferred-5b539b9c4adbb011a40d7792/training/inputs/silver-manifest.json": {
+      "byte_length": 4430184,
+      "sha256": "c6be326fe7f5c9e53b1311ae0beb263c4931c78c420e0401cd45821ec9d33527"
+    },
+    "gold-inferred/chocolate/uk/gold-inferred-5b539b9c4adbb011a40d7792/training/inputs/source-mappings.json": {
+      "byte_length": 18698,
+      "sha256": "5084dde12e3b2309f11b33e4a98226005bc6cb877531eb58510d17715f6f0128"
+    },
+    "gold-inferred/chocolate/uk/gold-inferred-5b539b9c4adbb011a40d7792/training/manifest.json": {
+      "byte_length": 3541,
+      "sha256": "90c25950937c029775d4910237cbdfb9cc134dc3e20c46c0c2b31f4c0d191370"
+    },
+    "gold-inferred/chocolate/uk/gold-inferred-5b539b9c4adbb011a40d7792/training/model-inputs.parquet": {
+      "byte_length": 5350,
+      "sha256": "5d5153ffaf5ecef7e8ec0fc7233376a8a5570b1e63bd3974e4613c72db2028a3"
+    },
+    "gold-inferred/chocolate/uk/gold-inferred-5b539b9c4adbb011a40d7792/training/report.json": {
+      "byte_length": 3055,
+      "sha256": "f137657e95b4a60fb8cc23480a1bcbee369c69620599bece192c9d66446885cd"
+    },
+    "gold-inferred/chocolate/uk/gold-inferred-5b539b9c4adbb011a40d7792/training/training-data.parquet": {
+      "byte_length": 81142,
+      "sha256": "907f92d4851e32b8dccb2d498ff9634b9ab341567d0acece1b49656d2f5f29bb"
+    },
+    "gold-inferred/chocolate/uk/latest.json": {
+      "byte_length": 1259,
+      "sha256": "2d79d5a2c4bed09ed00f29b7f0d84c17e8e780a5dc48c4ddaef53d20fd11d0be"
+    },
+    "gold-inferred/chocolate/uk/reviews/silver-f865cac2a7324d5204b797f4/adoption/accepted-decisions.jsonl": {
+      "byte_length": 1414033,
+      "sha256": "e19472feadcbbd6e52e0b60e556c8b7fdb4e4a959c4a37aa647e1bd77be90d22"
+    },
+    "gold-inferred/chocolate/uk/reviews/silver-f865cac2a7324d5204b797f4/adoption/nutrition-corrections-applied.json": {
+      "byte_length": 1482,
+      "sha256": "351a0dbdb92e69f1351f218cc3bd72a0cea76b1beaee1f2b3741373350dc653c"
+    },
+    "gold-inferred/chocolate/uk/reviews/silver-f865cac2a7324d5204b797f4/adoption/silver-reviews.json": {
+      "byte_length": 2401235,
+      "sha256": "a7d5489c9537a6b07f0d31c791a9f7dc1f64b33c247daa35ff0e1aa7dff3a5a8"
+    },
+    "gold-inferred/chocolate/uk/reviews/silver-f865cac2a7324d5204b797f4/inference/workers/worker-1/receipt.json": {
+      "byte_length": 345,
+      "sha256": "d2e32ce9c417f22d4d32cc537a61f85c646abd84f2f0aa93d8ede1dc762d7f18"
+    },
+    "gold-inferred/chocolate/uk/reviews/silver-f865cac2a7324d5204b797f4/inference/workers/worker-2/receipt.json": {
+      "byte_length": 346,
+      "sha256": "d06bd17f22be7038d71abc7ce947592a7c3e3837feecdac99f1bf04f77608a51"
+    },
+    "gold-inferred/chocolate/uk/reviews/silver-f865cac2a7324d5204b797f4/inference/workers/worker-3/receipt.json": {
+      "byte_length": 347,
+      "sha256": "6134469f4aa26b0ca74ffd4688ece2d2d9416ad88f790c046a6e0dbfcfe36c72"
+    },
+    "gold-inferred/chocolate/uk/reviews/silver-f865cac2a7324d5204b797f4/inference/workers/worker-4/receipt.json": {
+      "byte_length": 346,
+      "sha256": "683c4645b8deb5f1eba302bab2e07ac3321098e8ef8c06f93b84f90560698412"
+    },
+    "gold-inferred/chocolate/uk/reviews/silver-f865cac2a7324d5204b797f4/inference/workers/worker-5/receipt.json": {
+      "byte_length": 345,
+      "sha256": "436b5abf7836c1d74f3ecd19813ae769f8820445556bf4734fb81cdc5a9a31d1"
+    },
+    "gold-inferred/chocolate/uk/reviews/silver-f865cac2a7324d5204b797f4/publication/corpus-export-verification.json": {
+      "byte_length": 907,
+      "sha256": "513dd70448546f2d5cd5c987b9c10386dc930d3d14c5a0c6901ad373e41307e8"
+    },
+    "gold-inferred/chocolate/uk/reviews/silver-f865cac2a7324d5204b797f4/publication/latest-comparison.json": {
+      "byte_length": 4008,
+      "sha256": "869067d5d106d4e034c8b933cc3dcc9104d396d0a9895661eccf04c4e98264e6"
+    },
+    "gold-inferred/chocolate/uk/reviews/silver-f865cac2a7324d5204b797f4/rebuild/reviewed-verification.json": {
+      "byte_length": 1236,
+      "sha256": "d78cb03f3a6dd53334484e60eccf63bb3e4b1bca4725179068859268bb51bce3"
+    },
+    "gold-inferred/chocolate/uk/reviews/silver-f865cac2a7324d5204b797f4/reviewers/reviewer-1/fields.jsonl": {
+      "byte_length": 9573,
+      "sha256": "ccfdd47a2c98c5717141422dd098d54f0002a5217c3f79141110ace689969be2"
+    },
+    "gold-inferred/chocolate/uk/reviews/silver-f865cac2a7324d5204b797f4/reviewers/reviewer-1/report.json": {
+      "byte_length": 25713,
+      "sha256": "cfaa3523be90e0673ae13fb702c2dc1b4ff31c2e2fdcc95afebdddd4e3a943bc"
+    },
+    "gold-inferred/chocolate/uk/reviews/silver-f865cac2a7324d5204b797f4/reviewers/reviewer-2/fields.jsonl": {
+      "byte_length": 78842,
+      "sha256": "ef59ca10bfe3d6b8e63ff98eca510da60835c30335a5a4d666568d2fee591ad5"
+    },
+    "gold-inferred/chocolate/uk/reviews/silver-f865cac2a7324d5204b797f4/reviewers/reviewer-2/final-corrected-adoption-audit.json": {
+      "byte_length": 2484,
+      "sha256": "8062e5fb85baf9582217be258a50f5b7c312bba6883b3c3ed6fa47f6203fb08d"
+    },
+    "gold-inferred/chocolate/uk/reviews/silver-f865cac2a7324d5204b797f4/reviewers/reviewer-2/nutrition-corrections.jsonl": {
+      "byte_length": 675656,
+      "sha256": "6f36b3c38f67ee89d9bb98f000d13cfa99764ab883747f93909f954735692f0b"
+    },
+    "gold-inferred/chocolate/uk/reviews/silver-f865cac2a7324d5204b797f4/reviewers/reviewer-2/report.json": {
+      "byte_length": 78310,
+      "sha256": "49df20e57aaeee1ceacd7d73fa10c30afbfce29c37cc1d9c6cd1b2cbdf088de2"
+    },
+    "gold-inferred/chocolate/uk/reviews/silver-f865cac2a7324d5204b797f4/reviewers/reviewer-3/fields.jsonl": {
+      "byte_length": 12083,
+      "sha256": "705341bfcf7f5aff6108439d16d5fa179a8e60983ea19668f8fd8af746052367"
+    },
+    "gold-inferred/chocolate/uk/reviews/silver-f865cac2a7324d5204b797f4/reviewers/reviewer-3/report.json": {
+      "byte_length": 2299,
+      "sha256": "9a4db1f9e1bd9b1ac3c975ebde9bf3cc14a21f450c3897b9e5adf23677b277a9"
+    },
+    "gold-inferred/chocolate/uk/reviews/silver-f865cac2a7324d5204b797f4/reviewers/reviewer-4/fields.jsonl": {
+      "byte_length": 79548,
+      "sha256": "69ad525f2646ed5c94c2e92a505879b2bb717eb0b7701e88258c1a6dfef0b861"
+    },
+    "gold-inferred/chocolate/uk/reviews/silver-f865cac2a7324d5204b797f4/reviewers/reviewer-4/report.json": {
+      "byte_length": 8546,
+      "sha256": "d231c122cdabbac7a5bf8abc76774cfce0e6adecaf8da24711457b906a93f3ba"
+    },
+    "gold-inferred/chocolate/uk/reviews/silver-f865cac2a7324d5204b797f4/reviewers/reviewer-5/fields.jsonl": {
+      "byte_length": 24643,
+      "sha256": "87554cc6cf4601f6af32d95ef3e0ea1fc02c0ab6cfff1116d72ab88da27ca5ed"
+    },
+    "gold-inferred/chocolate/uk/reviews/silver-f865cac2a7324d5204b797f4/reviewers/reviewer-5/report.json": {
+      "byte_length": 7313,
+      "sha256": "9f2e1c8a09732f08a4e3d595cfbd94df059300fa73da462714a9d3ff3e097e9c"
+    },
+    "gold-inferred/chocolate/uk/reviews/silver-f865cac2a7324d5204b797f4/reviews/all-fields.jsonl": {
+      "byte_length": 218859,
+      "sha256": "34e09186c5df330b3eb71340965532238ba2be281d2fe2b7721ca75e1054e7ff"
+    },
+    "gold-inferred/chocolate/uk/reviews/silver-f865cac2a7324d5204b797f4/reviews/coverage-before-after.csv": {
+      "byte_length": 5174,
+      "sha256": "8ce8888c1e59f4ac1c572d4809fa9ce06c59c21fe1acf0b6767b110882ad7439"
+    },
+    "gold-inferred/chocolate/uk/reviews/silver-f865cac2a7324d5204b797f4/reviews/field-coverage.csv": {
+      "byte_length": 5431,
+      "sha256": "b721036d1f280685d2beb0b0f61bb978ed979f2224b3a73b4bf7cf19c1c7538e"
+    }
+  },
+  "parent_revision": "06680d7248ccc4487726b9a97e59aa8f586fb54e",
+  "price_basis_contract_version": "regular-consumer-price-1",
+  "remote_files_verified": 47,
+  "repo_id": "CoralLeiCN/rgc-collections",
+  "revision": "812a03a5faaced471a2a20f4c389865ed5675826",
+  "snapshot_prefix": "gold-inferred/chocolate/uk/gold-inferred-5b539b9c4adbb011a40d7792",
+  "status": "verified",
+  "uploaded_at": "2026-10-03T16:19:37.806633+00:00",
+  "verified_at": "2026-10-03T16:19:44.663061+00:00",
+  "format_version": "rgc-gold-inferred-publication-receipt-1",
+  "snapshot_url": "https://huggingface.co/datasets/CoralLeiCN/rgc-collections/tree/812a03a5faaced471a2a20f4c389865ed5675826/gold-inferred/chocolate/uk/gold-inferred-5b539b9c4adbb011a40d7792",
+  "latest_pointer_url": "https://huggingface.co/datasets/CoralLeiCN/rgc-collections/blob/812a03a5faaced471a2a20f4c389865ed5675826/gold-inferred/chocolate/uk/latest.json",
+  "default_configuration_preserved": true,
+  "normal_silver_and_gold_pointers_preserved": true,
+  "source_silver_dataset_version": "silver-f865cac2a7324d5204b797f4",
+  "source_dataset_version": "raw-snapshot-70239771976a75a48c5d99db",
+  "public_source_silver_dataset_version": "silver-2f97cfe8b8c50ecfa79ebf46",
+  "source_revision_checked": "06680d7248ccc4487726b9a97e59aa8f586fb54e",
+  "upload_bytes": 27382706,
+  "verification": {
+    "status": "passed",
+    "dataset_version": "gold-inferred-5b539b9c4adbb011a40d7792",
+    "source_silver_dataset_version": "silver-f865cac2a7324d5204b797f4",
+    "manifest_sha256": "18b1d00b301b1ad7ce7190076614e9c76f84cbb99f3c43a5aa8273f9f4123bfe",
+    "product_rows_compared": 3743,
+    "typed_attribute_cells_compared": 385529,
+    "complete_product_records_preserved": true,
+    "accepted_decisions_bytes_preserved": true,
+    "accepted_decisions": 2159,
+    "training_candidate_rows_preserved": 2134,
+    "price_observation_bytes_preserved": true,
+    "eligible_model_inputs": 0,
+    "price_basis_contract_version": "regular-consumer-price-1",
+    "coverage": {
+      "unknown": 350224,
+      "known": 33845,
+      "conflict": 1460
+    },
+    "fields_with_known_values": 53,
+    "chocolate_type_counts": {
+      "dark": 521,
+      "milk": 804,
+      "white": 98,
+      "mixed": 18,
+      "blonde": 24,
+      "ruby": 2
+    },
+    "parquet_columns": 109
+  },
+  "checks": {
+    "pytest": {
+      "passed": 437,
+      "elapsed_seconds": 9.2
+    },
+    "ruff": "passed",
+    "documentation": "passed",
+    "whitespace": "passed"
+  },
+  "preservation_note": "All 140 existing paths remain. Existing content hashes were checked except the updated root dataset card and optional Hugging Face LFS attributes. Existing Silver/Gold pointers and contracts are outside the upload payload.",
+  "limitations": [
+    "53 attributes have known values; 50 have none and 1460 attribute cells remain conflicting.",
+    "Only 2159 curated decisions were applied; broader proposals still require semantic review.",
+    "Training candidate values and eligibility are preserved: zero eligible inputs under regular-consumer-price-1.",
+    "Raw archives remain local and in historical Hugging Face revisions."
+  ]
+}

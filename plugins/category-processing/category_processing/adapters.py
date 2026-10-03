@@ -360,6 +360,28 @@ def _positive_claim(text, term):
     return False
 
 
+def _chocolate_type(name):
+    """Keep explicit selection types together without treating inclusions as a mix."""
+    kind = r"(?:dark|milk|white|ruby|blonde?)"
+    types = {"blonde" if value.lower() == "blond" else value.lower()
+             for value in re.findall(r"\b(" + kind + r")\s+chocolate\b", name, re.I)}
+    separator = r"(?:,\s*(?:(?:and|&)\s*)?|(?:and|&)\s*)"
+    coordinated = (r"\b" + kind + r"(?:\s+chocolate)?(?:\s*" + separator
+                   + kind + r"(?:\s+chocolate)?)+\s+chocolate\b")
+    coordinated_types = set()
+    for match in re.finditer(coordinated, name, re.I):
+        mentioned = {"blonde" if value.lower() == "blond" else value.lower()
+                     for value in re.findall(r"\b" + kind + r"\b", match.group(), re.I)}
+        types.update(mentioned)
+        if not re.match(r"\s+(?:chips?|chunks?|coating|filling)\b", name[match.end():], re.I):
+            coordinated_types.update(mentioned)
+    selection = re.search(r"\b(?:selection|assortment|assorted|collection|mix|bundle|set)\b"
+                          r"|\bgift\s+(?:bag|box)\b", name, re.I)
+    if len(coordinated_types) > 1 and selection:
+        return "mixed"
+    return next(iter(types)) if len(types) == 1 else None
+
+
 def extract_chocolate_capture(capture):
     """Extract reviewable candidates from one raw plugin capture, offline."""
     raw = capture.get("raw_record", {})
@@ -445,9 +467,9 @@ def extract_chocolate_capture(capture):
             assertion = _feature("cocoa_percentage", float(value), name_pointer, "explicit_chocolate_name_percentage", "number", "%", name)
             assertion.update(qualifier="source_stated", scope="source_declared_chocolate")
             features.append(assertion)
-    chocolate_types = re.findall(r"\b(dark|milk|white|ruby)\s+chocolate\b", name, re.I)
-    if len(set(value.lower() for value in chocolate_types)) == 1:
-        features.append(_feature("chocolate_type", chocolate_types[0].lower(), name_pointer, "explicit_product_name_type", "categorical", raw_value=name))
+    chocolate_type = _chocolate_type(name)
+    if chocolate_type:
+        features.append(_feature("chocolate_type", chocolate_type, name_pointer, "explicit_product_name_type", "categorical", raw_value=name))
     observed_at, time_basis = _source_time(capture, information, source)
     currency = information.get("source_price_currency") or information.get("catalogue_retrieval_currency")
     if isinstance(variant, dict) and "price" in variant:

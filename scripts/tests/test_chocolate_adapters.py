@@ -1,6 +1,44 @@
 """Regressions for conservative chocolate source interpretation."""
 
+import pytest
+from category_processing.adapters import (
+    extract_chocolate_capture as portable_extract_capture,
+)
 from chocolate_cleanup.adapters import extract_capture, parse_weight
+
+
+@pytest.mark.parametrize("extractor", [extract_capture, portable_extract_capture],
+                         ids=["canonical", "portable"])
+@pytest.mark.parametrize("name,expected", [
+    ("Blonde Chocolate Bar", "blonde"),
+    ("BLOND CHOCOLATE BAR", "blonde"),
+    ("Milk Chocolate and Dark Chocolate Selection", "mixed"),
+    ("Milk & Dark Chocolate Selection", "mixed"),
+    ("Milk, Dark & White Chocolate Selection", "mixed"),
+    ("Milk and Dark Chocolate Gift Bag", "mixed"),
+    ("Blonde Chocolate & Ruby Chocolate Collection", "mixed"),
+    ("Dark Chocolate and Dark Chocolate Selection", "dark"),
+    ("Milk Chocolate Selection", "milk"),
+    ("Dark Chocolate Bar with White Chocolate Chips", None),
+    ("Milk Chocolate Selection with Dark Chocolate Chips", None),
+    ("Milk Chocolate and Dark Chocolate Chips Bar", None),
+    ("Milk Chocolate and Dark Chocolate Chips Selection", None),
+    ("Milk & Dark Chocolate Chips Selection", None),
+    ("Chocolate Selection", None),
+    ("Blonde Caramel Gift Box", None),
+    ("Cadbury Dairy Milk", None),
+])
+def test_chocolate_title_types_preserve_selection_scope_and_evidence(extractor, name, expected):
+    result = extractor({"raw_record": {"identity": {"name": name}, "information": {}}})
+    features = [feature for feature in result["features"] if feature["name"] == "chocolate_type"]
+    assert len(features) == 1
+    feature = features[0]
+    assert feature["value"] == expected
+    assert feature["status"] == ("known" if expected else "unknown")
+    if expected:
+        assert feature["raw_pointer"] == "/raw_record/identity/name"
+        assert feature["raw_value"] == name
+        assert feature["method"] == "explicit_product_name_type"
 
 
 class ChocolateAdapterTests:

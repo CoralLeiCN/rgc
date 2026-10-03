@@ -60,6 +60,50 @@ exclusion counts, eligibility-preservation flag or eligibility override provenan
 Copied source reports and observations can retain those historical fields as
 source evidence. They do not determine Gold population membership.
 
+## Build a separate inferred export
+
+The version 1 inferred export packages curated attribute decisions beside a
+Gold training snapshot using its historical storage format. The exporter
+accepts an explicit Silver snapshot, accepted decisions and their provenance:
+
+```sh
+uv run --script scripts/build_chocolate_gold_inferred.py \
+  --silver-root data/silver/chocolate/uk/<silver-version> \
+  --decisions data/investigation/<review>/adoption/accepted-decisions.jsonl \
+  --provenance data/investigation/<review>/adoption/provenance.json \
+  --output data/gold-inferred/chocolate/uk
+```
+
+It writes an immutable `gold-inferred-<hash>` bundle. `products.parquet`
+contains every Silver product with typed columns for the 103 profile attributes.
+The exporter verifies that each accepted decision matches its reviewed Silver
+cell and source evidence. `record_json` retains the complete Silver record,
+including evidence, statuses and review context. The `inference/` directory
+preserves accepted-decision JSONL and provenance bytes, including model records
+and source review evidence.
+
+Version 1 explicitly uses `build_legacy_gold_dataset` and
+`verified_gold_storage` for its `training/` child. This preserves historical
+candidate and eligible tables, source flags, copied contracts and price bytes
+through wrapper verification. The public `verified_gold` loader independently
+exposes all candidates without selection fields when consuming that child.
+Supply `--gold-root <bundle>/training` to a conventional Gold trainer, with the
+current-price target selected for the current study. The inferred LightGBM
+route below accepts the whole bundle and joins the reviewed product attributes.
+
+The exporter packages existing Silver values and supplied review artifacts;
+its manifest binds their exact bytes and source identity. Publish it under the
+separate `gold-inferred/chocolate/uk/` dataset prefix with its own `latest.json`.
+The original publication preserved normal Silver/Gold pointers and the default
+training configuration.
+
+The [2026-10-03 publication receipt](analysis/chocolate-gold-inferred-publication-2026-10-03.json)
+records `gold-inferred-5b539b9c4adbb011a40d7792`: 3,743 products, 103 attribute
+columns, 2,159 curated additions and 2,134 training candidates. The immutable
+on-disk child retains zero source-eligible inputs under its pinned historical
+`regular-consumer-price-1` contract. That counter does not restrict the current
+loader's population. All 47 published files were downloaded and verified.
+
 ## Mark Gold rows reviewed at the user's request
 
 An optional administrative review records its author and reason in a new
@@ -265,9 +309,10 @@ The web workspace now consumes the published
 retain all 103 attributes and 2,159 accepted additions supported by source evidence across
 33 attributes. Parquet `record_json` owns complete values and evidence; the
 web adapter validates them with the export's copied contracts and preserves
-per-field review states. Nested training Gold retains 2,134 candidates, zero
-eligible inputs and the historical `regular-consumer-price-1` basis. The separate
-current-price study keeps its own policy. Silver continues to own source
+per-field review states. The immutable nested training files retain 2,134 candidates, zero
+source-eligible inputs and the historical `regular-consumer-price-1` basis. The
+current Gold loader exposes all 2,134 candidates without selection fields; the
+current-price study applies its own target policy. Silver continues to own source
 processing, interpretation, review and eligibility. The app reference pins the
 manifest and revision; [collection integration](../collection-integration.md)
 defines preparation and offline rebuild commands.
@@ -351,7 +396,7 @@ The inferred layer from dataset revision
 2,159 accepted decisions and 2,134 training candidates.
 `scripts/chocolate_gold_inferred.py` verifies its wrapper, full product records,
 accepted decisions, null states and conventional Gold child. Its builder and
-CLI were imported from the existing inferred-layer implementation.
+CLI use the explicit legacy storage APIs to preserve this version 1 contract.
 
 Refit with the pinned current displayed-price target:
 

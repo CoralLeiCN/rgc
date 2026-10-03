@@ -96,6 +96,10 @@ later analytical cleanup may consolidate identical price observations while
 retaining their evidence. Both operations keep seller listings separate across
 shops.
 
+After deduplication, the shared source adapter used by Silver and compatibility
+cleanup applies the [chocolate type rules](chocolate-schema.md#chocolate-type-from-product-names)
+for blonde names and explicit mixed selections to each preserved capture.
+
 ## Evidence and coverage
 
 Source artifacts, images, and immutable history files remain in the raw archive;

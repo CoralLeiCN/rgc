@@ -79,6 +79,13 @@ comparison groups before using them for eligibility or grouped validation.
 
 ## Evidence and missing values
 
+The shared adapter recognizes "Blonde Chocolate" and "Blond Chocolate" as
+`blonde`, and explicitly coordinated chocolate selections as `mixed`, including
+"Milk Chocolate and Dark Chocolate Selection". Original names and evidence
+pointers accompany these unreviewed assertions. The
+[schema guide](chocolate-schema.md#chocolate-type-from-product-names) defines
+the supported wording and scope limits used by canonical Silver too.
+
 Derived assertions refer to capture IDs and JSON pointers into retained source
 records. Resolve a capture through `capture-evidence.jsonl` and its artifact IDs
 through `artifacts.jsonl`; these shared tables avoid repeating complete artifact

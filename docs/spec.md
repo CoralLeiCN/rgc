@@ -1079,8 +1079,9 @@ the authoritative Parquet `record_json` logical hash and nested Gold training
 provenance. It loads the copied schema, profile, mappings and model design and
 validates every product before emitting private server-side JSON. The 2,159
 accepted trait additions retain source evidence, methods and review states.
-The export retains `regular-consumer-price-1`, with zero eligible inputs;
-the current-price training study has its own policy. The app build rejects
+The immutable export retains `regular-consumer-price-1`, with zero stored
+source-eligible inputs; the current loader exposes all 2,134 candidates.
+The current-price training study has its own policy. The app build rejects
 collection JSON that differs from its immutable pin. The reader checks the verified
 snapshot's schema/catalog and typed constraints independently of current
 training identity and target-policy requirements. A derived manifest hashes
@@ -1411,6 +1412,8 @@ category and plugin conformance scenarios apply across supported studies.
 | A product is collected again with a changed price or claim. | Append timestamped source captures and collection history; preserve earlier evidence and identify the current JSON index. |
 | A later schema normalizes a source field differently. | Create a versioned derived interpretation with evidence references; retain the original reported value and artifact. |
 | A chocolate schema field cannot be supported by the available capture. | Emit its explicit unknown state and coverage/review information; do not infer absence or a feature value from missing evidence. |
+| A product name states Blonde Chocolate or Blond Chocolate. | Extract `blonde` with the complete original name and capture pointer; retain its unreviewed state. |
+| A product name states Milk Chocolate and Dark Chocolate Selection, or Milk & Dark Chocolate Selection. | Extract `mixed` from the coordinated selection, including lists with a shared chocolate suffix; retain original evidence and distinguish ambiguous component mentions. |
 | Raw chocolate records are processed into silver. | Verify the raw snapshot, deduplicate exact seller listings and standardize them in one build; retain original captures/aliases, preserve separate sellers and roles, and emit candidate rows separately from reviewed eligible inputs. |
 | A schema, mapping, pricing gate, or model interpretation changes. | Update the affected machine contracts, version references, specification, schema/silver guides, and lifecycle plan together; run the documentation drift check. |
 | A study uses a category whose comparison basis is price per item. | Preserve its original quantities and prices during collection; derive its analytical profile without requiring cocoa percentage, edible weight, or GBP per 100 g. |
@@ -1466,6 +1469,18 @@ Resolve these decisions before the corresponding implementation or release commi
 ## 10. Gold and the finalized training basis
 
 The canonical chocolate architecture is raw → combined Silver → immutable Parquet Gold. Silver retains seller rows, evidence, reviews and source eligibility. Gold exports every candidate to one `training-data.parquet` population using `chocolate-gold-population-1` and `chocolate-gold-arrow-3`. Its analytical rows omit `model_eligible` and `exclusion_reasons`; it has no stored eligible subset. Typed empty tables, Zstandard compression, exact contracts/price/identity evidence, source manifests, logical digests and managed hashes support independent verification. Original source training views and complete migration parents are retained as provenance. Existing snapshots cannot be overwritten. The [Gold guide](data/chocolate-gold.md) defines build, migration, review provenance and trainer handoff.
+
+The optional inferred export is a separate immutable bundle derived from an
+explicit Silver snapshot and curated decision/provenance files. Typed profile
+columns expose supplied accepted values alongside existing Silver values, while
+`record_json` retains each complete Silver record. The bundle also contains a
+Gold snapshot under `training/` and the decision/source audit under `inference/`.
+Version 1 uses the explicit legacy builder and storage verifier to retain its
+historical source eligibility and contract bytes. The public Gold loader then
+exposes every candidate without selection fields for current model preparation.
+The export preserves Silver source decisions. Its Hugging Face publication uses
+the separate `gold-inferred/chocolate/uk/` prefix and pointer; the original
+publication preserved normal Silver/Gold pointers and the default configuration.
 
 Historical regular-price models and the portable processing profiles use `regular-consumer-price-1`: regular, non-promotional, consumer-tax-inclusive selling price, with `fallback_policy: reject`. Retain displayed/promotional/reference amounts as evidence; none substitutes for the target, and no tax guess or reverse discount is permitted. A separately evidenced regular amount alongside a promotional offer is supported. Chocolate normalizes GBP per 100g and logs it; other categories retain their declared currency and quantity basis. This fixed monetary basis supersedes earlier examples allowing excluded-tax model targets, without changing the preserved observations. Generated custom profiles retain this basis.
 

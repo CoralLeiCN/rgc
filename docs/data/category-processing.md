@@ -26,6 +26,14 @@ inputs or original captures.
 
 ## Layer responsibilities and commands
 
+The portable chocolate adapter recognizes explicit blonde names and coordinated
+selections of multiple chocolate types as `mixed`. Its
+[profile reference](../../plugins/category-processing/skills/category-processing/references/profile-contract.md)
+describes the rule independently of this repository. Existing chocolate
+contracts already permit both values; the adapter implementation fingerprint
+identifies the correction in subsequent builds. Corpus coverage after this
+correction remains unmeasured.
+
 Raw preserves original product indexes from sources, immutable captures and
 source/image artifacts. Silver verifies them, deduplicates only exact identities
 within the same source, applies versioned types/units/vocabularies, normalizes

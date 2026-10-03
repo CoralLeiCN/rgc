@@ -68,8 +68,12 @@ Read the skill's references for the
 [profile configuration](skills/category-processing/references/profile-contract.md),
 [mapping maintenance](skills/category-processing/references/mapping-maintenance.md), and
 [model handoff](skills/category-processing/references/model-handoff.md).
-Chocolate has a broad profile with 103 attributes and conservative source parsing;
-coffee is a small starter for structured sources that demonstrates category
+Chocolate has a broad profile with 103 attributes and conservative source parsing.
+Its adapter recognizes explicit blonde chocolate names and coordinated mixed
+selections, such as "Milk Chocolate and Dark Chocolate Selection". Extracted
+types retain original name evidence and require review for model use; see the
+[profile contract](skills/category-processing/references/profile-contract.md).
+Coffee is a small starter for structured sources that demonstrates category
 independence, with extraction limited to configured inputs.
 
 For a new category, define its attributes and structured source pointers, choose
