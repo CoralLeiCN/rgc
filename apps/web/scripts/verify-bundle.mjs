@@ -7,7 +7,7 @@ const app = fileURLToPath(new URL("../", import.meta.url));
 const snapshot = path.join(app, "snapshot");
 const manifest = JSON.parse(await readFile(path.join(snapshot, "manifest.json"), "utf8"));
 const expected = ["manifest.json", ...Object.keys(manifest.files)].map(relative => path.join(snapshot, relative));
-const routes = ["schema", "products", "products/[id]", "points", "compare", "analysis", "terrain", "extract-traits"];
+const routes = ["schema", "products", "products/[id]", "compare", "analysis", "terrain", "extract-traits"];
 let largest = 0;
 for (const route of routes) {
   const tracePath = path.join(app, ".next/server/app/api", route, "route.js.nft.json");

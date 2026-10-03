@@ -16,18 +16,16 @@ npm ci
 npm run dev
 ```
 
-Open `http://localhost:3000`. The current dashboard is `/`; the separate
-500-product fictional study is `/studies/layered-price-landscape.html`.
+Open `http://localhost:3000`. The dashboard is `/`.
 
 ```sh
 npm run typecheck
-npm test
 npm run build
 npm start
 ```
 
 Build verifies snapshot hashes, counts, evidence shards and packaged assets,
-then checks snapshot inclusion in all eight API function traces. It does not
+then checks snapshot inclusion in all seven API function traces. It does not
 fetch Hugging Face or run Python. No database or external credentials are needed
 to explore the collection; image/text extraction needs one provider below.
 
@@ -65,7 +63,7 @@ Core range uses full-cohort Tukey bounds and discloses omitted tails. Full range
 includes every usable price. Gap finder highlights interior empty price bands;
 brand analysis ranks known brands with at least three observations by median
 unit price. Neither establishes demand, sales, margin or a like-for-like premium.
-The dashboard uses ordinary `/api/analysis`, without legacy `scoreMode=demo`.
+The dashboard uses `/api/analysis` for observed-price statistics.
 
 ## Extraction provider A: OpenAI API
 
@@ -133,7 +131,7 @@ Configure these server-only Vercel variables, then redeploy:
 No OpenAI API key is required for this provider. Vercel revalidates the returned
 traits. Do not remove the preview's access protection to set this up.
 
-The bridge is implemented and tested with injected processes, but live extraction
+The bridge is implemented, but live extraction
 could not be verified here: Codex's local app-server initialization is blocked by
 this workspace (`Operation not permitted`). No Tailscale tunnel has been published.
 Tailscale was not found in the checked CLI/app locations. Provider configuration
@@ -160,16 +158,9 @@ assets. Extraction has a 120-second function budget for the optional laptop hop.
 
 Prepare verified data using the [collection integration commands](../../docs/collection-integration.md).
 Keep the resulting `snapshot/` and manifest together. A missing/stale manifest
-fails the build. The Plotly bundle and separate fictional study are packaged from
-the existing static prototype with the Plotly licence:
-
-```sh
-npm run sync:assets
-npm run verify:assets
-```
-
-Asset synchronization needs the repository checkout; deployment only verifies the
-packaged copies. No raw archives or model training run on page requests.
+fails the build. The pinned Plotly bundle and its licence live in `public/vendor/`. Build verifies
+them against `public/asset-manifest.json`; there is no prototype asset-copy step.
+No raw archives or model training run on page requests.
 
 ## Current preview
 
@@ -180,12 +171,10 @@ Extraction correctly reports missing provider configuration.
 
 ## Validation limits
 
-The snapshot has 3,743 listings, 103 traits and zero eligible model rows. Current
-application tests cover the score recipe, leaf-only dimensions, stable numeric
-bands, exact coordinates, rotation/update isolation, extraction validation,
-candidate review and bridge authentication/cleanup. See the lifecycle plan for
-build and hosted proof for this revision.
+The snapshot has 3,743 listings, 103 traits and zero eligible model rows. The test fixtures added during this demo have been removed. TypeScript,
+production build and data/asset integrity checks validate the current app.
+See the lifecycle plan for hosted verification.
 
 Browser layout/WebGL rendering and live model extraction remain separate from
-unit tests and HTTP checks. This sandbox cannot launch the browser or Codex's
+build and HTTP checks. This sandbox cannot launch the browser or Codex's
 in-process app-server. No fitted pricing benchmark is connected.

@@ -11,10 +11,8 @@
     "start": "next start",
     "extractor:local": "node --import tsx scripts/local-extractor.ts",
     "typecheck": "next typegen && tsc --noEmit",
-    "test": "node --conditions=react-server --import tsx --test tests/*.test.ts",
     "verify:data": "node scripts/verify-data.mjs",
-    "verify:assets": "node scripts/sync-assets.mjs --verify",
-    "sync:assets": "node scripts/sync-assets.mjs"
+    "verify:assets": "node scripts/verify-assets.mjs"
   },
   "dependencies": {
     "next": "16.3.8",
@@ -26,7 +24,6 @@
     "@types/node": "24.13.4",
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.5",
-    "esbuild": "0.28.2",
     "tsx": "4.23.13",
     "typescript": "7.0.2"
   }

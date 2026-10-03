@@ -4,7 +4,7 @@ import { memo, useEffect, useRef, useState } from "react";
 import type { TerrainResponse } from "../lib/contracts";
 import { buildTerrainGeometry, rowLayerColor, type TerrainDraftPoint, type TerrainGeometry } from "../lib/client/terrain-geometry";
 import { TerrainRenderQueue } from "../lib/client/terrain-controller";
-import { loadPlotly } from "./PointCloud";
+import { loadPlotly } from "../lib/client/plotly";
 
 type Plotly = Awaited<ReturnType<typeof loadPlotly>>;
 type PlotEvent = { points?: { customdata?: unknown }[]; [key: string]: unknown };

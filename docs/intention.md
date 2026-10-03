@@ -294,9 +294,11 @@ labels, errors and demo-score disclosure remain visible. The four top summary
 cards have been removed. Avoid factory metaphors and unsupported claims of
 market-wide coverage.
 
-The active terrain, product configuration and extraction workflow are the
-application delivery. Retired visual prototypes and intermediate design studies
-are outside the maintained application.
+Maintain one current application and its operational documentation. Retired
+visual studies, generated static explorers, intermediate design notes and tests
+added for the hackathon are removed at the user's request. No compatibility
+support is retained for those prototypes. The active terrain, product
+configuration, extraction workflow and declared trait-derived demo score remain.
 
 The teammate's pricing research and upstream experimental training remain
 separate from this application. The user cancelled pricing-model integration;

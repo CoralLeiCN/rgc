@@ -4,7 +4,6 @@ This repository studies how product features relate to prices across categories.
 Chocolate sold in the UK is the current example. Preserve original information
 and evidence before deriving an analytical schema or fitting a pricing model.
 
-
 The retailer-facing Piece of Cake Pricing app helps category managers, buyers and
 pricing teams inspect observed prices, product traits, assortment gaps and brand
 positioning. It uses a layered terrain: observed GBP/100g, a disclosed trait-derived
@@ -16,7 +15,7 @@ Provider setup and the separate fitted pricing-model connection remain pending.
 
 | Document | Purpose |
 | --- | --- |
-| [Vercel architecture](docs/vercel-architecture.md), [app setup](apps/web/README.md), [snapshot integration](docs/collection-integration.md) | Current pricing workspace, provider setup, deployment and private data preparation. |
+| [Vercel architecture](docs/vercel-architecture.md), [app setup](apps/web/README.md), [snapshot integration](docs/collection-integration.md) | Current pricing workspace, provider setup, deployment and private data preparation with [build_web_snapshot.py](scripts/build_web_snapshot.py). |
 | [Intention](docs/intention.md) | Goals, delivery order and constraints. |
 | [EAT_HACK Retail Futures brief](docs/eat-hack-track-two.md) | Track 2 challenge, submission requirements and judging criteria. |
 | [retail frontier project description](PROJECT.md) | Built capabilities, implementation status and a runnable collection demo. |
@@ -32,7 +31,6 @@ Provider setup and the separate fitted pricing-model connection remain pending.
 | [Collection package](plugins/category-research/README.md), [processing package](plugins/category-processing/README.md) | Agent Plugins 1.0.0 packages, skills, CLI and Python API. |
 | [Lifecycle intent](docs/lifecycle/intent.md), [design](docs/lifecycle/spec.md), [plan](docs/lifecycle/plan.md) | Navigation, implementation status, risks, proof and remaining work. |
 | [Documentation policy](docs/documentation-policy.md), [agent rules](AGENTS.md) | Document ownership, update conditions, language and writing style. |
-
 
 Run the web application with Node 24:
 

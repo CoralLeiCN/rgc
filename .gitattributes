@@ -1,3 +1,2 @@
 # Preserve upstream minified assets byte-for-byte, including embedded shaders.
-docs/visuals/vendor/*.min.js -whitespace
 apps/web/public/vendor/*.min.js -whitespace

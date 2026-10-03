@@ -32,16 +32,12 @@
 .help-tip-body .family-breakdown-description { font-size: 10px; line-height: 1.55; color: #a7bdc7; margin-top: 5px; }
 .help-tip-body .family-breakdown-footnote { border-top: 1px solid #3b5563; padding-top: 10px; color: #99b3c0; font-size: 9px; }
 .family-nav-note { padding: 0 24px 17px; color: var(--muted); font-size: 10px; line-height: 1.6; }
-.cloud-family-focus { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 9px 12px; margin: 0 23px 10px; border: 1px solid var(--family-color); background: #17252d; border-radius: 5px; font-size: 10px; }
-.cloud-family-focus strong { color: var(--family-color); text-transform: capitalize; font-weight: 500; }
-.evidence-symbol { font-style: normal; font-size: 15px; line-height: 1; }
 @media (max-width: 650px) {
   .family-nav-heading { align-items: flex-start; padding: 18px 15px; }
   .family-nav-heading h2 { font-size: 18px; }
   .family-nav-heading .button { white-space: normal; min-width: 78px; }
   .family-nav-strip { padding-left: 15px; padding-right: 15px; }
   .family-nav-note { padding-left: 15px; padding-right: 15px; }
-  .cloud-family-focus { margin-left: 15px; margin-right: 15px; }
 }
 @media (prefers-reduced-motion: reduce) { .family-nav-card { transition: none; } }
 .family-browser-toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; padding: 0 22px 15px; }

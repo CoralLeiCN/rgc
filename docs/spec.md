@@ -1028,13 +1028,13 @@ verified.
 
 The application consumes a pinned, validated silver snapshot. The adapter loads
 its schema, profile, mappings and model design and validates every product
-before emitting browser assets or server-side JSON. A derived manifest hashes
+before emitting private server-side JSON. A derived manifest hashes
 the server snapshot and evidence shards. Refreshes are explicit preparation and
 deployment operations; functions do not download or process Hugging Face data
 on each request. Original captures and machine contracts remain unchanged.
 
 Read-only GET routes provide schema definitions, paginated filtered source
-listings, bounded points and terrain coordinates, price analysis, complete
+listings, bounded terrain coordinates, price analysis, complete
 single-listing evidence and an ordered comparison of up to four listings.
 `POST /api/extract-traits` is a separate model-assisted candidate-extraction
 operation. It sends explicitly submitted inputs to a configured provider but
@@ -1120,12 +1120,8 @@ original price, calculated score and raw Z; they are never snapped to the smooth
 surface. Legend highlighting preserves the underlying coordinates and cohort.
 A 2D projection with explicit selection provides a fallback when WebGL fails.
 
-The previous 2D fictional family-score chart, its child-trait score allocations,
-and its manual configured-product score are retired from the current Dashboard.
-Legacy components and `/api/analysis?scoreMode=demo` remain separate compatibility
-fixtures, not the source of terrain or configured-product scores. The earlier
-points controller and standalone HTML explorer retain their own observed-price
-behavior.
+Retired chart components, the legacy points endpoint and ID-seeded score mode
+are removed. Only the current terrain and its 2D fallback are supported.
 
 #### Local product draft and candidate extraction
 
@@ -1202,17 +1198,13 @@ a model residual or causal brand premium.
 
 The interface preserves snapshot/review/model-readiness status. An unreviewed
 observed price, selected predictor or prototype score is not a fitted benchmark.
-The fictional 500-product study remains explicitly separate. Review writes,
+Review writes,
 database persistence, model fitting and supported price recommendations are
 outside the current explorer contract.
 
-The teammate owns model development. The [model handoff](model-handoff.md)
-defines the selected future hosted-API direction and a proposed boundary with
-dataset/model versions, listing/observation IDs, price/score basis, support and
-optional uncertainty/contributions. Its endpoint, wire format and authentication
-remain pending. A future adapter must reject mismatched identities and versions;
-price comparisons require compatible bases. The prototype score and extraction
-provider do not satisfy that pricing-model handoff.
+The teammate owns model development. A future hosted adapter must agree on
+versions, listing/observation identity, price/score basis and support before it
+can replace the current demo recipe. That integration is not part of this change.
 
 ## 7. Deferred research on value for money and brand premium
 

@@ -3,7 +3,6 @@ import type { ReactNode } from "react";
 import "./globals.css";
 import "./families.css";
 import "./family-navigator.css";
-import "./price-distribution.css";
 import "./analysis-panels.css";
 import "./help-tip.css";
 import "./product-configurator.css";

@@ -1,8 +1,9 @@
 # Project intent
 
 [Canonical intention](../intention.md) owns goals, scope and constraints. The
-[specification](../spec.md) owns contracts and the [plan](plan.md) records current
-implementation and verification.
+[specification](../spec.md) owns contracts, the [plan](plan.md) records current
+implementation and verification, and the [app README](../../apps/web/README.md)
+provides setup instructions.
 
 The two-person team is entering EAT_HACK on 3 October 2026 in Track 2, Retail
 Futures, under the project name **retail frontier**. The
@@ -68,6 +69,11 @@ model connected to the web application. The application remains an evidence
 explorer with a declared prototype score; supported benchmarks and prediction
 intervals require separate validation and renewed integration scope. Current
 application status is recorded in the [integration guide](../collection-integration.md).
+
+Maintain the current Vercel application and its operational documentation.
+Retired visual prototypes, generated static explorers, intermediate design notes
+and tests added for the hackathon have been removed. Compatibility with those
+artifacts is not part of the delivery. The active calculated demo score remains.
 
 Under the [maintenance decision](../decisions/agent-led-schema-maintenance.md),
 the agent assesses and applies supported local changes without user approval.

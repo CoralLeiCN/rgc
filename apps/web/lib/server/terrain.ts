@@ -5,7 +5,7 @@ import { loadSnapshot } from "./data";
 import { ApiError, invalid } from "./errors";
 import { boundedJson } from "./handlers";
 import { quantile } from "./analysis";
-import { assertParameters, attribute, axisValue, COHORT_KEYS, filterProducts, finite, parseCohort, positiveInteger } from "./query";
+import { assertParameters, attribute, observedUnitPrice, COHORT_KEYS, filterProducts, finite, parseCohort, positiveInteger } from "./query";
 
 const COLOR_TYPES = new Set(["enum", "boolean", "string_list", "number", "integer"]);
 const NUMERIC_TYPES = new Set(["number", "integer"]);
@@ -106,7 +106,7 @@ export function buildTerrain(snapshot: Snapshot, params: URLSearchParams): Terra
   if (requestedRange !== "core" && requestedRange !== "full") invalid("Price range must be core or full.");
   const products = filterProducts(snapshot.products, parseCohort(params, snapshot));
   const priced = products.flatMap(product => {
-    const price = axisValue(product, "displayed_unit", snapshot.fields.length);
+    const price = observedUnitPrice(product);
     return price === null ? [] : [{ product, price }];
   });
   const prices = priced.map(row => row.price).sort((a, b) => a - b);

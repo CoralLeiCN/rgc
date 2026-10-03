@@ -24,7 +24,7 @@ function Wordmark() {
 }
 
 function Header() {
-  return <header className="masthead"><Wordmark /><nav aria-label="Workspace sections"><a className="nav-active" href="#landscape">Explore</a><a href="#gap-finder">Gaps</a><a href="#brand-analysis">Brands</a><a href="#trait-matrix">Traits</a><a href="#comparison">Compare</a></nav><div className="workspace-label"><span className="live-dot" />FMCG PRICING<span className="workspace-avatar" aria-hidden="true">UK</span></div></header>;
+  return <header className="masthead"><Wordmark /><nav aria-label="Workspace sections"><a className="nav-active" href="#price-landscape">Explore</a><a href="#gap-finder">Gaps</a><a href="#brand-analysis">Brands</a><a href="#trait-matrix">Traits</a><a href="#comparison">Compare</a></nav><div className="workspace-label"><span className="live-dot" />FMCG PRICING<span className="workspace-avatar" aria-hidden="true">UK</span></div></header>;
 }
 
 export default function Dashboard() {
@@ -85,7 +85,7 @@ function Workspace({ schema }: { schema: SchemaResponse }) {
       </ProductConfigurator>
     </div>
     <div className="analysis-grid">
-      <GapFinder data={searchPending ? null : analysis.data} loading={analysis.loading || searchPending} error={analysis.error} onRetry={analysis.retry} activeGap={activeGap} onFocusGap={index => { setGapFocus(index === null ? null : { query: analysisQuery, index }); document.getElementById("landscape")?.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" }); }} />
+      <GapFinder data={searchPending ? null : analysis.data} loading={analysis.loading || searchPending} error={analysis.error} onRetry={analysis.retry} activeGap={activeGap} onFocusGap={index => { setGapFocus(index === null ? null : { query: analysisQuery, index }); document.getElementById("price-landscape")?.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" }); }} />
       <BrandAnalysis data={searchPending ? null : analysis.data} loading={analysis.loading || searchPending} error={analysis.error} onRetry={analysis.retry} />
     </div>
     <TraitMatrix schema={schema} data={searchPending ? null : products.data} loading={products.loading || searchPending} error={products.error} onRetry={products.retry} fields={fields} settings={columns} onSettings={setColumns} selectedId={selectedId} compared={compared} onSelect={selectProduct} onCompare={toggleCompare} onPage={setPage} onPin={togglePin} activeFamily={activeFamily} onFocusFamily={focusFamily} />

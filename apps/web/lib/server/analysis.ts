@@ -1,9 +1,8 @@
 import type {
-  AnalysisResponse, BrandPricePosition, Coverage, FamilyEvidenceStates, FieldDefinition,
+  AnalysisResponse, BrandPricePosition,
   HistogramBrand, ObservedPriceGap, ObservedPriceSummary, PriceHistogramBin, Product,
 } from "../contracts";
-import { attribute, axisValue, fieldFamilies, productFamilyCoverage } from "./query";
-import { buildDemoScores } from "./demo-score";
+import { attribute, observedUnitPrice } from "./query";
 
 export const HISTOGRAM_BINS = 20;
 export const GAP_MINIMUM_PRICED = 20;
@@ -11,7 +10,7 @@ export const GAP_MINIMUM_DISTINCT = 5;
 export const BRAND_MINIMUM_PRICED = 3;
 const MAX_RANKED_BRANDS = 30;
 
-type PricedListing = { product: Product; price: number; brand: string | null };
+type PricedListing = { price: number; brand: string | null };
 
 function priceBinIndex(price: number, lower: number, upper: number): number {
   return Math.min(HISTOGRAM_BINS - 1, Math.floor((price - lower) / ((upper - lower) / HISTOGRAM_BINS)));
@@ -30,14 +29,6 @@ function knownBrand(product: Product): string | null {
   return brand.status === "known" && typeof brand.value === "string" && !brand.truncated ? brand.value.trim() || null : null;
 }
 
-/** These mutually exclusive categories describe availability, never product quality. */
-export function familyEvidenceState(counts: Coverage): keyof FamilyEvidenceStates {
-  if (counts.conflict > 0) return "conflict";
-  if (counts.total > 0 && counts.not_applicable === counts.total) return "notApplicable";
-  if (counts.total > 0 && counts.known === counts.total) return "complete";
-  return counts.known > 0 ? "partial" : "none";
-}
-
 function summarize(prices: number[]): ObservedPriceSummary | null {
   if (!prices.length) return null;
   const q1 = quantile(prices, 0.25), q3 = quantile(prices, 0.75);
@@ -49,7 +40,7 @@ function summarize(prices: number[]): ObservedPriceSummary | null {
   };
 }
 
-function histogram(rows: PricedListing[], byBrand: Map<string, number[]>, summary: ObservedPriceSummary | null, fields: FieldDefinition[], requestedRange: "core" | "full"): AnalysisResponse["histogram"] {
+function histogram(rows: PricedListing[], byBrand: Map<string, number[]>, summary: ObservedPriceSummary | null, requestedRange: "core" | "full"): AnalysisResponse["histogram"] {
   const fallback = requestedRange === "core" && summary !== null && summary.q1 === summary.q3;
   const range = fallback ? "full" : requestedRange;
   const lower = summary ? range === "core" ? Math.max(summary.min, summary.lowerFence) : summary.min : null;
@@ -71,14 +62,12 @@ function histogram(rows: PricedListing[], byBrand: Map<string, number[]>, summar
   if (!summary || lower === null || upper === null) return { ...bounds, status: "no_prices", binCount: HISTOGRAM_BINS, brands, bins: [] };
   if (lower === upper) return { ...bounds, status: "insufficient_spread", binCount: HISTOGRAM_BINS, brands, bins: [] };
 
-  const families = fieldFamilies(fields);
   const width = (upper - lower) / HISTOGRAM_BINS;
   const bins: PriceHistogramBin[] = Array.from({ length: HISTOGRAM_BINS }, (_, index) => ({
     index, lower: lower + width * index,
     upper: index === HISTOGRAM_BINS - 1 ? upper : lower + width * (index + 1),
     upperInclusive: index === HISTOGRAM_BINS - 1, count: 0,
     brands: Object.fromEntries(brands.map((brand) => [brand.key, 0])),
-    familyStates: Object.fromEntries([...families.keys()].map((family) => [family, { complete: 0, partial: 0, none: 0, conflict: 0, notApplicable: 0 }])),
   }));
   for (const row of plotted) {
     const index = priceBinIndex(row.price, lower, upper);
@@ -86,7 +75,6 @@ function histogram(rows: PricedListing[], byBrand: Map<string, number[]>, summar
     bin.count++;
     const brandKey = row.brand === null ? "other" : groupByBrand.get(row.brand) ?? "other";
     bin.brands[brandKey]++;
-    for (const [group, counts] of Object.entries(productFamilyCoverage(row.product, families))) bin.familyStates[group][familyEvidenceState(counts)]++;
   }
   return { ...bounds, status: "ready", binCount: HISTOGRAM_BINS, brands, bins };
 }
@@ -132,14 +120,14 @@ function rankBrands(byBrand: Map<string, number[]>, summary: ObservedPriceSummar
   };
 }
 
-export function analyzePrices(products: Product[], fields: FieldDefinition[], range: "core" | "full" = "core", scoreMode?: "demo"): AnalysisResponse {
+export function analyzePrices(products: Product[], range: "core" | "full" = "core"): AnalysisResponse {
   const rows: PricedListing[] = [];
   const byBrand = new Map<string, number[]>();
   for (const product of products) {
-    const price = axisValue(product, "displayed_unit", fields.length);
+    const price = observedUnitPrice(product);
     if (price === null) continue;
     const brand = knownBrand(product);
-    rows.push({ product, price, brand });
+    rows.push({ price, brand });
     if (brand !== null) {
       const prices = byBrand.get(brand);
       if (prices) prices.push(price); else byBrand.set(brand, [price]);
@@ -147,13 +135,8 @@ export function analyzePrices(products: Product[], fields: FieldDefinition[], ra
   }
   const prices = rows.map((row) => row.price).sort((left, right) => left - right);
   const summary = summarize(prices);
-  const distribution = histogram(rows, byBrand, summary, fields, range);
+  const distribution = histogram(rows, byBrand, summary, range);
   const visiblePrices = prices.filter((price) => distribution.lower !== null && distribution.upper !== null && price >= distribution.lower && price <= distribution.upper);
-  const demoScores = scoreMode === "demo" ? buildDemoScores([...fieldFamilies(fields).keys()], distribution.bins,
-    distribution.bins.length && distribution.lower !== null && distribution.upper !== null
-      ? rows.filter((row) => row.price >= distribution.lower! && row.price <= distribution.upper!).map((row) => ({
-        listingId: row.product.id, index: priceBinIndex(row.price, distribution.lower!, distribution.upper!),
-      })) : []) : undefined;
   return {
     totalMatched: products.length, pricedCount: rows.length, excludedPriceCount: products.length - rows.length,
     unknownBrandPricedCount: rows.filter((row) => row.brand === null).length, summary, histogram: distribution,
@@ -166,6 +149,5 @@ export function analyzePrices(products: Product[], fields: FieldDefinition[], ra
       gapMeaning: "Interior empty runs in 20 equal-width bins of the displayed range, bounded by occupied bins. Core range clips to full-cohort Tukey fences; zero IQR falls back to full range. Gap readiness counts only displayed listings. Bracket counts refer to adjacent occupied bins. Observed absence is not evidence of demand or a commercial opportunity.",
       brandMeaning: "Named brands ranked by median observed unit price within this filtered cohort, with at least 3 priced listings. Premium is relative to the full priced-cohort median. Higher price positioning does not establish sales performance, value, causality or like-for-like comparability.",
     },
-    ...(demoScores ? { demoScores } : {}),
   };
 }

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Download a pinned public silver snapshot and build a local collection explorer.
+"""Download a pinned public silver snapshot and build the private web snapshot.
 
-Raw files remain under ignored data/. The browser receives an explicitly derived
+Raw files remain under ignored data/. Vercel receives an explicitly derived
 projection with source statuses, review gates and evidence references preserved.
 No missing attributes are inferred and no pricing model is fitted.
 """
@@ -44,7 +44,7 @@ def download(url, destination):
     destination.parent.mkdir(parents=True, exist_ok=True)
     temporary = destination.with_suffix(destination.suffix + ".partial")
     try:
-        with urlopen(Request(url, headers={"User-Agent": "rgc-collection-explorer/1"}), timeout=90) as source, temporary.open("wb") as target:
+        with urlopen(Request(url, headers={"User-Agent": "rgc-web-snapshot/1"}), timeout=90) as source, temporary.open("wb") as target:
             while block := source.read(1024 * 1024):
                 target.write(block)
         temporary.replace(destination)
@@ -119,10 +119,6 @@ def compact_attribute(attribute):
     return {k: attribute.get(k) for k in ("value", "status", "unit", "qualifier", "scope", "review_status", "method", "evidence")}
 
 
-def javascript_json(value):
-    return json.dumps(value, ensure_ascii=False, separators=(",", ":"), allow_nan=False).replace("<", "\\u003c").replace("\u2028", "\\u2028").replace("\u2029", "\\u2029")
-
-
 def summary_attribute(attribute):
     value = attribute.get("value")
     rendered = value if isinstance(value, str) else json.dumps(value, ensure_ascii=False)
@@ -154,7 +150,7 @@ def write_server_snapshot(directory, payload, evidence_by_source):
     (directory / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
 
 
-def build(root, output, server_output=None):
+def build(root, output):
     latest, metadata, manifest = verify(root)
     quality = read_json(root / "quality-report.json")
     schema = read_json(root / "product.schema.json")
@@ -249,15 +245,7 @@ def build(root, output, server_output=None):
                 "states": profile["missing_states"], "reviewStatuses": profile["review_statuses"],
                 "modelTarget": design["target"], "selectedPredictors": list(design["predictors"])}
     payload = {"meta": report, "contract": contract, "fields": attributes, "products": listings}
-    if server_output is not None:
-        write_server_snapshot(server_output, payload, evidence_by_source)
-    output.parent.mkdir(parents=True, exist_ok=True)
-    evidence_dir = output.parent / "collection-evidence"
-    evidence_dir.mkdir(exist_ok=True)
-    for source, details in evidence_by_source.items():
-        (evidence_dir / (source + ".js")).write_text("// Loaded on demand; original field values and evidence references.\nwindow.RGCCollectionEvidence = window.RGCCollectionEvidence || {};\nwindow.RGCCollectionEvidence[" + javascript_json(source) + "] = " + javascript_json(details) + ";\n", encoding="utf-8")
-    output.write_text("// Generated from a checksum-verified public snapshot. Full evidence is loaded by source on demand.\nwindow.RGCCollectionSnapshot = " + javascript_json(payload) + ";\n", encoding="utf-8")
-    (output.parent / "collection-sync-report.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+    write_server_snapshot(output, payload, evidence_by_source)
     return report
 
 
@@ -265,13 +253,11 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--snapshot", type=Path, help="Build offline from an already downloaded snapshot directory")
     parser.add_argument("--cache", type=Path, default=ROOT / "data/hf-snapshot")
-    parser.add_argument("--output", type=Path, default=ROOT / "docs/visuals/data/collection-snapshot.js")
-    parser.add_argument("--server-output", type=Path, help="Also export validated JSON for the Vercel app's private snapshot directory")
+    parser.add_argument("--output", type=Path, default=ROOT / "apps/web/snapshot")
     args = parser.parse_args()
     root = args.snapshot or sync(args.cache)
-    report = build(root, args.output, args.server_output)
-    print(json.dumps({"snapshot": str(root), "browser_data": str(args.output),
-                      "server_data": str(args.server_output) if args.server_output else None,
+    report = build(root, args.output)
+    print(json.dumps({"snapshot": str(root), "server_data": str(args.output),
                       "revision": report["revision"], "counts": report["counts"]}, indent=2))
 
 

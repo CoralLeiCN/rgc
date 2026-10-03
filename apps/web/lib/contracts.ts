@@ -39,10 +39,9 @@ export interface SchemaContract {
   modelTarget: Record<string, JsonValue>; selectedPredictors: string[];
 }
 export interface Snapshot { meta: SnapshotMeta; contract: SchemaContract; fields: FieldDefinition[]; products: Product[]; }
-export interface Axis { key: string; label: string; unit: string | null; }
 export interface SchemaResponse {
   meta: SnapshotMeta; contract: SchemaContract; fields: FieldDefinition[];
-  sources: { key: string; count: number }[]; axes: Axis[];
+  sources: { key: string; count: number }[];
 }
 export type RuleOperator = AttributeState | "reviewed" | "range" | "equals";
 export interface TraitRule { field: string; operator: RuleOperator; min?: number | null; max?: number | null; value?: string | number | boolean; }
@@ -63,26 +62,14 @@ export interface EvidenceAttribute {
 }
 export interface Evidence { attributes: Record<string, EvidenceAttribute>; prices: Record<string, JsonValue>[]; }
 export interface ProductResponse { product: Product; evidence: Evidence; }
-export interface Point {
-  id: string; name: string; source: string; role: SourceRole; x: number; y: number; z: number;
-  /** Trait-state counts across every schema field in each flat family, not model importance. */
-  familyCoverage: Record<string, Coverage>;
-}
-export interface PointsResponse {
-  points: Point[]; axes: [Axis, Axis, Axis]; totalMatched: number; completeCount: number;
-  excludedCount: number; sampled: boolean; limit: number;
-}
 export interface CompareResponse { products: Product[]; }
 export interface ErrorResponse { error: { code: string; message: string }; }
 
 /** Descriptive observed-price analysis, with one usable latest observation per listing. */
-export interface FamilyEvidenceStates {
-  complete: number; partial: number; none: number; conflict: number; notApplicable: number;
-}
 export interface HistogramBrand { key: string; label: string; count: number; kind: "brand" | "other"; }
 export interface PriceHistogramBin {
   index: number; lower: number; upper: number; upperInclusive: boolean; count: number;
-  brands: Record<string, number>; familyStates: Record<string, FamilyEvidenceStates>;
+  brands: Record<string, number>;
 }
 export interface ObservedPriceSummary {
   min: number; max: number; median: number; q1: number; q3: number;
@@ -95,11 +82,6 @@ export interface ObservedPriceGap {
 export interface BrandPricePosition {
   brand: string; pricedCount: number; median: number; premiumPercent: number;
   lowOutlierCount: number; highOutlierCount: number;
-}
-export interface DemoScoreBin { index: number; score: number | null; families: Record<string, number>; }
-export interface DemoScores {
-  label: string; definition: string; version: "demo-score-1"; range: [0, 100];
-  families: string[]; bins: DemoScoreBin[];
 }
 export interface AnalysisResponse {
   totalMatched: number; pricedCount: number; excludedPriceCount: number; unknownBrandPricedCount: number;
@@ -124,8 +106,6 @@ export interface AnalysisResponse {
     unit: "GBP_per_100g"; observationBasis: string; quantileMethod: string;
     outlierMethod: string; gapMeaning: string; brandMeaning: string;
   };
-  /** Explicitly requested synthetic illustration; omitted from ordinary observed-data responses. */
-  demoScores?: DemoScores;
 }
 
 export interface TerrainDimension {

@@ -1,15 +1,14 @@
 import "server-only";
 import { Buffer } from "node:buffer";
 import type {
-  CompareResponse, ErrorResponse, Point, PointsResponse, Product, ProductResponse, ProductsResponse,
+  CompareResponse, ErrorResponse, ProductResponse, ProductsResponse,
   SchemaResponse, Snapshot,
 } from "../contracts";
 import { findProduct, loadEvidence, loadSnapshot } from "./data";
 import { analyzePrices } from "./analysis";
 import { ApiError, invalid } from "./errors";
 import {
-  assertParameters, availableAxes, axisValue, COHORT_KEYS, coverage, fieldFamilies, filterProducts,
-  finite, parseAxes, parseCohort, positiveInteger, productFamilyCoverage,
+  assertParameters, COHORT_KEYS, coverage, filterProducts, parseCohort, positiveInteger,
 } from "./query";
 
 export const MAX_RESPONSE_BYTES = 4_000_000;
@@ -49,7 +48,6 @@ export function handleSchema(request: Request): Promise<Response> {
     return {
       meta: snapshot.meta, contract: snapshot.contract, fields: snapshot.fields,
       sources: [...sources].sort(([a], [b]) => a.localeCompare(b)).map(([key, count]) => ({ key, count })),
-      axes: availableAxes(snapshot.fields),
     };
   });
 }
@@ -74,30 +72,6 @@ export function handleProduct(request: Request, id: string): Promise<Response> {
   });
 }
 
-export function handlePoints(request: Request): Promise<Response> {
-  return respond(request, [...COHORT_KEYS, "x", "y", "z", "limit"], (params, snapshot): PointsResponse => {
-    const limit = positiveInteger(params, "limit", 500, 2_000);
-    const axes = parseAxes(params, snapshot.fields);
-    const products = filterProducts(snapshot.products, parseCohort(params, snapshot));
-    const complete: { product: Product; point: Omit<Point, "familyCoverage"> }[] = [];
-    for (const product of products) {
-      const values = axes.map((axis) => axisValue(product, axis.key, snapshot.fields.length));
-      if (values.every(finite)) {
-        complete.push({ product, point: { id: product.id, name: product.name, source: product.source, role: product.role,
-          x: values[0], y: values[1], z: values[2] } });
-      }
-    }
-    // Stable ID order and evenly spaced selection avoid a source-order prefix sample.
-    complete.sort((a, b) => a.point.id.localeCompare(b.point.id));
-    const sampled = complete.length > limit;
-    const selected = sampled ? Array.from({ length: limit }, (_, index) => complete[Math.floor(index * complete.length / limit)]) : complete;
-    const families = fieldFamilies(snapshot.fields);
-    const points = selected.map(({ product, point }) => ({ ...point, familyCoverage: productFamilyCoverage(product, families) }));
-    return { points, axes, totalMatched: products.length, completeCount: complete.length,
-      excludedCount: products.length - complete.length, sampled, limit };
-  });
-}
-
 export function handleCompare(request: Request): Promise<Response> {
   return respond(request, ["ids"], (params, snapshot): CompareResponse => {
     const raw = params.get("ids");
@@ -109,11 +83,9 @@ export function handleCompare(request: Request): Promise<Response> {
 }
 
 export function handleAnalysis(request: Request): Promise<Response> {
-  return respond(request, [...COHORT_KEYS, "range", "scoreMode"], (params, snapshot) => {
+  return respond(request, [...COHORT_KEYS, "range"], (params, snapshot) => {
     const range = params.get("range") ?? "core";
     if (range !== "core" && range !== "full") invalid("Price range must be core or full.");
-    const scoreMode = params.get("scoreMode");
-    if (scoreMode !== null && scoreMode !== "demo") invalid("Score mode must be demo, or omitted for observed-data analysis.");
-    return analyzePrices(filterProducts(snapshot.products, parseCohort(params, snapshot)), snapshot.fields, range, scoreMode ?? undefined);
+    return analyzePrices(filterProducts(snapshot.products, parseCohort(params, snapshot)), range);
   });
 }

@@ -22,32 +22,38 @@ Canonical requirements: [specification](../spec.md),
 
 ## Current work and files
 
-The current retailer workspace lives in `apps/web`. Its primary terrain uses
-observed GBP/100g on X, a read-only trait-derived demo score on Y, and one numeric
-leaf trait in its original units on Z. Colour also selects one leaf trait;
-numeric colours use fixed ranges from the whole app snapshot. Parent families
-navigate their members. Typed filters, a family matrix, comparison, gap finder,
-brand positioning and source evidence share the same observed cohort. Smoothed
-layers summarize category shares while exact product coordinates stay fixed.
+The current hackathon app is `apps/web`, with a Vercel frontend/backend, private
+snapshot, leaf-colour terrain, typed filters, product configurator, gap finder and
+brand analysis. Price is adjustable by slider; a read-only trait recipe supplies
+the demo score. Image/text extraction supports server-side OpenAI or a local
+Codex bridge; live provider configuration remains pending. The user cancelled
+the new pricing-model integration and requested removal of added tests, retired
+prototypes and intermediate demo documents.
 
-The configurator accepts typed traits, edible mass and a proposed-price slider.
-The shared `trait-demo-1` recipe supplies its score. Image/text extraction returns
-candidates with evidence for explicit review and application through OpenAI or a
-local authenticated Codex bridge. Provider configuration and live extraction
-remain pending; this workspace blocked the local app-server before model contact.
-No Tailscale tunnel has been published. See the
-[application architecture](../vercel-architecture.md),
-[collection integration guide](../collection-integration.md) and
-[application README](../../apps/web/README.md).
+The repository now keeps one current web app and the operational
+[architecture](../vercel-architecture.md), [data guide](../collection-integration.md)
+and [app setup](../../apps/web/README.md). The snapshot builder is
+`scripts/build_web_snapshot.py` and outputs private server JSON only. Old static
+studies, duplicated browser data, points API, fictional ID-seeded score mode,
+retired UI modules and their asset-copy tooling are removed. Existing upstream
+processing plugins and their verification suites are outside this cleanup.
+
+Cleanup validation passes: TypeScript, production build, all seven API snapshot
+traces, pinned Plotly integrity and documentation links. The simplified offline
+snapshot builder reproduces all 26 JSON files byte-for-byte. A cleaned preview
+is deploying; hosted checks are pending. The last protected preview is
+[available here](https://rgc-hqvkpvxpj-ptyyyy-s-projects.vercel.app); it predates
+this cleanup. Live browser/WebGL and actual model extraction remain unverified.
+Codex startup is blocked by this workspace before a model request; no Funnel
+has been published. Provider setup remains in the app README.
 
 The app's immutable snapshot pins Hugging Face revision
 `d4ebef3df5ac17145e8dbd2f8a7ae2b10c0afe70`. Its 3,743 listings, 103 traits and
 zero eligible model rows describe that snapshot. Upstream analytical contracts
 now pin `d549ad91d63fb452af605df4a939c4e1f0a59bfa`; their Gold, family-review and
 training progress is recorded in the work table and pipeline proof below.
-The user cancelled integration of the newly pulled pricing model into the web
-app. The web demo recipe remains active, and no fitted model service is connected.
-Upstream experimental training and evidence-review work retain their own status.
+The app continues to use its disclosed `trait-demo-1` recipe. Upstream
+experimental training and evidence review retain their own status.
 
 Model maintenance and without-brand integration checks passed against main
 `cd9e7df8eb7f50aee33d3fce5ca9f0509aff8deb`: `uv sync --locked`, all four
@@ -125,10 +131,10 @@ documentation or rewrite eligibility/targets.
 
 | Work | Files | Status |
 | --- | --- | --- |
-| Deploy the retailer workspace with typed cohorts, family matrix, comparison and layered terrain with gap/brand analysis. | `apps/web/app/`, `apps/web/components/`, `apps/web/lib/client/` | Implemented; web verification before repository integration is recorded below. Live browser/WebGL review remains. |
+| Deploy the retailer workspace with typed cohorts, family matrix, comparison and layered terrain with gap/brand analysis. | `apps/web/app/`, `apps/web/components/`, `apps/web/lib/client/` | Implemented; cleanup build, types and integrity verification are recorded above. Live browser/WebGL review remains. |
 | Serve bounded schema, product, terrain, evidence, comparison and analysis data, plus trait extraction adapters. | `apps/web/app/api/`, `apps/web/lib/server/`, `apps/web/lib/contracts.ts` | Implemented with typed queries and a 4 MB response cap; live extraction awaits provider configuration. |
-| Validate pinned snapshot contracts and derive private JSON plus an integrity manifest. | `scripts/build_collection_explorer.py`, `apps/web/snapshot/` | Implemented for the app's immutable revision; all 3,743 listings validate and evidence references are retained. |
-| Package the Vercel application with pinned dependencies and snapshot/asset verification. | `apps/web/package.json`, lockfile, Next/Vercel configuration and verification scripts | Node 24 London functions deployed with Vercel Authentication; cloud and hosted verification recorded below. |
+| Validate pinned snapshot contracts and derive private JSON plus an integrity manifest. | `scripts/build_web_snapshot.py`, `apps/web/snapshot/` | Implemented for the app's immutable revision; all 3,743 listings validate and evidence references are retained. |
+| Package the Vercel application with pinned dependencies and snapshot/asset verification. | `apps/web/package.json`, lockfile, Next/Vercel configuration and verification scripts | Node 24 London functions use Vercel Authentication; cleanup verifies all seven API snapshot traces, with hosted cleanup verification pending. |
 | Explain retail frontier using the hackathon submission and judging structure. | `PROJECT.md`, intention, lifecycle intent and `README` | Description, capability status, collection demo and submission fields added and reviewed; documentation checks and the offline demo passed. Team names, video, brand votes and public access verification remain pending. |
 | Demonstrate the built retail frontier workflow. | `PROJECT.md`, intention, lifecycle intent and `README` | Project description focuses on implemented collection, processing, evidence review and model preparation, with a brief description of the chocolate data, a runnable collection demo and explicit modelling limits. Event information, judging criteria and submission fields were removed from the project description. |
 | Diagram the data processing workflow. | `docs/data/chocolate-silver.md`, `PROJECT.md` and `README` | Added a Mermaid diagram for source collection, raw preservation, silver processing, review, eligible model inputs and portable model preparation, with purpose, output and status descriptions for bronze/raw, Silver and immutable Parquet Gold inside the diagram and its companion table. Export and the experimental trainer are implemented; real fitting, validated pricing and explanations remain pending. Documentation tests, Ruff and documentation/whitespace checks passed; diagram stages were reviewed against the silver and portable guides. |
@@ -176,41 +182,6 @@ retain unknown sellers outside the initial model and group related designs acros
 sellers in validation. Missing evidence cannot justify new taxonomy values.
 
 ## Proof
-
-### Web application verification before repository integration
-
-Before this repository integration, all 113 application tests passed. Cases covered shared trait scores and price
-independence, leaf-only dimensions, full-snapshot numeric colour calibration,
-missing/invalid/conflicting values, bounded responses, closed meshes and exact
-coordinates. Production controller tests cover camera-only rotation, deferred
-geometry during drag, slider-only draft updates and WebGL fallback. Extraction
-checks cover input/output validation, candidate review, stale request suppression,
-provider errors, bridge authentication, concurrency, timeout and cleanup.
-TypeScript, production build, snapshot/asset verification and documentation
-checks pass. All eight API traces include the private snapshot; the largest
-traced dependency set is 28.5 MiB before Vercel packaging. The protected
-[terrain preview](https://rgc-hqvkpvxpj-ptyyyy-s-projects.vercel.app)
-(`dpl_462wP5Zp3jqpu2cyx7SmNGYjbQis`) is READY. All 23 hosted route/error/static
-checks and nine Next.js assets returned expected statuses. Default/Core terrain
-has 289 rows and Full has 338; numeric colour returns five bands. Parent-family
-colour/Z parameters return 400. Extraction returns 503 EXTRACTOR_NOT_CONFIGURED
-without a provider call; invalid input returns 400 and unsupported methods 405.
-Hosted rows match the shared trait-score recipe and exact snapshot price/Z;
-category shares/counts reconcile and observed price statistics are unchanged.
-Shipped bundles contain the leaf controls, price slider, terrain and candidate
-review flow. Default Vercel Authentication remains enabled; the temporary testing
-credential was revoked and private staging/credential files were deleted.
-Earlier previews and production were unchanged. Proof is saved in the ignored
-`apps/web/.vercel/deployment-validation.json` report.
-
-The default real terrain returns 289 complete core-range listings from 892 usable
-prices and 3,743 matching listings (56,335 bytes). There are 81 prices above the
-core range; in-range missing-score (457) and missing-Z (522) counts overlap.
-The pinned web snapshot has zero eligible model rows; this count does not replace
-upstream Gold or model-readiness reports. Live browser/GPU
-proof remains unavailable. Live Codex extraction is unverified because local
-app-server initialization failed with `Operation not permitted` before a model
-request. No provider key or public tunnel was created.
 
 ### Pipeline and model preparation verification
 

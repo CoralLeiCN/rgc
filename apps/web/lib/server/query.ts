@@ -1,10 +1,9 @@
 import type {
-  Attribute, Axis, CohortQuery, Coverage, FieldDefinition, Product, Snapshot, TraitRule,
+  Attribute, CohortQuery, Coverage, FieldDefinition, Product, Snapshot, TraitRule,
 } from "../contracts";
 import { invalid } from "./errors";
 
 export const COHORT_KEYS = ["search", "source", "role", "status", "rules"] as const;
-export const DEFAULT_AXES = ["observation_weight", "composition.cocoa_percentage", "displayed_unit"] as const;
 const STATES = new Set(["known", "unknown", "conflict", "not_applicable", "reviewed"]);
 const UNKNOWN: Attribute = { value: null, status: "unknown", unit: null, reviewStatus: "unreviewed" };
 
@@ -103,22 +102,13 @@ export function matchesRule(product: Product, rule: TraitRule): boolean {
     (rule.min == null || value.value >= rule.min) && (rule.max == null || value.value <= rule.max);
 }
 
-export function axisValue(product: Product, key: string, totalFields: number): number | null {
+/** Positive GBP per 100g from the same latest observation with a known edible weight. */
+export function observedUnitPrice(product: Product): number | null {
   const price = product.prices[0];
-  if (key === "coverage") return totalFields > 0 ? product.known / totalFields * 100 : null;
-  if (key === "conflicts") return product.conflicts;
-  if (key === "observation_weight") {
-    return !product.latestPriceConflict && price?.quantity_status === "known" && finite(price.total_edible_weight_g) && price.total_edible_weight_g > 0
-      ? price.total_edible_weight_g : null;
-  }
-  if (key === "displayed_unit" || key === "displayed_pack") {
-    if (!price || price.currency !== "GBP" || product.latestPriceConflict) return null;
-    if (key === "displayed_unit" && (price.quantity_status !== "known" || !finite(price.total_edible_weight_g) || price.total_edible_weight_g <= 0)) return null;
-    const value = key === "displayed_unit" ? price.displayed_price_per_100g_gbp : price.displayed_price;
-    return finite(value) && value > 0 ? value : null;
-  }
-  const value = attribute(product, key);
-  return value.status === "known" && finite(value.value) ? value.value : null;
+  if (!price || price.currency !== "GBP" || product.latestPriceConflict) return null;
+  if (price.quantity_status !== "known" || !finite(price.total_edible_weight_g) || price.total_edible_weight_g <= 0) return null;
+  const value = price.displayed_price_per_100g_gbp;
+  return finite(value) && value > 0 ? value : null;
 }
 
 export function filterProducts(products: Product[], query: CohortQuery): Product[] {
@@ -128,7 +118,7 @@ export function filterProducts(products: Product[], query: CohortQuery): Product
     if (query.source && query.source !== "all" && product.source !== query.source) return false;
     if (query.role && query.role !== "all" && product.role !== query.role) return false;
     if (query.status === "conflicts" && !(product.conflicts > 0 || product.latestPriceConflict)) return false;
-    const priced = axisValue(product, "displayed_unit", 1) !== null;
+    const priced = observedUnitPrice(product) !== null;
     if (query.status === "priced" && !priced || query.status === "unpriced" && priced) return false;
     return (query.rules ?? []).every((rule) => matchesRule(product, rule));
   });
@@ -144,49 +134,4 @@ export function coverage(products: Product[], fields: FieldDefinition[]): Record
     }
     return [field.key, counts];
   }));
-}
-
-/** Preserve the snapshot's flat groups and their complete schema membership. */
-export function fieldFamilies(fields: FieldDefinition[]): Map<string, FieldDefinition[]> {
-  const families = new Map<string, FieldDefinition[]>();
-  for (const field of fields) {
-    const family = families.get(field.group);
-    if (family) family.push(field);
-    else families.set(field.group, [field]);
-  }
-  return families;
-}
-
-/** Missing compact attributes remain unknown; reviewed is orthogonal to value state. */
-export function productFamilyCoverage(product: Product, families: ReadonlyMap<string, readonly FieldDefinition[]>): Record<string, Coverage> {
-  return Object.fromEntries([...families].map(([group, fields]) => {
-    const counts: Coverage = { known: 0, unknown: 0, conflict: 0, not_applicable: 0, reviewed: 0, total: fields.length };
-    for (const field of fields) {
-      const value = attribute(product, field.key);
-      counts[value.status]++;
-      if (value.reviewStatus === "reviewed") counts.reviewed++;
-    }
-    return [group, counts];
-  }));
-}
-
-export function availableAxes(fields: FieldDefinition[]): Axis[] {
-  return [
-    { key: "observation_weight", label: "Observed edible weight", unit: "g" },
-    { key: "displayed_unit", label: "Displayed price per 100g", unit: "GBP_per_100g" },
-    { key: "displayed_pack", label: "Displayed pack price", unit: "GBP" },
-    { key: "coverage", label: "Known trait coverage", unit: "%" },
-    { key: "conflicts", label: "Conflicting traits", unit: null },
-    ...fields.filter((field) => field.numeric).map((field) => ({ key: field.key, label: field.label, unit: field.unit })),
-  ];
-}
-
-export function parseAxes(params: URLSearchParams, fields: FieldDefinition[]): [Axis, Axis, Axis] {
-  const axes = new Map(availableAxes(fields).map((axis) => [axis.key, axis]));
-  return ["x", "y", "z"].map((dimension, index) => {
-    const key = params.get(dimension) ?? DEFAULT_AXES[index];
-    const axis = axes.get(key);
-    if (!axis) invalid(`Unknown numeric axis for ${dimension}.`);
-    return axis;
-  }) as [Axis, Axis, Axis];
 }

@@ -63,25 +63,18 @@ No database is needed for the initial immutable collection explorer. Server
 functions never write files or invoke the processing pipeline. Dataset refresh
 is an explicit local preparation step followed by a new deployment.
 
-The teammate is developing the pricing/scoring model separately. The
-[model handoff](model-handoff.md) identifies the raw evidence, shared IDs and
-proposed result boundary and [hosted adapter design](hosted-model-api.md).
-The user selected a hosted prediction API; a future
+The teammate is developing the pricing/scoring model separately. The user selected a hosted prediction API; a future
 same-origin backend adapter will hold service credentials and call the teammate's
 endpoint after its contract is supplied. Raw-archive processing and model training do not run during
 page requests. No scoring endpoint is connected yet.
 
-`scripts/build_collection_explorer.py` verifies the pinned manifest and all
+`scripts/build_web_snapshot.py` verifies the pinned manifest and all
 required file hashes, loads that snapshot's four chocolate contracts, validates
 every product using the existing schema validator, and derives the application
 snapshot. The original source files remain in ignored `data/hf-snapshot/`.
 The deployment includes only `apps/web/snapshot/`, the application and public
 visualization assets. A generated manifest records hashes for the derived JSON.
 These assets are bundled server-side; they are never placed under `public/`.
-
-The existing static studies under `docs/visuals/` remain runnable. A clearly
-labelled fictional-study route can expose the existing 500-product prototype
-without mixing its values with real collection data.
 
 ## API contract
 
@@ -92,11 +85,10 @@ without local paths or stack traces. JSON errors have `{error:{code,message}}`.
 
 | Endpoint | Inputs | Output |
 | --- | --- | --- |
-| `/api/schema` | None | Snapshot metadata, schema contract, typed field catalogue, source counts, available axes. |
+| `/api/schema` | None | Snapshot metadata, schema contract, typed field catalogue, source counts. |
 | `/api/products` | Cohort filters; `page` (default 1); `pageSize` (default 25, max 50) | Product summaries, total/page metadata and per-field coverage across the entire matching cohort. |
 | `/api/products/[id]` | Exact listing ID | Product summary and original attribute/price evidence from its source shard. |
-| `/api/points` | Cohort filters; `x`, `y`, `z`; `limit` (default 500, max 2000) | Finite coordinates, source identity, all-family evidence counts per point, complete/excluded counts and explicit sampling status. |
-| `/api/analysis` | Cohort filters; `range=core` (default) or `full`; optional `scoreMode=demo` | Full-cohort unit-price summary and brand medians; 20-bin histogram and gaps; explicitly synthetic family score layers only when requested. |
+| `/api/analysis` | Cohort filters; `range=core` (default) or `full` | Full-cohort unit-price summary and brand medians; 20-bin histogram and gaps. |
 | `/api/terrain` | Cohort filters; leaf `color`; numeric leaf `z`; `range=core|full`; `limit` (default 1000, max 2000) | Exact price/trait-score/Z rows, category shares, range/completeness counts and score definition. |
 | `/api/extract-traits` (POST) | Description and/or base64 image | Validated candidate traits with evidence and warnings; never writes observed data. |
 | `/api/compare` | Comma-separated `ids`, maximum four distinct listings | Ordered product summaries for the trait matrix. |
@@ -110,9 +102,7 @@ must be finite, in schema bounds, correctly ordered and integer where required;
 at least one bound is required. Enum and boolean values retain their types.
 No arbitrary source filenames, expressions or query languages are accepted.
 
-The legacy `/api/points` accepts numeric schema fields and observation/coverage
-axes; it remains for the separate point-cloud view. The primary `/api/terrain`
-accepts leaf dimensions only. Parent family keys are rejected. Complete rows
+The primary `/api/terrain` accepts leaf dimensions only. Parent family keys are rejected. Complete rows
 require a usable observed GBP/100g price, at least one recognized scoring trait,
 and a known valid Z value. Core-range bounds are computed before completeness
 exclusions. The response discloses total, priced, complete, sampled and missing
@@ -154,7 +144,7 @@ data. Draft, selection, gap and highlight updates use separate lightweight
 commands; a proposed-price change only updates the draft trace and display bounds.
 Data axes retain their original calibration. No autorotation; pixel ratio is
 bounded. A 2D projection mode and keyboard product picker preserve exact values
-when WebGL is unavailable. Controller tests do not establish live GPU performance.
+when WebGL is unavailable. Live GPU performance still requires browser review.
 
 The local product configurator accepts proposed GBP pack price, edible mass and
 schema-validated traits. Explicit listing-copy/reset actions preserve edits across
@@ -169,10 +159,7 @@ Source evidence remains under a disclosure; drafts are not persisted or trained 
 
 Core uses full-cohort Tukey price fences and reports omitted tails; Full includes
 all usable prices. Zero IQR falls back to Full. Gap selection highlights an exact
-price interval on the terrain floor and 2D projections. The primary dashboard
-requests ordinary `/api/analysis` without `scoreMode=demo`; legacy ID-seeded 2D
-demo components and opt-in API output remain only for compatibility/tests, and
-are not used to score the current terrain or configured products.
+price interval on the terrain floor and 2D projections. The primary dashboard requests observed-price analysis from `/api/analysis`.
 
 Gap finding requires at least 20 in-range priced listings and five distinct
 in-range prices. It returns interior sequences of empty bins bounded by occupied
@@ -252,14 +239,12 @@ Vercel environment variables are in [the app README](../apps/web/README.md).
 
 The real default terrain has 289 complete core-range rows from 3,743 matching
 listings and 892 usable prices; 81 prices are above the core range. Missing score
-and Z counts are disclosed, and raw snapshot eligibility remains zero. The app
-suite has 113 passing tests covering typed APIs, category bands, recipe consistency,
-candidate review, provider mocks, bridge cleanup, closed meshes and drag-safe
-rendering. Build and hosted verification are recorded in the lifecycle plan.
+and Z counts are disclosed, and raw snapshot eligibility remains zero. The app's added test fixtures and retired compatibility routes have been removed
+at the user's request. Current validation uses TypeScript, production compilation,
+asset/data verification and hosted HTTP checks, recorded in the lifecycle plan.
 
 Actual browser layout and WebGL rendering remain unverified in this sandbox.
 A synthetic live Codex extraction failed before contacting a model because its
-in-process app-server could not initialize (`Operation not permitted`). Mocked
-bridge tests pass; live laptop extraction and an authenticated tunnel remain to
+in-process app-server could not initialize (`Operation not permitted`). Live laptop extraction and an authenticated tunnel remain to
 be verified. No API key has been provisioned by this change. These limits are
 separate from the teammate's pending fitted-model integration.
