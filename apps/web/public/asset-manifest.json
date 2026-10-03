@@ -1,0 +1,45 @@
+{
+  "formatVersion": 1,
+  "files": {
+    "vendor/plotly-gl3d-3.1.0.min.js": {
+      "sha256": "17df71fcd0e31dd278c2f8bc6e890b4b037426502a3c8f82dc27c9f871592f14",
+      "byteLength": 1613101
+    },
+    "vendor/plotly-LICENSE.txt": {
+      "sha256": "8c45d9eaf50c2f72dd9c7ab9ef440788ba58a3538484b5c51c1f17d5128752e7",
+      "byteLength": 1086
+    },
+    "vendor/README.md": {
+      "sha256": "9a5029a6735809b85153edf0237ae29712d59b8ac1d79b6bd8c8b1c671d0e757",
+      "byteLength": 547
+    },
+    "studies/layered-price-landscape.html": {
+      "sha256": "74f0dcedd74aa27a37474e3433a26e412d967a6e36430f4ce4bf5fa594b2e567",
+      "byteLength": 6302
+    },
+    "studies/layered-price-landscape.css": {
+      "sha256": "8b7369010b9377cf79b67e802aaf49e39d80dcb23487f4aa757ebbd5bafc6953",
+      "byteLength": 4173
+    },
+    "studies/layered-price-landscape.js": {
+      "sha256": "109ebe0613f6b6ca4710d97bc4619f0851fcdb0f42fcdf26222bc7b508263706",
+      "byteLength": 15951
+    },
+    "studies/layered-price-model.js": {
+      "sha256": "c2fe5f6f0954aae8f272c2b2e26319a0b31c8e905c1791ab7a7f29128b870afa",
+      "byteLength": 6607
+    },
+    "studies/price-terrain-model.js": {
+      "sha256": "cd5be7100b658d35086e00df8cb46b84509145d21eb431191961ee0ee3c4aa5e",
+      "byteLength": 3011
+    },
+    "studies/price-terrain.css": {
+      "sha256": "9f4da85fd9e8cdd311455907d4ae8732180f1661b34840e263570c03a14d306d",
+      "byteLength": 9441
+    },
+    "studies/layered-price-landscape.md": {
+      "sha256": "c087c2bfe8b0f706836ac31738c48696bf4aa097443425ffceec81a0fdf52b03",
+      "byteLength": 8025
+    }
+  }
+}

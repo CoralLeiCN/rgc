@@ -26,6 +26,7 @@ changing this structure.
 | [Dataset contract guide](data/dataset-contracts.md) | Dataset ownership, immutable pins, caches, offline use and publication. | Manifest format, resolver, cache behavior or publication workflow changes. |
 | [Model maintenance](model-maintenance.md) | Model artifact storage, immutable publication references, verification and retraining records. | Model publication, loading, version selection or maintenance rules change. |
 | [README](../README) | Entry points, usable commands, and implementation overview. | A public entry point, layer, usable command, or implementation status changes. |
+| [Vercel architecture](vercel-architecture.md), [application README](../apps/web/README.md), and [collection integration guide](collection-integration.md) | Frontend/backend API, deployment boundary, immutable snapshot adapter and explorer behavior. | Application interfaces, schema consumption, filtering, visualization, preparation or deployment commands change. Keep specification and lifecycle plan aligned. |
 | [Lifecycle intent](lifecycle/intent.md) and [lifecycle specification](lifecycle/spec.md) | Short navigation views of canonical intention and specification. | Their summarized scope or status would become inaccurate. Keep detail in canonical documents. |
 | [Lifecycle plan](lifecycle/plan.md) | Implementation work, current status, risks, proof, and remaining work. | Every behavioral, schema, pipeline, or modeling change; update affected progress and proof in the same change. |
 

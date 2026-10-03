@@ -1,0 +1,33 @@
+{
+  "name": "rgc-category-intelligence",
+  "version": "0.1.0",
+  "private": true,
+  "engines": { "node": "24.x" },
+  "scripts": {
+    "dev": "next dev",
+    "prebuild": "npm run verify:data && npm run verify:assets",
+    "build": "next build --webpack",
+    "postbuild": "node scripts/verify-bundle.mjs",
+    "start": "next start",
+    "extractor:local": "node --import tsx scripts/local-extractor.ts",
+    "typecheck": "next typegen && tsc --noEmit",
+    "test": "node --conditions=react-server --import tsx --test tests/*.test.ts",
+    "verify:data": "node scripts/verify-data.mjs",
+    "verify:assets": "node scripts/sync-assets.mjs --verify",
+    "sync:assets": "node scripts/sync-assets.mjs"
+  },
+  "dependencies": {
+    "next": "16.3.8",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "server-only": "0.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "24.13.4",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.5",
+    "esbuild": "0.28.2",
+    "tsx": "4.23.13",
+    "typescript": "7.0.2"
+  }
+}

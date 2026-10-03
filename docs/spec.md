@@ -4,12 +4,15 @@ This specification defines data, modeling and acceptance requirements for the
 scope in [intention](intention.md). The [lifecycle plan](lifecycle/plan.md) records
 implementation and verification evidence.
 
+The retail frontier hackathon submission and judging requirements are recorded
+in [PROJECT.md](../PROJECT.md) and the [challenge brief](eat-hack-track-two.md).
+
 ## 1. Scope and delivery order
 
 | Stage | Requested outcome | Implementation status |
 | --- | --- | --- |
 | 1 | Collect original product information, images and prices through a portable plugin; provide another plugin for processing within each seller, category profiles, mapping maintenance and model preparation; fit a regression explaining feature contributions. | Raw collection, combined chocolate silver/schema, model preparation and documentation maintenance are implemented and verified. The processing package passed package, isolated copy and collected data validation. Classification review/evaluation and model fitting/validation remain outstanding. |
-| 2 | Let a brand test the price of a newly designed product using that model. | Application outstanding; requires a validated category model. |
+| 2 | Let a retailer review a SKU's current or proposed price against a validated model and its range; also support a brand testing a newly designed product. | Draft configuration and observed price exploration are implemented. Supported model-based price testing requires a validated category model. |
 | 3 | Score category value for money and assess brand premium. | Research only; scoring implementation is deferred. |
 
 The product must support many categories over time. Chocolate sold in the United
@@ -76,9 +79,10 @@ The output must distinguish an estimated conditional price association from a
 causal effect. A coefficient cannot by itself establish that adding a claim or
 ingredient causes the corresponding price change.
 
-### 2.3 Test a newly designed product
+### 2.3 Review a retailer price or test a newly designed product
 
-1. A brand describes a proposed product using the model's feature schema.
+1. A retailer selects an existing SKU or proposed listing, or a brand describes
+   a proposed product, using the model's feature schema.
 2. The user selects supported market, product group and pricing context.
 3. The model estimates a price and prediction interval, with feature comparisons
    and warnings about unsupported inputs.
@@ -87,6 +91,18 @@ ingredient causes the corresponding price change.
 
 This is a test against observed market pricing. It does not estimate demand,
 profit or the price that maximizes revenue; those quantities require other data.
+
+The primary delivery audience is retail category managers, buyers, and pricing
+teams. Display evidence supporting and challenging a decision and allow an
+insufficient-evidence outcome. A target retailer such as Tesco is a user persona,
+not a claim that its internal data or full assortment is available.
+
+For an existing product used in model development, obtain a held-out or
+out-of-fold benchmark with related product families kept together. Changing only
+the proposed price must not refit the model or change its benchmark. Keep
+within-retailer estimates distinct from pooled-market or other reference-context
+benchmarks, and display the chosen context. Retailer price-ladder views show
+recorded/proposed price relationships, not predicted substitution or sales.
 
 ### 2.4 Agent plugin for collecting product information
 
@@ -950,7 +966,7 @@ remain open decisions. Define them for the study before judging a model ready.
 If the data or validation is inadequate, retain the dataset report and mark the
 model experimental or unavailable for supported price testing.
 
-## 6. Test the price of a new product
+## 6. Retailer price review and new product price test
 
 ### 6.1 Inputs
 
@@ -988,6 +1004,10 @@ coefficients or silent mapping to references are invalid.
 - When supplied, difference between proposed and predicted prices: `proposed - predicted`, and
   `100 * (proposed / predicted - 1)`.
 - Data/model version, comparable group, and evidence/validation context.
+- For an existing SKU, its current price and the held-out/out-of-fold status of
+  its benchmark; a separate proposed-price marker must leave that benchmark fixed.
+- For a retailer range review, selected comparable products and before/after
+  price gaps, with the price basis and available assortment coverage stated.
 - Flags for missing inputs, unseen levels, poorly supported combinations, and
   extrapolation beyond observed ranges.
 
@@ -995,6 +1015,204 @@ Reject mathematically invalid inputs. For unsupported valid inputs, either
 decline to produce a supported prediction or provide an explicitly experimental
 estimate, depending on the model's documented domain policy. A design using
 individually familiar features can still be an unsupported combination.
+
+### 6.3 Vercel evidence explorer and product configuration
+
+The selected application architecture is a Next.js App Router frontend and
+same-origin Route Handler backend deployed together on Vercel. The
+[architecture and API contract](vercel-architecture.md) defines interfaces,
+limits and deployment; `apps/web` is the deployment root. Verification and
+hosted-release status belong to the lifecycle plan. A previous deployment's
+checks do not establish that a later local implementation is hosted or visually
+verified.
+
+The application consumes a pinned, validated silver snapshot. The adapter loads
+its schema, profile, mappings and model design and validates every product
+before emitting browser assets or server-side JSON. A derived manifest hashes
+the server snapshot and evidence shards. Refreshes are explicit preparation and
+deployment operations; functions do not download or process Hugging Face data
+on each request. Original captures and machine contracts remain unchanged.
+
+Read-only GET routes provide schema definitions, paginated filtered source
+listings, bounded points and terrain coordinates, price analysis, complete
+single-listing evidence and an ordered comparison of up to four listings.
+`POST /api/extract-traits` is a separate model-assisted candidate-extraction
+operation. It sends explicitly submitted inputs to a configured provider but
+performs no dataset, evidence-review or draft persistence writes. The application
+requires no database. Provider configuration is required only for extraction.
+
+#### Cohort, families and evidence
+
+Schema-driven conditions use types, units, vocabulary, numeric bounds and
+known/unknown/conflict/not-applicable states. Conditions combine with AND and
+share the cohort across the terrain, observed-price analysis, matrix and
+comparison. Source, role, product-type, search and price-availability controls
+remain available. Missing attributes mean unknown, never false or zero.
+
+The schema contains flat families derived from each field's `group`. Families
+organize navigation and evidence comparison; they are not synthetic composite
+traits or related-product validation families. Multiple families can expand
+simultaneously in the matrix and shortlist, sharing expansion and trait settings.
+Collapsed summaries count every field's evidence state, including fields hidden
+by search, per-family limits or the pricing-input toggle. Pinned traits remain
+visible without duplicate columns. Selected model predictors are identified
+separately. Coverage is not quality, model influence or a price contribution.
+
+The workspace is branded Piece of Cake Pricing, with subtitle FMCG Pricing made
+easy. The four top summary cards are removed. Explanations sit in question-mark
+controls beside headings, accessible on hover, keyboard focus and tap,
+dismissible by Escape/outside click and positioned outside clipping panels.
+Actual values, labels, errors and the prototype-score disclosure remain visible.
+Family hover/focus exposes definitions, types/units and complete evidence
+coverage. Leaf-trait actions configure filters, color or numeric height.
+
+#### Primary terrain and shared prototype score
+
+The primary chart is a layered 3D terrain with X = observed GBP/100g,
+Y = trait-derived prototype score on a 0–100 scale, and Z = one selected numeric
+leaf field in its original units. The score is explicitly disclosed as a demo,
+not a fitted pricing prediction or a quality rating. Observed rows and configured
+products use the same `trait-demo-1` recipe in `apps/web/lib/trait-demo.ts`:
+
+- Base 20 only when at least one recognized input is known.
+- Cocoa percentage multiplied by 0.30, with valid input 0–100 and up to 30 points.
+- Ten points each for explicit organic, Fairtrade, bean-to-bar, single-origin
+  and gift-pack claims; explicitly absent claims contribute zero.
+
+Missing, conflicting, truncated and invalid scoring inputs are omitted, not
+inferred absent. With no recognized inputs the score is null. Names, prices,
+review state and cohort membership do not add score points. This prototype does
+not alter source review, model eligibility, model-design features or the
+requirements for supported price testing. The score is never manually editable.
+
+Displayed prices in this explorer remain observational evidence. Every future
+pricing model must use the reviewed `regular-consumer-price-1` target defined
+in section 10; displayed offers cannot replace that target.
+
+`GET /api/terrain` applies the common cohort and core/full price range, returning
+exact price/score/Z rows and color-category shares. Default sampling is bounded
+to 1,000 rows, with a 2,000-row maximum and deterministic selection when needed.
+The response reports the matched/priced/complete counts, sampled status,
+below/above-range counts and missing-score/missing-Z counts; missing coordinate
+counts are within the displayed range and may overlap. A missing score or Z
+excludes the listing from terrain geometry, not from the matrix or independently
+computed observed-price analysis.
+
+Only an individual leaf field can supply color: numeric/integer, enum, boolean
+or string-list. Parent families are navigation containers, not color bars or
+height indices. Numeric color values use five equal-width bands calibrated to
+valid known values in the immutable full snapshot; cohort filtering does not
+recompute their boundaries. A categorical single value gets its whole visual
+share. A string-list field divides its share equally among distinct values.
+Unknown, conflict, not-applicable, truncated and explicitly empty-list states
+remain distinct. Z accepts only a single numeric field in raw units; family
+aggregation and normalized family means are rejected.
+
+The browser builds a 24 × 24 surface grid in price/score space using positive
+local weights to average neighboring Z values. Unsupported cells stay open;
+weighted heights do not overshoot the contributing observed Z values. Smoothing
+changes the surface only. Layers divide the height above the explicit
+`min(0, observed Z)` baseline using local category shares. They are ordered by
+weighted median Z, with up to eight named/state layers plus Other categories.
+Layer thickness is illustrative composition, not causal pricing influence,
+model attribution, cost or measured product quality. Exact dots retain their
+original price, calculated score and raw Z; they are never snapped to the smooth
+surface. Legend highlighting preserves the underlying coordinates and cohort.
+A 2D projection with explicit selection provides a fallback when WebGL fails.
+
+The previous 2D fictional family-score chart, its child-trait score allocations,
+and its manual configured-product score are retired from the current Dashboard.
+Legacy components and `/api/analysis?scoreMode=demo` remain separate compatibility
+fixtures, not the source of terrain or configured-product scores. The earlier
+points controller and standalone HTML explorer retain their own observed-price
+behavior.
+
+#### Local product draft and candidate extraction
+
+The right column provides editable name, proposed GBP pack price, edible weight
+and schema-typed traits. Families expand independently and can be searched.
+Blank traits remain unspecified; numeric zero is retained where permitted;
+enum/list vocabulary and numeric bounds are validated. Price is normalized from
+the draft's own pack price and edible mass. A proposed-price slider complements
+the exact numeric input and expands to include larger typed prices. Price edits
+do not change the calculated score. A read-only output and rule breakdown expose
+the score and known-input count.
+
+An explicit action can copy a selected listing's known, untruncated attributes
+and usable price/weight from the same observation. Ordinary source selection
+preserves draft edits. Source evidence stays accessible in a collapsed section.
+The marker requires valid price, weight, a known score and the selected numeric
+Z trait; invalid or missing coordinates suppress it. Out-of-range draft prices
+can extend display axes without changing the observed cohort/range or clamping
+the draft onto an invented price. Drafts never enter source listings, terrain
+smoothing, gap calculations, brand statistics or model training.
+
+The extractor accepts a description of at most 12,000 characters and/or a PNG,
+JPEG or WebP image of at most 2 MiB. `POST /api/extract-traits` receives JSON
+`{description, image?: {mimeType, data}}`, where `data` is base64 without a data-URL
+prefix. It validates body limits, image contents and field values. The response
+contains provider/model metadata, candidate `{key, value, evidence}` traits and
+warnings. Unsupported or schema-invalid candidates are omitted; missing values
+are never filled automatically. Generated candidate claims are not independently
+verified source facts, and neither extraction nor applying them grants model
+eligibility.
+
+Image previews and description inputs remain local until extraction is requested.
+The user reviews checkboxes and evidence, then explicitly applies candidates.
+Apply merges into the latest draft, replacing only checked matching inputs;
+name and edible weight map to their top inputs and proposed pack price is
+unchanged. The score recalculates from applied traits. Async results never
+modify edits on arrival. Editing extraction inputs, Reset, source import or
+unmount cancels/discards stale extraction work; previews release their object
+URLs. Reset/source import clear the extraction session. Drafts and candidates
+have no application persistence, and errors never trigger fabricated fallback
+extraction.
+
+The Vercel route supports a server-configured OpenAI API provider or an
+authenticated HTTPS bridge to a local Codex CLI session. Provider credentials
+remain server-side. The bridge is a separate laptop process intended for the
+requested Tailscale connection, validates the same contract and limits work to
+one local extraction at a time. Missing configuration returns 503 with a setup
+message. The live Codex bridge path remains unverified because sandbox startup
+is blocked; provider/network configuration and end-to-end extraction must be
+verified separately. This extraction service is not the teammate's pricing
+model, which remains unconnected.
+
+#### Observed-price analysis and future model boundary
+
+The read-only analysis endpoint applies cohort filters to all matching listings,
+independent of matrix pagination or complete terrain coordinates. Only positive
+displayed GBP/100g with known same-observation weight and no latest-price
+conflict enters price analysis. Core-range bins lie within full-cohort
+Q1 - 1.5 IQR to Q3 + 1.5 IQR, clipped to observed limits; Full includes all usable
+prices. Tail counts remain explicit and zero-IQR Core falls back to Full.
+Summary and brand statistics always use the full priced cohort.
+
+The gap finder reports empty interior bin runs bounded by occupied bins, with
+adjacent-bin counts and at least 20 in-range priced listings and five distinct
+in-range prices. Selecting a gap highlights its price interval on the terrain;
+changing cohort/range invalidates the selection. Gaps describe collected supply
+at the stated resolution, not demand, opportunity or a recommended price.
+Brands with at least three priced listings are ranked by median observed price,
+with percent difference from the cohort median and counts beyond full-cohort
+Tukey fences. R-7 quantiles weight each seller listing equally. Unknown brands
+remain in totals but are unranked; rankings are capped at 30 with exclusions
+reported. Higher price positioning does not imply sales, profitability, quality,
+a model residual or causal brand premium.
+
+The interface preserves snapshot/review/model-readiness status. An unreviewed
+observed price, selected predictor or prototype score is not a fitted benchmark.
+The fictional 500-product study remains explicitly separate. Review writes,
+database persistence, model fitting and supported price recommendations are
+outside the current explorer contract.
+
+The teammate owns model development. The [model handoff](model-handoff.md)
+defines the selected future hosted-API direction and a proposed boundary with
+dataset/model versions, listing/observation IDs, price/score basis, support and
+optional uncertainty/contributions. Its endpoint, wire format and authentication
+remain pending. A future adapter must reject mismatched identities and versions;
+price comparisons require compatible bases. The prototype score and extraction
+provider do not satisfy that pricing-model handoff.
 
 ## 7. Deferred research on value for money and brand premium
 
@@ -1106,6 +1324,9 @@ category and plugin conformance scenarios apply across supported studies.
 | A certification appears only in one brand. | Flag identification/support limits; do not claim a separately established causal certification premium. |
 | A dataset contains repeated offers and related sizes. | Keep product families together during validation on held out data. |
 | A brand tests a supported new product. | Return price, prediction interval, feature references, and the selected model/context. |
+| A retailer reviews an existing SKU included in model development. | Use a held-out or out-of-fold benchmark with product families kept together; show its current price and evidence. |
+| A retailer changes only a proposed price. | Keep model inputs and benchmark fixed; update its gap and position in the selected range. |
+| Public price data is available without sales or cost data. | Report price positioning and observed/proposed range gaps; do not fabricate margin, elasticity, revenue lift, or cannibalization. |
 | The design has an unseen brand or unsupported feature combination. | Use a validated, labeled fallback where available or report insufficient support. |
 | A user supplies a proposed selling price. | Show its currency and percentage difference from the estimate. |
 | A user supplies a GBP pack price while the model target is GBP per 100 g. | Convert consistently and compare pack price with the implied pack estimate on the same price basis. |
@@ -1124,7 +1345,8 @@ category and plugin conformance scenarios apply across supported studies.
 - Further chocolate schema extensions and extraction coverage, reviewed
   comparable groups, and confirmed quantity and consumer price basis before modeling.
 - Coverage targets, extraction review plan, and numerical model release criteria.
-- The delivery surface and implementation stack.
+- Hosted preview verification and access configuration for the selected Vercel
+  application; the Next.js frontend/backend stack is decided.
 - Whether stage 3 will define value for money as a comparison of adjusted prices or
   include separately collected consumer utility/quality evidence.
 

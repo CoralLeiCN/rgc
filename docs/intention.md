@@ -1,4 +1,4 @@
-# Intention
+# RGC project intention
 
 Build a tool for classifying product features and analyzing how those features
 relate to product pricing within a category.
@@ -17,6 +17,19 @@ The hackathon project is named **retail frontier**. Its
 runnable collection workflow, distinguishing implemented features from proposed
 modelling. Keep event requirements and judging criteria in the hackathon brief.
 The team confirms that no substantial project work existed before EAT_HACK.
+
+Retail category managers, buyers and pricing teams are the primary application
+users. They need to explain a SKU's proposed price against comparable market
+evidence and its position in an assortment. Brand product developers are a
+related audience. Retailer examples such as Tesco identify the intended users;
+internal retailer data or a customer relationship is not assumed.
+
+The retail frontier entry includes the **Piece of Cake Pricing** web workspace.
+Current application work covers evidence exploration, a declared prototype trait
+score, product configuration and candidate extraction. The user cancelled
+pricing-model integration; merging the upstream training and Gold work does not
+connect it to this application. The broader research goals below retain their
+review and validation requirements.
 
 ## 1. Category research and a pricing model
 
@@ -139,10 +152,18 @@ Maintain canonical documents and implementation status with behavior changes,
 using the repository's rules and runnable check in
 [documentation-policy.md](documentation-policy.md).
 
-## 2. Price testing for a newly designed product
+## 2. Price review for a retailer or a newly designed product
 
-A brand, as a user of the application, can use the model to test the price of a
-newly designed product.
+The intended validated workflow lets a retailer review an existing SKU, proposed
+listing or price change against a supported model and comparable range. A brand
+can also test a newly designed product. Declare category, market, comparison
+group and selling context, then report the estimate, prediction interval and
+supported comparisons. Unsupported designs require an explanation of missing
+support.
+
+The current application provides observed evidence and proposed-price placement.
+Connecting the pricing model is excluded from the current work at the user's
+request. A prototype trait score does not fulfill the validated workflow.
 
 ## 3. Category value for money and brand premium
 
@@ -150,7 +171,150 @@ Develop a score within each category for value for money and assess the brand
 premium a product carries.
 
 Implementation of this feature is deferred. Research suitable scientific methods
-first.
+first. A price residual alone cannot establish brand premium, quality or consumer
+value. Descriptive brand median rankings in the application measure observed
+price positioning only.
+
+## Gold, final price basis and family maintenance
+
+Prepare immutable Parquet Gold from Silver as the training interface, initially
+preserving its candidates, missing values and reviewed eligibility without new
+processing. Implement experimental training from verified Gold; distinguish
+loadable candidates, actual eligible observations and a validated fitted model.
+
+The current chocolate study uses collected displayed prices as its regular-price
+proxy under `current-consumer-price-1`, without a separate regular-price,
+promotion or confirmed-tax gate. Keep GBP per 100 g normalization, log scale,
+actual edible weight requirements and original source metadata. Record promotion,
+membership, tax and capture-date uncertainty in `PROJECT.md` and run artifacts.
+Historical `regular-consumer-price-1` studies and other category contracts retain
+their original price basis.
+
+Include reusable product-family taxonomy mappings during raw-to-Silver
+processing. Codex decides supported new family relationships within the
+authorized study and persists decisions supported by evidence for later builds.
+Preserve separate seller listings, original evidence and prior immutable
+snapshots. Keep exact physical pack identity distinct from broad related product
+ranges, and defer insufficient or conflicting cases.
+
+## 4. Hackathon application: Piece of Cake Pricing
+
+The workspace is **Piece of Cake Pricing**, with subtitle **FMCG Pricing made
+easy.** It serves a two-person hackathon team presenting to retail pricing
+teams. The requested delivery platform is Vercel for both frontend and backend.
+The [application architecture](vercel-architecture.md) defines a Next.js app,
+server APIs and a pinned, verified collection snapshot. Frontend, backend and
+platform implementation are delegated to subagents after architecture design.
+
+The current application is an evidence explorer and product-configuration
+prototype. Its pinned UK chocolate snapshot contains 3,743 source listings,
+2,134 price observations and 103 traits. These are seller listings, not reviewed
+independent products. Zero rows pass the published model-input gate. No fitted
+pricing model, supported benchmark, prediction interval or recommended selling
+price is connected. [Integration notes](collection-integration.md) distinguish
+implemented behavior from remaining validation and deployment work.
+
+### Terrain and trait exploration
+
+The primary visualization is a layered 3D terrain. X is observed GBP per 100 g;
+Y is a reproducible prototype score calculated from known traits; Z is one
+selected numeric leaf trait in its original units. Exact product points retain
+all three coordinates. The terrain smooths nearby numeric values with positive
+local weights and leaves unsupported areas open. Colored layers divide height
+above a declared baseline; their thickness is a visual composition, not a price
+contribution, cost share, model coefficient or quality measure. A 2D projection
+provides an accessible alternative when 3D is unavailable.
+
+The user rejected aggregating an entire parent family into a color bar or height
+index. The published schema has flat families containing individual fields, not
+a migrated nested family hierarchy. Families organize navigation, definitions,
+filters and matrix comparison. Color is selected from one leaf field: number,
+integer, enum, boolean or string list. Numeric colors use five equal-width bands
+calibrated to the immutable full snapshot; filtering does not redefine a band's
+meaning. A multi-valued list splits its visual share equally between its distinct
+values. Unknown, conflicting, not-applicable and truncated evidence stay explicit.
+Z accepts a single numeric leaf; family means and normalized family indices are
+excluded.
+
+Retailers can build a cohort with source, role, product-type, search and typed
+trait conditions, then inspect the same evidence in a dynamic matrix and an
+up-to-four-product comparison. Several trait families can expand at once;
+pinning and per-family limits preserve manageable detail without changing
+coverage denominators. The family browser exposes Filter, Colour and Height
+actions for eligible leaf traits. Legend highlighting and surface smoothing
+change presentation, not the cohort or original product coordinates.
+
+The gap finder and brand analysis continue to use observed prices from the full
+filtered listing collection, independently of matrix pagination and terrain
+coordinate completeness. Gaps identify empty interior price bands at the chosen
+resolution. Brands stand out by higher median observed price positioning within
+the cohort; sales, profit, causal brand premium and demand are not inferred.
+Core/full price ranges disclose excluded tails, while brand statistics retain
+the full priced cohort.
+
+### Configure a proposed product
+
+The right column lets a retailer specify a proposed product with schema-typed
+traits, pack price and edible weight. A price slider and precise numeric input
+move its proposed GBP/100 g position. Score is read-only and recalculated from
+traits using the shared, declared six-input prototype recipe. Prices and names
+do not affect the score. No recognized scoring inputs means no score; unknown
+claims are not treated as absent. A visible demo/prototype disclosure and an
+inspectable rule breakdown distinguish this recipe from the separate pricing
+research.
+
+A valid configured product appears at its exact proposed price, calculated
+score and selected raw numeric trait. Invalid or missing coordinates suppress
+the marker instead of inventing values. A price beyond the observed range can
+extend the display axes while preserving the observed cohort and range. The
+draft never becomes a source listing or enters gap or brand statistics.
+
+An explicit action can copy known, untruncated values from a selected listing;
+ordinary source selection preserves edits. Product descriptions and packaging
+images can also be submitted for model-assisted trait extraction. Results are
+candidates with evidence and warnings. The retailer reviews and selects them,
+then explicitly applies them to the draft. Applying candidates can replace
+matching name, weight or trait inputs, but never changes proposed pack price.
+Original source evidence remains available in a collapsed disclosure.
+
+The extraction route supports a configured OpenAI API provider or an
+authenticated local Codex bridge, including the requested laptop connection
+through Tailscale. The extraction model has a separate purpose from the cancelled
+pricing model integration. Missing provider configuration produces an explicit
+error instead of invented traits. The live local Codex path remains unverified because sandbox startup is
+blocked; local bridge and network availability must be established before
+claiming that route works end to end.
+
+### Presentation, assets and remaining work
+
+Use a restrained professional palette, explicit units, legible comparisons and
+inspectable assumptions. Explanatory prose belongs in accessible question-mark
+help beside headings, available on hover, focus and tap. Actual values, field
+labels, errors and demo-score disclosure remain visible. The four top summary
+cards have been removed. Avoid factory metaphors and unsupported claims of
+market-wide coverage.
+
+The active terrain, product configuration and extraction workflow are the
+application delivery. Retired visual prototypes and intermediate design studies
+are outside the maintained application.
+
+The teammate's pricing research and upstream experimental training remain
+separate from this application. The user cancelled pricing-model integration;
+no hosted prediction adapter, model endpoint or fitted score is connected. The
+full public raw text-evidence archive remains available for separate modeling
+work, with image bytes deliberately omitted from the export. Application
+requests use their pinned snapshot and do not automatically adopt a new Gold
+release or model artifact.
+
+Upstream research retains experimental training from verified Gold and reviewed
+family mappings. Remaining readiness work includes unresolved identities,
+regular consumer-price and tax evidence, other feature reviews, and evaluation
+against a baseline. Supported price testing requires validated benchmarks and
+uncertainty, including held-out or out-of-fold results for training products.
+If validation remains inadequate, the demo must remain an evidence explorer and
+explicit prototype score, without claiming optimal pricing, value for money or
+causal brand premium. The [specification](spec.md) remains authoritative for
+model readiness and interpretation.
 
 ## Repository language and writing style
 
@@ -158,14 +322,7 @@ Author repository content in English, including when prompts are in Chinese.
 Preserve original source evidence verbatim in its original language. Follow the
 writing rules in [AGENTS.md](../AGENTS.md).
 
-## Gold, final price basis and family maintenance
-
-Prepare immutable Parquet Gold from Silver as the ready-to-load training interface, initially preserving its candidates, missing values and reviewed eligibility without new processing. Implement experimental training from verified Gold; distinguish loadable candidates, actual eligible observations and a validated fitted model.
-
-The current chocolate study uses collected current displayed price as its regular-price proxy under `current-consumer-price-1`. A separate regular-price target, promotion classification and confirmed tax inclusion are not required. Keep GBP per 100 g normalization and log scale, actual weight requirements, original source metadata and the limitations in `PROJECT.md`. Historical regular-price studies retain their own contracts.
-
-Include reusable product-family taxonomy mappings during raw-to-Silver processing. Codex decides supported new family relationships within the authorized study and persists evidence-backed decisions for later builds. Preserve separate seller listings, original evidence and prior immutable snapshots. Keep exact physical pack identity distinct from broad related product ranges, and defer insufficient or conflicting cases.
-
+## Independent training sessions
 
 On 2026-10-03 the user requested every Gold entity model eligible and instructed
 all three chocolate training chats to pull the refreshed data and refit. Gold

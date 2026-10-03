@@ -1,0 +1,31 @@
+.heading-with-help, .label-with-help { display: flex; align-items: center; gap: 8px; }
+.heading-with-help { min-width: 0; }
+.heading-with-help > h2, .heading-with-help > h3 { margin: 0; }
+.help-tip { display: inline-flex; vertical-align: middle; align-items: center; flex-shrink: 0; }
+.help-tip-trigger { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; padding: 0; border: 1px solid #456071; border-radius: 50%; background: #172c39; color: #a7c6d3; font: 11px/1 Arial, sans-serif; cursor: help; }
+.help-tip-trigger:hover, .help-tip-trigger[aria-expanded="true"] { color: #d4f0e8; border-color: #8bbfac; background: #264138; }
+.help-tip-trigger:focus-visible { outline: 2px solid #9bdfc9; outline-offset: 3px; }
+.help-tip-content { z-index: 10000; width: 350px; overflow-y: auto; overscroll-behavior: contain; padding: 16px 17px; border: 1px solid #4b6979; border-radius: 8px; background: #172b37; color: #c0d6dd; box-shadow: 0 12px 42px #0008; text-align: left; scrollbar-width: thin; scrollbar-color: #567685 transparent; }
+.help-tip-label { display: block; font-size: 11px; line-height: 1.5; font-weight: 600; color: #d5eae6; margin-bottom: 9px; letter-spacing: 0; text-transform: none; }
+.help-tip-body { font-size: 11px; line-height: 1.7; letter-spacing: 0; font-weight: 400; overflow-wrap: anywhere; }
+.help-tip-body p { font-size: inherit; line-height: inherit; color: inherit; margin: 0; }
+.help-tip-body p + p, .help-tip-body ul, .help-tip-body dl { margin-top: 10px; }
+.help-tip-body ul { padding-left: 17px; margin-bottom: 0; }
+.help-tip-body li + li { margin-top: 5px; }
+.help-tip-body strong { color: #e2eee5; font-weight: 500; }
+.help-tip-body code { color: #b2d4e2; font-size: 10px; white-space: pre-wrap; }
+.help-tip-body dl { margin-bottom: 0; }
+.help-tip-body dt { color: #97b7c5; font-size: 10px; }
+.help-tip-body dd { margin: 2px 0 9px; }
+.help-tip-body a { color: #b2e5cd; text-decoration: underline; text-underline-offset: 2px; }
+.compact-heading-note { display: flex; align-items: center; gap: 8px; margin: 12px 0; color: #9db7c3; font-size: 10px; }
+.section-help-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.rule-form > .rule-field, .matrix-limit-control { display: grid; gap: 7px; }
+.matrix-limit-control { min-width: 165px; flex: 0 1 175px; }
+.matrix-limit-control label { font-size: 9px; color: #7f99a7; }
+.matrix-limit-control select { height: 33px; background: #101f29; font-size: 10px; }
+.brand-price-table thead th > .label-with-help { display: flex; font-size: 8px; color: #8ca9b9; }
+.family-matrix .family-controls { min-height: 31px; }
+@media (max-width: 1020px) { .matrix-limit-control { min-width: 130px; flex: 1; } }
+@media (max-width: 600px) { .help-tip-trigger { width: 22px; height: 22px; } .heading-with-help { gap: 7px; } }
+@media (prefers-reduced-motion: reduce) { .help-tip-trigger, .help-tip-content { animation: none; transition: none; } }

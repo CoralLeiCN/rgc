@@ -4,8 +4,19 @@ This repository studies how product features relate to prices across categories.
 Chocolate sold in the UK is the current example. Preserve original information
 and evidence before deriving an analytical schema or fitting a pricing model.
 
+
+The retailer-facing Piece of Cake Pricing app helps category managers, buyers and
+pricing teams inspect observed prices, product traits, assortment gaps and brand
+positioning. It uses a layered terrain: observed GBP/100g, a disclosed trait-derived
+demo score and one raw numeric leaf trait. Parent families organize navigation;
+leaf categories or numeric bands supply colour layers. A local product draft has
+typed traits, a read-only score and a proposed-price slider. Image/text extraction
+returns candidates for explicit review through OpenAI or a local Codex bridge.
+Provider setup and the separate fitted pricing-model connection remain pending.
+
 | Document | Purpose |
 | --- | --- |
+| [Vercel architecture](docs/vercel-architecture.md), [app setup](apps/web/README.md), [snapshot integration](docs/collection-integration.md) | Current pricing workspace, provider setup, deployment and private data preparation. |
 | [Intention](docs/intention.md) | Goals, delivery order and constraints. |
 | [EAT_HACK Retail Futures brief](docs/eat-hack-track-two.md) | Track 2 challenge, submission requirements and judging criteria. |
 | [retail frontier project description](PROJECT.md) | Built capabilities, implementation status and a runnable collection demo. |
@@ -21,6 +32,21 @@ and evidence before deriving an analytical schema or fitting a pricing model.
 | [Collection package](plugins/category-research/README.md), [processing package](plugins/category-processing/README.md) | Agent Plugins 1.0.0 packages, skills, CLI and Python API. |
 | [Lifecycle intent](docs/lifecycle/intent.md), [design](docs/lifecycle/spec.md), [plan](docs/lifecycle/plan.md) | Navigation, implementation status, risks, proof and remaining work. |
 | [Documentation policy](docs/documentation-policy.md), [agent rules](AGENTS.md) | Document ownership, update conditions, language and writing style. |
+
+
+Run the web application with Node 24:
+
+```sh
+cd apps/web
+npm ci
+npm run dev
+```
+
+Open `http://localhost:3000`. The deployment root is `apps/web`. Collection
+exploration needs no external credentials; image/text extraction requires a
+server-configured provider. The private web snapshot remains pinned to its own
+dataset revision; the upstream Gold and model workflow below has separate
+versioning and readiness. See the app README for current preview and validation.
 
 The collection package bundles its [manifest](plugins/category-research/plugin.json)
 and [skill](plugins/category-research/skills/category-research/SKILL.md), with a

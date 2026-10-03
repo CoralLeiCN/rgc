@@ -3,6 +3,27 @@
 [Canonical specification](../spec.md) owns contracts and acceptance requirements.
 The essential sequence is:
 
+The retailer-facing [collection explorer](../collection-integration.md) consumes
+an immutable published silver snapshot, exposes known/unknown/conflicting trait
+states, and plots available observations without changing upstream review gates.
+It keeps price observations tied to their quantities and evidence. The separate
+layered pricing study uses explicitly fictional fixtures; neither artifact
+establishes a trained benchmark. The intended validated workflow supports retail
+SKU price review as well as a brand's new-product test.
+
+The [Vercel architecture](../vercel-architecture.md) defines a single Next.js
+frontend/backend application under `apps/web`, an expandable family matrix,
+a layered price/trait-score/numeric-leaf terrain, observed gap finder and brand
+price-position analysis, with private bundled snapshot/evidence assets. Parent
+families organize navigation; only leaf fields supply colour and only one numeric
+leaf supplies raw Z. Draft scores are trait-derived and read-only; a proposed-price
+slider moves the draft without changing observed analysis. Image/text extraction
+returns reviewable candidates through OpenAI or a token-protected local Codex bridge.
+The server returns bounded pages, terrain coordinates, aggregate analysis and the retained points API; the browser does not load the full collection
+index. Schema validation, typed filter bounds and original review semantics
+apply at the interface. The delivery stack is decided; hosted verification and
+implementation status are recorded in the plan.
+
 ```text
 bronze/raw -> silver (deduplication + standardization + reviews/gates)
            -> immutable Parquet Gold -> experimental trainer -> later validated model

@@ -5,7 +5,7 @@ Implemented 3 October 2026.
 - [Real collection explorer](visuals/collection-explorer.html)
 - [500-product fictional point cloud](visuals/layered-price-landscape.html)
 - [Vercel frontend/backend architecture](vercel-architecture.md)
-- [Hosted preview](https://rgc-jvefjm0yy-ptyyyy-s-projects.vercel.app) — Vercel sign-in required
+- [Hosted preview](https://rgc-hqvkpvxpj-ptyyyy-s-projects.vercel.app) — Vercel sign-in required
 - [Teammate model handoff](model-handoff.md)
 
 ## What is usable now
