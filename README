@@ -10,11 +10,14 @@ Project documents and implementation:
 
 - Intention: docs/intention.md
 - Specification: docs/spec.md
+- Chocolate pricing model design: docs/chocolate-modeling-design.md
+- LightGBM, SHAP, and AI explanations: docs/analysis/lightgbm-shap-explanation-design.md
 - UK chocolate raw and silver workflow: docs/chocolate-silver.md
 - UK chocolate schema, reviews, and pricing handoff: docs/chocolate-schema.md
 - Portable processing, mapping maintenance, and model preparation: docs/category-processing.md
 - Compatibility deduplication and cleanup guides: docs/chocolate-deduplication.md, docs/chocolate-cleaning.md
-- Versioned chocolate contracts: schemas/chocolate/
+- Pinned chocolate dataset contracts: schemas/chocolate/dataset-contract.json
+- Dataset contract storage, caches and offline use: docs/dataset-contracts.md
 - Documentation maintenance rules: docs/documentation-policy.md
 - Agent Plugins 1.0.0 collection package: plugins/category-research/README.md
 - Agent Plugins 1.0.0 processing package: plugins/category-processing/README.md
@@ -56,6 +59,15 @@ The canonical UK chocolate workflow has two dataset layers:
   typed schema/vocabulary/unit standardization, price normalization, evidence
   review and model-input eligibility in one build.
 
+Analytical JSON contracts are authoritative in the Hugging Face dataset
+CoralLeiCN/rgc-collections, under contracts/chocolate/ and
+contracts/category-processing/<category>/. Git retains only dataset-contract.json
+references with an immutable dataset commit, per-file SHA-256 hashes and version
+metadata. Loaders download missing pinned files into ignored caches and verify
+every file before use; cached runs can be offline. Human documentation remains
+in Git. See docs/chocolate-schema.md and docs/category-processing.md for versions
+and cache behavior.
+
 Build silver directly from the raw collections root:
 
     python3 -B scripts/build_chocolate_silver.py --archive-root data/collections --output data/silver/chocolate/uk
@@ -84,7 +96,7 @@ and the earlier cleanup, remain compatibility/diagnostic helpers; creating
 persistent intermediate layers is not required for the canonical workflow.
 
 The standalone category-processing plugin packages the full post-collection
-methodology with its own runtime, five-contract profiles, stable seller UIDs,
+methodology with its own runtime, five-contract dataset references, stable seller UIDs,
 processing ledger, grouped mapping-review batches, calling-harness skill and
 model-preparation CLI. Chocolate tracks 103 attributes; the coffee starter
 demonstrates a second category with explicit structured inputs. Copying the
@@ -112,6 +124,7 @@ Documentation changes with behavioral/schema/model changes in the same change.
 AGENTS.md and docs/documentation-policy.md name the canonical documents and sync
 conditions. Run the drift guard and relevant tests before finishing:
 
+    python3 -B scripts/fetch_contracts.py --all
     python3 -B scripts/check_documentation.py
     python3 -B -m unittest discover -s scripts/tests -v
     python3 -B -m unittest discover -s plugins/category-processing/tests -v
@@ -120,9 +133,15 @@ conditions. Run the drift guard and relevant tests before finishing:
 requests and pushes. docs/lifecycle/plan.md records implementation status,
 verification commands, limitations, and remaining work.
 
-Public dataset publication uses the category-independent text-evidence policy in
+Raw collection publication uses the category-independent text-evidence policy in
 docs/spec.md, section 3.1.1. It includes product records, original text/HTML/JSON
 evidence, capture histories, catalogues, discovery/run evidence, and coverage.
+
+The dataset also contains separately published silver snapshots and analytical
+contracts. Contract publication uses scripts/publish_contracts.py and immutable
+reference manifests; it preserves raw exports and silver files. See
+docs/dataset-contracts.md. Published silver does not establish reviewed or
+model-ready inputs.
 Image files and HTTP transfer caches remain local; their recorded references
 are disclosed as omitted. Accepted source bytes are preserved in losslessly
 compressed category/market bundles, with a product JSONL index and manifests.

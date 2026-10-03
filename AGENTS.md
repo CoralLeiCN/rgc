@@ -19,8 +19,16 @@ Keep `docs/intention.md` accurate when user goals or constraints change;
 and the affected layer guide accurate when inputs, outputs, commands, mapping
 rules, or limitations change. Chocolate schema and model-design changes must
 also update `docs/chocolate-schema.md`, `docs/chocolate-silver.md`, and their
-versioned machine contracts. Keep raw plus combined silver as the canonical
-chocolate architecture; standalone deduplication, standardization and cleanup
+versioned dataset contract manifests. Analytical schemas, source mappings,
+validators, model designs and processing recipes are authoritative in the
+`CoralLeiCN/rgc-collections` Hugging Face dataset, not in Git. Keep only small
+manifests with an immutable dataset commit and per-file SHA-256 hashes in Git;
+materialize verified contracts into ignored caches when needed. Update affected
+contract versions and manifests together after publishing a new immutable
+dataset revision. Documentation checks must work offline without cached
+schemas, and validate any cached files that are present. Keep raw plus combined
+silver as the canonical chocolate architecture; standalone deduplication,
+standardization and cleanup
 commands are compatibility/diagnostic helpers. Preserve source evidence when
 changing derived interpretations.
 

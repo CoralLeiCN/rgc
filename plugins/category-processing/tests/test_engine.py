@@ -18,6 +18,7 @@ sys.path.insert(0, str(PLUGIN_ROOT))
 
 from fixture_archive import import_document
 from category_processing.pipeline import build_silver_dataset
+from category_processing.profiles import resolve_profile
 from category_processing.tracking import compare_ledgers
 
 
@@ -28,7 +29,7 @@ class CategoryProcessingEngineTests(unittest.TestCase):
         self.base = Path(self.temporary.name)
         self.archive = self.base / "collections"
         self.output = self.base / "silver"
-        self.profile = PLUGIN_ROOT / "profiles/coffee"
+        self.profile = resolve_profile(PLUGIN_ROOT / "profiles/coffee")
 
     def product(self, listing="coffee-example", source="fixture-retailer", price=6.5,
                 observed_at="2026-10-03T07:00:00Z"):
@@ -157,7 +158,7 @@ class CategoryProcessingEngineTests(unittest.TestCase):
     def test_valid_category_value_outside_selected_model_domain_is_excluded(self):
         self.collect([self.product()])
         copied = self.base / "restricted-model-profile"
-        shutil.copytree(self.profile, copied)
+        shutil.copytree(self.profile, copied, ignore=shutil.ignore_patterns("dataset-contract.json"))
         path = copied / "model-design.json"
         design = json.loads(path.read_text())
         design["predictors"]["coffee.roast"]["allowed_values"] = ["light", "dark"]
@@ -232,7 +233,7 @@ class CategoryProcessingEngineTests(unittest.TestCase):
         product["information"]["alternate_roast"] = "Dark Roast"
         self.collect([product])
         copied = self.base / "coffee-profile"
-        shutil.copytree(self.profile, copied)
+        shutil.copytree(self.profile, copied, ignore=shutil.ignore_patterns("dataset-contract.json"))
         recipe_path = copied / "pipeline.json"
         recipe = json.loads(recipe_path.read_text())
         recipe["fields"].append({"attribute": "coffee.roast", "pointer": "/raw_record/information/alternate_roast"})
@@ -324,7 +325,7 @@ class CategoryProcessingEngineTests(unittest.TestCase):
                                   "url": "https://chocolate-shop.example.test/products/chocolate"}], "images": [],
         }
         self.collect([chocolate], category="chocolate")
-        self.build(profile=PLUGIN_ROOT / "profiles/chocolate")
+        self.build(profile=resolve_profile(PLUGIN_ROOT / "profiles/chocolate"))
         row = self.rows("products")[0]
         self.assertEqual(row["category"], "chocolate")
         self.assertEqual(len(row["attributes"]), 103)
@@ -334,12 +335,12 @@ class CategoryProcessingEngineTests(unittest.TestCase):
     def test_copied_plugin_processes_coffee_in_isolated_python_without_sibling_modules(self):
         self.collect([self.product()])
         copied = self.base / "moved-processing-plugin"
-        shutil.copytree(PLUGIN_ROOT, copied, ignore=shutil.ignore_patterns("__pycache__", "tests"))
+        shutil.copytree(PLUGIN_ROOT, copied, ignore=shutil.ignore_patterns("__pycache__", "tests", ".contract-cache"))
         destination = self.base / "isolated-silver"
         environment = dict(os.environ)
         environment.pop("PYTHONPATH", None)
         result = subprocess.run([sys.executable, "-I", "-B", str(copied / "cli.py"), "process",
-                                 "--archive-root", str(self.archive), "--profile", str(copied / "profiles/coffee"),
+                                 "--archive-root", str(self.archive), "--profile", str(self.profile), "--offline",
                                  "--output", str(destination)], cwd=self.base, env=environment,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=False)
         self.assertEqual(result.returncode, 0, result.stderr)
@@ -347,6 +348,33 @@ class CategoryProcessingEngineTests(unittest.TestCase):
         self.assertEqual(self.rows("products", output=destination)[0]["category"], "coffee")
         self.assertFalse((copied.parent / "category-research").exists())
         self.assertFalse((copied.parent / "scripts").exists())
+
+    def test_detached_plugin_resolves_pinned_coffee_from_explicit_offline_cache(self):
+        from category_processing.dataset_contracts import cache_directory, load_manifest
+        self.collect([self.product()])
+        copied = self.base / "detached-processing-plugin"
+        shutil.copytree(PLUGIN_ROOT, copied, ignore=shutil.ignore_patterns("__pycache__", "tests", ".contract-cache"))
+        cache = self.base / "portable-contract-cache"
+        reference = load_manifest(copied / "profiles/coffee/dataset-contract.json")
+        destination = cache_directory(reference, cache)
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copytree(self.profile, destination)
+        output = self.base / "offline-silver"
+        environment = dict(os.environ)
+        environment.pop("PYTHONPATH", None)
+        result = subprocess.run([sys.executable, "-I", "-B", str(copied / "cli.py"), "process",
+                                 "--archive-root", str(self.archive), "--category", "coffee",
+                                 "--contracts-cache", str(cache), "--offline", "--output", str(output)],
+                                cwd=self.base, env=environment, stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE, text=True, check=False)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(self.rows("products", output=output)[0]["category"], "coffee")
+        self.assertFalse((copied / ".contract-cache").exists())
+        manifest = json.loads((output / "manifest.json").read_text())
+        self.assertEqual(manifest["contract_source"]["type"], "hugging_face_dataset")
+        self.assertEqual(manifest["contract_source"]["repo_id"], reference["repo_id"])
+        self.assertEqual(manifest["contract_source"]["revision"], reference["revision"])
+        self.assertEqual(set(manifest["contract_source"]["paths"]), set(reference["files"]))
 
     def test_model_preparation_refuses_empty_eligible_rows_without_fake_artifacts(self):
         self.collect([self.product()])

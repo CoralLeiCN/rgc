@@ -12,12 +12,14 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 from chocolate_standardization.values import standardize_value, unknown_attribute, validate_product
+from dataset_contracts import resolve_contract_root
 
 
 class ChocolateStandardizedValueTests(unittest.TestCase):
     def setUp(self):
-        self.profile = json.loads((ROOT / "schemas/chocolate/profile.json").read_text())
-        self.mappings = json.loads((ROOT / "schemas/chocolate/source-mappings.json").read_text())
+        schema_root = resolve_contract_root(offline=True)
+        self.profile = json.loads((schema_root / "profile.json").read_text())
+        self.mappings = json.loads((schema_root / "source-mappings.json").read_text())
 
     def value(self, name, original, unit=None):
         return standardize_value(name, original, self.profile, self.mappings, unit)

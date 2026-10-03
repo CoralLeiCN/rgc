@@ -12,12 +12,13 @@ from chocolate_cleanup.adapters import extract_capture
 from chocolate_cleanup.core import aware_time, normalized, pointer_value, positive
 from chocolate_cleanup.deduplication import inside, json_bytes, digest
 from chocolate_model import ModelContractError, _predictor_value
+from dataset_contracts import SCHEMA_REFERENCE, resolve_contract_root
+import dataset_contracts as contract_module
 
 from .values import standardize_value, unknown_attribute, validate_product, validate_evidence, validate_attribute_contract
 
 
 ROOT = Path(__file__).resolve().parents[2]
-SCHEMA_ROOT = ROOT / "schemas/chocolate"
 SCHEMA_VERSION = "chocolate-schema-1"
 REVIEW_VERSION = "chocolate-schema-reviews-1"
 FEATURE_MAP = {
@@ -47,11 +48,27 @@ def sha256(path):
     return result.hexdigest()
 
 
-def load_contract(schema_root):
-    schema_root = Path(schema_root).resolve()
+def load_contract(schema_root=None, *, offline=False):
+    schema_root = resolve_contract_root(schema_root, offline=offline)
     paths = {name: schema_root / name for name in ("profile.json", "source-mappings.json", "model-design.json", "product.schema.json")}
     documents = {name: read_json(path) for name, path in paths.items()}
     profile, mappings, design = (documents[name] for name in ("profile.json", "source-mappings.json", "model-design.json"))
+    reference_path = schema_root / "dataset-contract.json"
+    reference = contract_module.load_manifest(reference_path) if reference_path.is_file() else None
+    if reference is None:
+        pinned_reference = contract_module.load_manifest(SCHEMA_REFERENCE)
+        if schema_root.resolve() == contract_module.cache_directory(pinned_reference, contract_module.SCHEMA_CACHE).resolve():
+            reference = pinned_reference
+    if reference is not None:
+        if set(reference["files"]) != set(paths) or reference["contract_set"] != "chocolate":
+            raise ValueError("The chocolate dataset reference must identify all four chocolate contracts.")
+        metadata = {"category": profile.get("category"), "market": profile.get("market"),
+                    "schema_version": profile.get("schema_version"), "attribute_count": profile.get("attribute_count"),
+                    "mapping_version": mappings.get("mapping_version"),
+                    "model_design_version": design.get("model_design_version")}
+        for name, value in metadata.items():
+            if reference.get(name) != value:
+                raise ValueError("Category contracts differ from dataset reference metadata: " + name)
     if any(doc.get("schema_version") != SCHEMA_VERSION for doc in (profile, mappings, design)):
         raise ValueError("Category contracts must agree on " + SCHEMA_VERSION)
     if documents["product.schema.json"]["properties"]["schema_version"].get("const") != SCHEMA_VERSION:
@@ -143,18 +160,21 @@ def selected_attribute(name, values, profile):
     return result
 
 
-def build_standardized_dataset(deduplicated_root, output, reviews=None, schema_root=SCHEMA_ROOT):
+def build_standardized_dataset(deduplicated_root, output, reviews=None, schema_root=None, offline=False):
     source = Path(deduplicated_root).expanduser().resolve()
     output = Path(output).expanduser().resolve()
     if inside(output, source) or inside(source, output):
         raise ValueError("Standardized output must not overlap the deduplicated input.")
-    profile, mappings, design, contract_hashes = load_contract(schema_root)
+    schema_root = resolve_contract_root(schema_root, offline=offline)
+    profile, mappings, design, contract_hashes = load_contract(schema_root, offline=offline)
     manifest, manifest_hash = verify_snapshot(source)
     source_report = read_json(source / "quality-report.json") if "quality-report.json" in manifest["managed_files"] else {}
     decisions = load_reviews(reviews)
     implementation_paths = [Path(__file__), Path(__file__).with_name("values.py"),
                             ROOT / "scripts/chocolate_cleanup/adapters.py", ROOT / "scripts/chocolate_cleanup/core.py",
-                            ROOT / "scripts/chocolate_cleanup/deduplication.py", ROOT / "scripts/chocolate_model.py"]
+                            ROOT / "scripts/chocolate_cleanup/deduplication.py", ROOT / "scripts/chocolate_model.py",
+                            ROOT / "scripts/dataset_contracts.py",
+                            ROOT / "plugins/category-processing/category_processing/dataset_contracts.py", SCHEMA_REFERENCE]
     implementation = {str(path.relative_to(ROOT)): sha256(path) for path in implementation_paths}
     version = "standardized-" + digest({"input_manifest": manifest_hash, "contracts": contract_hashes,
                                         "reviews": decisions, "implementation": implementation})[:24]
@@ -413,7 +433,7 @@ def build_standardized_dataset(deduplicated_root, output, reviews=None, schema_r
         raise ValueError("Review IDs do not resolve in this deduplicated dataset.")
     if verify_snapshot(source)[1] != manifest_hash:
         raise RuntimeError("Deduplicated snapshot changed during standardization.")
-    if load_contract(schema_root)[3] != contract_hashes or {str(path.relative_to(ROOT)): sha256(path) for path in implementation_paths} != implementation:
+    if load_contract(schema_root, offline=offline)[3] != contract_hashes or {str(path.relative_to(ROOT)): sha256(path) for path in implementation_paths} != implementation:
         raise RuntimeError("Standardization contracts or code changed during the build.")
     eligible = [row for row in candidates if row["model_eligible"]]
     if eligible:

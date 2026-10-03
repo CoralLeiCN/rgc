@@ -1,7 +1,20 @@
 # Profile contract
 
-Choose a supplied profile or copy a starter into a separately versioned profile
-directory. The five JSON files own separate decisions:
+Choose a supplied profile or resolve a packaged category with
+`category_processing.profiles.resolve_profile(category="coffee")`. Packaged
+references live in `profiles/<category>/dataset-contract.json`; their five JSON
+payloads live under `contracts/category-processing/<category>/` in the
+[Hugging Face dataset](https://huggingface.co/datasets/CoralLeiCN/rgc-collections).
+Each reference pins a full immutable commit revision, source paths, SHA-256 hashes
+and byte lengths. The portable resolver checks every file and rechecks any cache
+on use; it does not follow a mutable branch or repair corrupt cache content
+silently. `--contracts-cache` selects the cache, and `--offline` requires verified
+cached bytes without downloading.
+
+To extend a starter, copy its five verified payload files into a separately
+versioned custom profile directory, omitting `dataset-contract.json`. Keep the
+verified cache unchanged. A custom directory without a dataset reference retains
+local-only loading. The five JSON files own separate decisions:
 
 | File | Owns |
 | --- | --- |
@@ -21,7 +34,7 @@ Loading checks category/market constants and each attribute's declared type,
 unit, enum/list vocabulary and numeric bounds against both the nullable value
 branch and the known-status value condition in `product.schema.json`. Drift
 fails before publishing a snapshot. The runtime supports the explicit typed
-template used by the bundled validators; it rejects unsupported value-constraint
+template used by the pinned validators; it rejects unsupported value-constraint
 keywords rather than acting as a general JSON Schema executor.
 
 Selected numeric/categorical/presence predictors must use compatible profile

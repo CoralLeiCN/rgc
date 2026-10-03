@@ -8,6 +8,7 @@ import sys
 from tempfile import NamedTemporaryFile
 
 from .model import fit_encoder, split_by_family, transform_rows, validate_candidates
+from .profiles import resolve_profile
 from .review_batches import build_review_batches, render_summary
 from .tracking import compare_ledgers
 
@@ -156,7 +157,11 @@ def main(argv=None):
     commands = parser.add_subparsers(dest="command", required=True)
     process = commands.add_parser("process", help="Build a seller-specific silver snapshot using a category profile.")
     process.add_argument("--archive-root", type=Path, required=True)
-    process.add_argument("--profile", type=Path, required=True)
+    profile_selection = process.add_mutually_exclusive_group(required=True)
+    profile_selection.add_argument("--profile", type=Path, help="Custom profile directory or pinned reference directory.")
+    profile_selection.add_argument("--category", help="Packaged category whose contracts are pinned on Hugging Face.")
+    process.add_argument("--contracts-cache", type=Path, help="Verified contract cache (default: <plugin-root>/.contract-cache).")
+    process.add_argument("--offline", action="store_true", help="Require verified cached category contracts; never download.")
     process.add_argument("--output", type=Path, required=True)
     process.add_argument("--reviews", type=Path)
     for name, help_text in (("summarize", "Prepare a local mapping gap review packet."),
@@ -174,7 +179,9 @@ def main(argv=None):
             if (args.output / "manifest.json").exists():
                 previous_root, unused_manifest = verified_silver(args.output)
                 previous = _read_rows(previous_root / "processing-ledger.jsonl")
-            result = build_silver_dataset(args.archive_root, args.output, args.profile, reviews=args.reviews)
+            profile = resolve_profile(args.profile, category=args.category, cache_root=args.contracts_cache,
+                                      offline=args.offline)
+            result = build_silver_dataset(args.archive_root, args.output, profile, reviews=args.reviews)
             result = dict(result)
             result["processing_changes"] = compare_ledgers(_read_rows(args.output / "processing-ledger.jsonl"), previous)
             result["execution_strategy"] = "full_snapshot_rebuild"

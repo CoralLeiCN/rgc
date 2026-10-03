@@ -33,6 +33,9 @@ affected history while preserving raw evidence and immutable training snapshots.
  shops unique, and expose direct brand-store and retail data separately.
 - Keep source claims, derived interpretations, reviewed facts, and model inputs
  distinguishable. Unknown evidence cannot establish absence.
+- Store analytical contracts in the authoritative Hugging Face dataset; keep
+ immutable revision/hash manifests and human documentation in Git, with ignored
+ verified local caches.
 - Validate model support and uncertainty before supported price testing;
  regression associations do not establish causal effects.
 - Keep value-for-money scoring deferred pending the research in the canonical

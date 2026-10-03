@@ -15,16 +15,35 @@ eligibility, a processing ledger and grouped mapping-review artifacts in one
 silver dataset. The calling harness uses the skill and evidence batches to
 prepare mapping changes; there is no external dispatcher or scheduler.
 
-The package includes its engine, model-preparation helpers and chocolate/coffee
-profiles. It does not import repository sibling modules, require another plugin
-installation or fit a regression. Copy the whole package when moving it; run its
-CLI directly when native plugin installation is unavailable.
+The package includes its engine, model-preparation helpers and pinned references
+to chocolate/coffee contracts in the
+[Hugging Face dataset](https://huggingface.co/datasets/CoralLeiCN/rgc-collections).
+Category JSON payloads are dataset artifacts rather than Git content. The plugin
+uses a commit revision and per-file SHA-256/size checks, without repository sibling
+modules or another plugin installation. It does not fit a regression. Copy the
+whole package when moving it; run its CLI directly when native installation is
+unavailable.
 
 ```text
-python3 <plugin-root>/cli.py process --archive-root <collections-root> --profile <plugin-root>/profiles/chocolate --output <silver-root>
+python3 <plugin-root>/cli.py process --archive-root <collections-root> --category chocolate --output <silver-root>
+python3 <plugin-root>/cli.py process --archive-root <collections-root> --profile <custom-profile-folder> --output <silver-root>
 python3 <plugin-root>/cli.py summarize --silver-root <silver-root> --output <summary-output>
 python3 <plugin-root>/cli.py prepare-model --silver-root <silver-root> --output <model-preparation-root> --validation-fraction 0.2
 ```
+
+`--category chocolate` and `--category coffee` resolve the corresponding
+`profiles/<category>/dataset-contract.json` reference. `--profile` also accepts a
+reference directory, or a custom local directory containing the five contracts.
+The first packaged-profile resolution downloads its pinned bytes. Subsequent
+resolutions reverify the cache, including its reference marker; corrupt or
+inconsistent cached content fails explicitly. Processing reads local archives.
+
+The default cache is `<plugin-root>/.contract-cache`, excluded from Git. Select a
+writable location with `--contracts-cache <cache-root>` when the installed plugin
+is read-only. Add `--offline` to require a verified populated cache and prohibit
+downloads. A full custom profile without a dataset reference needs no network.
+Silver outputs preserve the five exact contract files and record their hashes,
+repository, immutable revision and reference fingerprint.
 
 Read the skill's references for the
 [processing/archive contract](skills/category-processing/references/processing-contract.md),
@@ -54,12 +73,12 @@ Run the bundled tests from the package root:
 python3 -B -m unittest discover -s tests -v
 ```
 
-All 64 bundled tests pass, including typed-contract drift and selected-model
-domain exclusion checks. A copied package ran with isolated Python without
-repository sibling modules; independent coffee processing/review/model-preparation
-and real chocolate preservation/hash/repeated-build checks passed. Skill structure
-validation passed. These checks establish package behavior; native installation
-in multiple harnesses remains unverified.
+The bundled tests cover typed-contract drift, selected-model domain exclusions,
+reference/cache routing and isolated copied-plugin execution. Category integration
+tests resolve the pinned contracts, requiring a populated default cache or access
+to the public dataset on their first run. Resolver unit tests use mocked downloads
+and synthetic references without category payload fixtures. These checks establish
+package behavior; native installation in multiple harnesses remains unverified.
 
 Dataset eligibility is separate from package correctness: unreviewed evidence and
 unresolved price basis remain excluded. Current real chocolate has mapping gaps

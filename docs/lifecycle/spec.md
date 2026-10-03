@@ -34,14 +34,17 @@ raw collection -> silver (deduplication + standardization + reviews/gates)
 
 Silver verifies raw index/history consistency, retains canonical source groups
 with unchanged captures and aliases, and applies the versioned profile,
-source-mapping, product-schema and model-design files in `schemas/chocolate/`.
+source-mapping, product-schema and model-design files pinned by
+`schemas/chocolate/dataset-contract.json`. The JSON bodies are authoritative in
+the Hugging Face dataset and downloaded into ignored verified caches; Git keeps
+only immutable revision/hash/version references and human documentation.
 It preserves original source references and unknown claims for future extensions.
 Separately persisted deduplicated and standardized datasets are not required.
 The earlier cleanup and standalone component CLIs remain compatibility/diagnostic
 helpers, described in their guides rather than additional canonical layers.
 
 The portable package keeps raw/silver responsibilities while supplying all of its
-runtime and five-contract profiles without sibling imports. Processing records
+runtime and five-contract dataset references without sibling imports. Processing records
 capture and rules fingerprints and groups evidenced mapping gaps. The calling
 harness proposes changes within the current task; profiles remain fixed per run,
 and accepted changes create a new snapshot. Current execution rebuilds fully;

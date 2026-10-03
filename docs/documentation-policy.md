@@ -16,20 +16,32 @@ The [repository instructions](../AGENTS.md) apply this policy to future work.
 | [Deduplication guide](chocolate-deduplication.md) | Standalone deduplication helper identity, snapshot outputs and CLI. | Shared deduplication identity, helper partitions/provenance or CLI changes; update the silver contract too. |
 | [Cleanup guide](chocolate-cleaning.md) | Earlier direct-from-raw compatibility cleanup and its distinct review contract. | That helper implementation, profile, review format or CLI changes; keep its compatibility relationship to silver accurate. |
 | [Chocolate schema guide](chocolate-schema.md) | Typed fields, standardization rules, evidence reviews, training handoff and insight interpretation within silver. | Chocolate schema, vocabulary, source mappings, review/eligibility, model design or related behavior changes. |
-| [Chocolate machine contracts](../schemas/chocolate/profile.json) | Executable field definitions and versioned rules. | Typed attributes, vocabulary, units, mapping behavior, record shape, feature selection, or model design changes. Update the affected contract files and versions together. |
+| [Chocolate dataset manifest](../schemas/chocolate/dataset-contract.json) | Immutable dataset revision, paths, hashes and version metadata for executable contracts stored in Hugging Face. | Typed attributes, vocabulary, units, mapping behavior, record shape, feature selection, or model design changes. Publish affected contracts and update the manifest and documented versions together. |
 | [README](../README) | Entry points, usable commands, and implementation overview. | A public entry point, layer, usable command, or implementation status changes. |
+| [Dataset contract guide](dataset-contracts.md) | Dataset ownership, manifest pins, cache/offline behavior and storage maintenance. | Reference format, resolver, cache behavior or contract publication workflow changes. |
 | [Lifecycle intent](lifecycle/intent.md) and [lifecycle specification](lifecycle/spec.md) | Short navigation views of canonical intention and specification. | Their summarized scope or status would become inaccurate. Keep detail in canonical documents. |
 | [Lifecycle plan](lifecycle/plan.md) | Implementation work, current status, risks, proof, and remaining work. | Every behavioral, schema, pipeline, or modeling change; update affected progress and proof in the same change. |
 
-The schema contract consists of `profile.json`, `source-mappings.json`,
-`product.schema.json`, and `model-design.json` under `schemas/chocolate/`.
-Generated output copies describe the exact build that produced them; edit the
-checked-in contracts and rebuild rather than editing generated copies.
-Portable profiles under `plugins/category-processing/profiles/<category>/` also
-include `pipeline.json`; their five contracts must agree on schema/catalog and
-have explicit mapping, model-design and recipe versions. Keep the portable guide's
-version table synchronized. Portable chocolate's stable seller envelope uses its
-own schema/design versions; do not rewrite established chocolate snapshots.
+The authoritative machine contracts are in the
+[Hugging Face dataset](https://huggingface.co/datasets/CoralLeiCN/rgc-collections).
+`contracts/chocolate/` contains `profile.json`, `source-mappings.json`,
+`product.schema.json` and `model-design.json`.
+`contracts/category-processing/<category>/` adds `pipeline.json` for each
+portable profile. Git retains `schemas/chocolate/dataset-contract.json` and
+`plugins/category-processing/profiles/<category>/dataset-contract.json`, with
+immutable dataset commit pins, per-file SHA-256 hashes and version metadata.
+Analytical contract bodies and generated output copies are not authoritative
+Git source. Runtime caches are ignored; dataset snapshots retain the exact
+contracts used by their builds.
+
+Publish changed contracts to a new immutable dataset revision before updating
+the manifest. Verify hashes and profile alignment, update affected semantic
+versions and documentation, then rebuild. A storage-only move preserves existing
+machine versions and bytes. The five portable contracts must agree on
+schema/catalog and have explicit mapping, model-design and recipe versions. Keep
+the portable guide's version table synchronized. Portable chocolate's stable
+seller envelope uses its own schema/design versions; do not rewrite established
+chocolate snapshots or edit generated copies.
 
 ## Mechanically required change coverage
 
@@ -39,7 +51,9 @@ documents when their meaning or public entry points are affected.
 
 | Changed paths | Required document updates |
 | --- | --- |
-| `scripts/build_chocolate_silver.py`, `scripts/chocolate_silver.py`, `schemas/chocolate/**`, `scripts/chocolate_standardization/**`, `scripts/standardize_chocolate_data.py`, `scripts/chocolate_model.py` | `docs/spec.md`, `docs/chocolate-schema.md`, `docs/chocolate-silver.md`, `docs/lifecycle/plan.md` |
+| `scripts/build_chocolate_silver.py`, `scripts/chocolate_silver.py`, `schemas/chocolate/**`, `scripts/chocolate_standardization/**`, `scripts/standardize_chocolate_data.py`, `scripts/chocolate_model.py`, `scripts/dataset_contracts.py`, `scripts/fetch_contracts.py` | `docs/spec.md`, `docs/chocolate-schema.md`, `docs/chocolate-silver.md`, `docs/lifecycle/plan.md` |
+| `scripts/dataset_contracts.py`, `scripts/fetch_contracts.py` | Also `docs/dataset-contracts.md` and `README`. |
+| `scripts/publish_contracts.py` | `docs/spec.md`, `docs/dataset-contracts.md`, `README`, `docs/lifecycle/plan.md` |
 | `scripts/chocolate_cleanup/**`, `scripts/clean_chocolate_data.py`, `scripts/deduplicate_chocolate_data.py` | `docs/spec.md`, `docs/chocolate-cleaning.md`, `docs/chocolate-deduplication.md`, `docs/chocolate-silver.md`, `docs/lifecycle/plan.md` |
 | `plugins/category-research/**`, excluding its tests | `docs/spec.md`, `plugins/category-research/README.md`, `docs/lifecycle/plan.md` |
 | `plugins/category-processing/**`, excluding its tests | `docs/spec.md`, `docs/category-processing.md`, `plugins/category-processing/README.md`, `docs/lifecycle/plan.md` |
@@ -60,6 +74,7 @@ documents when their meaning or public entry points are affected.
 5. Run the structural guard and relevant behavioral tests before finishing:
 
    ```sh
+   python3 -B scripts/fetch_contracts.py --all
    python3 -B scripts/check_documentation.py
    python3 -B -m unittest discover -s scripts/tests -v
    ```
@@ -81,9 +96,13 @@ contract/version alignment, and whether tracked or untracked behavioral changes
 have corresponding documentation updates. It cannot prove that prose is correct
 or that a source assertion was reviewed. Review the changed contracts and
 generated quality report for those questions.
-It also checks that both bundled portable profiles have aligned five-file
-schema/catalog contracts and documented schema/mapping/model-design/recipe
-versions, plus required package skill/reference links. Copied-package behavior
+It also checks that both pinned portable profiles have aligned five-file
+manifest references and documented schema/mapping/model-design/recipe versions,
+plus required package skill/reference links. Structural checking works offline
+in a clean clone: no live dataset access or downloaded schema is required.
+When cached contracts are available, the checker additionally verifies their
+hashes, versions and schema/catalog alignment; missing cache files are not
+missing repository source. Copied-package behavior
 and native client installation require their own verification.
 
 The [validation workflow](../.github/workflows/validation.yml) runs the guard and

@@ -14,9 +14,10 @@ and no regression is fitted.
 The package targets [Agent Plugins 1.0.0](https://agent-plugins.org/specification)
 with a root `plugin.json` (`category-processing`, version `0.1.0`) and an
 [Agent Skills](https://agentskills.io/specification) component. Its standard-library
-Python 3.9+ runtime, profiles and references are self-contained. Copying the
+Python 3.9+ runtime, profile manifests and references are self-contained. Copying the
 package does not require repository sibling modules, another plugin installation,
-network access, an MCP server or a task dispatcher. The collection plugin can
+an MCP server or a task dispatcher. Contract cache misses require downloading
+the pinned dataset files; verified cached contracts can be reused offline. The collection plugin can
 produce its raw input format, but any compatible producer may do so.
 
 ## Layer responsibilities and commands
@@ -75,7 +76,17 @@ records into an older snapshot or overwrite an immutable model-training dataset.
 
 A category profile consists of five aligned JSON contracts: `profile.json`,
 `source-mappings.json`, `product.schema.json`, `model-design.json` and
-`pipeline.json`. The recipe configures category/market, structured field pointers
+`pipeline.json`. Their authoritative storage is
+`contracts/category-processing/<category>/` in the
+[Hugging Face dataset](https://huggingface.co/datasets/CoralLeiCN/rgc-collections).
+The package tracks only the
+[chocolate manifest](../plugins/category-processing/profiles/chocolate/dataset-contract.json)
+and [coffee manifest](../plugins/category-processing/profiles/coffee/dataset-contract.json),
+with immutable dataset commits, per-file SHA-256 hashes and version metadata.
+The portable loader verifies files in a local ignored profile cache; it never
+substitutes the latest dataset revision for a pinned revision. The documentation
+guard checks manifests and documented versions offline, and validates cached
+files only when they are available. The recipe configures category/market, structured field pointers
 or the bundled chocolate adapter, source-role registry and price/quantity basis.
 It does not load arbitrary Python adapters. Read the
 [profile contract](../plugins/category-processing/skills/category-processing/references/profile-contract.md)
@@ -84,12 +95,12 @@ before extending one.
 Loading rejects disagreement between profile and validator category/market,
 attribute types, units, enum/list vocabularies or numeric bounds. Both nullable
 typed branches and known-status value conditions must match. The runtime supports
-the bundled explicit validator template and rejects unsupported value-constraint
+the explicit validator template and rejects unsupported value-constraint
 keywords; it is not a general JSON Schema executor. Selected model types/units
 must be compatible with the profile and declared vocabularies must stay within
 its catalog.
 
-| Bundled profile | Schema | Mappings | Model design | Pipeline recipe |
+| Pinned profile | Schema | Mappings | Model design | Pipeline recipe |
 | --- | --- | --- | --- | --- |
 | Chocolate/UK, 103 tracked attributes | `chocolate-processing-schema-1` | `chocolate-source-mappings-1` | `chocolate-processing-pricing-design-1` | `chocolate-processing-pipeline-1` |
 | Coffee/UK, 12 starter attributes | `coffee-schema-1` | `coffee-source-mappings-1` | `coffee-pricing-design-1` | `coffee-processing-pipeline-1` |

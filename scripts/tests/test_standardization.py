@@ -9,6 +9,7 @@ import shutil
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -20,6 +21,8 @@ from chocolate_cleanup.deduplication import build_deduplicated_dataset
 from chocolate_cleanup.core import pointer_value
 from chocolate_model import fit_encoder, transform_rows
 from chocolate_standardization.pipeline import build_standardized_dataset
+from dataset_contracts import resolve_contract_root
+import dataset_contracts as contract_module
 
 
 class ChocolateStandardizationTests(unittest.TestCase):
@@ -30,8 +33,9 @@ class ChocolateStandardizationTests(unittest.TestCase):
         self.archive = self.base / "collections"
         self.deduplicated = self.base / "deduplicated"
         self.output = self.base / "standardized"
-        self.profile = json.loads((ROOT / "schemas/chocolate/profile.json").read_text())
-        self.design = json.loads((ROOT / "schemas/chocolate/model-design.json").read_text())
+        self.schema_root = resolve_contract_root(offline=True)
+        self.profile = json.loads((self.schema_root / "profile.json").read_text())
+        self.design = json.loads((self.schema_root / "model-design.json").read_text())
 
     def product(self, listing="example", source="chocolate-shop", weight=200, price="04.00",
                 observed_at="2026-10-03T07:00:00Z"):
@@ -80,20 +84,32 @@ class ChocolateStandardizationTests(unittest.TestCase):
         return self.build()
 
     def build(self, reviews=None, output=None):
-        return build_standardized_dataset(self.deduplicated, output or self.output, reviews=reviews)
+        return build_standardized_dataset(self.deduplicated, output or self.output, reviews=reviews, offline=True)
 
     def test_valid_category_value_outside_selected_model_domain_is_excluded(self):
         self.prepare()
         copied = self.base / "restricted-model-contracts"
-        shutil.copytree(ROOT / "schemas/chocolate", copied)
+        shutil.copytree(self.schema_root, copied, ignore=shutil.ignore_patterns("dataset-contract.json"))
         path = copied / "model-design.json"
         design = json.loads(path.read_text())
         design["predictors"]["quantity.total_edible_weight_g"]["minimum"] = 1000
         path.write_text(json.dumps(design))
-        report = build_standardized_dataset(self.deduplicated, self.output, reviews=self.reviews(), schema_root=copied)
+        report = build_standardized_dataset(self.deduplicated, self.output, reviews=self.reviews(),
+                                            schema_root=copied, offline=True)
         self.assertEqual(report["counts"]["eligible_model_inputs"], 0)
         self.assertEqual(self.rows("products")[0]["attributes"]["quantity.total_edible_weight_g"]["value"], 200)
         self.assertIn("model_predictor_outside_design_domain:quantity.total_edible_weight_g", self.rows("training-candidates")[0]["exclusion_reasons"])
+
+    def test_unavailable_pinned_contract_cache_prevents_output_writes(self):
+        self.collect([self.product()])
+        build_deduplicated_dataset(self.archive, self.deduplicated)
+        before = self.snapshot(self.deduplicated)
+        with patch.object(contract_module, "SCHEMA_CACHE", self.base / "missing-contract-cache"):
+            with patch("category_processing.dataset_contracts._download", side_effect=AssertionError("Offline builds must not fetch contracts")):
+                with self.assertRaisesRegex(FileNotFoundError, "not cached"):
+                    self.build()
+        self.assertFalse(self.output.exists())
+        self.assertEqual(self.snapshot(self.deduplicated), before)
 
     def rows(self, name="products", directory=None):
         return [json.loads(line) for line in

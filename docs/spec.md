@@ -256,11 +256,17 @@ page/image capture.
 
 ### 3.1.1 Public dataset publication policy
 
-Public dataset uploads use the versioned `rgc-text-evidence-1` export policy.
+Raw collection uploads use the versioned `rgc-text-evidence-1` export policy.
 This policy applies to every category/market under `data/collections/`, including
 future studies; chocolate and the UK are examples, not export filters. Public
 publication is a filtered derivative of the local raw archive. Local image and
 source preservation requirements in section 3.1 continue to apply.
+
+The Hugging Face dataset also hosts separately published silver snapshots and
+analytical contracts. [Dataset contract storage](dataset-contracts.md) defines
+their immutable references and cache/publication behavior. Publishing contracts
+preserves existing raw-export and silver files, and does not rebuild silver or
+establish reviewed/model-ready observations.
 
 | Material | Publication rule |
 | --- | --- |
@@ -483,14 +489,14 @@ sections 3.2–5 before a model release.
 
 #### Defined chocolate schema inside silver
 
-The initial schema is `chocolate-schema-1`, implemented in
-[schemas/chocolate/profile.json](../schemas/chocolate/profile.json).
-[source-mappings.json](../schemas/chocolate/source-mappings.json) defines source
-aliases and normalization rules;
-[product.schema.json](../schemas/chocolate/product.schema.json) defines the
-standardized product shape; and
-[model-design.json](../schemas/chocolate/model-design.json) defines the initial
-training and insight contract. The
+The initial schema is `chocolate-schema-1`. Its `profile.json`,
+`source-mappings.json`, `product.schema.json` and `model-design.json` are
+authoritative under `contracts/chocolate/` in the
+[Hugging Face dataset](https://huggingface.co/datasets/CoralLeiCN/rgc-collections).
+The small [dataset manifest](../schemas/chocolate/dataset-contract.json) pins an
+immutable dataset commit, every file's SHA-256 and the contract versions.
+These files define the tracked attributes, source aliases/normalization,
+standardized shape and initial training/insight contract respectively. The
 [schema guide](chocolate-schema.md) documents their application and extension.
 
 The schema tracks over 100 attributes across identity, composition, dietary claims,
@@ -502,7 +508,7 @@ independent predictors.
 
 Profile/validator attribute types, units, enum/list vocabularies and numeric
 bounds must agree in nullable and known-status value branches. The runtimes
-support the explicit bundled typed template and reject unsupported value
+support the explicit typed template and reject unsupported value
 constraints; they do not execute arbitrary JSON Schema. A known category-valid
 value outside the selected model domain remains in silver, with its candidate
 excluded as `model_predictor_outside_design_domain:<attribute>` rather than
@@ -536,8 +542,8 @@ raw-to-canonical aliases, evidence-linked assertions, price observations,
 candidate training rows, eligible model inputs, review items, quality and
 reproducibility reports, and copies of the exact contracts used.
 Build-specific field coverage, source coverage, and exclusion reasons belong in
-the quality report. Schema changes must update the applicable contracts,
-versions, [intention](intention.md) when scope changes, this specification,
+the quality report. Schema changes must publish the applicable dataset contracts
+and update their manifest pins, versions, [intention](intention.md) when scope changes, this specification,
 schema/silver guides, and lifecycle plan under the
 [documentation policy](documentation-policy.md).
 
@@ -559,7 +565,12 @@ not an instruction to fit a model.
 The self-contained [category-processing plugin](../plugins/category-processing/README.md)
 packages the post-collection workflow under Agent Plugins 1.0.0. Python 3.9+
 standard-library processing accepts a compatible raw category/market archive and
-five aligned profile contracts. It verifies raw evidence, deduplicates exact
+five aligned profile contracts resolved from an immutable dataset manifest.
+Portable manifests live under `plugins/category-processing/profiles/<category>/`;
+the authoritative JSON files are under
+`contracts/category-processing/<category>/` in the same Hugging Face dataset.
+Downloaded contracts occupy ignored caches. A cache miss requires network
+access; verified cached contracts support offline reuse. It verifies raw evidence, deduplicates exact
 seller identities, standardizes typed data, normalizes observations, applies
 reviews/eligibility and writes one silver dataset. No repository sibling imports
 or collection-plugin installation are required. Chocolate and a small structured
@@ -670,6 +681,13 @@ sales-weighted market average.
 
 ## 5. Pricing regression
 
+The [UK chocolate model design](chocolate-modeling-design.md) consolidates the
+initial cohort, baseline, hedonic and LightGBM model architecture, feature handling,
+validation, uncertainty, and prediction contract. The
+[LightGBM and explanation design](analysis/lightgbm-shap-explanation-design.md)
+specifies TreeSHAP and grounded AI interpretation. These remain designs; no
+pricing model has been fitted.
+
 ### 5.1 Initial model proposal
 
 Start with a hedonic regression: relate observed prices to measured product
@@ -695,6 +713,17 @@ quantity/size terms for each category. Add interactions only when there is
 adequate support and an explicit reason. Compare against a simple category/group
 baseline and keep the formula interpretable.
 
+Treat retailer as an explicit pricing context. Compare the same reviewed
+variant across retailers on consistent date, channel, tax, membership, and
+promotion bases to distinguish retailer differences from assortment differences.
+Use retailer fixed effects in the hedonic models and supported interactions
+when retailer differences vary by product profile. The UK chocolate design
+includes a matched-variant retailer diagnostic and retailer-specific validation
+and prediction intervals. Report conditional retailer price associations;
+different target audiences are a hypothesis requiring additional shopper or
+choice evidence. An unseen retailer has no supported coefficient until evidence
+collection, fitting, and validation establish its domain.
+
 Specify reference levels for categorical features. Review rank deficiency,
 correlation, sparse levels, influential observations, residual behavior, and
 stability across sources and reasonable model choices. Account for dependence
@@ -706,14 +735,26 @@ Applying it to UK chocolate is this specification's proposal and requires its ow
 validation.
 
 The initial chocolate feature selection and preprocessing contract is recorded
-in [model-design.json](../schemas/chocolate/model-design.json), using the same
+in dataset `contracts/chocolate/model-design.json`, pinned by the
+[dataset manifest](../schemas/chocolate/dataset-contract.json), using the same
 typed schema as standardization. The broad tracking schema and the selected
 predictors serve different purposes: retain useful evidence even when a field is
 excluded from the initial model because it is sparse, redundant, unsupported,
 or descriptive. Save the actual fitted feature list, unknown handling,
 categorical references, numeric scaling, split membership, and supported ranges
 with each future model version. Current standardization does not fit regression
-coefficients or establish a price premium.
+coefficients or establish a price premium. This is the current executable
+preparation contract. The consolidated research design proposes a subsequent
+version with separate brand/no-brand models, optional-feature handling and
+calibration; existing preparation commands do not implement those extensions.
+
+The proposed model comparison includes LightGBM candidates with and without
+brand, trained on the same log-price target, reviewed features, retailer
+contexts, family weights, and grouped splits
+as their hedonic comparators. Select settings and the prediction champion using
+fitting-partition validation, then freeze each model before separate calibration
+and final testing. Retain hedonic models for coefficient comparisons. Nonlinear
+predictions do not resolve confounded attributes or unsupported retailers.
 
 ### 5.2 Feature contributions
 
@@ -741,6 +782,20 @@ If two attributes cannot be distinguished in the data, say so. A Fairtrade term
 may capture correlated brand, origin, quality, or retail positioning that the
 dataset does not adequately measure.
 
+For LightGBM, use version-verified exact TreeSHAP to explain raw log-price output.
+Its base value plus signed contributions must numerically reconstruct the same
+frozen prediction and tree count. Contributions describe allocation relative to
+the model explanation reference; they are not additive GBP amounts, causal
+premiums, or uncertainty intervals. Keep full-prediction scenario contrasts
+separate from attribution.
+
+An AI narrative may interpret a validated packet of predictions, SHAP values,
+feature evidence, and support limits. Deterministic code owns arithmetic; require
+traceable claims and validate references, numbers, directions, and meaning.
+Use a fixed template when validation fails. Correlated retailer/brand/claims and
+missing evidence must retain their limitations; SHAP does not establish shopper
+segments, quality, demand, or optimal price.
+
 ### 5.3 Validation and model release
 
 Split by product family so repeated retailer listings, duplicate observations,
@@ -759,8 +814,9 @@ baseline and report errors by supported group, size, brand, and retailer where
 the sample permits. A high training R-squared is not a release criterion.
 
 Exponentiating a log prediction does not automatically produce an expected
-arithmetic price. State whether the output is a median or mean estimate; a mean
-requires a justified retransformation adjustment and original-scale validation.
+arithmetic price. Label the default exponentiated log prediction as a geometric
+price benchmark. A median claim requires supporting assumptions; a mean requires
+a justified retransformation adjustment and original-scale validation.
 Use prediction intervals for a new product, not only coefficient confidence
 intervals.
 
@@ -904,7 +960,7 @@ category and plugin conformance scenarios apply across supported studies.
 | A schema, mapping, pricing gate, or model interpretation changes. | Update the affected machine contracts, version references, specification, schema/silver guides, and lifecycle plan together; run the documentation drift check. |
 | A study uses a category whose comparison basis is price per item. | Preserve its original quantities and prices during collection; derive its analytical profile without requiring cocoa percentage, edible weight, or GBP per 100 g. |
 | Another category is added. | Reuse the minimal collection/evidence envelope, then derive its own analytical profile, dataset, and validated model domain from collected information. |
-| Any category is published as a public dataset. | Apply `rgc-text-evidence-1`: include original product records, text evidence, history, catalogues, collection reports, and coverage; omit image bytes, transfer caches, and runtime files while retaining metadata and explicit omission manifests. |
+| A category's raw archive is published as a public dataset. | Apply `rgc-text-evidence-1`: include original product records, text evidence, history, catalogues, collection reports, and coverage; omit image bytes, transfer caches, and runtime files while retaining metadata and explicit omission manifests. |
 | A binary image is stored with a text-like filename. | Exclude its bytes from public publication and record the reason; keep the original local evidence unchanged. |
 | A public record references an omitted image or cache file. | Preserve the historical reference and provide its omission entry; do not claim the file is downloadable or that local archive verification verifies the public subset. |
 | The same study request and evidence fixture are supplied through two supported harness adapters. | Both return valid collection envelopes and preserved raw bundles with compatible provenance meanings, original image/page handling, and explicit missingness; arbitrary source-specific fields remain supported. |

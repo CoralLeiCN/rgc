@@ -13,6 +13,59 @@ CONTRACT_FILES = ("profile.json", "source-mappings.json", "model-design.json", "
 TYPES = {"string", "number", "integer", "boolean", "enum", "string_list"}
 SCOPES = {"product", "ingredient", "brand", "packaging", "packaging_component", "observation"}
 ANNOTATIONS = {"title", "description", "$comment", "examples"}
+PLUGIN_ROOT = Path(__file__).resolve().parents[1]
+PROFILE_REFERENCE = "dataset-contract.json"
+
+
+def resolve_profile(profile_root=None, *, category=None, cache_root=None, offline=False):
+    """Materialize a pinned packaged profile or retain an explicit custom directory.
+
+    A dataset reference resolves to verified pinned bytes. Materialized profile
+    directories are reverified; custom directories retain local-only behavior.
+    """
+    if (profile_root is None) == (category is None):
+        raise ValueError("Supply exactly one profile directory or packaged category.")
+    if category is not None:
+        if not isinstance(category, str) or re.fullmatch(r"[a-z][a-z0-9_-]*", category) is None:
+            raise ValueError("Packaged category must be a simple category identifier.")
+        root = PLUGIN_ROOT / "profiles" / category
+        if not (root / PROFILE_REFERENCE).is_file():
+            raise ValueError("Unknown packaged category: " + category)
+    else:
+        requested_root = Path(profile_root).expanduser().absolute()
+        root = requested_root.resolve()
+        if requested_root.is_symlink() and (root / PROFILE_REFERENCE).is_file():
+            raise ValueError("Pinned category profile directory cannot be a symlink.")
+    reference = root / PROFILE_REFERENCE
+    if reference.is_file():
+        from .dataset_contracts import load_manifest, resolve_contracts, verify_contract_directory
+        manifest = load_manifest(reference)
+        if set(manifest["files"]) != set(CONTRACT_FILES):
+            raise ValueError("A category processing profile reference requires all five contracts.")
+        if manifest["contract_set"] != "category-processing/" + manifest["category"]:
+            raise ValueError("Category processing reference category and contract set disagree.")
+        if category is not None and manifest["category"] != category:
+            raise ValueError("Packaged category differs from its dataset reference: " + category)
+        if any((root / name).exists() for name in CONTRACT_FILES):
+            verify_contract_directory(manifest, root)
+            return root
+        cache = PLUGIN_ROOT / ".contract-cache" if cache_root is None else Path(cache_root).expanduser().absolute()
+        return resolve_contracts(reference, cache, offline=offline)
+    return root
+
+
+def profile_provenance(profile_root):
+    """Describe the contract source without replacing exact contract hashes."""
+    root = Path(profile_root).expanduser().resolve()
+    reference = root / PROFILE_REFERENCE
+    if not reference.is_file():
+        return {"type": "local_profile"}
+    from .dataset_contracts import load_manifest
+    manifest = load_manifest(reference)
+    return {"type": "hugging_face_dataset", "repo_id": manifest["repo_id"],
+            "revision": manifest["revision"], "contract_set": manifest["contract_set"],
+            "reference_sha256": sha256(reference),
+            "paths": {name: metadata["path"] for name, metadata in manifest["files"].items()}}
 
 
 def _value_contract(name, definition, schema):
@@ -61,7 +114,7 @@ def validate_attribute_contract(name, definition, schema):
     """Reject profile/validator drift before a derived snapshot can be published.
 
     The portable runtime supports explicit nullable typed value branches and a
-    known-status conditional, as used by the bundled profile validators. This
+    known-status conditional, as used by the pinned profile validators. This
     checks their declared semantics without claiming a general JSON Schema engine.
     """
     if not isinstance(schema, dict) or not isinstance(schema.get("properties"), dict):
@@ -93,11 +146,22 @@ def _pointer(value, label):
 
 
 def load_profile(profile_root):
-    root = Path(profile_root).expanduser().resolve()
+    root = resolve_profile(profile_root)
     documents = {name: read_json(root / name) for name in CONTRACT_FILES}
     if any(not isinstance(doc, dict) for doc in documents.values()):
         raise ValueError("Category contracts must be JSON objects.")
     profile, mappings, design, validator, recipe = (documents[name] for name in CONTRACT_FILES)
+    reference = root / PROFILE_REFERENCE
+    if reference.is_file():
+        from .dataset_contracts import load_manifest
+        manifest = load_manifest(reference)
+        declared = {"category": profile.get("category"), "market": profile.get("market"),
+                    "schema_version": profile.get("schema_version"), "mapping_version": mappings.get("mapping_version"),
+                    "model_design_version": design.get("model_design_version"),
+                    "pipeline_version": recipe.get("pipeline_version"), "attribute_count": profile.get("attribute_count")}
+        for key, value in declared.items():
+            if manifest.get(key) != value:
+                raise ValueError("Category contracts differ from dataset reference metadata: " + key)
     for key in ("category", "market"):
         value = profile.get(key)
         if not isinstance(value, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]*", value) or value in (".", ".."):

@@ -25,8 +25,8 @@ evaluation, and a validated pricing model remain outstanding.
 
 | Work | Files | Status |
 | --- | --- | --- |
-| Define typed chocolate attributes, vocabularies, units, evidence states, and record shape. | `schemas/chocolate/profile.json`, `schemas/chocolate/product.schema.json` | Implemented initial schema; extraction review remains. |
-| Define source-mapping and model-training/interpretation contracts. | `schemas/chocolate/source-mappings.json`, `schemas/chocolate/model-design.json`, `scripts/chocolate_model.py` | Implemented contracts and preparation helpers; no regression fitted. |
+| Define typed chocolate attributes, vocabularies, units, evidence states, and record shape. | Dataset `contracts/chocolate/`, pinned by `schemas/chocolate/dataset-contract.json` | Implemented initial schema; extraction review remains. |
+| Define source-mapping and model-training/interpretation contracts. | Pinned dataset contracts and `scripts/chocolate_model.py` | Implemented contracts and preparation helpers; no regression fitted. |
 | Combine raw verification, exact seller deduplication, standardization, price normalization and review/eligibility in silver. | `scripts/build_chocolate_silver.py`, `scripts/chocolate_silver.py`, shared processing components, `scripts/tests/test_silver.py` | Implemented; real build, preservation, contracts, hashes and complete test verification passed. |
 | Document raw/silver responsibilities, schema and training boundaries, canonical commands and compatibility helpers. | `docs/intention.md`, `docs/spec.md`, `docs/chocolate-silver.md`, `docs/chocolate-schema.md`, compatibility guides, `README`, lifecycle views | Implemented; canonical commands, contract ownership and documentation checks verified. |
 | Enforce same-change documentation maintenance including silver behavior. | `AGENTS.md`, `docs/documentation-policy.md`, `scripts/check_documentation.py`, `.github/workflows/validation.yml`, and tests | Implemented; silver guide included in required ownership and drift checks. |
@@ -34,6 +34,8 @@ evaluation, and a validated pricing model remain outstanding.
 | Record capture/rules fingerprints, grouped mapping gaps and explicit mapping-maintenance decisions. | Processing ledger, batch/summary helpers, skill references | Implemented full-rebuild ledger/batches and current-task guidance; no dispatcher, incremental cache or automatic migration. |
 | Prepare generic family-held-out model inputs and frozen training-only encoders. | Portable model helpers and `prepare-model` CLI | Implemented; positive reviewed preparation and exclusion/failure gates verified, no regression fitted. |
 | Reject typed profile/validator drift and retain category-valid values outside selected model domains. | Portable profile loader, both standardization pipelines and regression tests | Implemented and verified by final prelanding suite/corpus checks. Supported validator template is explicit, not arbitrary JSON Schema execution. |
+| Consolidate supermarket price models, retailer comparisons, and LightGBM/SHAP/AI explanation requirements. | `docs/chocolate-modeling-design.md`, `docs/analysis/lightgbm-shap-explanation-design.md` | Proposed research design; current executable preparation contracts have not been migrated and no model has been fitted. |
+| Move analytical contract bodies to the dataset, retaining immutable references and verified ignored caches. | Three `dataset-contract.json` manifests, resolver/fetch/publication helpers, `docs/dataset-contracts.md` | Published and byte-verified; original contract bodies removed from the working tree, with offline caches and both processing pipelines verified. |
 
 ## Risks and controls
 
@@ -49,6 +51,56 @@ remain retained and excluded from the initial model. Group related designs
 across seller records in validation to avoid repeated-product leakage.
 
 ## Proof
+
+Analytical-contract storage uses the authoritative Hugging Face
+dataset `CoralLeiCN/rgc-collections`. Git keeps three small immutable-revision
+manifests and per-file hashes; existing schema/mapping/model/recipe versions and
+contract bytes are preserved. Loaders materialize verified ignored caches and
+retain exact contract copies/provenance in generated snapshots. The
+documentation guard must pass offline without cached contracts, reject malformed
+pins and documentation-version drift, and verify any cached bytes and complete
+cached schema/profile alignment. Verify this migration with:
+
+```sh
+python3 -B scripts/check_documentation.py
+python3 -B -m unittest discover -s scripts/tests -p test_documentation.py -v
+```
+
+Publication completed on 2026-10-03 at dataset commit
+`d4ebef3df5ac17145e8dbd2f8a7ae2b10c0afe70`. All 14 original contract payloads,
+the new contract index and the updated dataset card were downloaded from that
+immutable revision and verified byte for byte. Comparing its remote tree with
+`1ff72d7d1d0611ac134adfe08e82b77d99e6117a` confirmed all 29 existing files
+apart from the updated dataset card retained their object identifiers, sizes
+and LFS metadata, including the raw export and published silver files.
+
+The 14 original payload files were removed from the working tree after verified
+publication. `python3 -B scripts/fetch_contracts.py --all --offline` verified all
+three cached sets without those repository payloads. All 168 repository script
+tests, 75 processing-plugin tests and 13 collection-plugin tests passed (256
+total). Runtime checks cover missing/corrupt pinned caches, explicit custom
+contracts, snapshot copying/provenance and isolated offline use of a copied
+portable package. This migration preserves contract semantics and does not
+rebuild local silver or fit any model.
+
+Documentation migration verification passed: the full same-change guard and
+structural-only guard both passed, all 30 documentation tests passed, and scoped
+`git diff --check` passed. Tests establish clean-clone offline checking without
+cached schemas, immutable pin/hash validation, documented-version drift,
+optional partial-cache reuse, cache-marker/hash rejection, and complete-cache
+catalog/version checks. Tests use small temporary fixtures rather than retaining
+the authoritative analytical payloads in Git. No local silver dataset was rebuilt
+by these checks.
+
+The local integration of the consolidated research design with the latest
+processing implementation preserves the active contracts and distinguishes
+proposed extensions in the specification, schema/silver guides and design.
+Verify this documentation integration with:
+
+```sh
+python3 -B scripts/check_documentation.py
+python3 -B -m unittest discover -s scripts/tests -p test_documentation.py -v
+```
 
 Portable package verification uses its own tests, copied-package checks, a
 structured second-category fixture, evidence-preservation checks and the

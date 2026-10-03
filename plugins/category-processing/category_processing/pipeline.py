@@ -13,7 +13,7 @@ from .archive import (ARCHIVE_VERSION, aware_time, confirm_raw_snapshot,
                       deduplicate_archive, digest, inside, json_bytes,
                       load_raw_archive, normalized_price, pointer_value,
                       positive, read_json, sha256)
-from .profiles import CONTRACT_FILES, load_profile
+from .profiles import CONTRACT_FILES, load_profile, profile_provenance, resolve_profile
 from .model import ModelContractError, _predictor_value
 from .values import standardize_value, unknown_attribute, validate_evidence, validate_product
 
@@ -115,12 +115,13 @@ def build_silver_dataset(archive_root, output, profile_root, reviews=None):
     """
     source = Path(archive_root).expanduser().resolve()
     output = Path(output).expanduser().resolve()
-    profile_root = Path(profile_root).expanduser().resolve()
+    profile_root = resolve_profile(profile_root)
     if inside(output, source) or inside(source, output):
         raise ValueError("Silver output must be separate from the raw archive (no overlap).")
     if inside(output, profile_root) or inside(profile_root, output):
         raise ValueError("Silver output must be separate from the category profile.")
     profile, mappings, design, recipe, contracts = load_profile(profile_root)
+    contract_source = profile_provenance(profile_root)
     category, market, schema = profile["category"], profile["market"], profile["schema_version"]
     decisions = _reviews(reviews, recipe)
     implementation = implementation_hashes()
@@ -455,6 +456,7 @@ def build_silver_dataset(archive_root, output, profile_root, reviews=None):
                 "source_layer": "raw_collections", "source_archive_format": ARCHIVE_VERSION,
                 "input_reference_base": "supplied raw collections root", "inputs": archive["inputs"],
                 "input_inventory": archive["initial_locks"], "contract_sha256": contracts,
+                "contract_source": contract_source,
                 "implementation_sha256": implementation, "processing_fingerprint": processing_fingerprint,
                 "reviews": decisions, "deduplication": deduplication,
                 "evidence_reference_base": "capture IDs and JSON pointers resolve in source-listings.jsonl; original artifact/history paths resolve against the supplied raw collections root",
@@ -462,7 +464,8 @@ def build_silver_dataset(archive_root, output, profile_root, reviews=None):
     files["manifest.json"] = json_bytes(manifest)
     _preflight(output, files)
     confirm_raw_snapshot(archive)
-    if implementation_hashes() != implementation or load_profile(profile_root)[4] != contracts:
+    if (implementation_hashes() != implementation or load_profile(profile_root)[4] != contracts
+            or profile_provenance(profile_root) != contract_source):
         raise RuntimeError("Processing implementation or category contracts changed during the build.")
     _publish(output, files)
     return report

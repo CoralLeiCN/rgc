@@ -16,10 +16,19 @@ and a fitted/validated pricing model remain outstanding.
 
 | Contract | Version | Responsibility |
 | --- | --- | --- |
-| [profile.json](../schemas/chocolate/profile.json) | `chocolate-schema-1` | Attribute types, units, vocabularies, scope, qualifiers, model roles, standardization rules, and missingness. |
-| [source-mappings.json](../schemas/chocolate/source-mappings.json) | `chocolate-source-mappings-1` | Recognized source aliases, conversion bases, and source-scope rules. |
-| [product.schema.json](../schemas/chocolate/product.schema.json) | `chocolate-schema-1` | Required standardized product envelope and typed attribute objects. |
-| [model-design.json](../schemas/chocolate/model-design.json) | `chocolate-pricing-design-1` | Selected predictors, target, eligibility, preprocessing, validation, and insight requirements. |
+| `profile.json` | `chocolate-schema-1` | Attribute types, units, vocabularies, scope, qualifiers, model roles, standardization rules, and missingness. |
+| `source-mappings.json` | `chocolate-source-mappings-1` | Recognized source aliases, conversion bases, and source-scope rules. |
+| `product.schema.json` | `chocolate-schema-1` | Required standardized product envelope and typed attribute objects. |
+| `model-design.json` | `chocolate-pricing-design-1` | Selected predictors, target, eligibility, preprocessing, validation, and insight requirements. |
+
+These four files are authoritative under `contracts/chocolate/` in the
+[Hugging Face dataset](https://huggingface.co/datasets/CoralLeiCN/rgc-collections).
+The checked-in [dataset manifest](../schemas/chocolate/dataset-contract.json)
+pins the immutable dataset commit, file paths, SHA-256 hashes and version
+metadata. Runtime loading verifies downloaded bytes and stores them under
+ignored `data/contract-cache/`. Git does not contain the analytical JSON bodies.
+The documentation guard validates manifest pins and documented versions offline;
+it validates cached contracts when present, without downloading them.
 
 Machine contracts own the complete field list and precise allowed values. This
 guide explains their intent and use; it does not define a competing field list.
@@ -27,7 +36,7 @@ The [project specification](spec.md) owns cross-layer and release requirements.
 
 Loading rejects drift between each profile attribute and the product validator's
 type, unit, enum/list vocabulary and numeric bounds in both nullable and
-known-status value branches. The runtime supports the explicit bundled template;
+known-status value branches. The runtime supports the explicit typed template;
 unsupported value-constraint keywords fail rather than being silently ignored.
 It does not implement a general JSON Schema executor.
 
@@ -209,6 +218,12 @@ confirmed. Inspect attribute review states and `model_eligible` with its
 
 ## Pricing-model handoff and insights
 
+This section describes the current `chocolate-pricing-design-1` preparation
+contract. The [consolidated pricing research design](chocolate-modeling-design.md)
+proposes a subsequent model comparison, optional-feature policy and calibration
+workflow. It requires versioned implementation alignment before preparation can
+use those extensions; existing contracts and snapshots retain their own rules.
+
 The initial target is natural-log regular consumer GBP per 100 g:
 
 ```text
@@ -291,8 +306,9 @@ and the [specification's release gates](spec.md) pass.
 
 1. Inspect an original capture and retain the unfamiliar statement/evidence.
 2. Add or amend typed definitions, allowed values, source aliases, scope and unit
-  rules in the checked-in contracts; bump affected version identifiers when
-  semantics change.
+  rules in a local working copy of the dataset contracts; bump affected version
+  identifiers when semantics change. Publish the revised contracts to a new
+  immutable dataset revision and update the checked-in manifest pins/hashes.
 3. Implement evidence-scoped extraction/validation and add tests for the actual
   ambiguity or conversion, including unknown/conflict behavior where relevant.
 4. Rebuild silver and inspect coverage, exclusions and review changes. Leave

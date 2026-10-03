@@ -59,6 +59,14 @@ conflict states, versioned source mappings, and evidence references to standardi
 the information consistently. Extend the schema as evidence reveals additional
 useful information without rewriting original source material.
 
+Keep analytical schemas, mappings, validators, model designs and processing
+recipes in the authoritative
+[Hugging Face dataset](https://huggingface.co/datasets/CoralLeiCN/rgc-collections).
+Git retains human documentation and small manifests pinning an immutable
+dataset commit and each contract's SHA-256. Downloaded contracts are ignored
+local caches; moving storage must preserve existing contract versions and
+original evidence.
+
 Package the whole post-collection methodology as a standalone category-processing
 agent plugin, separate from the raw collection plugin. Include the processing
 core, category profiles, evidence reports, mapping-maintenance skill and

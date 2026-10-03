@@ -6,7 +6,8 @@ from pathlib import Path
 from tempfile import NamedTemporaryFile, TemporaryDirectory
 
 from chocolate_cleanup.deduplication import build_deduplicated_dataset, digest, inside, json_bytes
-from chocolate_standardization.pipeline import SCHEMA_ROOT, build_standardized_dataset, read_json, sha256
+from chocolate_standardization.pipeline import build_standardized_dataset, read_json, sha256
+from dataset_contracts import resolve_contract_root
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -16,6 +17,8 @@ IMPLEMENTATION_FILES = (
     "scripts/chocolate_cleanup/sources.py", "scripts/chocolate_cleanup/adapters.py",
     "scripts/chocolate_cleanup/core.py", "scripts/chocolate_standardization/pipeline.py",
     "scripts/chocolate_standardization/values.py", "scripts/chocolate_model.py",
+    "scripts/dataset_contracts.py", "plugins/category-processing/category_processing/dataset_contracts.py",
+    "schemas/chocolate/dataset-contract.json",
 )
 
 
@@ -52,7 +55,7 @@ def table_bytes(path, version, source_version):
     return b"".join(lines)
 
 
-def build_silver_dataset(archive_root, output, reviews=None, schema_root=SCHEMA_ROOT):
+def build_silver_dataset(archive_root, output, reviews=None, schema_root=None, offline=False):
     """Deduplicate seller listings, standardize attributes, and gate model inputs.
 
     Intermediate tables are temporary implementation details. Published evidence
@@ -62,13 +65,15 @@ def build_silver_dataset(archive_root, output, reviews=None, schema_root=SCHEMA_
     output = Path(output).expanduser().resolve()
     if inside(output, source) or inside(source, output):
         raise ValueError("Silver output must be separate from the raw archive (no overlap).")
+    schema_root = resolve_contract_root(schema_root, offline=offline)
     initial_inventory = inventory(source)
     implementation = implementation_hashes()
     with TemporaryDirectory(prefix="chocolate-silver-") as temporary:
         scratch = Path(temporary)
         deduplicated, standardized = scratch / "deduplicated", scratch / "standardized"
         dedup_report = build_deduplicated_dataset(source, deduplicated)
-        report = build_standardized_dataset(deduplicated, standardized, reviews=reviews, schema_root=schema_root)
+        report = build_standardized_dataset(deduplicated, standardized, reviews=reviews,
+                                            schema_root=schema_root, offline=offline)
         dedup_manifest = read_json(deduplicated / "manifest.json")
         standard_manifest = read_json(standardized / "manifest.json")
         source_version = "raw-snapshot-" + digest({
@@ -129,6 +134,7 @@ def build_silver_dataset(archive_root, output, reviews=None, schema_root=SCHEMA_
         confirm_source(source, initial_inventory, dedup_manifest["inputs"])
         if implementation_hashes() != implementation:
             raise RuntimeError("Silver implementation changed during the build.")
+        resolve_contract_root(schema_root, offline=offline)
         for name, checksum in standard_manifest["contract_sha256"].items():
             if sha256(Path(schema_root).resolve() / name) != checksum:
                 raise RuntimeError("Category contracts changed during the silver build.")

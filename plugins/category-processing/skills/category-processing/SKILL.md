@@ -5,7 +5,9 @@ description: Process preserved category product archives into seller-specific si
 
 # Category Processing
 
-Requires Python 3.9 or later. Processing uses local archives without network access.
+Requires Python 3.9 or later. Processing uses local archives. Packaged category
+contracts are downloaded from a pinned Hugging Face dataset revision on first
+use; a verified cache or full custom profile supports offline execution.
 
 Use the requested category, market, preserved archive and profile. Keep raw
 collection and silver processing separate. The package is self-contained; its
@@ -17,10 +19,14 @@ Normalize with the existing versioned profile first:
 
 ```text
 python3 <plugin-root>/cli.py process --archive-root <collections-root> --profile <profile-folder> --output <silver-root>
+python3 <plugin-root>/cli.py process --archive-root <collections-root> --category chocolate --contracts-cache <cache-root> --output <silver-root> [--offline]
 ```
 
-The bundled profiles are `<plugin-root>/profiles/chocolate` and
-`<plugin-root>/profiles/coffee`. Use a supplied custom profile when appropriate;
+The packaged references are `<plugin-root>/profiles/chocolate/dataset-contract.json`
+and `<plugin-root>/profiles/coffee/dataset-contract.json`. `--category` resolves
+their immutable revision and verified file hashes; `--profile` accepts either a
+reference directory or a full custom profile. Use a writable `--contracts-cache`
+when needed, and `--offline` to prohibit downloading. Use a supplied custom profile when appropriate;
 read [profile-contract.md](references/profile-contract.md) before defining or
 extending one. A profile can track more fields than the current extractors can
 establish. Missing evidence stays unknown.

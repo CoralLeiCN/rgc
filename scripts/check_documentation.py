@@ -8,6 +8,8 @@ import re
 import subprocess
 import sys
 
+from dataset_contracts import cache_directory, load_manifest, verify_contract_directory
+
 
 ROOT = Path(__file__).resolve().parents[1]
 REQUIRED = (
@@ -15,6 +17,7 @@ REQUIRED = (
     "docs/lifecycle/intent.md", "docs/lifecycle/spec.md", "docs/lifecycle/plan.md",
     "docs/documentation-policy.md", "docs/chocolate-schema.md", "docs/chocolate-silver.md",
     "docs/category-processing.md", "plugins/category-processing/README.md",
+    "docs/dataset-contracts.md",
     "plugins/category-processing/skills/category-processing/SKILL.md",
     "plugins/category-processing/skills/category-processing/references/processing-contract.md",
     "plugins/category-processing/skills/category-processing/references/profile-contract.md",
@@ -30,8 +33,12 @@ def required_updates(changed):
     for path in changed:
         if path in ("scripts/chocolate_silver.py", "scripts/build_chocolate_silver.py"):
             required.update(("docs/spec.md", "docs/chocolate-schema.md", "docs/chocolate-silver.md", "docs/lifecycle/plan.md"))
-        if path.startswith("schemas/chocolate/") or path.startswith("scripts/chocolate_standardization/") or path in ("scripts/standardize_chocolate_data.py", "scripts/chocolate_model.py"):
+        if path.startswith("schemas/chocolate/") or path.startswith("scripts/chocolate_standardization/") or path in ("scripts/standardize_chocolate_data.py", "scripts/chocolate_model.py", "scripts/dataset_contracts.py", "scripts/fetch_contracts.py"):
             required.update(("docs/spec.md", "docs/chocolate-schema.md", "docs/chocolate-silver.md", "docs/lifecycle/plan.md"))
+        if path in ("scripts/dataset_contracts.py", "scripts/fetch_contracts.py"):
+            required.update(("docs/dataset-contracts.md", "README"))
+        if path == "scripts/publish_contracts.py":
+            required.update(("docs/spec.md", "docs/dataset-contracts.md", "README", "docs/lifecycle/plan.md"))
         if path.startswith("scripts/chocolate_cleanup/") or path in ("scripts/clean_chocolate_data.py", "scripts/deduplicate_chocolate_data.py"):
             required.update(("docs/spec.md", "docs/chocolate-cleaning.md", "docs/chocolate-deduplication.md", "docs/chocolate-silver.md", "docs/lifecycle/plan.md"))
         if path.startswith("plugins/category-research/") and "/tests/" not in path:
@@ -55,6 +62,100 @@ def changed_paths(root, base):
     return changed
 
 
+
+def check_dataset_reference(root, name, contract_set, category, cache_root, guide_name, errors):
+    """Check immutable metadata offline, and inspect already-cached bodies only."""
+    try:
+        manifest = load_manifest(root / name)
+    except (OSError, ValueError) as error:
+        errors.append("Unreadable dataset contract reference " + name + ": " + str(error))
+        return
+    portable = contract_set.startswith("category-processing/")
+    expected_files = {"profile.json", "source-mappings.json", "product.schema.json", "model-design.json"}
+    if portable:
+        expected_files.add("pipeline.json")
+    if manifest.get("repo_id") != "CoralLeiCN/rgc-collections":
+        errors.append("Dataset contract repository mismatch: " + name)
+    if manifest.get("contract_set") != contract_set or manifest.get("category") != category or manifest.get("market") != "uk":
+        errors.append("Dataset contract category/set/market mismatch: " + name)
+    if set(manifest.get("files", {})) != expected_files:
+        errors.append("Dataset contract file set mismatch: " + name)
+    guide = (root / guide_name).read_text(encoding="utf-8")
+    version_keys = ("schema_version", "mapping_version", "model_design_version")
+    if portable:
+        version_keys += ("pipeline_version",)
+    for key in version_keys:
+        value = manifest.get(key)
+        if not isinstance(value, str) or not value or value not in guide:
+            errors.append("Contract guide does not document " + category + " " + key + ": " + guide_name)
+    directory = cache_directory(manifest, cache_root)
+    if not directory.exists() and not directory.is_symlink():
+        return
+    try:
+        verify_contract_directory(manifest, directory, require_all=False)
+    except (OSError, ValueError) as error:
+        errors.append("Invalid cached dataset contracts " + name + ": " + str(error))
+        return
+    # Partial caches are valid offline: check cross-file semantics only when complete.
+    if not all((directory / filename).is_file() for filename in expected_files):
+        return
+    try:
+        documents = {filename: json.loads((directory / filename).read_text(encoding="utf-8")) for filename in expected_files}
+    except (OSError, ValueError) as error:
+        errors.append("Unreadable cached dataset contract " + name + ": " + str(error))
+        return
+    profile = documents["profile.json"]
+    version = profile.get("schema_version")
+    attributes = profile.get("attributes", {})
+    if not isinstance(attributes, dict):
+        errors.append("Cached profile attributes must be an object: " + name)
+        return
+    if profile.get("category") != category or profile.get("market") != manifest.get("market"):
+        errors.append("Cached profile category/market mismatch: " + name)
+    if profile.get("attribute_count") != len(attributes) or manifest.get("attribute_count") != len(attributes):
+        errors.append("Cached profile attribute_count differs from the declared catalog/reference: " + name)
+    if version != manifest.get("schema_version"):
+        errors.append("Cached profile schema version differs from dataset reference: " + name)
+    for filename in ("source-mappings.json", "model-design.json") + (("pipeline.json",) if portable else ()):
+        if documents[filename].get("schema_version") != version:
+            errors.append("Cached schema version mismatch: " + category + "/" + filename)
+    for filename, key in (("source-mappings.json", "mapping_version"), ("model-design.json", "model_design_version")) + ((("pipeline.json", "pipeline_version"),) if portable else ()):
+        if documents[filename].get(key) != manifest.get(key):
+            errors.append("Cached contract version differs from dataset reference: " + category + "/" + key)
+    properties = documents["product.schema.json"].get("properties", {})
+    if not isinstance(properties, dict):
+        errors.append("Cached product validator properties must be an object: " + category)
+        return
+    validator_version = properties.get("schema_version", {})
+    if not isinstance(validator_version, dict) or validator_version.get("const") != version:
+        errors.append("Cached product validator version differs from the profile: " + category)
+    catalog = properties.get("attributes", {})
+    if (not isinstance(catalog, dict) or not isinstance(catalog.get("properties", {}), dict)
+            or not isinstance(catalog.get("required", []), list)
+            or not all(isinstance(value, str) for value in catalog.get("required", []))):
+        errors.append("Cached product validator catalog has an invalid shape: " + category)
+        return
+    if set(catalog.get("properties", {})) != set(attributes) or set(catalog.get("required", [])) != set(attributes):
+        errors.append("Cached product validator attribute catalog differs from the profile: " + category)
+    for filename, field in (("source-mappings.json", "aliases"), ("model-design.json", "predictors")):
+        values = documents[filename].get(field, {})
+        if not isinstance(values, dict):
+            errors.append("Cached contract " + field + " must be an object: " + category)
+            continue
+        for attribute in values:
+            if attribute not in attributes:
+                errors.append("Cached contract references an undefined attribute: " + category + "/" + attribute)
+    if portable:
+        fields = documents["pipeline.json"].get("fields", [])
+        if not isinstance(fields, list):
+            errors.append("Cached processing recipe fields must be a list: " + category)
+            return
+        for field in fields:
+            attribute = field.get("attribute") if isinstance(field, dict) else None
+            if attribute not in attributes:
+                errors.append("Cached processing recipe references an undefined attribute: " + category + "/" + str(attribute))
+
+
 def check(root=ROOT, changed=None):
     root = Path(root)
     errors = []
@@ -74,79 +175,16 @@ def check(root=ROOT, changed=None):
             path = (root / name).parent / target
             if not path.exists():
                 errors.append("Broken local link in " + name + ": " + target)
-    schema_root = root / "schemas/chocolate"
-    documents = {}
-    for name in ("profile.json", "source-mappings.json", "model-design.json", "product.schema.json"):
-        try:
-            documents[name] = json.loads((schema_root / name).read_text())
-        except (OSError, ValueError) as error:
-            errors.append("Unreadable category contract " + name + ": " + str(error))
-    if len(documents) == 4:
-        version = documents["profile.json"].get("schema_version")
-        if not version:
-            errors.append("Profile has no schema_version.")
-        for name in ("source-mappings.json", "model-design.json"):
-            if documents[name].get("schema_version") != version:
-                errors.append("Schema version mismatch: " + name)
-        if documents["product.schema.json"].get("properties", {}).get("schema_version", {}).get("const") != version:
-            errors.append("Product validator version differs from the profile.")
-        if version and version not in (root / "docs/chocolate-schema.md").read_text():
-            errors.append("Schema guide does not document the current version.")
-        attributes = documents["profile.json"].get("attributes", {})
-        if documents["profile.json"].get("attribute_count") != len(attributes):
-            errors.append("Profile attribute_count differs from the declared catalog.")
-        validator_attributes = documents["product.schema.json"].get("properties", {}).get("attributes", {})
-        if set(validator_attributes.get("properties", {})) != set(attributes) or set(validator_attributes.get("required", [])) != set(attributes):
-            errors.append("Product validator attribute catalog differs from the profile.")
-        guide = (root / "docs/chocolate-schema.md").read_text()
-        for name, key in (("source-mappings.json", "mapping_version"), ("model-design.json", "model_design_version")):
-            contract_version = documents[name].get(key)
-            if not isinstance(contract_version, str) or not contract_version or contract_version not in guide:
-                label = "mapping version" if key == "mapping_version" else "model design version"
-                errors.append("Schema guide does not document the " + label + ".")
-        for name in documents["source-mappings.json"].get("aliases", {}):
-            if name not in attributes:
-                errors.append("Vocabulary mappings reference an undefined attribute: " + name)
-        for name in documents["model-design.json"].get("predictors", {}):
-            if name not in attributes:
-                errors.append("Model design references an undefined attribute: " + name)
-    profile_base = root / "plugins/category-processing/profiles"
-    guide = (root / "docs/category-processing.md").read_text(encoding="utf-8")
+    check_dataset_reference(
+        root, "schemas/chocolate/dataset-contract.json", "chocolate", "chocolate",
+        root / "data/contract-cache", "docs/chocolate-schema.md", errors,
+    )
     for category in PROCESSING_PROFILES:
-        contracts = {}
-        for name in ("profile.json", "source-mappings.json", "product.schema.json", "model-design.json", "pipeline.json"):
-            try:
-                contracts[name] = json.loads((profile_base / category / name).read_text(encoding="utf-8"))
-            except (OSError, ValueError) as error:
-                errors.append("Unreadable processing profile " + category + "/" + name + ": " + str(error))
-        if len(contracts) != 5:
-            continue
-        profile = contracts["profile.json"]
-        version = profile.get("schema_version")
-        attributes = profile.get("attributes", {})
-        if profile.get("category") != category or profile.get("attribute_count") != len(attributes):
-            errors.append("Processing profile category/catalog mismatch: " + category)
-        for name in ("source-mappings.json", "model-design.json", "pipeline.json"):
-            if contracts[name].get("schema_version") != version:
-                errors.append("Processing profile version mismatch: " + category + "/" + name)
-        properties = contracts["product.schema.json"].get("properties", {})
-        if properties.get("schema_version", {}).get("const") != version:
-            errors.append("Processing product validator version mismatch: " + category)
-        catalog = properties.get("attributes", {})
-        if set(catalog.get("properties", {})) != set(attributes) or set(catalog.get("required", [])) != set(attributes):
-            errors.append("Processing product validator catalog mismatch: " + category)
-        for name, key in (("profile.json", "schema_version"), ("source-mappings.json", "mapping_version"),
-                          ("model-design.json", "model_design_version"), ("pipeline.json", "pipeline_version")):
-            value = contracts[name].get(key)
-            if not isinstance(value, str) or not value or value not in guide:
-                errors.append("Processing guide must document " + category + " " + key + ".")
-        for name, field in (("source-mappings.json", "aliases"), ("model-design.json", "predictors")):
-            for attribute in contracts[name].get(field, {}):
-                if attribute not in attributes:
-                    errors.append("Processing profile references undefined attribute: " + category + "/" + attribute)
-        for field in contracts["pipeline.json"].get("fields", []):
-            if field.get("attribute") not in attributes:
-                errors.append("Processing recipe references undefined attribute: " + category + "/" + str(field.get("attribute")))
+        check_dataset_reference(
+            root, "plugins/category-processing/profiles/" + category + "/dataset-contract.json",
+            "category-processing/" + category, category,
+            root / "plugins/category-processing/.contract-cache", "docs/category-processing.md", errors,
+        )
     if changed is not None:
         for name in sorted(required_updates(set(changed)) - set(changed)):
             errors.append("Affected implementation needs an accompanying documentation update: " + name)

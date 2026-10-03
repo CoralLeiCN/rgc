@@ -1,12 +1,15 @@
 # Processing contract
 
 Use the entire plugin directory with Python 3.9+. The core uses the standard
-library and local files. No repository sibling module, network service or
-particular client installation is required. `<plugin-root>` contains
-`plugin.json` and `cli.py`.
+library and local archives. Packaged contracts resolve from pinned Hugging Face
+references on first use, with SHA-256 and byte-length verification. A populated
+verified cache or full custom profile supports offline execution. No repository
+sibling module or particular client installation is required. `<plugin-root>`
+contains `plugin.json` and `cli.py`.
 
 ```text
 python3 <plugin-root>/cli.py process --archive-root <collections-root> --profile <profile-folder> --output <silver-root> [--reviews <reviews.json>]
+python3 <plugin-root>/cli.py process --archive-root <collections-root> --category chocolate --contracts-cache <cache-root> --output <silver-root> [--offline]
 ```
 
 Another Python caller can place the plugin root on its import path and use
@@ -14,6 +17,13 @@ Another Python caller can place the plugin root on its import path and use
 profile_root, reviews=None)`. Reviews may be a JSON-file path or a decision object.
 This function returns the quality report and writes the snapshot. CLI execution
 additionally compares a prior output ledger and reports processing-change counts.
+Use `category_processing.profiles.resolve_profile(category="chocolate",
+cache_root=<cache-root>, offline=True)` to materialize a verified pinned directory
+before an API call. Existing full custom profile directories remain supported;
+profile directories containing a dataset reference resolve its pinned bytes.
+The CLI requires exactly one of `--category` and `--profile`. Its default cache
+is `<plugin-root>/.contract-cache`; use a writable supplied cache for a read-only
+installation. Offline mode fails when pinned bytes are unavailable or corrupt.
 
 The archive root contains `<category>/<market>/products/<product_id>/product.json`.
 Each index follows `category-research-raw-1`, identifies category, market and
@@ -54,7 +64,7 @@ this build does not rehash every preserved source/image artifact's payload.
 | `processing-ledger.jsonl` | Capture fingerprints and processing outcomes. |
 | `mapping-review-batches.jsonl`, `mapping-review-summary.md` | Grouped evidence gaps for the calling harness. |
 | `profile.json`, `source-mappings.json`, `product.schema.json`, `model-design.json`, `pipeline.json` | Exact copies of all five contracts. |
-| `quality-report.json`, `manifest.json` | Coverage, exclusions/readiness, versions, fingerprints, hashes and raw artifact roots. |
+| `quality-report.json`, `manifest.json` | Coverage, exclusions/readiness, versions, fingerprints, hashes, contract source/revision and raw artifact roots. |
 | `brand/`, `retail/`, `unknown/` | Products, prices and source listings partitioned by seller role. |
 
 Resolve capture IDs and capture-root JSON pointers through `source-listings.jsonl`;

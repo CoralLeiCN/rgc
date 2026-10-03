@@ -24,6 +24,7 @@ from chocolate_silver import build_silver_dataset
 import chocolate_silver as silver_module
 from build_chocolate_silver import main as silver_main
 import scripts.tests.test_standardization as standardization_fixtures
+import dataset_contracts as contract_module
 
 
 class ChocolateSilverTests(unittest.TestCase):
@@ -35,6 +36,7 @@ class ChocolateSilverTests(unittest.TestCase):
         self.archive = self.fixture.archive
         self.output = self.base / "silver"
         self.design = self.fixture.design
+        self.schema_root = self.fixture.schema_root
 
     def product(self, *args, **kwargs):
         return self.fixture.product(*args, **kwargs)
@@ -46,7 +48,7 @@ class ChocolateSilverTests(unittest.TestCase):
         return self.fixture.snapshot(directory)
 
     def build(self, reviews=None, output=None):
-        return build_silver_dataset(self.archive, output or self.output, reviews=reviews)
+        return build_silver_dataset(self.archive, output or self.output, reviews=reviews, offline=True)
 
     def rows(self, name):
         return [json.loads(line) for line in (self.output / (name + ".jsonl")).read_text(encoding="utf-8").splitlines()]
@@ -188,8 +190,56 @@ class ChocolateSilverTests(unittest.TestCase):
         for name, checksum in manifest["contract_sha256"].items():
             with self.subTest(contract=name):
                 copied = (self.output / name).read_bytes()
-                self.assertEqual(copied, (ROOT / "schemas/chocolate" / name).read_bytes())
+                self.assertEqual(copied, (self.schema_root / name).read_bytes())
                 self.assertEqual(hashlib.sha256(copied).hexdigest(), checksum)
+
+    def test_custom_contract_directory_is_copied_exactly_and_changes_dataset_version(self):
+        self.collect([self.product()])
+        original = self.build()
+        custom = self.base / "custom-contracts"
+        shutil.copytree(self.schema_root, custom, ignore=shutil.ignore_patterns("dataset-contract.json"))
+        design_path = custom / "model-design.json"
+        design = json.loads(design_path.read_text())
+        design["purpose"] += " Custom fixture contract."
+        design_path.write_text(json.dumps(design, ensure_ascii=False) + "\n", encoding="utf-8")
+        report = build_silver_dataset(self.archive, self.output, schema_root=custom, offline=True)
+        self.assertNotEqual(report["dataset_version"], original["dataset_version"])
+        self.assertEqual(report["source_dataset_version"], original["source_dataset_version"])
+        manifest = json.loads((self.output / "manifest.json").read_text())
+        for name, checksum in manifest["contract_sha256"].items():
+            data = (custom / name).read_bytes()
+            self.assertEqual((self.output / name).read_bytes(), data)
+            self.assertEqual(hashlib.sha256(data).hexdigest(), checksum)
+
+    def test_unavailable_pinned_contract_cache_prevents_raw_processing_and_output(self):
+        self.collect([self.product()])
+        before = self.snapshot(self.archive)
+        with patch.object(contract_module, "SCHEMA_CACHE", self.base / "missing-contract-cache"):
+            with patch.object(silver_module, "build_deduplicated_dataset") as deduplicate:
+                with patch("category_processing.dataset_contracts._download", side_effect=AssertionError("Offline builds must not fetch contracts")):
+                    with self.assertRaisesRegex(FileNotFoundError, "not cached"):
+                        self.build()
+                deduplicate.assert_not_called()
+        self.assertFalse(self.output.exists())
+        self.assertEqual(self.snapshot(self.archive), before)
+
+    def test_corrupt_offline_cache_is_rejected_before_raw_processing(self):
+        self.collect([self.product()])
+        cache_root = self.base / "corrupt-contract-cache"
+        reference = contract_module.load_manifest(contract_module.SCHEMA_REFERENCE)
+        cached = contract_module.cache_directory(reference, cache_root)
+        shutil.copytree(self.schema_root, cached)
+        profile = cached / "profile.json"
+        profile.write_bytes(profile.read_bytes() + b"\n")
+        before = self.snapshot(self.archive)
+        with patch.object(contract_module, "SCHEMA_CACHE", cache_root):
+            with patch.object(silver_module, "build_deduplicated_dataset") as deduplicate:
+                with patch("category_processing.dataset_contracts._download", side_effect=AssertionError("Corrupt caches must not be silently refetched")):
+                    with self.assertRaisesRegex(ValueError, "checksum/length mismatch"):
+                        self.build()
+                deduplicate.assert_not_called()
+        self.assertFalse(self.output.exists())
+        self.assertEqual(self.snapshot(self.archive), before)
 
     def test_same_archive_and_reviews_rebuild_to_identical_bytes(self):
         self.collect([self.product()])
@@ -333,7 +383,8 @@ class ChocolateSilverTests(unittest.TestCase):
 
     def test_cli_builds_silver_directly_and_reports_partial_exit_status(self):
         self.collect([self.product()])
-        arguments = ["--archive-root", str(self.archive), "--output", str(self.output)]
+        arguments = ["--archive-root", str(self.archive), "--output", str(self.output),
+                     "--schema-root", str(self.schema_root), "--offline"]
         stdout = io.StringIO()
         with redirect_stdout(stdout):
             self.assertEqual(silver_main(arguments), 0)

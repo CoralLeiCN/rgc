@@ -1,0 +1,40 @@
+{
+  "attribute_count": 12,
+  "category": "coffee",
+  "contract_set": "category-processing/coffee",
+  "files": {
+    "model-design.json": {
+      "path": "contracts/category-processing/coffee/model-design.json",
+      "sha256": "70e72313e22eb58d495ded0103dc69048a2f022a763d3eb6be06998e31710189",
+      "size_bytes": 3134
+    },
+    "pipeline.json": {
+      "path": "contracts/category-processing/coffee/pipeline.json",
+      "sha256": "df45518950b119a7c64d0ff65a5d9d12c7f3b6160de69f92e476c3234f32dd17",
+      "size_bytes": 1709
+    },
+    "product.schema.json": {
+      "path": "contracts/category-processing/coffee/product.schema.json",
+      "sha256": "68f82ab86f8d18207c6b5757872a6beb88603aa44edc0d69f557577f0364d1b1",
+      "size_bytes": 43486
+    },
+    "profile.json": {
+      "path": "contracts/category-processing/coffee/profile.json",
+      "sha256": "0c17fda56943b62973f44188223418a8828e6a7f43ca8d4fe0ffb1678251f4d3",
+      "size_bytes": 5035
+    },
+    "source-mappings.json": {
+      "path": "contracts/category-processing/coffee/source-mappings.json",
+      "sha256": "ce174895499816635bc325b166216b19c50c3de123566c04c5040ab945613d89",
+      "size_bytes": 1368
+    }
+  },
+  "format_version": "rgc-dataset-contract-reference-1",
+  "mapping_version": "coffee-source-mappings-1",
+  "market": "uk",
+  "model_design_version": "coffee-pricing-design-1",
+  "pipeline_version": "coffee-processing-pipeline-1",
+  "repo_id": "CoralLeiCN/rgc-collections",
+  "revision": "d4ebef3df5ac17145e8dbd2f8a7ae2b10c0afe70",
+  "schema_version": "coffee-schema-1"
+}

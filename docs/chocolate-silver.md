@@ -10,6 +10,15 @@ The [schema guide](chocolate-schema.md) owns the 103-attribute chocolate contrac
 standardization rules, review format and pricing-model handoff. The
 [project specification](spec.md) owns cross-layer and release requirements.
 
+Machine contracts are stored in the
+[Hugging Face dataset](https://huggingface.co/datasets/CoralLeiCN/rgc-collections)
+under `contracts/chocolate/`. The small
+[dataset manifest](../schemas/chocolate/dataset-contract.json) pins their
+immutable revision, versions and SHA-256 hashes. The build materializes verified
+files into ignored `data/contract-cache/`; it requires network access for a cache
+miss and can reuse verified cached bytes offline. Generated silver snapshots
+retain exact contract copies and their dataset provenance.
+
 ## Layer responsibilities
 
 | Responsibility | Raw: `data/collections/chocolate/uk` | Silver: `data/silver/chocolate/uk` |
@@ -166,6 +175,12 @@ The current source-derived values remain unreviewed and price/tax basis is
 unresolved, so eligible model inputs remain empty and `release_ready` is false.
 Use the report and review queue to plan evidence review and extraction evaluation
 before fitting.
+
+The [consolidated pricing research design](chocolate-modeling-design.md) proposes
+subsequent hedonic/LightGBM comparisons, optional-feature handling, calibration,
+and SHAP/AI explanations. Current silver gates and preparation helpers do not
+implement those extensions; adopting them requires aligned versioned contracts
+and newly generated reviewed inputs.
 
 ## Mapping-maintenance workflow
 

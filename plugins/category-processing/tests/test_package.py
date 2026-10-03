@@ -6,10 +6,14 @@ import hashlib
 import json
 from pathlib import Path
 import re
+import sys
 import unittest
 
 
 PLUGIN_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(PLUGIN_ROOT))
+
+from category_processing.profiles import resolve_profile
 
 
 def validate_schema(value, schema):
@@ -90,7 +94,7 @@ class CategoryProcessingPackageTests(unittest.TestCase):
                 self.assertFalse(imported & forbidden, str(path))
 
     def test_coffee_contracts_are_consistent_without_chocolate_attributes(self):
-        root = PLUGIN_ROOT / "profiles/coffee"
+        root = resolve_profile(category="coffee")
         documents = {name: json.loads((root / name).read_text()) for name in
                      ("profile.json", "source-mappings.json", "model-design.json", "product.schema.json", "pipeline.json")}
         version = documents["profile.json"]["schema_version"]

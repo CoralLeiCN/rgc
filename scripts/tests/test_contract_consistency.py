@@ -10,6 +10,8 @@ import unittest
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 from chocolate_standardization.pipeline import load_contract
+from dataset_contracts import resolve_contract_root
+import dataset_contracts as contract_module
 
 
 class ChocolateContractConsistencyTests(unittest.TestCase):
@@ -17,7 +19,8 @@ class ChocolateContractConsistencyTests(unittest.TestCase):
         self.temporary = tempfile.TemporaryDirectory()
         self.addCleanup(self.temporary.cleanup)
         self.root = Path(self.temporary.name) / "contracts"
-        shutil.copytree(ROOT / "schemas/chocolate", self.root)
+        shutil.copytree(resolve_contract_root(offline=True), self.root,
+                        ignore=shutil.ignore_patterns("dataset-contract.json"))
 
     def edit(self, name, change):
         path = self.root / name
@@ -39,6 +42,17 @@ class ChocolateContractConsistencyTests(unittest.TestCase):
         self.edit("product.schema.json", lambda doc: doc["properties"]["attributes"]["properties"]["composition.cocoa_percentage"]["allOf"][0]["then"]["properties"]["value"].update(maximum=95))
         with self.assertRaisesRegex(ValueError, "numeric bounds differ"):
             load_contract(self.root)
+
+    def test_pinned_reference_metadata_must_agree_with_verified_payloads(self):
+        original = contract_module.load_manifest(contract_module.SCHEMA_REFERENCE)
+        for field, changed in (("category", "coffee"), ("market", "us"),
+                               ("schema_version", "other-schema-1"), ("attribute_count", original["attribute_count"] + 1),
+                               ("mapping_version", "other-mappings-1"), ("model_design_version", "other-design-1")):
+            with self.subTest(field=field):
+                reference = dict(original, **{field: changed})
+                (self.root / "dataset-contract.json").write_text(json.dumps(reference))
+                with self.assertRaisesRegex(ValueError, "dataset reference metadata: " + field):
+                    load_contract(self.root, offline=True)
 
 
 if __name__ == "__main__":

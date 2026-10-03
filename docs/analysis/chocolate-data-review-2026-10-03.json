@@ -1,0 +1,198 @@
+{
+  "review_date": "2026-10-03",
+  "source_root_inspected": "/Users/coral/repos/rgc/data/collections/chocolate/uk",
+  "portable_source_root": "data/collections/chocolate/uk",
+  "coverage_prepared_at": "2026-10-03T10:07:15.303504+00:00",
+  "evidence_sha256": {
+    "coverage.json": "e55a2f29d420439b28aa1f70b584c6952fed753b954cee896f52485baf856152",
+    "archive-verification.json": "0a6600b9d430ee0564d01a70b1ae0805d486fd5a789fbb7245542c643e6c8c69",
+    "discovery/brands/README.md": "2763bd1786e4d92d37ab7cf5b17befe4f4ca81ecb6ff55292d4e99fd25c05804"
+  },
+  "review_scope": "Read-only structural inventory and selected record inspection. Not a full semantic review, new artifact-integrity check, deduplication, or eligible modeling sample.",
+  "archive_counts": {
+    "product_folders": 1844,
+    "plugin_product_folders": 1844,
+    "legacy_exploratory_folders": 0,
+    "plugin_captures": 2445,
+    "saved_image_files": 4098,
+    "distinct_downloaded_image_urls": 3320,
+    "distinct_image_sha256": 3189,
+    "disk_usage_bytes_including_transfer_cache": 15489183744,
+    "disk_usage_basis": "Filesystem allocated blocks, including directories and transfer caches."
+  },
+  "ingredient_evidence_by_counting_unit": {
+    "brands": {
+      "counting_unit": "source_product_families",
+      "total_families": 600,
+      "text_present": 276,
+      "unresolved": 324,
+      "report": "discovery/brands/brand-web-ingredient-evidence-report.json"
+    },
+    "specialist_retailers": {
+      "counting_unit": "included_source_product_families",
+      "total_families": 386,
+      "text_present": 239,
+      "unresolved": 147,
+      "report": "discovery/retailers/catalogue-summary.json"
+    },
+    "waitrose": {
+      "counting_unit": "category_candidate_listings",
+      "total_listings": 411,
+      "text_present": 131,
+      "unresolved": 280,
+      "report": "discovery/supermarkets/waitrose-enrichment-report.json"
+    },
+    "ocado": {
+      "counting_unit": "source_product_ids",
+      "total_source_product_ids": 301,
+      "text_present": 247,
+      "unresolved": 54,
+      "guide": "discovery/ocado/README.md"
+    }
+  },
+  "existing_integrity_report": {
+    "status": "passed",
+    "input_records_matched": 2445,
+    "history_records_verified": 2445,
+    "unique_referenced_artifact_files_hashed": 9030,
+    "referenced_artifact_bytes_hashed": 8214778727,
+    "integrity_failures": 0,
+    "report": "archive-verification.json",
+    "legacy_scope": "No legacy exploratory product folders remain after the owner-requested removal on 3 October 2026."
+  },
+  "structural_audit": {
+    "file_counts": {
+      "product_json": 1844,
+      "plugin_records": 1844,
+      "legacy_records": 0,
+      "legacy_paths": []
+    },
+    "capture_count_distribution": {
+      "1": 1243,
+      "2": 601
+    },
+    "capture_recorded_at_min": "2026-10-03T08:14:37.653+00:00",
+    "capture_recorded_at_max": "2026-10-03T08:43:52.810+00:00",
+    "capture_dates": {
+      "2026-10-03": 2445
+    },
+    "source_product_id_distinct_within_source": 1738,
+    "brand_exact_nonempty_labels": 55,
+    "brand_trim_casefold_nonempty_labels": 54
+  },
+  "latest_capture_metrics": {
+    "captures": 1844,
+    "identity_name_nonempty": 1844,
+    "identity_brand_nonempty": 1132,
+    "identity_source_product_id_nonempty": 1844,
+    "identity_source_variant_id_nonempty": 1132,
+    "identity_gtin_nonempty": 0,
+    "selected_variant_present": 1132,
+    "selected_price_numeric": 1132,
+    "selected_price_positive": 1131,
+    "selected_price_zero": 1,
+    "selected_grams_numeric": 1132,
+    "selected_grams_positive": 895,
+    "selected_grams_zero": 237,
+    "selected_grams_gt10000": 3,
+    "available_boolean_true": 977,
+    "available_boolean_false": 155,
+    "compare_at_numeric": 197,
+    "ocado_page_observations_present": 301,
+    "ocado_category_observations_present": 119,
+    "product_page_information_dict_present": 844,
+    "compare_at_above_price": 106,
+    "compare_at_equal_price": 57,
+    "compare_at_below_price": 34,
+    "waitrose_catalogue_context_nonempty": 411,
+    "waitrose_explicit_item_price_marker": 406,
+    "waitrose_source_weight_nonempty": 411,
+    "waitrose_simple_mass_string": 373
+  },
+  "latest_capture_status_counts": {
+    "raw_record_preserved_review_pending": 742,
+    "partial": 1102
+  },
+  "latest_capture_completeness_counts": {
+    "not_verified": 1844
+  },
+  "source_record_capture_counts": {
+    "chococo": {
+      "records": 167,
+      "captures": 167
+    },
+    "chocolarder": {
+      "records": 43,
+      "captures": 43
+    },
+    "chocolate-co-uk": {
+      "records": 86,
+      "captures": 86
+    },
+    "chocolate-shop": {
+      "records": 208,
+      "captures": 211
+    },
+    "divine": {
+      "records": 57,
+      "captures": 57
+    },
+    "love-cocoa": {
+      "records": 30,
+      "captures": 30
+    },
+    "montezumas": {
+      "records": 91,
+      "captures": 91
+    },
+    "moo-free": {
+      "records": 74,
+      "captures": 74
+    },
+    "nomo": {
+      "records": 60,
+      "captures": 60
+    },
+    "ocado": {
+      "records": 301,
+      "captures": 483
+    },
+    "pump-street": {
+      "records": 66,
+      "captures": 66
+    },
+    "seed-and-bean": {
+      "records": 13,
+      "captures": 13
+    },
+    "tonys-uk": {
+      "records": 237,
+      "captures": 242
+    },
+    "waitrose": {
+      "records": 411,
+      "captures": 822
+    }
+  },
+  "capture_history_checks": {
+    "waitrose_records": 411,
+    "waitrose_first_last_catalogue_context_identical": 411,
+    "ocado_records_with_any_browser_listing_record": 159,
+    "ocado_records_with_latest_browser_listing_record": 0
+  },
+  "metric_definitions": {
+    "selected_price": "Only raw_record.information.selected_variant.price, coercible to float. Not confirmed VAT-inclusive or regular price.",
+    "selected_grams": "Only raw_record.information.selected_variant.grams, coercible to float. SOURCE/SHIPPING METADATA, not reviewed edible weight.",
+    "waitrose_explicit_item_price_marker": "Only raw_record.information.catalogue_text_context; exact Item price followed by GBP amount. Presence signal only, not parsed or reconciled price.",
+    "waitrose_simple_mass_string": "Only source_weight_text matching a single g/kg amount. Presence signal, not validated net edible mass or pack configuration.",
+    "ocado_browser_explicit_price_marker": "Only original_listing_record.card.text, standalone Price line followed by GBP amount. Presence signal only. Earlier capture can contain this when latest does not.",
+    "identity_missingness": "Nonempty dedicated raw_record.identity field, no inference from names, SKU, source text, or vendor aliases.",
+    "captures": "Each immutable archived import capture. Two captures of a product may be enrichment or retry rather than another market price/date."
+  },
+  "limitations": [
+    "Latest means final appended capture, not freshest source observation.",
+    "Raw source price, grams, availability, identity labels and capture status are structural fields, not reviewed model inputs.",
+    "Ingredient evidence uses different denominators across source groups.",
+    "No final physical-product brand count, eligible bar count, price distribution or feature accuracy was established."
+  ]
+}
