@@ -34,6 +34,9 @@ immutable commit pins, per-file SHA-256 hashes and version metadata. Runtime
 caches are ignored; generated snapshots retain exact contract copies/provenance.
 
 Publish changed contracts to a new immutable revision before updating manifests.
+For schema changes, complete local implementation and validation and follow the
+[release review decision](decisions/agent-led-schema-maintenance.md#review-before-a-hugging-face-commit)
+before the Hugging Face commit. Supported local maintenance needs no user approval.
 Verify hashes and profile alignment, synchronize affected semantic versions and
 documentation, then rebuild. Moving storage alone preserves bytes and versions.
 All five portable contracts must agree on schema/catalog and declare mapping,
@@ -69,24 +72,27 @@ documents when their meaning or public entry points are affected.
    data, evaluated extraction, and fitted/validated models. None implies the next.
 4. Update commands and links when files or entry points move. Do not leave an
    alternate contract in a lifecycle summary or README.
-5. Run the structural guard and relevant behavioral tests before finishing:
+5. Use the locked development environment, run Ruff and the structural guard,
+   then run relevant behavioral tests with pytest before finishing:
 
    ```sh
+   uv sync --locked
    python3 -B scripts/fetch_contracts.py --all
+   uv run ruff check .
    python3 -B scripts/check_documentation.py
-   python3 -B -m unittest discover -s scripts/tests -v
+   uv run pytest scripts/tests
    ```
 
    Run the collection plugin's tests when collection behavior changes:
 
    ```sh
-   python3 -B -m unittest discover -s plugins/category-research/tests -v
+   uv run pytest plugins/category-research/tests
    ```
 
    Run the processing package's tests when its core, profiles or workflow change:
 
    ```sh
-   python3 -B -m unittest discover -s plugins/category-processing/tests -v
+   uv run pytest plugins/category-processing/tests
    ```
 
 The guard checks required documents, local references, lifecycle placeholders,
@@ -99,8 +105,14 @@ prose, changed contracts and
 generated quality report for semantic accuracy and evidence review. Verify
 execution after copying a package and native client installation independently.
 
-The [validation workflow](../.github/workflows/validation.yml) runs the guard and
-behavioral tests for pull requests and pushes. Its explicit `--base <git-ref>`
+pytest is the repository test framework and Ruff checks Python source and tests.
+Their development versions and dependencies are pinned in `uv.lock`. A full
+verification uses `uv run pytest`; focused commands above select the affected
+suite. Runtime plugins continue to use the standard library. Verify populated
+contract caches with `python3 -B scripts/fetch_contracts.py --all --offline`.
+
+The [validation workflow](../.github/workflows/validation.yml) runs Ruff, pytest
+and the guard for pull requests and pushes. Its explicit `--base <git-ref>`
 compares against the pull request base or previous push revision; local checks
 include current tracked and untracked changes.
 

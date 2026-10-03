@@ -2,6 +2,34 @@
 name = "rgc"
 version = "0.1.0"
 description = "Add your description here"
-readme = "README.md"
+readme = "README"
 requires-python = ">=3.13"
 dependencies = []
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4,<10",
+    "ruff>=0.14,<1",
+]
+
+[tool.pytest.ini_options]
+testpaths = [
+    "scripts/tests",
+    "plugins/category-research/tests",
+    "plugins/category-processing/tests",
+]
+python_classes = ["Test*", "*Tests"]
+pythonpath = [
+    "scripts",
+    "scripts/tests",
+    "plugins/category-research",
+    "plugins/category-processing",
+    "plugins/category-processing/tests",
+]
+addopts = ["--import-mode=importlib", "--strict-config", "--strict-markers"]
+
+[tool.ruff]
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]

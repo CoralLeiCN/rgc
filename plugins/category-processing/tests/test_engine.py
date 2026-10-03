@@ -1,32 +1,28 @@
 """Exercise category processing with preserved chocolate and coffee fixtures."""
 
-from copy import deepcopy
 import hashlib
 import json
 import math
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import sys
-import tempfile
-import unittest
+from copy import deepcopy
+from pathlib import Path
 
-
-PLUGIN_ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(PLUGIN_ROOT))
-
-from fixture_archive import import_document
+import pytest
 from category_processing.pipeline import build_silver_dataset
 from category_processing.profiles import resolve_profile
 from category_processing.tracking import compare_ledgers
+from fixture_archive import import_document
+
+PLUGIN_ROOT = Path(__file__).resolve().parents[1]
 
 
-class CategoryProcessingEngineTests(unittest.TestCase):
-    def setUp(self):
-        self.temporary = tempfile.TemporaryDirectory()
-        self.addCleanup(self.temporary.cleanup)
-        self.base = Path(self.temporary.name)
+class CategoryProcessingEngineTests:
+    @pytest.fixture(autouse=True)
+    def setup(self, tmp_path):
+        self.base = tmp_path
         self.archive = self.base / "collections"
         self.output = self.base / "silver"
         self.profile = resolve_profile(PLUGIN_ROOT / "profiles/coffee")
@@ -91,33 +87,33 @@ class CategoryProcessingEngineTests(unittest.TestCase):
         self.collect([original])
         before = self.snapshot(self.archive)
         report = self.build()
-        self.assertEqual(self.snapshot(self.archive), before)
+        assert (self.snapshot(self.archive)) == (before)
         row = self.rows("products")[0]
-        self.assertEqual(row["category"], "coffee")
-        self.assertEqual(len(row["attributes"]), 12)
-        self.assertEqual(row["attributes"]["coffee.roast"]["value"], "medium")
-        self.assertEqual(row["attributes"]["coffee.format"]["value"], "whole_bean")
-        self.assertEqual(row["attributes"]["coffee.decaf_claim"]["value"], "absent")
-        self.assertEqual(row["attributes"]["coffee.arabica_percentage"]["status"], "unknown")
-        self.assertIsNone(row["attributes"]["coffee.arabica_percentage"]["value"])
-        self.assertFalse(any("cocoa" in name or "nuts" in name for name in row["attributes"]))
-        self.assertEqual(self.rows("source-listings")[0]["captures"][0]["raw_record"], original)
-        self.assertEqual(self.rows("model-inputs"), [])
-        self.assertFalse(report["release_ready"])
+        assert (row["category"]) == ("coffee")
+        assert (len(row["attributes"])) == (12)
+        assert (row["attributes"]["coffee.roast"]["value"]) == ("medium")
+        assert (row["attributes"]["coffee.format"]["value"]) == ("whole_bean")
+        assert (row["attributes"]["coffee.decaf_claim"]["value"]) == ("absent")
+        assert (row["attributes"]["coffee.arabica_percentage"]["status"]) == ("unknown")
+        assert (row["attributes"]["coffee.arabica_percentage"]["value"]) is None
+        assert not (any("cocoa" in name or "nuts" in name for name in row["attributes"]))
+        assert (self.rows("source-listings")[0]["captures"][0]["raw_record"]) == (original)
+        assert (self.rows("model-inputs")) == ([])
+        assert not (report["release_ready"])
 
     def test_exact_duplicates_merge_within_seller_and_other_sellers_remain_unique(self):
         self.collect([self.product("first-copy"), self.product("second-copy"),
                       self.product("brand-copy", "fixture-roaster")])
         self.build()
         sources = {row["listing_id"]: row for row in self.rows("source-listings")}
-        self.assertEqual(set(sources), {"first-copy", "brand-copy"})
-        self.assertEqual(sources["first-copy"]["source_listing_ids"], ["first-copy", "second-copy"])
-        self.assertEqual(sources["first-copy"]["source_role"], "retail")
-        self.assertEqual(sources["brand-copy"]["source_role"], "brand")
-        self.assertNotEqual(sources["first-copy"]["seller_uid"], sources["brand-copy"]["seller_uid"])
-        self.assertEqual(len(self.rows("retail/products")), 1)
-        self.assertEqual(len(self.rows("brand/products")), 1)
-        self.assertEqual(len(self.rows("unknown/products")), 0)
+        assert (set(sources)) == ({"first-copy", "brand-copy"})
+        assert (sources["first-copy"]["source_listing_ids"]) == (["first-copy", "second-copy"])
+        assert (sources["first-copy"]["source_role"]) == ("retail")
+        assert (sources["brand-copy"]["source_role"]) == ("brand")
+        assert (sources["first-copy"]["seller_uid"]) != (sources["brand-copy"]["seller_uid"])
+        assert (len(self.rows("retail/products"))) == (1)
+        assert (len(self.rows("brand/products"))) == (1)
+        assert (len(self.rows("unknown/products"))) == (0)
 
     def test_alias_addition_and_new_capture_preserve_existing_stable_identifiers(self):
         self.collect([self.product("middle-name")])
@@ -126,13 +122,13 @@ class CategoryProcessingEngineTests(unittest.TestCase):
         observations = {row["observation_id"] for row in self.rows("prices")}
         self.collect([self.product("aaa-new-alias")])
         self.build()
-        self.assertEqual(self.rows("products")[0]["seller_uid"], uid)
-        self.assertEqual(self.rows("products")[0]["listing_id"], "aaa-new-alias")
-        self.assertEqual({row["observation_id"] for row in self.rows("prices")}, observations)
+        assert (self.rows("products")[0]["seller_uid"]) == (uid)
+        assert (self.rows("products")[0]["listing_id"]) == ("aaa-new-alias")
+        assert ({row["observation_id"] for row in self.rows("prices")}) == (observations)
         self.collect([self.product("middle-name", price=7.0, observed_at="2026-10-04T07:00:00Z")])
         self.build()
-        self.assertEqual(self.rows("products")[0]["seller_uid"], uid)
-        self.assertTrue(observations < {row["observation_id"] for row in self.rows("prices")})
+        assert (self.rows("products")[0]["seller_uid"]) == (uid)
+        assert (observations < {row["observation_id"] for row in self.rows("prices")})
 
     def test_reviewed_coffee_rows_have_generic_unit_price_targets(self):
         self.collect([self.product()])
@@ -140,20 +136,20 @@ class CategoryProcessingEngineTests(unittest.TestCase):
         ids = {row["observation_id"] for row in self.rows("prices")}
         self.build(self.reviews())
         eligible = self.rows("model-inputs")
-        self.assertEqual(len(eligible), 1)
-        self.assertAlmostEqual(eligible[0]["target"]["regular_unit_price"], 2.6)
-        self.assertAlmostEqual(eligible[0]["target"]["log_regular_unit_price"], math.log(2.6))
-        self.assertEqual(set(eligible[0]["target"]) & {"regular_price_per_100g_gbp", "log_regular_price_per_100g_gbp"}, set())
-        self.assertEqual({row["observation_id"] for row in self.rows("prices")}, ids)
+        assert (len(eligible)) == (1)
+        assert round(abs((eligible[0]["target"]["regular_unit_price"]) - (2.6)), 7) == 0
+        assert round(abs((eligible[0]["target"]["log_regular_unit_price"]) - (math.log(2.6))), 7) == 0
+        assert (set(eligible[0]["target"]) & {"regular_price_per_100g_gbp", "log_regular_price_per_100g_gbp"}) == (set())
+        assert ({row["observation_id"] for row in self.rows("prices")}) == (ids)
 
     def test_review_changes_invalidate_prior_processing_state(self):
         self.collect([self.product()])
         initial = self.build()
         prior_ledger = self.rows("processing-ledger")
         reviewed = self.build(self.reviews())
-        self.assertNotEqual(reviewed["processing_fingerprint"], initial["processing_fingerprint"])
-        self.assertEqual(compare_ledgers(self.rows("processing-ledger"), prior_ledger)["rules_changed"], 1)
-        self.assertEqual(len(self.rows("model-inputs")), 1)
+        assert (reviewed["processing_fingerprint"]) != (initial["processing_fingerprint"])
+        assert (compare_ledgers(self.rows("processing-ledger"), prior_ledger)["rules_changed"]) == (1)
+        assert (len(self.rows("model-inputs"))) == (1)
 
     def test_valid_category_value_outside_selected_model_domain_is_excluded(self):
         self.collect([self.product()])
@@ -165,10 +161,10 @@ class CategoryProcessingEngineTests(unittest.TestCase):
         path.write_text(json.dumps(design))
         self.build(profile=copied)
         report = self.build(self.reviews(), profile=copied)
-        self.assertEqual(report["status"], "complete_snapshot")
-        self.assertEqual(self.rows("products")[0]["attributes"]["coffee.roast"]["value"], "medium")
-        self.assertEqual(self.rows("model-inputs"), [])
-        self.assertIn("model_predictor_outside_design_domain:coffee.roast", self.rows("training-candidates")[0]["exclusion_reasons"])
+        assert (report["status"]) == ("complete_snapshot")
+        assert (self.rows("products")[0]["attributes"]["coffee.roast"]["value"]) == ("medium")
+        assert (self.rows("model-inputs")) == ([])
+        assert ("model_predictor_outside_design_domain:coffee.roast") in (self.rows("training-candidates")[0]["exclusion_reasons"])
 
     def test_complete_reviewed_cli_handoff_preserves_families_and_no_fit_status(self):
         first = self.product("coffee-family-a")
@@ -197,21 +193,21 @@ class CategoryProcessingEngineTests(unittest.TestCase):
         command = [sys.executable, "-I", "-B", str(PLUGIN_ROOT / "cli.py"), "prepare-model",
                    "--silver-root", str(self.output), "--output", str(destination)]
         result = subprocess.run(command, cwd=self.base, capture_output=True, text=True)
-        self.assertEqual(result.returncode, 0, result.stderr)
+        assert (result.returncode) == (0), (result.stderr)
         report = json.loads((destination / "preparation-report.json").read_text())
-        self.assertFalse(report["regression_fitted"])
-        self.assertFalse(report["release_ready"])
+        assert not (report["regression_fitted"])
+        assert not (report["release_ready"])
         train, validation = self.rows("train", destination), self.rows("validation", destination)
-        self.assertEqual(len(train), 1)
-        self.assertEqual(len(validation), 1)
-        self.assertFalse({row["family_id"] for row in train} & {row["family_id"] for row in validation})
+        assert (len(train)) == (1)
+        assert (len(validation)) == (1)
+        assert not ({row["family_id"] for row in train} & {row["family_id"] for row in validation})
         (self.output / "model-inputs.jsonl").write_text("{}\n")
         rejected = self.base / "tampered-preparation"
         command[command.index(str(destination))] = str(rejected)
         result = subprocess.run(command, cwd=self.base, capture_output=True, text=True)
-        self.assertEqual(result.returncode, 2)
-        self.assertIn("differs from its manifest", result.stderr)
-        self.assertFalse(rejected.exists())
+        assert (result.returncode) == (2)
+        assert ("differs from its manifest") in (result.stderr)
+        assert not (rejected.exists())
 
     def test_unknown_and_unmapped_values_stay_evidence_backed_without_fabricated_absence(self):
         product = self.product()
@@ -221,12 +217,12 @@ class CategoryProcessingEngineTests(unittest.TestCase):
         self.collect([product])
         self.build()
         row = self.rows("products")[0]
-        self.assertEqual(row["attributes"]["coffee.decaf_claim"]["status"], "unknown")
-        self.assertIsNone(row["attributes"]["coffee.decaf_claim"]["value"])
+        assert (row["attributes"]["coffee.decaf_claim"]["status"]) == ("unknown")
+        assert (row["attributes"]["coffee.decaf_claim"]["value"]) is None
         claims = {claim["attribute"]: claim for claim in row["unmapped_claims"]}
-        self.assertEqual(claims["coffee.new_source_claim"]["value"], "Original unfamiliar coffee claim")
-        self.assertTrue(claims["coffee.roast"]["evidence"])
-        self.assertEqual(self.rows("model-inputs"), [])
+        assert (claims["coffee.new_source_claim"]["value"]) == ("Original unfamiliar coffee claim")
+        assert (claims["coffee.roast"]["evidence"])
+        assert (self.rows("model-inputs")) == ([])
 
     def test_conflicting_mappings_keep_all_evidence_and_no_selected_value(self):
         product = self.product()
@@ -240,22 +236,22 @@ class CategoryProcessingEngineTests(unittest.TestCase):
         recipe_path.write_text(json.dumps(recipe))
         self.build(profile=copied)
         attribute = self.rows("products")[0]["attributes"]["coffee.roast"]
-        self.assertEqual(attribute["status"], "conflict")
-        self.assertIsNone(attribute["value"])
-        self.assertGreaterEqual(len(attribute["evidence"]), 2)
+        assert (attribute["status"]) == ("conflict")
+        assert (attribute["value"]) is None
+        assert (len(attribute["evidence"])) >= (2)
         conflicts = [row for row in self.rows("mapping-review-batches") if row["reason"] == "conflict"]
-        self.assertEqual(len(conflicts), 1)
-        self.assertEqual(set(conflicts[0]["value"]), {"Medium Roast", "Dark Roast"})
+        assert (len(conflicts)) == (1)
+        assert (set(conflicts[0]["value"])) == ({"Medium Roast", "Dark Roast"})
 
     def test_new_seller_role_is_an_evidenced_mapping_gap(self):
         self.collect([self.product(source="unregistered-seller")])
         self.build()
         row = self.rows("products")[0]
-        self.assertEqual(row["source_role"], "unknown")
+        assert (row["source_role"]) == ("unknown")
         batches = [item for item in self.rows("mapping-review-batches") if item["reason"] == "selling_source_role_unmapped"]
-        self.assertEqual(len(batches), 1)
-        self.assertEqual(batches[0]["value"], "unregistered-seller")
-        self.assertEqual(batches[0]["scope"], "product")
+        assert (len(batches)) == (1)
+        assert (batches[0]["value"]) == ("unregistered-seller")
+        assert (batches[0]["scope"]) == ("product")
 
     def test_malformed_source_context_remains_unresolved_with_original_facts(self):
         product = self.product(source="")
@@ -263,41 +259,41 @@ class CategoryProcessingEngineTests(unittest.TestCase):
         self.collect([product])
         self.build()
         row = self.rows("products")[0]
-        self.assertEqual(row["source_key"], "unknown")
-        self.assertEqual(row["source_role"], "unknown")
-        self.assertIsNone(row["brand"])
-        self.assertEqual(row["attributes"]["identity.brand"]["status"], "unknown")
-        self.assertTrue(any(claim["attribute"] == "identity.brand" for claim in row["unmapped_claims"]))
-        self.assertEqual(self.rows("source-listings")[0]["captures"][0]["raw_record"], product)
-        self.assertEqual(self.rows("model-inputs"), [])
+        assert (row["source_key"]) == ("unknown")
+        assert (row["source_role"]) == ("unknown")
+        assert (row["brand"]) is None
+        assert (row["attributes"]["identity.brand"]["status"]) == ("unknown")
+        assert (any(claim["attribute"] == "identity.brand" for claim in row["unmapped_claims"]))
+        assert (self.rows("source-listings")[0]["captures"][0]["raw_record"]) == (product)
+        assert (self.rows("model-inputs")) == ([])
 
     def test_outputs_are_deterministic_and_contract_copies_match_recorded_hashes(self):
         self.collect([self.product()])
         first = self.build()
         before = self.snapshot(self.output)
-        self.assertEqual(self.build(), first)
-        self.assertEqual(self.snapshot(self.output), before)
+        assert (self.build()) == (first)
+        assert (self.snapshot(self.output)) == (before)
         manifest = json.loads((self.output / "manifest.json").read_text())
-        self.assertTrue(manifest["dataset_version"].startswith("silver-"))
-        self.assertTrue(manifest["source_dataset_version"].startswith("raw-snapshot-"))
+        assert (manifest["dataset_version"].startswith("silver-"))
+        assert (manifest["source_dataset_version"].startswith("raw-snapshot-"))
         for name, checksum in manifest["contract_sha256"].items():
-            self.assertEqual((self.output / name).read_bytes(), (self.profile / name).read_bytes())
-            self.assertEqual(hashlib.sha256((self.output / name).read_bytes()).hexdigest(), checksum)
+            assert ((self.output / name).read_bytes()) == ((self.profile / name).read_bytes())
+            assert (hashlib.sha256((self.output / name).read_bytes()).hexdigest()) == (checksum)
         for name, metadata in manifest["managed_files"].items():
             data = (self.output / name).read_bytes()
-            self.assertEqual(metadata["byte_length"], len(data))
-            self.assertEqual(metadata["sha256"], hashlib.sha256(data).hexdigest())
+            assert (metadata["byte_length"]) == (len(data))
+            assert (metadata["sha256"]) == (hashlib.sha256(data).hexdigest())
 
     def test_changed_seller_identity_is_excluded_with_original_captures_preserved(self):
         self.collect([self.product()])
         self.collect([self.product(source="fixture-roaster")])
         before = self.snapshot(self.archive)
         report = self.build()
-        self.assertEqual(report["status"], "partial")
-        self.assertEqual(self.rows("products"), [])
-        self.assertEqual(self.rows("prices"), [])
-        self.assertEqual(self.snapshot(self.archive), before)
-        self.assertTrue(report["archive_errors"])
+        assert (report["status"]) == ("partial")
+        assert (self.rows("products")) == ([])
+        assert (self.rows("prices")) == ([])
+        assert (self.snapshot(self.archive)) == (before)
+        assert (report["archive_errors"])
 
     def test_bad_reviews_and_unsafe_output_paths_fail_before_writes(self):
         self.collect([self.product()])
@@ -305,11 +301,11 @@ class CategoryProcessingEngineTests(unittest.TestCase):
         reviews = self.reviews()
         reviews["products"]["coffee-example"]["evidence"][0]["pointer"] = "/does/not/resolve"
         rejected = self.base / "rejected"
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             self.build(reviews, output=rejected)
-        self.assertFalse(rejected.exists())
+        assert not (rejected.exists())
         for output in (self.archive, self.archive / "silver", self.base):
-            with self.subTest(output=output), self.assertRaises(ValueError):
+            with pytest.raises(ValueError):
                 self.build(output=output)
 
     def test_chocolate_profile_uses_the_same_generic_engine(self):
@@ -327,10 +323,10 @@ class CategoryProcessingEngineTests(unittest.TestCase):
         self.collect([chocolate], category="chocolate")
         self.build(profile=resolve_profile(PLUGIN_ROOT / "profiles/chocolate"))
         row = self.rows("products")[0]
-        self.assertEqual(row["category"], "chocolate")
-        self.assertEqual(len(row["attributes"]), 103)
-        self.assertIn("composition.cocoa_percentage", row["attributes"])
-        self.assertNotIn("coffee.roast", row["attributes"])
+        assert (row["category"]) == ("chocolate")
+        assert (len(row["attributes"])) == (103)
+        assert ("composition.cocoa_percentage") in (row["attributes"])
+        assert ("coffee.roast") not in (row["attributes"])
 
     def test_copied_plugin_processes_coffee_in_isolated_python_without_sibling_modules(self):
         self.collect([self.product()])
@@ -343,11 +339,11 @@ class CategoryProcessingEngineTests(unittest.TestCase):
                                  "--archive-root", str(self.archive), "--profile", str(self.profile), "--offline",
                                  "--output", str(destination)], cwd=self.base, env=environment,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=False)
-        self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertEqual(len(self.rows("products", output=destination)), 1)
-        self.assertEqual(self.rows("products", output=destination)[0]["category"], "coffee")
-        self.assertFalse((copied.parent / "category-research").exists())
-        self.assertFalse((copied.parent / "scripts").exists())
+        assert (result.returncode) == (0), (result.stderr)
+        assert (len(self.rows("products", output=destination))) == (1)
+        assert (self.rows("products", output=destination)[0]["category"]) == ("coffee")
+        assert not ((copied.parent / "category-research").exists())
+        assert not ((copied.parent / "scripts").exists())
 
     def test_detached_plugin_resolves_pinned_coffee_from_explicit_offline_cache(self):
         from category_processing.dataset_contracts import cache_directory, load_manifest
@@ -367,14 +363,14 @@ class CategoryProcessingEngineTests(unittest.TestCase):
                                  "--contracts-cache", str(cache), "--offline", "--output", str(output)],
                                 cwd=self.base, env=environment, stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE, text=True, check=False)
-        self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertEqual(self.rows("products", output=output)[0]["category"], "coffee")
-        self.assertFalse((copied / ".contract-cache").exists())
+        assert (result.returncode) == (0), (result.stderr)
+        assert (self.rows("products", output=output)[0]["category"]) == ("coffee")
+        assert not ((copied / ".contract-cache").exists())
         manifest = json.loads((output / "manifest.json").read_text())
-        self.assertEqual(manifest["contract_source"]["type"], "hugging_face_dataset")
-        self.assertEqual(manifest["contract_source"]["repo_id"], reference["repo_id"])
-        self.assertEqual(manifest["contract_source"]["revision"], reference["revision"])
-        self.assertEqual(set(manifest["contract_source"]["paths"]), set(reference["files"]))
+        assert (manifest["contract_source"]["type"]) == ("hugging_face_dataset")
+        assert (manifest["contract_source"]["repo_id"]) == (reference["repo_id"])
+        assert (manifest["contract_source"]["revision"]) == (reference["revision"])
+        assert (set(manifest["contract_source"]["paths"])) == (set(reference["files"]))
 
     def test_model_preparation_refuses_empty_eligible_rows_without_fake_artifacts(self):
         self.collect([self.product()])
@@ -384,9 +380,5 @@ class CategoryProcessingEngineTests(unittest.TestCase):
                                  "--silver-root", str(self.output), "--output", str(destination)],
                                 cwd=self.base, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                 text=True, check=False)
-        self.assertEqual(result.returncode, 2, result.stderr)
-        self.assertFalse(destination.exists())
-
-
-if __name__ == "__main__":
-    unittest.main()
+        assert (result.returncode) == (2), (result.stderr)
+        assert not (destination.exists())

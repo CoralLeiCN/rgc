@@ -8,14 +8,13 @@ records, and 2 for an invalid invocation or an unreadable output destination.
 """
 
 import argparse
-from collections import Counter, defaultdict
-from datetime import datetime, timezone
 import hashlib
 import json
-from pathlib import Path
 import re
 import sys
-
+from collections import Counter, defaultdict
+from datetime import datetime, timezone
+from pathlib import Path
 
 ARCHIVE_VERSION = "category-research-raw-1"
 ARTIFACT_GROUPS = ("source_artifacts", "source_catalogs", "images")

@@ -1,12 +1,11 @@
 """Validate and load an explicit category processing profile at runtime."""
 
-from pathlib import Path
 import math
 import re
+from pathlib import Path
 
 from .archive import positive, read_json, sha256
 from .values import alias_key
-
 
 PROFILE_FORMAT = "category-processing-profile-1"
 CONTRACT_FILES = ("profile.json", "source-mappings.json", "model-design.json", "product.schema.json", "pipeline.json")
@@ -38,7 +37,11 @@ def resolve_profile(profile_root=None, *, category=None, cache_root=None, offlin
             raise ValueError("Pinned category profile directory cannot be a symlink.")
     reference = root / PROFILE_REFERENCE
     if reference.is_file():
-        from .dataset_contracts import load_manifest, resolve_contracts, verify_contract_directory
+        from .dataset_contracts import (
+            load_manifest,
+            resolve_contracts,
+            verify_contract_directory,
+        )
         manifest = load_manifest(reference)
         if set(manifest["files"]) != set(CONTRACT_FILES):
             raise ValueError("A category processing profile reference requires all five contracts.")
@@ -186,6 +189,21 @@ def load_profile(profile_root):
         raise ValueError("Pipeline recipe requires a versioned pipeline_version.")
     if recipe.get("adapter") not in ("structured", "chocolate"):
         raise ValueError("The profile requires a supported bundled adapter.")
+    discovery = recipe.get("discovery", {})
+    if not isinstance(discovery, dict) or set(discovery) - {"enabled", "roots", "ignore_pointers"}:
+        raise ValueError("Pipeline discovery must use enabled, roots and ignore_pointers.")
+    if "enabled" in discovery and type(discovery["enabled"]) is not bool:
+        raise ValueError("Pipeline discovery enabled must be boolean.")
+    for name in ("roots", "ignore_pointers"):
+        if name not in discovery:
+            continue
+        pointers = discovery[name]
+        if not isinstance(pointers, list) or (name == "roots" and not pointers):
+            raise ValueError("Pipeline discovery " + name + " must be a list of raw-record pointers.")
+        for pointer in pointers:
+            _pointer(pointer, "Pipeline discovery " + name)
+            if pointer != "/raw_record" and not pointer.startswith("/raw_record/"):
+                raise ValueError("Pipeline discovery pointers must stay within /raw_record.")
     attributes = profile.get("attributes")
     if not isinstance(attributes, dict) or not attributes or profile.get("attribute_count") != len(attributes):
         raise ValueError("Profile attribute_count must match its nonempty attribute catalog.")
@@ -310,9 +328,25 @@ def load_profile(profile_root):
         raise ValueError("Model target quantity_attribute and base_quantity must agree with the pipeline recipe.")
     if not isinstance(target.get("currency"), str) or not target["currency"].strip():
         raise ValueError("Model target currency must be explicit nonempty text.")
+    eligibility = design.get("eligibility", {})
+    if not isinstance(eligibility, dict):
+        raise ValueError("Model eligibility must be an object.")
+    tax_bases = eligibility.get("allowed_tax_bases", ["consumer_tax_included"])
+    if (not isinstance(tax_bases, list) or len(tax_bases) != 1
+            or any(not isinstance(value, str) or not value.strip() or value != value.strip()
+                   or value.casefold() in {"unknown", "unresolved", "not_applicable", "conflict"}
+                   for value in tax_bases)):
+        raise ValueError("Model eligibility allowed_tax_bases must select one resolved tax basis.")
+    if "tax_basis" in target and target["tax_basis"] not in tax_bases:
+        raise ValueError("Model target tax_basis differs from the eligibility policy.")
     price = recipe.get("price", {})
     if not isinstance(price, dict) or price.get("price_unit") not in ("major", "minor"):
         raise ValueError("Pipeline price requires an explicit major/minor representation.")
+    if ("minor_unit_factor" in price
+            and (isinstance(price["minor_unit_factor"], bool)
+                 or not isinstance(price["minor_unit_factor"], (int, float))
+                 or positive(price["minor_unit_factor"]) is None)):
+        raise ValueError("Pipeline price minor_unit_factor must be a finite positive number.")
     for name, value in price.items():
         if name.endswith("_pointer"):
             _pointer(value, "Pipeline price " + name)

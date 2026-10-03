@@ -3,12 +3,11 @@
 import hashlib
 import json
 import os
-from pathlib import Path, PurePosixPath
 import re
 import tempfile
+from pathlib import Path, PurePosixPath
 from urllib.parse import quote
 from urllib.request import urlopen
-
 
 REFERENCE_FORMAT = "rgc-dataset-contract-reference-1"
 REFERENCE_FILE = "dataset-contract.json"

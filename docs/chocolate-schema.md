@@ -300,15 +300,30 @@ dataset until evidence review, extraction evaluation, support checks and the
 1. Inspect an original capture and retain the unfamiliar statement/evidence.
 2. Add or amend typed definitions, allowed values, source aliases, scope and unit
   rules in a local working copy of the dataset contracts; bump affected version
-  identifiers when semantics change. Publish the revised contracts to a new
-  immutable dataset revision, verify its bytes and update the manifest pins/hashes
-  in Git under [dataset contract maintenance](dataset-contracts.md#maintenance-and-verification).
+  identifiers when semantics change.
 3. Implement extraction/validation scoped to the evidence and test the actual
   ambiguity or conversion, including unknown/conflict behavior where relevant.
 4. Rebuild silver and inspect coverage, exclusions and review changes.
-5. Update this guide and the applicable documents under the
+5. For schema changes, present the completed release summary and wait for user
+  review before its Hugging Face commit under the
+  [maintenance decision](decisions/agent-led-schema-maintenance.md). Supported
+  local changes require no user approval.
+6. Publish reviewed contracts to a new immutable dataset revision, verify bytes
+  and update manifest pins/hashes under
+  [dataset contract maintenance](dataset-contracts.md#maintenance-and-verification).
+7. Update this guide and the applicable documents under the
   [documentation policy](documentation-policy.md); run
   `python3 -B scripts/check_documentation.py`.
 
 New tracked fields can remain unknown or excluded from the model until evidence,
 review and support justify their use.
+
+Use the locked development environment for schema and model contract checks:
+
+```sh
+uv sync --locked
+python3 -B scripts/fetch_contracts.py --all
+uv run pytest scripts/tests/test_standardization.py scripts/tests/test_standardized_values.py scripts/tests/test_contract_consistency.py scripts/tests/test_model_contract.py
+uv run ruff check .
+python3 -B scripts/check_documentation.py
+```

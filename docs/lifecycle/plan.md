@@ -29,6 +29,10 @@ Canonical requirements: [specification](../spec.md),
 | Specify supermarket pricing, retailer comparisons and LightGBM/SHAP/AI explanations. | `docs/chocolate-modeling-design.md`, `docs/analysis/lightgbm-shap-explanation-design.md` | Proposed research design; active preparation contracts await migration and model fitting remains pending. |
 | Move analytical contract bodies to the dataset with immutable references and verified ignored caches. | Three `dataset-contract.json` manifests, resolver/fetch/publication helpers, `docs/dataset-contracts.md` | Published and verified against original bytes; offline caches and both processing pipelines verified. |
 | Consolidate repeated documentation and apply plain wording while preserving contracts and evidence. | Repository instructions, canonical/lifecycle guides, root and package READMEs, package skills/references | Completed; original cleanup and integration with the contract migration verified below. |
+| Configure collection sections and generate processing profiles for new categories. | Collection `collection_sections`, processing `profile_builder.py`, `init-profile`, definition reference and generic engine/archive tests | Implemented: Unicode section reports, five-contract authoring, non-food quantities/currencies/tax bases and normalized study paths. |
+| Discover unconfigured structured source fields and document proposals. | Processing `discovery.py`, `schema_suggestions.py`, pipeline/summary outputs, tests/reference, `docs/schema-proposals/` | Implemented structural discovery and worksheets; seller review metrics and selling plan terms await agent assessment. Prose investigation, a decision registry and snapshot comparisons remain future work. |
+| Maintain schemas autonomously and review completed schema releases before Hugging Face commits. | `docs/decisions/agent-led-schema-maintenance.md`, canonical guides, processing skill/references and generated guidance | Standing user decision: agents apply supported local changes without approval, with evidence, versioning, tests and impact checks. Present the detailed completed release for user review before its remote commit. The harness owns this step; no popup UI or upload gate is implemented. |
+| Use pytest for tests and Ruff for Python linting. | `pyproject.toml`, `uv.lock`, native pytest tests, plugin `pytest.ini` files, `.github/workflows/validation.yml`, development documentation | Implemented with locked development dependencies and CI commands. All 316 tests and Ruff checks passed; isolated package verification is recorded below. |
 
 ## Risks and controls
 
@@ -60,6 +64,8 @@ readiness; `complete_snapshot` establishes accepted input consistency.
 | Agent writing guidelines | Documentation guard, documentation checker tests and `git diff --check` passed. Rules are in `AGENTS.md`, referenced from intention and policy. |
 | Documentation cleanup | 147 script, 64 processing and 13 collection tests passed (224 total), alongside the documentation guard and local file/heading link checks. Independent semantic review and comparison with the saved originals retained requirements, source URLs, identifiers, command arguments, examples/formulas, acceptance scenarios and historical proof. Repeated detail now links to owning guides; package references remain complete for independent use. Removed the empty root `README.md`. |
 | Cleanup integration with main | 168 script, 75 processing and 13 collection tests passed (256 total). All three pinned contract caches verified offline; documentation guard, 157 local file/heading links and whitespace checks passed. Independent review preserved both parents' requirements, source URLs, CLI arguments, examples/formulas, acceptance scenarios, migration evidence and active/proposed model boundaries. Runtime files and immutable contract manifests match main. |
+| Prior main integration with pending generic/discovery work | On 2026-10-03, local main `9cafecb` was integrated while retaining pending collection/profile authoring, discovery and maintenance policy changes. 168 script, 129 processing and 19 collection tests passed (316 total), with documentation and whitespace checks. All 14 contract payloads matched immutable manifest hashes/lengths and all three caches verified offline. An isolated package processed the two proposal captures with 31 discovered occurrences, full typed evidence, 28 verified managed files and reproducible repeated outputs/review packets. |
+| Pytest and Ruff migration after the latest main sync | On 2026-10-03, fetched origin and integrated local main `f932668` while preserving pending work. All 316 tests passed as native pytest tests with pytest 9.1.1; Ruff 0.16.10, documentation and whitespace checks passed. Locked development dependencies and equivalent CI commands are configured; the updated GitHub workflow has not run here. Isolated copied plugins passed all 129 processing and 19 collection tests using their own pytest configuration. Existing immutable contract references are unchanged. |
 
 Current chocolate source values are unreviewed and price/tax basis is unresolved:
 `model-inputs.jsonl` is empty and `release_ready` is false. Unsupported mappings
@@ -73,12 +79,12 @@ Run from the repository root:
 python3 -B scripts/build_chocolate_silver.py \
   --archive-root data/collections \
   --output data/silver/chocolate/uk
+uv sync --locked
 python3 -B scripts/fetch_contracts.py --all
 python3 -B scripts/fetch_contracts.py --all --offline
+uv run pytest
+uv run ruff check .
 python3 -B scripts/check_documentation.py
-python3 -B -m unittest discover -s scripts/tests -v
-python3 -B -m unittest discover -s plugins/category-research/tests -v
-python3 -B -m unittest discover -s plugins/category-processing/tests -v
 ```
 
 The [silver guide](../chocolate-silver.md) and [acceptance scenarios](../spec.md#8-acceptance-scenarios-for-stages-1-and-2)

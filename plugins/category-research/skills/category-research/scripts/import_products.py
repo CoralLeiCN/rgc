@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Agent Skills entry point using the library bundled within this plugin."""
 
-from pathlib import Path
 import sys
+from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 

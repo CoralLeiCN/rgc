@@ -1,4 +1,4 @@
-name: Validate data contracts and documentation
+name: Validate Python, data contracts and documentation
 
 on:
   pull_request:
@@ -15,18 +15,25 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
+      - name: Set up uv and Python
+        uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4 # v10.1.0
+        with:
+          version: "0.11.29"
+          python-version: "3.13"
+      - name: Install locked development dependencies
+        run: uv sync --locked
+      - name: Lint Python with Ruff
+        run: uv run --locked ruff check . --output-format github
       - name: Check documentation maintenance
         env:
           DOCUMENTATION_BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
         run: |
           if [ -z "$DOCUMENTATION_BASE" ] || [ "$DOCUMENTATION_BASE" = "0000000000000000000000000000000000000000" ]; then
-            python3 -B scripts/check_documentation.py --structural-only
+            uv run --locked python -B scripts/check_documentation.py --structural-only
           else
-            python3 -B scripts/check_documentation.py --base "$DOCUMENTATION_BASE"
+            uv run --locked python -B scripts/check_documentation.py --base "$DOCUMENTATION_BASE"
           fi
       - name: Test data layers and modeling contracts
         run: |
-          python3 -B scripts/fetch_contracts.py --all
-          python3 -B -m unittest discover -s scripts/tests -v
-          python3 -B -m unittest discover -s plugins/category-research/tests -v
-          python3 -B -m unittest discover -s plugins/category-processing/tests -v
+          uv run --locked python -B scripts/fetch_contracts.py --all
+          uv run --locked pytest

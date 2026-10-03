@@ -1,11 +1,10 @@
 """Typed vocabulary and unit standardization driven by the category profile."""
 
-from decimal import Decimal, InvalidOperation
-from datetime import date
 import math
 import re
 import unicodedata
-
+from datetime import date
+from decimal import Decimal, InvalidOperation
 
 STATES = {"known", "unknown", "not_applicable", "conflict"}
 SCOPES = {"product", "ingredient", "brand", "packaging", "packaging_component", "observation"}

@@ -1,8 +1,7 @@
 """Repository entry point for dataset-owned analytical contract resolution."""
 
-from pathlib import Path
 import sys
-
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 PLUGIN_ROOT = ROOT / "plugins/category-processing"
@@ -10,9 +9,11 @@ if str(PLUGIN_ROOT) not in sys.path:
     sys.path.insert(0, str(PLUGIN_ROOT))
 
 from category_processing.dataset_contracts import (  # noqa: E402
-    cache_directory, load_manifest, resolve_contracts, verify_contract_directory,
+    cache_directory,
+    load_manifest,
+    resolve_contracts,
+    verify_contract_directory,
 )
-
 
 SCHEMA_REFERENCE = ROOT / "schemas/chocolate/dataset-contract.json"
 SCHEMA_CACHE = ROOT / "data/contract-cache"

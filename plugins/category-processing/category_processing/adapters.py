@@ -1,15 +1,14 @@
-"""Conservative, offline adapters for the collected UK chocolate evidence.
+"""Offline structured extraction with an optional UK chocolate source adapter.
 
 Adapters return candidates, rather than reviewed product facts. Original records
 are never changed. A JSON pointer identifies each supporting value in the capture.
 Shopify ``grams`` is deliberately excluded: it can describe shipping weight.
 """
 
-from decimal import Decimal, InvalidOperation
-from html.parser import HTMLParser
 import math
 import re
-
+from decimal import Decimal, InvalidOperation
+from html.parser import HTMLParser
 
 INFO = "/raw_record/information"
 IDENTITY = "/raw_record/identity"
@@ -622,10 +621,16 @@ def extract_capture(capture, recipe):
             def value(name, default=None):
                 return _configured_value(capture, config[name]) if name in config else default
 
+            currency = value("currency_pointer", config.get("currency"))
+
             def money(raw):
+                # Other currencies require plain numeric amounts; GBP source
+                # prefixes stay compatible only with an explicitly GBP price.
+                if currency != "GBP" and isinstance(raw, str) and not re.fullmatch(r"\d+(?:\.\d+)?", raw.strip()):
+                    return None
                 result = parse_money(raw)
                 if result is not None and config["price_unit"] == "minor":
-                    result /= 100
+                    result /= Decimal(str(config.get("minor_unit_factor", 100)))
                 if result is None:
                     return None
                 result = float(result)
@@ -635,7 +640,7 @@ def extract_capture(capture, recipe):
             tax = value("tax_basis_pointer", "unknown")
             prices.append({"displayed_price": money(amount), "regular_price": money(value("regular_price_pointer")),
                            "reference_price": money(value("reference_price_pointer")),
-                           "currency": value("currency_pointer", config.get("currency")),
+                           "currency": currency,
                            "observed_at": value("observed_at_pointer"), "available": available if type(available) is bool else None,
                            "tax_basis": tax if isinstance(tax, str) else "unknown", "promotion_status": "unknown",
                            "promotion": None, "time_basis": "source_observation" if value("observed_at_pointer") else "unknown",
@@ -647,4 +652,14 @@ def extract_capture(capture, recipe):
         if item["attribute"] == quantity["attribute"] and item.get("value") is not None:
             quantities.append({"value": item["value"], "unit": item.get("unit", quantity["unit"]),
                                "pointer": item["pointer"], "method": item["method"]})
-    return {"attributes": attributes, "quantities": quantities, "prices": prices, "warnings": warnings}
+    handled_pointers = []
+    if recipe["adapter"] == "chocolate":
+        # Price context is consumed even when it has no separate feature assertion.
+        # Other raw siblings remain available to structural discovery.
+        handled_pointers = [INFO + "/" + name for name in (
+            "selected_variant/price", "selected_variant/compare_at_price", "selected_variant/available",
+            "source_price_currency", "catalogue_retrieval_currency", "source_price_unit",
+            "source_collected_at", "catalogue_collected_at", "catalogue_archived_at",
+        )]
+    return {"attributes": attributes, "quantities": quantities, "prices": prices, "warnings": warnings,
+            "handled_pointers": handled_pointers}

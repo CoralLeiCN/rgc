@@ -2,10 +2,10 @@
 
 import argparse
 import json
-from pathlib import Path
 import sys
+from pathlib import Path
 
-from .archive import ArchiveError, DEFAULT_MAX_BYTES, import_document
+from .archive import DEFAULT_MAX_BYTES, ArchiveError, import_document
 
 
 def main(argv=None):
@@ -36,11 +36,14 @@ def main(argv=None):
     except (ArchiveError, OSError, json.JSONDecodeError) as error:
         print(json.dumps({"status": "failed", "error": str(error)}), file=sys.stderr)
         return 2
-    summary = {key: result[key] for key in ("run_id", "status", "completeness", "records_received", "unique_product_ids", "unique_http_transfers", "report_path")}
+    summary = {key: result[key] for key in ("run_id", "status", "completeness", "records_received", "unique_product_ids", "unique_http_transfers", "report_path", "section_presence_contract_version")}
     summary.update({"image_files_saved": sum(item.get("image_files_saved", 0) for item in result["products"]),
                     "source_files_saved": sum(item.get("source_files_saved", 0) for item in result["products"]),
                     "failed_products": sum(item["status"] == "failed" for item in result["products"]),
-                    "ingredient_fields_unknown": sum(item.get("ingredient_field_status") == "unknown" for item in result["products"])})
+                    "section_fields_unknown": {name: sum(item.get("section_field_statuses", {}).get(name) == "unknown" for item in result["products"])
+                                               for name in result["collection_sections"]}})
+    if "ingredients" in result["collection_sections"]:
+        summary["ingredient_fields_unknown"] = summary["section_fields_unknown"]["ingredients"]
     print(json.dumps(summary, ensure_ascii=False, indent=2))
     return 1 if any(product["status"] == "failed" for product in result["products"]) else 0
 

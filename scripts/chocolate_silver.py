@@ -5,10 +5,18 @@ import json
 from pathlib import Path
 from tempfile import NamedTemporaryFile, TemporaryDirectory
 
-from chocolate_cleanup.deduplication import build_deduplicated_dataset, digest, inside, json_bytes
-from chocolate_standardization.pipeline import build_standardized_dataset, read_json, sha256
+from chocolate_cleanup.deduplication import (
+    build_deduplicated_dataset,
+    digest,
+    inside,
+    json_bytes,
+)
+from chocolate_standardization.pipeline import (
+    build_standardized_dataset,
+    read_json,
+    sha256,
+)
 from dataset_contracts import resolve_contract_root
-
 
 ROOT = Path(__file__).resolve().parents[1]
 LAYER_VERSION = "chocolate-silver-1"

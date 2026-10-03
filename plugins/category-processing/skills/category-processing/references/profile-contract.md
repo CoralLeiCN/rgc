@@ -1,6 +1,8 @@
 # Profile contract
 
-Choose a supplied profile or resolve a packaged category with
+Choose a supplied profile for the requested category/market, generate a new
+profile from an explicit [category definition](profile-definition.md) using
+`init-profile`, or resolve a packaged category with
 `category_processing.profiles.resolve_profile(category="coffee")`. Packaged
 references live in `profiles/<category>/dataset-contract.json`; their five JSON
 payloads live under `contracts/category-processing/<category>/` in the
@@ -11,10 +13,18 @@ on use. It rejects mutable revision references and corrupt cache content.
 `--contracts-cache` selects the cache, and `--offline` requires verified cached
 bytes without downloading.
 
+An example may inform a design, but new categories do not require copying its
+attributes or price basis. `init-profile` produces all five aligned local
+contracts from the supplied definition without a dataset download.
+
 To extend a starter, copy its five verified payload files into a separately
-versioned custom profile directory, omitting `dataset-contract.json`. A custom
-directory without a dataset reference loads local files. Edit and version this
-copy. The five JSON files own separate decisions:
+versioned custom profile directory, omitting `dataset-contract.json`. Keep the
+verified cache unchanged. A custom directory without a dataset reference retains
+local-only loading. Use these local working copies for evidence assessment and
+validation. Published analytical contracts are authoritative in the Hugging Face
+dataset; after the required release review and publication, update the small
+reference to the new immutable revision and per-file hashes. Do not put category
+JSON payloads back into Git. The five JSON files own separate decisions:
 
 | File | Owns |
 | --- | --- |
@@ -69,21 +79,49 @@ imports. Structured extraction uses JSON pointers rooted in captures:
 This is a fragment of a complete recipe. Field entries may specify scope and
 qualifier; sections map structured objects to attribute families. `source_roles`
 maps exact source keys to role/retailer; brand does not establish retailer role.
-`price` declares amount, optional regular price, currency, observation time,
+`group_attribute` identifies the declared comparable-group field. New category
+definitions require it explicitly; older recipes default to
+`identity.product_group`. `price` declares amount, optional regular price, currency, observation time,
 availability and tax pointers, optional fixed currency and explicit major/minor
-money units. Quantity uses a numeric declared attribute/unit and positive base.
+money units. For structured minor-unit money, `minor_unit_factor` is the positive
+divisor converting to major units; omitted legacy values use 100. Major prices
+are unchanged. Quantity uses a numeric declared attribute/unit and positive base.
+It may describe items, packs, mass, volume, length or time. No default count is
+inferred. `unit_conversions` maps a canonical unit to source-unit multipliers;
+choose conversions supported by the category and source evidence.
+Structured money accepts positive plain decimal amounts in the explicit currency.
+Locale punctuation or symbols are not parsed; legacy £/GBP prefixes require an
+explicit GBP observation. Invalid derived money stays null with its raw evidence
+preserved.
+
+Model `eligibility.allowed_tax_bases` selects exactly one resolved reviewed basis;
+the default for older designs is `consumer_tax_included`. `target.tax_basis`, when
+present, must match. A separate study may select `consumer_tax_excluded` or
+another evidenced basis. The engine does not normalize taxes or exchange rates
+or pool incompatible price bases.
 
 Conversions require declared units or supported source structure: g/kg/mg mass,
 recognized duration/temperature units, currency major/minor units, validated
 GTINs, ISO dates and supported country aliases. Ambiguous freeform values,
 shipping weights and unfamiliar sections are retained rather than silently
 coerced. Keep unsupported values, product types/tags and structured fields as
-unmapped claims with evidence. Chocolate uses conservative parsing for each
-supported source; coffee demonstrates structured extraction within its configured fields.
-Gap detection reaches configured pointers/sections and supported parser cases;
-fields outside that coverage remain raw and may not create a review batch.
+unmapped claims with evidence. Chocolate uses conservative source-specific
+parsing; coffee demonstrates structured extraction, not broad coffee coverage.
+Known-field gap detection reaches configured pointers/sections and supported
+parser cases. Structural discovery also records meaningful source subtrees
+outside that coverage, preserving their full typed values and evidence pointers.
 Audit section coverage and sample original evidence before claiming complete
-classification for a new category or source.
+classification for a new category or source; concepts hidden inside already-used
+prose still need separate investigation.
+
+Optional `pipeline.json` `discovery` settings contain `enabled` (default `true`),
+`roots` (a nonempty list, default `["/raw_record"]`) and `ignore_pointers` (extra
+exact source paths excluded alongside known identity/provenance metadata).
+All roots and exclusions must be JSON pointers within `/raw_record`. Explicit
+field mappings and selected sections remain extraction coverage. Version the
+recipe when changing these discovery boundaries; the quality report records the
+effective policy. See [schema discovery](schema-discovery.md) for review outputs,
+unresolved semantic scope and durable proposal guidance.
 
 Reviews use the recipe's format, normally `category-processing-reviews-1`;
 chocolate also accepts its documented legacy format. Use actual listing/price
@@ -96,6 +134,16 @@ study scope, variant and family; prices establish regular price, currency, aware
 time, availability and tax basis. Inspect output records and design before
 reviewing. Reviews cannot borrow another seller's capture or bypass feature,
 quantity and price observation gates.
+
+Review is an evidence assessment by the calling agent within the authorized
+study, not a required user approval. User review or confirmation is not required
+for local authorized schema, mapping or parser maintenance. Before a Hugging Face
+commit or publication carrying a changed schema or its rebuilt data, complete
+the local contracts and checks, present the detailed release summary, and wait
+for user authorization of that release; see
+[mapping maintenance](mapping-maintenance.md#hugging-face-release-review).
+The `reviewed_by` value identifies the agent or other actual reviewer; valid
+source support and all eligibility checks still apply.
 
 An illustrative partial coffee review is below. Replace seller/observation/
 capture IDs with actual output IDs and each value/pointer with decisions supported

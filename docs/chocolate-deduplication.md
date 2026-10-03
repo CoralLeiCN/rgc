@@ -112,3 +112,12 @@ separate verification.
 
 The CLI exits with 0 for a complete snapshot, 1 for a partial snapshot with
 reported gaps, and 2 when the build cannot complete.
+
+Run deduplication checks in the locked development environment:
+
+```sh
+uv sync --locked
+uv run pytest scripts/tests/test_deduplication.py
+uv run ruff check .
+python3 -B scripts/check_documentation.py
+```

@@ -194,8 +194,11 @@ unimplemented in both workflows.
 3. Triage a batch as a recognized alias, a new concept, a parser bug, missing
    data or conflicting evidence. Treat missing copy as missing data; resolve
    conflicts from evidence instead of choosing the most frequent claim.
-4. Use Codex and human review to prepare a proposed mapping/parser/schema diff,
-   evidence fixtures, tests and an impact comparison. An alias must preserve the
+4. Use agent evidence review to prepare and assess a mapping/parser/schema diff,
+   fixtures, tests and an impact comparison under the
+   [maintenance decision](decisions/agent-led-schema-maintenance.md). Supported
+   local changes need no user approval; present the completed schema release
+   for user review before its Hugging Face commit. An alias must preserve the
    original meaning. Check whether a new concept needs a typed field or scope
    change before adding a label. Keep the mapping frozen during normalization.
 5. After a version is accepted, reprocess affected existing captures and compare

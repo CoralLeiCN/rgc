@@ -1,8 +1,8 @@
 """Create minimal compatible immutable archives without a collector dependency."""
 
-from copy import deepcopy
 import hashlib
 import json
+from copy import deepcopy
 from pathlib import Path
 from uuid import uuid4
 

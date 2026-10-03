@@ -6,16 +6,15 @@
 """Export category-independent text evidence and optionally publish it publicly."""
 
 import argparse
-from collections import Counter
 import gzip
 import hashlib
 import io
 import json
 import os
-from pathlib import Path
 import tarfile
 import tempfile
-
+from collections import Counter
+from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 POLICY_VERSION = "rgc-text-evidence-1"

@@ -3,8 +3,8 @@
 
 import argparse
 import json
-from pathlib import Path
 import sys
+from pathlib import Path
 
 from chocolate_standardization import build_standardized_dataset
 

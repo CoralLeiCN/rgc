@@ -52,4 +52,9 @@ Before finishing, run `python3 -B scripts/check_documentation.py` and the checks
 appropriate to the changed behavior. Check semantic accuracy as well as the
 structural and coverage checks. Describe remaining gaps honestly and do not mark
 proposed or unvalidated capabilities implemented.
+Use pytest for tests and Ruff for Python linting. Install the locked development
+environment with `uv sync --locked`, then run `uv run pytest` and
+`uv run ruff check .`. Write native pytest assertions and fixtures; retain
+`unittest.mock` when mocking is useful. Fetch pinned contracts before semantic
+tests, or verify existing caches with `python3 -B scripts/fetch_contracts.py --all --offline`.
 Use the task's existing authorization for documentation maintenance.

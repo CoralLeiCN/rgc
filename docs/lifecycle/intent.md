@@ -11,6 +11,17 @@ The standalone [processing package](../category-processing.md) supplies category
 profiles, mapping maintenance and model preparation with stable seller identity
 and immutable training snapshots.
 
+Both plugins accept category configuration. Collection observes general or
+selected source sections; processing creates five aligned working contracts
+from explicit fields, units, quantity, comparison groups, currency and tax basis.
+Chocolate and coffee are examples. Structural discovery preserves unfamiliar
+raw fields for agent investigation and durable evidence-linked proposals.
+
+Under the [maintenance decision](../decisions/agent-led-schema-maintenance.md),
+the agent assesses and applies supported local changes without user approval.
+After a schema change, present the completed release summary and wait for user
+review before its Hugging Face commit.
+
 Keep these constraints in view:
 
 - Preserve captures and source wording. Follow the language and writing rules in

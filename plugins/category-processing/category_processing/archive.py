@@ -1,15 +1,14 @@
 """Read and verify immutable raw captures without changing the archive."""
 
-from collections import defaultdict
-from datetime import datetime
-from decimal import Decimal, InvalidOperation
 import hashlib
 import json
 import math
-from pathlib import Path
 import re
+from collections import defaultdict
+from datetime import datetime
+from decimal import Decimal, InvalidOperation
+from pathlib import Path
 from urllib.parse import urlsplit
-
 
 ARCHIVE_VERSION = "category-research-raw-1"
 IDENTITY_RULE = "Exact source key, source hostname, source product ID and nullable variant ID; never merge different sellers."
@@ -123,11 +122,27 @@ def seller_uid(raw, category, market, raw_listing_id):
     return "seller-" + digest(basis)[:32]
 
 
+def raw_study_slug(value):
+    """Match collector directory names without changing study identity values."""
+    if not isinstance(value, str):
+        raise ValueError("Raw study identifiers must be strings.")
+    result = re.sub(r"[^a-z0-9]+", "-", value.casefold()).strip("-")
+    if not result:
+        raise ValueError("Raw study identifiers must yield a nonempty directory name.")
+    return result
+
+
 def load_raw_archive(archive_root, category, market):
     root = Path(archive_root).expanduser().resolve()
-    products = root / category / market / "products"
+    products = root / raw_study_slug(category) / raw_study_slug(market) / "products"
+    if not products.is_dir() and all(re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]*", value)
+                                    for value in (category, market)):
+        # Older/other producers may retain exact safe identifiers as directories.
+        exact_products = root / category / market / "products"
+        if exact_products.is_dir():
+            products = exact_products
     if not products.is_dir():
-        raise ValueError("Expected " + category + "/" + market + "/products under --archive-root.")
+        raise ValueError("Expected " + raw_study_slug(category) + "/" + raw_study_slug(market) + "/products under --archive-root.")
     inventory = sorted(products.glob("*/product.json"))
     result = {"root": root, "product_root": products, "inventory": inventory,
               "initial_locks": {str(path.relative_to(root)): (path.parent / ".import.lock").exists() for path in inventory},

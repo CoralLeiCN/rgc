@@ -3,8 +3,8 @@
 
 import argparse
 import json
-from pathlib import Path
 import sys
+from pathlib import Path
 
 from chocolate_cleanup import build_dataset
 

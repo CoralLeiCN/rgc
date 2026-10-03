@@ -1,9 +1,8 @@
 """Deterministic capture processing state, independent of mutable folder aliases."""
 
-from collections import Counter
 import hashlib
 import json
-
+from collections import Counter
 
 LEDGER_VERSION = "category-processing-ledger-1"
 

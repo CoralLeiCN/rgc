@@ -1,12 +1,12 @@
 """Offline conformance checks against the downloaded official manifest schema."""
 
-from copy import deepcopy
 import hashlib
 import json
-from pathlib import Path
 import re
-import unittest
+from copy import deepcopy
+from pathlib import Path
 
+import pytest
 
 PLUGIN_ROOT = Path(__file__).resolve().parents[1]
 SCHEMA_PATH = Path(__file__).resolve().parent / "fixtures/plugin.schema.json"
@@ -48,43 +48,39 @@ def validate_schema(value, schema):
             validate_schema(item, schema["items"])
 
 
-class PackagingTests(unittest.TestCase):
+class PackagingTests:
     def test_manifest_conforms_to_official_versioned_schema(self):
         official_bytes = SCHEMA_PATH.read_bytes()
-        self.assertEqual(hashlib.sha256(official_bytes).hexdigest(), "0a4aad95ce337878ad38802ebf0daa3fde76abe3f65400c86bcbb1ec0b3ab883")
+        assert (hashlib.sha256(official_bytes).hexdigest()) == ("0a4aad95ce337878ad38802ebf0daa3fde76abe3f65400c86bcbb1ec0b3ab883")
         schema = json.loads(official_bytes)
-        self.assertEqual(schema["$id"], "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json")
+        assert (schema["$id"]) == ("https://agent-plugins.org/schemas/1.0.0/plugin.schema.json")
         manifest = json.loads((PLUGIN_ROOT / "plugin.json").read_text())
         validate_schema(manifest, schema)
         invalid = deepcopy(manifest)
         invalid["entrypoints"] = {"cli": "./cli.py"}
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             validate_schema(invalid, schema)
 
     def test_skill_is_discoverable_and_uses_valid_plain_yaml_metadata(self):
         skill = PLUGIN_ROOT / "skills/category-research/SKILL.md"
         lines = skill.read_text().splitlines()
-        self.assertEqual(lines[0], "---")
+        assert (lines[0]) == ("---")
         finish = lines.index("---", 1)
         frontmatter = {}
         for line in lines[1:finish]:
             key, separator, value = line.partition(":")
-            self.assertEqual(separator, ":")
+            assert (separator) == (":")
             frontmatter[key] = value.strip()
         name = frontmatter["name"]
-        self.assertEqual(name, skill.parent.name)
-        self.assertRegex(name, r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
-        self.assertLessEqual(len(name), 64)
-        self.assertTrue(1 <= len(frontmatter["description"]) <= 1024)
-        self.assertLessEqual(len(frontmatter["compatibility"]), 500)
-        self.assertTrue((skill.parent / "scripts/import_products.py").is_file())
-        self.assertTrue((skill.parent / "references/import-contract.md").is_file())
+        assert (name) == (skill.parent.name)
+        assert re.search(r"^[a-z0-9]+(?:-[a-z0-9]+)*$", name) is not None
+        assert (len(name)) <= (64)
+        assert (1 <= len(frontmatter["description"]) <= 1024)
+        assert (len(frontmatter["compatibility"])) <= (500)
+        assert ((skill.parent / "scripts/import_products.py").is_file())
+        assert ((skill.parent / "references/import-contract.md").is_file())
 
     def test_package_files_remain_inside_root_without_a_server_config(self):
-        self.assertFalse((PLUGIN_ROOT / "mcp.json").exists())
+        assert not ((PLUGIN_ROOT / "mcp.json").exists())
         for path in PLUGIN_ROOT.rglob("*"):
             path.resolve().relative_to(PLUGIN_ROOT.resolve())
-
-
-if __name__ == "__main__":
-    unittest.main()

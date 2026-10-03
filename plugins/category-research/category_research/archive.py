@@ -1,23 +1,33 @@
 """Preserve supplied product information and source bytes before schema design."""
 
-from concurrent.futures import ThreadPoolExecutor
-from contextlib import contextmanager
-from copy import deepcopy
-from datetime import datetime, timezone
 import hashlib
 import json
 import mimetypes
 import os
-from pathlib import Path
 import re
+import unicodedata
+from concurrent.futures import ThreadPoolExecutor
+from contextlib import contextmanager
+from copy import deepcopy
+from datetime import datetime, timezone
+from pathlib import Path
 from threading import Lock
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlparse
 from urllib.request import Request, urlopen
 from uuid import uuid4
 
-
 ARCHIVE_VERSION = "category-research-raw-1"
+SECTION_PRESENCE_VERSION = "category-research-sections-2"
+DEFAULT_SECTION_MARKERS = {
+    "description": ["description", "bodyhtml"],
+    "prices": ["price"],
+    "availability": ["availability", "available", "stock"],
+}
+LEGACY_SECTION_MARKERS = {
+    "ingredients": ["ingredient"], "nutrition": ["nutrition", "nutritional"],
+    **DEFAULT_SECTION_MARKERS, "packaging": ["packaging", "wrapper"],
+}
 DEFAULT_MAX_BYTES = 20 * 1024 * 1024
 
 
@@ -64,6 +74,12 @@ def require_string(value, field):
         raise ArchiveError(field + " must be a nonempty string.")
 
 
+def normalized_field_key(value):
+    """Normalize matching keys while preserving the original source values."""
+    return "".join(character for character in unicodedata.normalize("NFKC", value).casefold()
+                   if character.isalnum())
+
+
 def validate_document(document):
     if not isinstance(document, dict):
         raise ArchiveError("The import document must be a JSON object.")
@@ -78,6 +94,18 @@ def validate_document(document):
         raise ArchiveError("products must be an array.")
     if not isinstance(document.get("source_catalogs", []), list):
         raise ArchiveError("source_catalogs must be an array when supplied.")
+    if "collection_sections" in document:
+        sections = document["collection_sections"]
+        if not isinstance(sections, dict):
+            raise ArchiveError("collection_sections must be an object mapping section names to field-key markers.")
+        for name, markers in sections.items():
+            require_string(name, "collection_sections section name")
+            if not isinstance(markers, list) or not markers:
+                raise ArchiveError("Each collection section must have a nonempty array of field-key markers.")
+            for marker in markers:
+                require_string(marker, "collection_sections field-key marker")
+                if not normalized_field_key(marker):
+                    raise ArchiveError("Collection field-key markers must contain letters or numbers.")
     for index, product in enumerate(products):
         if not isinstance(product, dict):
             raise ArchiveError(f"products[{index}] must be an object.")
@@ -203,13 +231,14 @@ def archive_artifact(descriptor, directory, stem, output_root, input_base, *, fe
     return metadata
 
 
-def section_presence(information):
-    """Report explicit source-field presence, never inferred completeness."""
+def section_presence(information, markers=None):
+    """Report source-field presence; omitted markers retain the legacy helper API."""
+    normalize = (lambda value: re.sub(r"[^a-z]", "", value.casefold())) if markers is None else normalized_field_key
+    markers = LEGACY_SECTION_MARKERS if markers is None else markers
     sections = {name: {"status": "unknown", "paths": [], "completeness": "not_verified"}
-                for name in ("ingredients", "nutrition", "description", "prices", "availability", "packaging")}
-    markers = {"ingredients": ("ingredient",), "nutrition": ("nutrition", "nutritional"),
-               "description": ("description", "bodyhtml"), "prices": ("price",),
-               "availability": ("availability", "available", "stock"), "packaging": ("packaging", "wrapper")}
+                for name in markers}
+    markers = {name: tuple(normalize(word) for word in words)
+               for name, words in markers.items()}
     ingredient_metadata = ("status", "error", "quality", "note", "method", "path", "hash",
                            "encoding", "complete", "review", "verif", "missing", "available",
                            "availability", "present", "sourceurl", "sourcekey", "retrievedat",
@@ -226,13 +255,13 @@ def section_presence(information):
             return any(ingredient_evidence(item) for item in value)
         if isinstance(value, dict):
             return any(ingredient_evidence(item) for key, item in value.items()
-                       if not any(word in re.sub(r"[^a-z]", "", key.casefold()) for word in ingredient_metadata))
+                       if not any(word in normalize(key) for word in ingredient_metadata))
         return False
 
     def visit(value, path):
         if isinstance(value, dict):
             for key, item in value.items():
-                normalized = re.sub(r"[^a-z]", "", key.casefold())
+                normalized = normalize(key)
                 meaningful = item is not None and item != "" and item != [] and item != {}
                 for name, words in markers.items():
                     if name == "ingredients" and (any(word in normalized for word in ingredient_metadata) or not ingredient_evidence(item)):
@@ -278,6 +307,7 @@ def import_document(document, output_root, *, download_images=False, image_limit
     output_root = Path(output_root).resolve()
     input_base = Path(input_base or Path.cwd()).resolve()
     study = document["study"]
+    section_markers = document.get("collection_sections", DEFAULT_SECTION_MARKERS)
     study_root = output_root / slug(study["category"]) / slug(study["market"])
     run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ") + "-" + uuid4().hex[:10]
     run_folder = study_root / "runs" / run_id
@@ -336,7 +366,9 @@ def import_document(document, output_root, *, download_images=False, image_limit
                        "raw_record": deepcopy(record), "information": deepcopy(record.get("information")),
                        "collection_notes": deepcopy(record.get("collection_notes", [])),
                        "source_artifacts": [], "images": [], "source_catalogs": deepcopy(global_catalogs),
-                       "raw_section_presence": section_presence(record.get("information")),
+                       "section_presence_contract_version": SECTION_PRESENCE_VERSION,
+                       "collection_sections": deepcopy(section_markers),
+                       "raw_section_presence": section_presence(record.get("information"), section_markers),
                        "completeness": "not_verified"}
             if "source_catalog" in record:
                 values = record["source_catalog"] if isinstance(record["source_catalog"], list) else [record["source_catalog"]]
@@ -367,11 +399,15 @@ def import_document(document, output_root, *, download_images=False, image_limit
             current.update({"latest_capture_id": capture_id, "identity": deepcopy(record.get("identity", {})),
                             "updated_at": now()})
             write_index(current_path, current)
-            return {"product_id": record["product_id"], "capture_id": capture_id,
+            outcome = {"product_id": record["product_id"], "capture_id": capture_id,
                     "product_json": str(current_path.relative_to(output_root)), "history_path": capture["history_path"],
-                    "status": capture["status"], "ingredient_field_status": capture["raw_section_presence"]["ingredients"]["status"],
+                    "status": capture["status"],
+                    "section_field_statuses": {name: section["status"] for name, section in capture["raw_section_presence"].items()},
                     "source_files_saved": sum("archive_relative_path" in item for item in capture["source_artifacts"]),
                     "image_files_saved": sum(item["status"] == "saved" for item in capture["images"])}
+            if "ingredients" in capture["raw_section_presence"]:
+                outcome["ingredient_field_status"] = capture["raw_section_presence"]["ingredients"]["status"]
+            return outcome
 
     grouped = {}
     for index, record in enumerate(document["products"]):
@@ -394,6 +430,8 @@ def import_document(document, output_root, *, download_images=False, image_limit
     with ThreadPoolExecutor(max_workers=workers) as executor:
         results = [item for group in executor.map(archive_group, grouped.values()) for item in group]
     report = {"archive_format_version": ARCHIVE_VERSION, "contract_version": document["contract_version"],
+              "section_presence_contract_version": SECTION_PRESENCE_VERSION,
+              "collection_sections": deepcopy(section_markers),
               "run_id": run_id, "study": deepcopy(study), "finished_at": now(), "timezone": "UTC",
               "status": "partial" if any(item["status"] in ("failed", "partial") for item in results) or any(item["status"] != "saved" or item.get("source_retrieval_status") in ("failed", "truncated", "partial") for item in global_catalogs) else "raw_import_preserved_review_pending",
               "completeness": "not_verified", "records_received": len(document["products"]),

@@ -52,6 +52,7 @@ remain supported for custom profiles and compatibility.
 
 Edit a local working copy, preserve source evidence, bump affected semantic
 versions when meanings change, and validate the aligned contracts. Publish them
+after the [completed schema release review](decisions/agent-led-schema-maintenance.md#review-before-a-hugging-face-commit)
 to a new dataset commit, verify the published bytes, then update the Git
 manifest pins/hashes and corresponding documentation. A storage-only migration
 preserves contract bytes and existing schema/mapping/model/recipe versions.
@@ -77,8 +78,10 @@ inspect the prepared inventory. Contract publication is separate from the raw
 text-evidence exporter and does not authorize a new evidence or silver rebuild.
 
 ```sh
+uv sync --locked
+uv run ruff check .
 python3 -B scripts/check_documentation.py
-python3 -B -m unittest discover -s scripts/tests -p test_documentation.py -v
+uv run pytest scripts/tests/test_dataset_contracts.py scripts/tests/test_documentation.py
 ```
 
 The documentation guard works offline in a clean clone. It checks manifest

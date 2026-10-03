@@ -1,22 +1,26 @@
 """Build schema-governed attributes and reviewed pricing inputs after deduplication."""
 
-from collections import Counter, defaultdict
-from copy import deepcopy
 import hashlib
 import json
 import math
+from collections import Counter, defaultdict
+from copy import deepcopy
 from pathlib import Path
-import re
 
+import dataset_contracts as contract_module
 from chocolate_cleanup.adapters import extract_capture
 from chocolate_cleanup.core import aware_time, normalized, pointer_value, positive
-from chocolate_cleanup.deduplication import inside, json_bytes, digest
+from chocolate_cleanup.deduplication import digest, inside, json_bytes
 from chocolate_model import ModelContractError, _predictor_value
 from dataset_contracts import SCHEMA_REFERENCE, resolve_contract_root
-import dataset_contracts as contract_module
 
-from .values import standardize_value, unknown_attribute, validate_product, validate_evidence, validate_attribute_contract
-
+from .values import (
+    standardize_value,
+    unknown_attribute,
+    validate_attribute_contract,
+    validate_evidence,
+    validate_product,
+)
 
 ROOT = Path(__file__).resolve().parents[2]
 SCHEMA_VERSION = "chocolate-schema-1"

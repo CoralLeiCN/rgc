@@ -1,13 +1,12 @@
 """Preserve raw captures in a separate, seller-specific deduplicated snapshot."""
 
-from collections import Counter, defaultdict
 import hashlib
 import json
+from collections import Counter, defaultdict
 from pathlib import Path
 from urllib.parse import urlsplit
 
 from .sources import SOURCES
-
 
 ARCHIVE_VERSION = "category-research-raw-1"
 LAYER_VERSION = "chocolate-deduplicated-raw-1"

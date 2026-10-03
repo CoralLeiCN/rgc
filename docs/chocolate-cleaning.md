@@ -222,3 +222,13 @@ in validation. Follow [spec.md](spec.md), sections 4–5, for model support,
 uncertainty, evaluation on data held out of training, and release requirements.
 Establish readiness through classification and model validation; eligible row
 counts and automatically extracted confidence scores alone are insufficient.
+
+Run compatibility cleanup checks in the locked development environment:
+
+```sh
+uv sync --locked
+python3 -B scripts/fetch_contracts.py --all
+uv run pytest scripts/tests/test_cleaning.py
+uv run ruff check .
+python3 -B scripts/check_documentation.py
+```

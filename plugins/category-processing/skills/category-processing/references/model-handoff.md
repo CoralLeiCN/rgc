@@ -12,6 +12,14 @@ base quantity. Chocolate and the coffee starter use regular GBP/100 g; another
 category must deliberately define its comparable price basis. Chocolate may
 also expose compatible GBP/100 g aliases.
 
+New definitions explicitly choose their currency, numeric observed quantity,
+unit and base; a per-item design still requires source-supported count evidence.
+`eligibility.allowed_tax_bases` selects one reviewed basis matching the target;
+older designs default to `consumer_tax_included`. Do not mix included/excluded
+prices without a separately implemented, reviewed normalization. Source monetary
+minor units use the recipe's explicit factor. No tax or currency conversion is
+performed by model preparation.
+
 The command verifies hashes, `complete_snapshot` status and candidate contracts.
 Eligibility requires reviewed scope, physical/family identity, price/quantity
 basis and selected predictors with evidence from the relevant observation capture.

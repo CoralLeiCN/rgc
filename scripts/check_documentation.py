@@ -3,13 +3,12 @@
 
 import argparse
 import json
-from pathlib import Path
 import re
 import subprocess
 import sys
+from pathlib import Path
 
 from dataset_contracts import cache_directory, load_manifest, verify_contract_directory
-
 
 ROOT = Path(__file__).resolve().parents[1]
 REQUIRED = (

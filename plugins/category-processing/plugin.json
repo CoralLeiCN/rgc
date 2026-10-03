@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "category-processing",
-  "version": "0.1.0",
-  "description": "Process preserved category product archives into schema-governed silver data, review mapping gaps, and prepare interpretable pricing-model inputs.",
+  "version": "0.3.2",
+  "description": "Define category profiles, process preserved product archives into schema-governed silver data, review mapping gaps, and prepare interpretable pricing-model inputs.",
   "keywords": ["category-processing", "silver-data", "standardization", "mapping-review", "pricing-model-inputs"]
 }

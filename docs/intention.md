@@ -3,7 +3,9 @@
 Build a tool for classifying product features and analyzing how those features
 relate to product pricing within a category.
 
-The tool will support many product categories. Chocolate is an example.
+The tool and both plugins must support arbitrary product categories through
+category-specific configuration. Chocolate is an example. New categories must
+not require copying food assumptions into the collection or processing core.
 
 ## 1. Category research and a pricing model
 
@@ -14,8 +16,8 @@ Find as many types and varieties of products in the selected category as possibl
 and collect:
 
 - Prices.
-- Basic product information, including complete ingredient lists, brands, and
-  other relevant source statements.
+- Basic product information, brands, specifications, and relevant source
+  statements. Collect complete ingredient lists when applicable to the category.
 - Product features.
 - All identifiable points emphasized on packaging and in promotional material.
 
@@ -64,23 +66,33 @@ Git retains human documentation and small manifests pinning an immutable
 commit and each contract's SHA-256. Downloaded contracts are ignored caches;
 moving storage must preserve contract versions and original evidence.
 
-Package the whole method after collection as a standalone processing agent
-plugin, separate from the raw collection plugin. Include the processing
-core, category profiles, evidence reports, a skill for maintaining mappings and
-helpers for model preparation. Another harness or plugin must be able to use it
-independently of repository siblings. Include chocolate and a starter for a
-second category to demonstrate reuse through profiles. See
-[category-processing.md](category-processing.md).
+Package the method after collection as a standalone processing plugin with its
+core, category profiles, evidence reports, maintenance skill and model helpers.
+Define collection sections, fields, source mappings, comparable groups, units,
+currency and price basis for each study. Generate five aligned local working
+contracts from an explicit definition, then publish the authoritative contracts
+and pin their verified immutable dataset revision after release review.
+Chocolate and coffee references are optional examples; products beyond food and
+mass quantities must exercise the common core. The
+[portable processing guide](category-processing.md) owns commands and boundaries.
 
-Normalize captures under a frozen, versioned mapping, then summarize unsupported
-values and unfamiliar vocabulary with evidence. Use Codex and human review in
-the current task to propose and accept mapping/parser/schema improvements.
-Distinguish new concepts from missing data and conflicts. Reprocess affected
-history after acceptance while preserving seller identities and immutable
-training snapshots. Track input content and processing fingerprints together in
-the portable ledger and grouped summaries. The
-[portable processing guide](category-processing.md) defines the workflow;
-selective caches, automatic dispatch and silent migrations are outside delivery.
+Normalize captures with a frozen mapping, then summarize unsupported values and
+unfamiliar vocabulary with evidence. Under the
+[maintenance decision](decisions/agent-led-schema-maintenance.md), the agent
+assesses and applies supported local schema, mapping and parser changes without
+user approval. Distinguish new concepts from missing data and conflicts; leave
+insufficient evidence unresolved with a reason. When the schema changes, finish
+implementation and validation, present a detailed release summary and wait for
+user review before committing the changed schema or rebuilt data to Hugging Face.
+
+Discover retained source fields beyond configured extraction with exact typed
+values and capture pointers. Keep hypotheses, justification, counterexamples and
+accept/reject/defer decisions in durable proposals linked to immutable evidence.
+After an accepted version change, rebuild affected history with stable seller
+identities and immutable training snapshots. Track content and rules fingerprints
+in the portable ledger and grouped summaries. Selective caches, automatic task
+dispatch and silent migrations remain future work; package correctness needs
+separate evidence for reviewed data and fitted models.
 
 Use this schema as the shared contract for preparing pricing model inputs,
 training an interpretable model, and explaining the resulting associations as

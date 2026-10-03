@@ -1,18 +1,17 @@
 """Build deterministic derived tables without modifying source evidence."""
 
-from collections import Counter, defaultdict
-from datetime import datetime
-from decimal import Decimal, InvalidOperation
 import hashlib
 import json
 import math
-from pathlib import Path
 import re
+from collections import Counter, defaultdict
+from datetime import datetime
+from decimal import Decimal, InvalidOperation
+from pathlib import Path
 
 from .adapters import extract_capture
 from .deduplication import confirm_raw_snapshot, deduplicate_listings, load_raw_archive
 from .sources import SOURCES
-
 
 PROFILE_VERSION = "uk-chocolate-clean-1"
 ARCHIVE_VERSION = "category-research-raw-1"

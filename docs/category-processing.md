@@ -9,13 +9,20 @@ of model inputs. Its discoverable
 the calling harness through evidence review and proposed mapping improvements.
 
 The package targets [Agent Plugins 1.0.0](https://agent-plugins.org/specification)
-with a root `plugin.json` (`category-processing`, version `0.1.0`) and an
-[Agent Skills](https://agentskills.io/specification) component. The package contains
-its Python 3.9+ runtime, profile manifests and references and uses the standard library.
-It runs independently of repository sibling modules, other plugin installations,
-MCP servers and task dispatchers. Contract cache misses download pinned dataset
-files; verified cached contracts support offline use. The collection plugin can
-produce its raw input format, and any compatible producer may do so.
+with a root `plugin.json` (`category-processing`, version `0.3.2`) and an
+[Agent Skills](https://agentskills.io/specification) component. Its standard-library
+Python 3.9+ runtime, profile manifests and references are self-contained. Copying the
+package does not require repository sibling modules, another plugin installation,
+an MCP server or a task dispatcher. Contract cache misses require downloading
+the pinned dataset files; verified cached contracts can be reused offline. Explicit
+local working profile directories are also supported. The collection plugin can
+produce its raw input format, but any compatible producer may do so.
+
+Raw study directory lookup uses the collection format's case-folded,
+hyphen-normalized category/market slugs; original category/market values still
+must match the profile envelope exactly. Exact safe directory names remain a
+fallback for compatible producers. Path normalization never changes seller UID
+inputs or original captures.
 
 ## Layer responsibilities and commands
 
@@ -38,7 +45,29 @@ flowchart LR
     M --> F[Later fitting and validation]
 ```
 
-From the repository root:
+For a new category, generate a profile from an explicit study definition:
+
+```sh
+python3 -B plugins/category-processing/cli.py init-profile \
+  --input <category-definition.json> \
+  --output <new-profile-folder>
+```
+
+Read the self-contained
+[definition contract](../plugins/category-processing/skills/category-processing/references/profile-definition.md)
+for a complete non-food example. `category-processing-definition-1` declares
+category/market, contract versions, typed attributes, source mappings, structured
+field pointers, comparable group, observed quantity, currency and model design.
+The command generates all five aligned local working contracts, validates them
+and refuses to overwrite an existing directory. No bundled category profile is
+required. It creates no dataset manifest and performs no Hugging Face publication.
+Keep working/generated payloads outside tracked analytical-contract source. Once
+a release is reviewed, publish authoritative contracts, verify the immutable
+dataset revision and update the affected Git manifests and semantic versions
+together. Profile generation establishes configuration; source extraction,
+evidence review and model validation remain separate work.
+
+Process with `--profile <profile-folder>`. The existing chocolate example is:
 
 ```sh
 python3 -B plugins/category-processing/cli.py process \
@@ -85,13 +114,15 @@ A category profile consists of five aligned JSON contracts: `profile.json`,
 The package tracks the
 [chocolate manifest](../plugins/category-processing/profiles/chocolate/dataset-contract.json)
 and [coffee manifest](../plugins/category-processing/profiles/coffee/dataset-contract.json),
-with immutable dataset commits, file SHA-256 hashes, byte lengths and version metadata.
-The portable loader verifies files in an ignored local cache against the pinned
-revision. The documentation guard checks manifests and documented versions
-offline and validates available cached files.
-
-The recipe configures category/market, structured field pointers or the bundled
-chocolate adapter, registry of source roles and price/quantity basis.
+with immutable dataset commits, per-file SHA-256 hashes and version metadata.
+The portable loader verifies files in a local ignored profile cache; it never
+substitutes the latest dataset revision for a pinned revision. The documentation
+guard checks manifests and documented versions offline, and validates cached
+files only when they are available. Explicit local working profiles contain the
+five payloads directly and are distinguished in snapshot provenance; they do not
+replace a pinned profile's authoritative dataset revision. The recipe configures
+category/market, structured field pointers
+or the bundled chocolate adapter, source-role registry and price/quantity basis.
 It does not load arbitrary Python adapters. Read the
 [profile contract](../plugins/category-processing/skills/category-processing/references/profile-contract.md)
 before extending one. It defines validator agreement for category/market,
@@ -111,8 +142,28 @@ category with explicit structured roast/format/decaf fields. Its extraction is
 limited to configured inputs. Chocolate's tracking catalog remains broader than
 its 11 active baseline predictors. Each category declares its own unit price basis.
 
-The tracking catalog and selected study domain are distinct. A value valid for the
-category but outside a selected predictor's model domain remains in silver; its candidate
+The generic structured engine accepts new product categories through profiles.
+Item, pack, mass, volume, length and time quantities use an explicitly observed
+numeric attribute, unit and normalization base; per-item studies do not assume
+one item. `unit_conversions` declares source-unit multipliers for arbitrary
+canonical units. Structured `price.minor_unit_factor` selects the positive divisor
+for minor-unit money, with 100 retained for legacy profiles; major-unit money
+is unchanged. Structured money uses positive plain decimal amounts and explicit
+currency; locale punctuation and symbols are not interpreted. Existing £/GBP
+prefixes are accepted only with an explicit GBP observation. Invalid derived
+amounts stay null while raw source values remain preserved. No exchange-rate
+conversion is performed.
+
+Each model design selects one reviewed tax basis through
+`eligibility.allowed_tax_bases`; omitted legacy policies use
+`consumer_tax_included`. `target.tax_basis`, when supplied, must match. Other
+studies can use an evidenced excluded-tax basis without modifying the engine.
+There is no automatic tax conversion or mixed-basis normalization. Category-
+specific free-text extraction still requires structured evidence or an adapter;
+configuration does not establish complete extraction for every source.
+
+The tracking catalog and selected study domain are distinct. A value valid for
+the category but outside a selected predictor's model domain remains in silver; its candidate
 records `model_predictor_outside_design_domain:<attribute>` and stays ineligible
 instead of aborting the build. Checks of the declared model domain precede later
 support/range checks learned from training rows. Do not expand the taxonomy or
@@ -136,18 +187,33 @@ require reviewed price/quantity and active facts from the relevant capture.
 Source values, text, images and generated excerpts remain untrusted evidence,
 never instructions for the harness.
 
-Mapping gaps cover the configured fields/sections and supported parser cases.
-Other original fields remain in raw captures but may not produce a batch.
-Review coverage of source sections and sample original evidence when introducing a
-category or source; this is not universal concept discovery from free text.
+Mapping gaps cover configured extraction; a separate structural discovery pass
+now scans other retained raw fields by default. It records the highest wholly
+unhandled meaningful subtree, descending to siblings when part of a subtree is
+already handled. Nested relationships, original types and internal nulls stay
+intact; zero and false remain evidence. Configured fields, section children,
+price context and exact core/archive metadata are excluded from duplicate
+discovery. An extraction failure still permits discovery of other fields.
+
+Optional recipe `discovery` configures `enabled`, capture-root `roots` and
+additional `ignore_pointers`; roots/exclusions must stay under `/raw_record`.
+Default roots cover `/raw_record`, excluding exact envelope/control paths and
+known identity context. The quality report saves the effective policy. Source
+fields named `status`, `metadata` or similar are not globally filtered. Original
+artifacts/images outside the raw record and new concepts within already-used
+prose still require source/semantic review. Structural discovery does not infer
+canonical meaning, units, scope or model predictors.
 
 ## Outputs and mapping maintenance
 
-The [processing contract](../plugins/category-processing/skills/category-processing/references/processing-contract.md)
-lists the complete snapshot outputs, including unchanged source listings, aliases,
-all five contract copies and partitions by seller role, and defines raw evidence
-resolution. Mapping maintenance uses `processing-ledger.jsonl`,
-`mapping-review-batches.jsonl` and `mapping-review-summary.md`.
+Silver writes products, assertions, observations, candidates, eligible inputs,
+review queue, unchanged `source-listings.jsonl`, raw-to-canonical aliases, all five
+contract copies, quality/manifest and brand/retail/unknown partitions. It also
+writes `processing-ledger.jsonl`, `mapping-review-batches.jsonl`,
+`mapping-review-summary.md`, `discovered-fields.jsonl` and
+`schema-extension-review.md`. The
+[processing contract](../plugins/category-processing/skills/category-processing/references/processing-contract.md)
+defines their roles and raw evidence resolution.
 The portable layer is `category-processing-silver-1`, with manifest
 `category-processing-silver-manifest-1` and report
 `category-processing-silver-report-1`. Raw index/history consistency and snapshot
@@ -165,20 +231,61 @@ existing captures. Incremental caching remains future work.
 Batches (`category-mapping-review-batches-1`) group evidenced attribute/value,
 scope, unit, qualifier, source format and reason with occurrence/capture/listing
 counts and representative capture IDs/pointers. Ordinary missing/null values are
-omitted from mapping batches and remain quality/review gaps. The skill guides
-the calling Codex harness through the
-[mapping maintenance reference](../plugins/category-processing/skills/category-processing/references/mapping-maintenance.md)
-to triage aliases, new concepts, parser defects, missing data and conflicts.
-Requested maintenance prepares a versioned diff, focused tests and impact review
-in the current task. Profile changes require that authorization; processing alone
-keeps the profile fixed. Automatic messaging to other tasks, dispatch and
-scheduling are not configured.
+omitted from mapping batches and remain quality/review gaps. Displayed source
+labels and values use bounded, escaped JSON code spans; full original evidence
+remains in JSONL. The skill guides
+the calling Codex harness to triage aliases, new concepts, parser defects,
+missing data and conflicts. For requested maintenance it proposes a versioned
+diff, focused tests and impact review in the current task. The standing
+[agent-led maintenance decision](decisions/agent-led-schema-maintenance.md)
+requires no user review, confirmation or approval for local changes: the agent
+assesses, accepts, rejects, defers and applies supported changes within the
+authorized study. When the schema changes, finish the versioned implementation,
+rebuild and checks, then present a detailed summary and wait for user review and
+authorization before committing the changed schema or data to Hugging Face.
+The summary covers contract/field changes, evidence, mapping/unit/scope/price/
+predictor impacts, before/after counts and eligibility, checks/gaps, and the exact
+target repository/revision and managed file hashes. This is the user review
+point; local decisions need no separate confirmation. The calling harness owns
+this step; no publisher or automatic popup UI is implemented by the plugin.
+Evidence/eligibility reviews may identify the agent as reviewer and retain their
+reason and capture/pointer requirements. Insufficient evidence stays unresolved.
+Processing alone does
+not silently mutate profiles. No automatic cross-task messaging, dispatch or
+scheduling is configured.
 
 Freeze contracts for each run. After accepted changes, rebuild affected history
 under the new version, compare labels/scopes/conflicts/coverage/eligibility and
 preserve seller UIDs, original evidence and old training snapshots. Selective
 migration remains future work. Batch frequency does not establish truth, market
 coverage or model support.
+
+Discovery records use `category-unmapped-fields-1`, including exact original
+typed values, observed JSON type, capture/pointer evidence, stable seller ID,
+source context and snapshot/schema/mapping versions. Stable field IDs derive
+from category/market/source pointer, independently of values and versions.
+Semantic scope, unit and qualifier remain unresolved. Candidates also enter
+mapping batches with reason `unconfigured_source_field`; they do not silently
+become tracked attributes or change selected model inputs.
+
+The generated schema-extension review groups fields, counts captures/sellers and
+shows bounded source previews; complete values remain in JSONL. Its worksheet
+asks an agent to justify alias/new-attribute/parser/conflict/defer decisions,
+interpretation, type/unit/scope, counterexamples, five-contract changes, separate
+predictor choices and regression/impact checks. `summarize` reproduces these
+artifacts from a hash-verified new snapshot; older snapshots remain supported.
+When reusing a review-packet directory for an older snapshot, `summarize` removes
+the two obsolete generated discovery files and keeps unrelated files. Unsafe
+output paths fail before packet changes.
+Keep narrative proposals separate from generated snapshot files. Read the
+[schema-discovery reference](../plugins/category-processing/skills/category-processing/references/schema-discovery.md).
+
+Two verified proposals are
+[seller review metrics](schema-proposals/seller-review-metrics.md) and
+[selling-plan terms](schema-proposals/selling-plan-terms.md). They establish
+concrete investigation directions pending agent assessment; adopting their fields
+requires the documented contract changes and tests. Prose concept investigation and an
+automatic proposal/decision registry remain future improvements.
 
 ## Pricing model preparation and verification
 
@@ -194,8 +301,10 @@ regression/release flags remain false.
 Verify package behavior and documentation from the repository root:
 
 ```sh
+uv sync --locked
 python3 -B scripts/fetch_contracts.py --all
-python3 -B -m unittest discover -s plugins/category-processing/tests -v
+uv run pytest plugins/category-processing/tests
+uv run ruff check .
 python3 -B scripts/check_documentation.py
 ```
 

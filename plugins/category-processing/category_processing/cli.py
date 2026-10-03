@@ -3,8 +3,8 @@
 import argparse
 import hashlib
 import json
-from pathlib import Path
 import sys
+from pathlib import Path
 from tempfile import NamedTemporaryFile
 
 from .model import fit_encoder, split_by_family, transform_rows, validate_candidates
@@ -78,14 +78,16 @@ def verified_silver(root):
     return root, manifest
 
 
-def _publish(output, files, source):
+def _publish(output, files, source, obsolete=()):
+    if set(files) & set(obsolete):
+        raise ValueError("Derived output cannot both write and remove the same generated file.")
     requested = Path(output).expanduser().absolute()
     if requested.is_symlink():
         raise ValueError("Output directory must not be a symlink.")
     output = requested.resolve()
     if _inside(output, source) or _inside(source, output):
         raise ValueError("Derived output must be separate from the silver source.")
-    for name in files:
+    for name in sorted(set(files) | set(obsolete)):
         path = output / name
         if (not _inside(path.resolve(), output) or path.is_symlink() or path.is_dir()
                 or any(parent.is_symlink() for parent in path.parents if _inside(parent, output))):
@@ -103,6 +105,8 @@ def _publish(output, files, source):
         finally:
             if temporary is not None and temporary.exists():
                 temporary.unlink()
+    for name in sorted(set(obsolete)):
+        (output / name).unlink(missing_ok=True)
 
 
 def summarize(silver_root, output):
@@ -112,12 +116,22 @@ def summarize(silver_root, output):
     context = {"category": profile["category"], "market": profile["market"],
                "schema_version": profile["schema_version"], "mapping_version": mappings["mapping_version"]}
     batches = build_review_batches(_read_rows(root / "review-queue.jsonl"), **context)
-    _publish(output, {
+    files = {
         "mapping-review-batches.jsonl": _jsonl_bytes(batches),
         "mapping-review-summary.md": render_summary(batches, **context).encode(),
-    }, root)
+    }
+    discovered = []
+    obsolete = ("discovered-fields.jsonl", "schema-extension-review.md")
+    if "discovered-fields.jsonl" in manifest["managed_files"]:
+        from .schema_suggestions import render_schema_suggestions
+        discovered = _read_rows(root / "discovered-fields.jsonl")
+        files["discovered-fields.jsonl"] = _jsonl_bytes(discovered)
+        files["schema-extension-review.md"] = render_schema_suggestions(discovered, **context).encode()
+        obsolete = ()
+    _publish(output, files, root, obsolete=obsolete)
     return {"status": "review_packet_prepared", "dataset_version": manifest["dataset_version"],
-            "batch_count": len(batches), "output": str(Path(output).resolve())}
+            "batch_count": len(batches), "discovered_field_count": len({row["field_id"] for row in discovered}),
+            "output": str(Path(output).resolve())}
 
 
 def prepare_model(silver_root, output, validation_fraction=0.2):
@@ -155,6 +169,9 @@ def prepare_model(silver_root, output, validation_fraction=0.2):
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
+    author = commands.add_parser("init-profile", help="Generate five aligned contracts from an explicit category definition.")
+    author.add_argument("--input", type=Path, required=True)
+    author.add_argument("--output", type=Path, required=True)
     process = commands.add_parser("process", help="Build a seller-specific silver snapshot using a category profile.")
     process.add_argument("--archive-root", type=Path, required=True)
     profile_selection = process.add_mutually_exclusive_group(required=True)
@@ -173,7 +190,10 @@ def main(argv=None):
             subparser.add_argument("--validation-fraction", type=float, default=0.2)
     args = parser.parse_args(argv)
     try:
-        if args.command == "process":
+        if args.command == "init-profile":
+            from .profile_builder import init_profile
+            result = init_profile(_read_json(args.input), args.output)
+        elif args.command == "process":
             from .pipeline import build_silver_dataset
             previous = []
             if (args.output / "manifest.json").exists():

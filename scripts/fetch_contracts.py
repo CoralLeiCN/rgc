@@ -4,7 +4,7 @@
 import argparse
 from pathlib import Path
 
-from dataset_contracts import ROOT, SCHEMA_REFERENCE, SCHEMA_CACHE, resolve_contracts
+from dataset_contracts import ROOT, SCHEMA_CACHE, SCHEMA_REFERENCE, resolve_contracts
 
 
 def main(argv=None):

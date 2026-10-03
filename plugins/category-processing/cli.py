@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Run the portable category processing plugin."""
 
-from pathlib import Path
 import sys
+from pathlib import Path
 
 # Isolated Python removes the script directory from its import path. Resolve
 # only this package's local modules so the launcher remains relocatable.

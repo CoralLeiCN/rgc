@@ -42,6 +42,10 @@ require separate analysis to establish distinct products or market coverage.
 The legacy `scripts/archive_product_sources.py` reproduces only the initial
 exploratory sample of five products.
 
+Collection `0.2.0` observes description, prices and availability by default.
+Configure `collection_sections` for other source fields; observations describe
+field presence and retain the complete original information.
+
 The canonical chocolate workflow preserves raw evidence in
 `data/collections/chocolate/uk` and builds one silver dataset in
 `data/silver/chocolate/uk`. Silver combines deduplication within each seller,
@@ -75,6 +79,19 @@ cache and publication behavior.
 The standalone processing package includes its runtime, five contract references,
 stable seller UIDs, ledger, evidence batches, harness skill and model preparation.
 Chocolate tracks 103 attributes; coffee demonstrates reuse with structured inputs.
+These are optional examples. Processing `0.3.2` also generates five aligned
+working contracts from an explicit category definition, including non-food
+fields, units, quantity, currency and tax basis:
+
+```sh
+python3 -B plugins/category-processing/cli.py init-profile --input <category-definition.json> --output <new-profile-folder>
+```
+
+Read the [definition contract](plugins/category-processing/skills/category-processing/references/profile-definition.md).
+Generation validates configuration; extraction and model readiness need separate
+evidence. Working contracts are local drafts; published contracts belong in the
+dataset with immutable references retained in Git.
+
 Copy the entire package to use it independently of repository siblings or a
 collection plugin installation. Run its workflow from the repository root:
 
@@ -93,14 +110,30 @@ reviewed eligible rows and at least two families, and writes frozen inputs and a
 encoder. Current chocolate inputs are ineligible; regression fitting and model
 validation remain future work. The original chocolate CLI keeps its established versions.
 
-Run the documentation guard and relevant tests under the policy:
+Structural discovery records unconfigured raw fields in `discovered-fields.jsonl`
+and generates `schema-extension-review.md`. Keep hypotheses and decisions in
+durable proposals linked to this evidence; see the initial
+[seller review metrics](docs/schema-proposals/seller-review-metrics.md) and
+[selling plan terms](docs/schema-proposals/selling-plan-terms.md) proposals.
+The [standing maintenance decision](docs/decisions/agent-led-schema-maintenance.md)
+allows supported local schema, mapping and parser changes without user approval.
+When a schema changes, finish implementation and validation, present a detailed
+release summary and wait for user review before its Hugging Face commit.
+
+Use the locked development environment for pytest and Ruff, then run the
+documentation guard under the policy:
 
 ```sh
+uv sync --locked
 python3 -B scripts/fetch_contracts.py --all
+uv run pytest
+uv run ruff check .
 python3 -B scripts/check_documentation.py
-python3 -B -m unittest discover -s scripts/tests -v
-python3 -B -m unittest discover -s plugins/category-processing/tests -v
 ```
+
+Use `python3 -B scripts/fetch_contracts.py --all --offline` to verify populated
+caches. Runtime processing uses the standard library; pytest and Ruff are
+development dependencies.
 
 The [validation workflow](.github/workflows/validation.yml) runs checks on pull
 requests and pushes. The lifecycle plan records verification and limitations.
@@ -123,6 +156,10 @@ Upload to a public Hugging Face dataset using cached login or `HF_TOKEN`;
 ```sh
 uv run --script scripts/publish_collections.py --upload --repo-id CoralLeiCN/rgc-collections
 ```
+
+For changed schemas, the calling harness completes the
+[release review](docs/decisions/agent-led-schema-maintenance.md#review-before-a-hugging-face-commit)
+before committing to Hugging Face. The exporter does not enforce this gate.
 
 The dataset also contains separately published silver snapshots and analytical
 contracts. `scripts/publish_contracts.py` publishes contracts with immutable

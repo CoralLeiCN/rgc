@@ -6,11 +6,10 @@ from training rows only. An encoder is a reproducible design contract, not a
 pricing model or evidence of release readiness.
 """
 
-from collections import Counter
-from copy import deepcopy
 import hashlib
 import math
-
+from collections import Counter
+from copy import deepcopy
 
 ENCODER_VERSION = "category-processing-encoder-1"
 
@@ -154,7 +153,9 @@ def split_by_family(rows, validation_fraction=0.2):
         raise ModelContractError("a family holdout requires at least two reviewed families")
     count = max(1, min(len(families) - 1, int(len(families) * fraction + 0.5)))
     validation_families = set(families[:count])
-    key = lambda row: row["observation_id"]
+    def key(row):
+        return row["observation_id"]
+
     train = sorted((row for row in candidates if row["family_id"] not in validation_families), key=key)
     validation = sorted((row for row in candidates if row["family_id"] in validation_families), key=key)
     return {

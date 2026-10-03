@@ -14,7 +14,13 @@ python3 <plugin-root>/cli.py process --archive-root <collections-root> --categor
 
 Another Python caller can place the plugin root on its import path and use
 `category_processing.pipeline.build_silver_dataset(archive_root, output,
-profile_root, reviews=None)`. Reviews may be a path to a JSON file or a decision object.
+profile_root, reviews=None)`. Reviews may be a JSON-file path or a decision object.
+They record evidence-backed agent assessments; they do not require user approval.
+If schema changes, review of the detailed summary before a Hugging Face commit
+or publication of the changed schema or its rebuilt data is the only required
+user-facing review; see [mapping maintenance](mapping-maintenance.md#hugging-face-release-review).
+The calling harness waits for authorization of that exact release after local
+contracts, rebuilds and checks are ready. These local commands do not upload.
 This function returns the quality report and writes the snapshot. CLI execution
 additionally compares a prior output ledger and reports counts of processing changes.
 Use `category_processing.profiles.resolve_profile(category="chocolate",
@@ -25,7 +31,12 @@ The CLI requires exactly one of `--category` and `--profile`. Its default cache
 is `<plugin-root>/.contract-cache`; supply a writable cache when the installation
 permits no writes. Offline mode fails when pinned bytes are unavailable or corrupt.
 
-The archive root contains `<category>/<market>/products/<product_id>/product.json`.
+The archive root contains `<category-slug>/<market-slug>/products/<product_id>/product.json`.
+Slugs case-fold category/market values, replace runs outside ASCII letters/digits
+with hyphens and trim edge hyphens, matching collection directory names. Exact
+safe-name paths are accepted as a fallback for other compatible producers.
+Original envelope category/market must still equal the profile values exactly;
+path normalization does not change seller identity or source evidence.
 Each index follows `category-research-raw-1`, identifies category, market and
 product, and contains captures plus `latest_capture_id`. Capture history paths
 are relative to the archive root. Index and immutable history must agree;
@@ -61,6 +72,7 @@ this build does not rehash every preserved source/image artifact's payload.
 | `review-queue.jsonl` | Unsupported/conflicting evidence and unresolved eligibility decisions. |
 | `processing-ledger.jsonl` | Capture fingerprints and processing outcomes. |
 | `mapping-review-batches.jsonl`, `mapping-review-summary.md` | Grouped evidence gaps for the calling harness. |
+| `discovered-fields.jsonl`, `schema-extension-review.md` | Full typed unhandled raw fields (`category-unmapped-fields-1`) and bounded evidence-backed proposal worksheets; meaning/scope/unit remain unresolved. |
 | `profile.json`, `source-mappings.json`, `product.schema.json`, `model-design.json`, `pipeline.json` | Exact copies of all five contracts. |
 | `quality-report.json`, `manifest.json` | Coverage, exclusions/readiness, versions, fingerprints, hashes, contract source/revision and raw artifact roots. |
 | `brand/`, `retail/`, `unknown/` | Products, prices and source listings partitioned by seller role. |
@@ -76,5 +88,23 @@ The command rebuilds the complete snapshot. Comparison against the previous ledg
 unchanged captures. Use a new output path to retain an immutable training
 snapshot. Output stays separate from raw. Summary/model consumers verify managed
 hashes. Exit codes are 0 for success, 1 for partial processing and 2 for fatal
-errors. `complete_snapshot` proves accepted input consistency. Extraction coverage
-and model readiness require separate checks.
+errors. `complete_snapshot` proves accepted input consistency, not complete
+extraction or model readiness.
+
+Default structural discovery scans `/raw_record` beyond handled fields and
+exact archive/core context. Optional recipe `discovery` defines raw roots,
+additional exclusions or explicit disabling; the quality report saves effective
+coverage and counts. Highest unhandled meaningful subtrees retain their complete
+typed values and source pointers, including zero/false and nested nulls. Handled
+subtrees are skipped; partially handled ones yield unhandled siblings. Original
+raw data and typed product facts stay unchanged by discovery. The mechanism
+does not parse unseen concepts from already-used text or open source artifacts.
+Read [schema-discovery.md](schema-discovery.md) before writing proposals. Keep
+agent narratives outside managed snapshot artifacts. The `summarize` command
+regenerates discovery evidence/worksheets from covered, verified snapshot files;
+old snapshots without discovery remain supported.
+For an older snapshot, reusing an output directory removes obsolete generated
+`discovered-fields.jsonl` and `schema-extension-review.md` files and leaves other
+files intact. Unsafe write/removal paths are rejected before packet changes.
+Mapping summaries quote and escape source-derived labels and values as bounded
+JSON code spans; full evidence remains in their JSONL batches.

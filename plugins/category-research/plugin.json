@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "category-research",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Collect and preserve broad raw product information and original evidence before designing an analytical feature schema.",
   "keywords": ["category-research", "product-information", "raw-evidence", "collection"]
 }

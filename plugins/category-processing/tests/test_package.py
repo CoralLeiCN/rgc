@@ -1,19 +1,16 @@
 """Check portable package metadata against the published plugin/skill constraints."""
 
 import ast
-from copy import deepcopy
 import hashlib
 import json
-from pathlib import Path
 import re
-import sys
-import unittest
+from copy import deepcopy
+from pathlib import Path
 
+import pytest
+from category_processing.profiles import resolve_profile
 
 PLUGIN_ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(PLUGIN_ROOT))
-
-from category_processing.profiles import resolve_profile
 
 
 def validate_schema(value, schema):
@@ -52,34 +49,33 @@ def validate_schema(value, schema):
             validate_schema(item, schema["items"])
 
 
-class CategoryProcessingPackageTests(unittest.TestCase):
+class CategoryProcessingPackageTests:
     def test_manifest_matches_agent_plugins_1_0_schema_constraints(self):
         official_bytes = (PLUGIN_ROOT / "tests/fixtures/plugin.schema.json").read_bytes()
-        self.assertEqual(hashlib.sha256(official_bytes).hexdigest(),
-                         "0a4aad95ce337878ad38802ebf0daa3fde76abe3f65400c86bcbb1ec0b3ab883")
+        assert (hashlib.sha256(official_bytes).hexdigest()) == ("0a4aad95ce337878ad38802ebf0daa3fde76abe3f65400c86bcbb1ec0b3ab883")
         schema = json.loads(official_bytes)
-        self.assertEqual(schema["$id"], "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json")
+        assert (schema["$id"]) == ("https://agent-plugins.org/schemas/1.0.0/plugin.schema.json")
         manifest = json.loads((PLUGIN_ROOT / "plugin.json").read_text())
         validate_schema(manifest, schema)
         invalid = deepcopy(manifest)
         invalid["entrypoints"] = {"cli": "./cli.py"}
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             validate_schema(invalid, schema)
 
     def test_discoverable_skill_frontmatter_and_local_references_resolve(self):
         # Primary constraints: https://agentskills.io/specification
         skill = PLUGIN_ROOT / "skills/category-processing/SKILL.md"
         source = skill.read_text()
-        self.assertTrue(source.startswith("---\n"))
+        assert (source.startswith("---\n"))
         frontmatter = source.split("---", 2)[1]
         fields = dict(re.findall(r"^([a-z-]+):\s*(.+)$", frontmatter, flags=re.MULTILINE))
-        self.assertEqual(fields["name"], skill.parent.name)
-        self.assertRegex(fields["name"], r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
-        self.assertTrue(1 <= len(fields["name"]) <= 64)
-        self.assertTrue(1 <= len(fields["description"]) <= 1024)
+        assert (fields["name"]) == (skill.parent.name)
+        assert re.search((r"^[a-z0-9]+(?:-[a-z0-9]+)*$"), (fields["name"]))
+        assert (1 <= len(fields["name"]) <= 64)
+        assert (1 <= len(fields["description"]) <= 1024)
         for target in re.findall(r"\]\(([^)]+)\)", source):
             if "://" not in target and not target.startswith("#"):
-                self.assertTrue((skill.parent / target.split("#")[0]).exists(), target)
+                assert ((skill.parent / target.split("#")[0]).exists()), (target)
 
     def test_runtime_imports_are_standard_library_or_local_to_the_plugin(self):
         forbidden = {"category_research", "chocolate_cleanup", "chocolate_standardization", "chocolate_model", "chocolate_silver"}
@@ -91,7 +87,7 @@ class CategoryProcessingPackageTests(unittest.TestCase):
                     imported = {node.module.split(".")[0]}
                 else:
                     continue
-                self.assertFalse(imported & forbidden, str(path))
+                assert not (imported & forbidden), (str(path))
 
     def test_coffee_contracts_are_consistent_without_chocolate_attributes(self):
         root = resolve_profile(category="coffee")
@@ -99,15 +95,11 @@ class CategoryProcessingPackageTests(unittest.TestCase):
                      ("profile.json", "source-mappings.json", "model-design.json", "product.schema.json", "pipeline.json")}
         version = documents["profile.json"]["schema_version"]
         for name in ("source-mappings.json", "model-design.json", "pipeline.json"):
-            self.assertEqual(documents[name]["schema_version"], version)
-        self.assertEqual(documents["product.schema.json"]["properties"]["schema_version"]["const"], version)
+            assert (documents[name]["schema_version"]) == (version)
+        assert (documents["product.schema.json"]["properties"]["schema_version"]["const"]) == (version)
         attributes = documents["profile.json"]["attributes"]
-        self.assertEqual(len(attributes), 12)
-        self.assertEqual(documents["profile.json"]["category"], "coffee")
-        self.assertFalse(any("cocoa" in name or "nuts" in name for name in attributes))
-        self.assertFalse(set(documents["model-design.json"]["predictors"]) - set(attributes))
-        self.assertEqual(set(documents["product.schema.json"]["properties"]["attributes"]["required"]), set(attributes))
-
-
-if __name__ == "__main__":
-    unittest.main()
+        assert (len(attributes)) == (12)
+        assert (documents["profile.json"]["category"]) == ("coffee")
+        assert not (any("cocoa" in name or "nuts" in name for name in attributes))
+        assert not (set(documents["model-design.json"]["predictors"]) - set(attributes))
+        assert (set(documents["product.schema.json"]["properties"]["attributes"]["required"])) == (set(attributes))

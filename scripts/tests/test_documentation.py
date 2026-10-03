@@ -1,22 +1,18 @@
 """Exercise offline dataset pins, optional cached contracts and documentation drift."""
 
-from contextlib import redirect_stderr, redirect_stdout
 import hashlib
 import io
 import json
-from pathlib import Path
 import re
 import shutil
-import sys
-import tempfile
-import unittest
+from contextlib import redirect_stderr, redirect_stdout
+from pathlib import Path
 from unittest.mock import patch
 
+import check_documentation as guard
+import pytest
 
 ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT / "scripts"))
-
-import check_documentation as guard
 
 
 REFERENCES = (
@@ -26,16 +22,17 @@ REFERENCES = (
 )
 
 
-class DocumentationMaintenanceTests(unittest.TestCase):
-    def setUp(self):
-        self.temporary = tempfile.TemporaryDirectory()
-        self.addCleanup(self.temporary.cleanup)
-        self.root = Path(self.temporary.name)
+class DocumentationMaintenanceTests:
+    @pytest.fixture(autouse=True)
+    def setup(self, tmp_path):
+        self.root = tmp_path
         for name in guard.REQUIRED + REFERENCES:
             self.copy_file(name)
         # Preserve local documentation/link destinations without copying caches/corpus.
         for name in guard.REQUIRED:
-            for target in re.findall(r"\]\(([^)]+)\)", (ROOT / name).read_text(encoding="utf-8")):
+            for target in re.findall(
+                r"\]\(([^)]+)\)", (ROOT / name).read_text(encoding="utf-8")
+            ):
                 target = target.split("#", 1)[0]
                 if not target or "://" in target or target.startswith("mailto:"):
                     continue
@@ -62,28 +59,57 @@ class DocumentationMaintenanceTests(unittest.TestCase):
 
     def cached_contracts(self, category="chocolate", portable=False):
         """Build minimal temporary fixtures, never copy authoritative schema bodies."""
-        name = ("plugins/category-processing/profiles/" + category + "/dataset-contract.json"
-                if portable else REFERENCES[0])
+        name = (
+            "plugins/category-processing/profiles/"
+            + category
+            + "/dataset-contract.json"
+            if portable
+            else REFERENCES[0]
+        )
         manifest = json.loads((self.root / name).read_text(encoding="utf-8"))
         manifest["attribute_count"] = 1
-        attributes = {"quantity.total_edible_weight_g": {"type": "numeric", "unit": "g"}}
+        attributes = {
+            "quantity.total_edible_weight_g": {"type": "numeric", "unit": "g"}
+        }
         documents = {
-            "profile.json": {"schema_version": manifest["schema_version"], "category": category,
-                             "market": "uk", "attribute_count": 1, "attributes": attributes},
-            "source-mappings.json": {"schema_version": manifest["schema_version"],
-                                     "mapping_version": manifest["mapping_version"], "aliases": {}},
-            "model-design.json": {"schema_version": manifest["schema_version"],
-                                  "model_design_version": manifest["model_design_version"], "predictors": {}},
-            "product.schema.json": {"properties": {
-                "schema_version": {"const": manifest["schema_version"]},
-                "attributes": {"properties": attributes, "required": list(attributes)},
-            }},
+            "profile.json": {
+                "schema_version": manifest["schema_version"],
+                "category": category,
+                "market": "uk",
+                "attribute_count": 1,
+                "attributes": attributes,
+            },
+            "source-mappings.json": {
+                "schema_version": manifest["schema_version"],
+                "mapping_version": manifest["mapping_version"],
+                "aliases": {},
+            },
+            "model-design.json": {
+                "schema_version": manifest["schema_version"],
+                "model_design_version": manifest["model_design_version"],
+                "predictors": {},
+            },
+            "product.schema.json": {
+                "properties": {
+                    "schema_version": {"const": manifest["schema_version"]},
+                    "attributes": {
+                        "properties": attributes,
+                        "required": list(attributes),
+                    },
+                }
+            },
         }
         if portable:
-            documents["pipeline.json"] = {"schema_version": manifest["schema_version"],
-                                          "pipeline_version": manifest["pipeline_version"], "fields": []}
-        cache_root = (self.root / "plugins/category-processing/.contract-cache" if portable
-                      else self.root / "data/contract-cache")
+            documents["pipeline.json"] = {
+                "schema_version": manifest["schema_version"],
+                "pipeline_version": manifest["pipeline_version"],
+                "fields": [],
+            }
+        cache_root = (
+            self.root / "plugins/category-processing/.contract-cache"
+            if portable
+            else self.root / "data/contract-cache"
+        )
         directory = guard.cache_directory(manifest, cache_root)
         directory.mkdir(parents=True)
         for filename, document in documents.items():
@@ -91,7 +117,9 @@ class DocumentationMaintenanceTests(unittest.TestCase):
             (directory / filename).write_bytes(payload)
             manifest["files"][filename]["sha256"] = hashlib.sha256(payload).hexdigest()
             manifest["files"][filename]["size_bytes"] = len(payload)
-        (self.root / name).write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+        (self.root / name).write_text(
+            json.dumps(manifest, indent=2) + "\n", encoding="utf-8"
+        )
         return name, directory
 
     def cached_change(self, reference, directory, filename, change):
@@ -100,19 +128,23 @@ class DocumentationMaintenanceTests(unittest.TestCase):
         change(document)
         payload = (json.dumps(document, sort_keys=True) + "\n").encode("utf-8")
         path.write_bytes(payload)
-        self.reference(reference, lambda manifest: manifest["files"][filename].update(
-            sha256=hashlib.sha256(payload).hexdigest(), size_bytes=len(payload)))
+        self.reference(
+            reference,
+            lambda manifest: manifest["files"][filename].update(
+                sha256=hashlib.sha256(payload).hexdigest(), size_bytes=len(payload)
+            ),
+        )
 
     def assert_error(self, fragment):
         errors = guard.check(self.root)
-        self.assertTrue(any(fragment.casefold() in error.casefold() for error in errors), errors)
+        assert any(fragment.casefold() in error.casefold() for error in errors), errors
 
     def test_clean_clone_passes_without_cached_contracts(self):
         with patch.object(guard, "verify_contract_directory") as verify:
-            self.assertEqual(guard.check(self.root), [])
+            assert guard.check(self.root) == []
             verify.assert_not_called()
-        self.assertFalse((self.root / "data/contract-cache").exists())
-        self.assertFalse((self.root / "plugins/category-processing/.contract-cache").exists())
+        assert not (self.root / "data/contract-cache").exists()
+        assert not (self.root / "plugins/category-processing/.contract-cache").exists()
 
     def test_missing_maintained_document_is_reported(self):
         (self.root / "docs/intention.md").unlink()
@@ -125,14 +157,18 @@ class DocumentationMaintenanceTests(unittest.TestCase):
 
     def test_broken_relative_link_is_reported_with_document(self):
         path = self.root / "docs/spec.md"
-        path.write_text(path.read_text() + "\n[Missing contract](missing-contract.md#section)\n")
+        path.write_text(
+            path.read_text() + "\n[Missing contract](missing-contract.md#section)\n"
+        )
         self.assert_error("Broken local link in docs/spec.md: missing-contract.md")
 
     def test_existing_fragments_and_external_links_do_not_require_local_files(self):
         path = self.root / "docs/spec.md"
-        path.write_text(path.read_text() + "\n[Local](intention.md#purpose) [Here](#scope) "
-                        "[External](https://example.test/unavailable) [Email](mailto:example@example.test)\n")
-        self.assertEqual(guard.check(self.root), [])
+        path.write_text(
+            path.read_text() + "\n[Local](intention.md#purpose) [Here](#scope) "
+            "[External](https://example.test/unavailable) [Email](mailto:example@example.test)\n"
+        )
+        assert guard.check(self.root) == []
 
     def test_missing_dataset_reference_is_reported(self):
         (self.root / REFERENCES[0]).unlink()
@@ -143,7 +179,9 @@ class DocumentationMaintenanceTests(unittest.TestCase):
         self.assert_error("Unreadable dataset contract reference")
 
     def test_malformed_file_hash_is_rejected(self):
-        self.reference(REFERENCES[0], lambda doc: doc["files"]["profile.json"].update(sha256="bad"))
+        self.reference(
+            REFERENCES[0], lambda doc: doc["files"]["profile.json"].update(sha256="bad")
+        )
         self.assert_error("Unreadable dataset contract reference")
 
     def test_dataset_file_set_drift_is_rejected(self):
@@ -151,25 +189,31 @@ class DocumentationMaintenanceTests(unittest.TestCase):
         self.assert_error("file set")
 
     def test_unexpected_dataset_repository_is_rejected(self):
-        self.reference(REFERENCES[0], lambda doc: doc.update(repo_id="OtherOwner/dataset"))
+        self.reference(
+            REFERENCES[0], lambda doc: doc.update(repo_id="OtherOwner/dataset")
+        )
         self.assert_error("repository")
 
     def test_schema_guide_must_name_pinned_versions_without_cache(self):
         for field in ("schema_version", "mapping_version", "model_design_version"):
-            with self.subTest(field=field):
-                original = (self.root / REFERENCES[0]).read_text()
-                self.reference(REFERENCES[0], lambda doc: doc.update({field: "undocumented-version"}))
-                self.assert_error("Contract guide does not document chocolate " + field)
-                (self.root / REFERENCES[0]).write_text(original)
+            original = (self.root / REFERENCES[0]).read_text()
+            self.reference(
+                REFERENCES[0], lambda doc: doc.update({field: "undocumented-version"})
+            )
+            self.assert_error("Contract guide does not document chocolate " + field)
+            (self.root / REFERENCES[0]).write_text(original)
 
     def test_processing_guide_must_name_pinned_recipe_version_without_cache(self):
-        self.reference(REFERENCES[2], lambda doc: doc.update(pipeline_version="undocumented-recipe"))
+        self.reference(
+            REFERENCES[2],
+            lambda doc: doc.update(pipeline_version="undocumented-recipe"),
+        )
         self.assert_error("Contract guide does not document coffee pipeline_version")
 
     def test_matching_cached_contracts_pass(self):
         self.cached_contracts()
         self.cached_contracts("coffee", portable=True)
-        self.assertEqual(guard.check(self.root), [])
+        assert guard.check(self.root) == []
 
     def test_cache_hash_drift_is_rejected(self):
         _, directory = self.cached_contracts()
@@ -179,7 +223,7 @@ class DocumentationMaintenanceTests(unittest.TestCase):
     def test_partial_verified_cache_does_not_require_downloads(self):
         _, directory = self.cached_contracts()
         (directory / "model-design.json").unlink()
-        self.assertEqual(guard.check(self.root), [])
+        assert guard.check(self.root) == []
 
     def test_cache_marker_must_match_the_pinned_reference(self):
         reference, directory = self.cached_contracts()
@@ -190,98 +234,174 @@ class DocumentationMaintenanceTests(unittest.TestCase):
 
     def test_cached_schema_version_drift_is_rejected(self):
         reference, directory = self.cached_contracts()
-        self.cached_change(reference, directory, "source-mappings.json",
-                           lambda doc: doc.update(schema_version="obsolete"))
+        self.cached_change(
+            reference,
+            directory,
+            "source-mappings.json",
+            lambda doc: doc.update(schema_version="obsolete"),
+        )
         self.assert_error("Cached schema version mismatch")
 
     def test_cached_attribute_catalog_shape_is_reported_without_crashing(self):
         reference, directory = self.cached_contracts()
-        self.cached_change(reference, directory, "profile.json", lambda doc: doc.update(attributes=[]))
+        self.cached_change(
+            reference, directory, "profile.json", lambda doc: doc.update(attributes=[])
+        )
         self.assert_error("Cached profile attributes must be an object")
 
     def test_cached_validator_catalog_drift_is_rejected(self):
         reference, directory = self.cached_contracts("coffee", portable=True)
-        self.cached_change(reference, directory, "product.schema.json",
-                           lambda doc: doc["properties"]["attributes"]["required"].clear())
+        self.cached_change(
+            reference,
+            directory,
+            "product.schema.json",
+            lambda doc: doc["properties"]["attributes"]["required"].clear(),
+        )
         self.assert_error("Cached product validator attribute catalog")
 
     def test_cached_predictors_cannot_reference_undefined_attributes(self):
         reference, directory = self.cached_contracts()
-        self.cached_change(reference, directory, "model-design.json",
-                           lambda doc: doc["predictors"].update({"composition.imaginary": {}}))
+        self.cached_change(
+            reference,
+            directory,
+            "model-design.json",
+            lambda doc: doc["predictors"].update({"composition.imaginary": {}}),
+        )
         self.assert_error("undefined attribute")
 
     def test_cached_recipe_cannot_reference_undefined_attributes(self):
         reference, directory = self.cached_contracts("coffee", portable=True)
-        self.cached_change(reference, directory, "pipeline.json",
-                           lambda doc: doc["fields"].append({"attribute": "composition.imaginary"}))
+        self.cached_change(
+            reference,
+            directory,
+            "pipeline.json",
+            lambda doc: doc["fields"].append({"attribute": "composition.imaginary"}),
+        )
         self.assert_error("Cached processing recipe references an undefined attribute")
 
     def test_behavior_change_requires_documents_in_the_same_change(self):
         changed = {"scripts/chocolate_standardization/values.py"}
-        required = {"docs/spec.md", "docs/chocolate-schema.md", "docs/chocolate-silver.md", "docs/lifecycle/plan.md"}
+        required = {
+            "docs/spec.md",
+            "docs/chocolate-schema.md",
+            "docs/chocolate-silver.md",
+            "docs/lifecycle/plan.md",
+        }
         errors = guard.check(self.root, changed=changed)
         for name in required:
-            self.assertTrue(any("accompanying documentation update: " + name in error for error in errors), errors)
-        self.assertEqual(guard.check(self.root, changed=required | changed), [])
+            assert any(
+                "accompanying documentation update: " + name in error
+                for error in errors
+            ), errors
+        assert guard.check(self.root, changed=required | changed) == []
 
     def test_dataset_resolver_and_manifest_changes_require_guides(self):
         for name in ("scripts/dataset_contracts.py", REFERENCES[0]):
-            with self.subTest(name=name):
-                self.assertIn("docs/chocolate-silver.md", guard.required_updates({name}))
-                self.assertIn("docs/lifecycle/plan.md", guard.required_updates({name}))
+            assert "docs/chocolate-silver.md" in guard.required_updates({name})
+            assert "docs/lifecycle/plan.md" in guard.required_updates({name})
 
     def test_silver_builder_and_cli_require_their_guides_in_the_same_change(self):
-        required = {"docs/spec.md", "docs/chocolate-schema.md", "docs/chocolate-silver.md", "docs/lifecycle/plan.md"}
-        for name in ("scripts/chocolate_silver.py", "scripts/build_chocolate_silver.py"):
-            with self.subTest(name=name):
-                self.assertEqual(guard.required_updates({name}), required)
-                self.assertEqual(guard.check(self.root, changed=required | {name}), [])
+        required = {
+            "docs/spec.md",
+            "docs/chocolate-schema.md",
+            "docs/chocolate-silver.md",
+            "docs/lifecycle/plan.md",
+        }
+        for name in (
+            "scripts/chocolate_silver.py",
+            "scripts/build_chocolate_silver.py",
+        ):
+            assert guard.required_updates({name}) == required
+            assert guard.check(self.root, changed=required | {name}) == []
 
     def test_shared_schema_and_cleanup_changes_require_silver_documentation(self):
-        for name in (REFERENCES[0], "scripts/chocolate_standardization/pipeline.py",
-                     "scripts/chocolate_cleanup/deduplication.py", "scripts/chocolate_model.py"):
-            with self.subTest(name=name):
-                self.assertIn("docs/chocolate-silver.md", guard.required_updates({name}))
+        for name in (
+            REFERENCES[0],
+            "scripts/chocolate_standardization/pipeline.py",
+            "scripts/chocolate_cleanup/deduplication.py",
+            "scripts/chocolate_model.py",
+        ):
+            assert "docs/chocolate-silver.md" in guard.required_updates({name})
 
     def test_tests_and_unrelated_changes_do_not_require_behavior_documentation(self):
-        self.assertEqual(guard.check(self.root, changed={"scripts/tests/test_documentation.py", "unrelated.txt"}), [])
+        assert (
+            guard.check(
+                self.root,
+                changed={"scripts/tests/test_documentation.py", "unrelated.txt"},
+            )
+            == []
+        )
 
     def test_processing_behavior_requires_portable_plugin_documentation(self):
         changed = {"plugins/category-processing/category_processing/pipeline.py"}
-        required = {"docs/spec.md", "docs/category-processing.md", "plugins/category-processing/README.md", "docs/lifecycle/plan.md"}
-        self.assertEqual(guard.required_updates(changed), required)
-        self.assertEqual(guard.check(self.root, changed=changed | required), [])
-        self.assertEqual(guard.required_updates({"plugins/category-processing/tests/test_model.py"}), set())
+        required = {
+            "docs/spec.md",
+            "docs/category-processing.md",
+            "plugins/category-processing/README.md",
+            "docs/lifecycle/plan.md",
+        }
+        assert guard.required_updates(changed) == required
+        assert guard.check(self.root, changed=changed | required) == []
+        assert (
+            guard.required_updates({"plugins/category-processing/tests/test_model.py"})
+            == set()
+        )
 
-    def test_component_policies_cover_collection_cleanup_publication_and_governance(self):
+    def test_component_policies_cover_collection_cleanup_publication_and_governance(
+        self,
+    ):
         cases = (
-            ({"plugins/category-research/category_research/archive.py"}, {"docs/spec.md", "plugins/category-research/README.md", "docs/lifecycle/plan.md"}),
-            ({"scripts/chocolate_cleanup/adapters.py"}, {"docs/spec.md", "docs/chocolate-cleaning.md", "docs/chocolate-deduplication.md", "docs/chocolate-silver.md", "docs/lifecycle/plan.md"}),
-            ({"scripts/publish_collections.py"}, {"docs/spec.md", "README", "docs/lifecycle/plan.md"}),
-            ({"scripts/check_documentation.py"}, {"docs/documentation-policy.md", "docs/lifecycle/plan.md"}),
+            (
+                {"plugins/category-research/category_research/archive.py"},
+                {
+                    "docs/spec.md",
+                    "plugins/category-research/README.md",
+                    "docs/lifecycle/plan.md",
+                },
+            ),
+            (
+                {"scripts/chocolate_cleanup/adapters.py"},
+                {
+                    "docs/spec.md",
+                    "docs/chocolate-cleaning.md",
+                    "docs/chocolate-deduplication.md",
+                    "docs/chocolate-silver.md",
+                    "docs/lifecycle/plan.md",
+                },
+            ),
+            (
+                {"scripts/publish_collections.py"},
+                {"docs/spec.md", "README", "docs/lifecycle/plan.md"},
+            ),
+            (
+                {"scripts/check_documentation.py"},
+                {"docs/documentation-policy.md", "docs/lifecycle/plan.md"},
+            ),
         )
         for changed, expected in cases:
-            with self.subTest(changed=changed):
-                self.assertEqual(guard.required_updates(changed), expected)
+            assert guard.required_updates(changed) == expected
 
     def test_structural_cli_returns_success_without_git_comparison(self):
         output, errors = io.StringIO(), io.StringIO()
-        with patch.object(guard, "ROOT", self.root), patch.object(guard, "changed_paths") as git_changes:
+        with (
+            patch.object(guard, "ROOT", self.root),
+            patch.object(guard, "changed_paths") as git_changes,
+        ):
             with redirect_stdout(output), redirect_stderr(errors):
                 status = guard.main(["--structural-only"])
-        self.assertEqual(status, 0, errors.getvalue())
+        assert status == 0, errors.getvalue()
         git_changes.assert_not_called()
-        self.assertIn("maintenance checks passed", output.getvalue())
+        assert "maintenance checks passed" in output.getvalue()
 
     def test_cli_returns_failure_for_missing_same_change_docs(self):
         output, errors = io.StringIO(), io.StringIO()
-        with patch.object(guard, "ROOT", self.root), patch.object(guard, "changed_paths", return_value={"scripts/chocolate_model.py"}):
+        with (
+            patch.object(guard, "ROOT", self.root),
+            patch.object(
+                guard, "changed_paths", return_value={"scripts/chocolate_model.py"}
+            ),
+        ):
             with redirect_stdout(output), redirect_stderr(errors):
                 status = guard.main(["--base", "test-base"])
-        self.assertEqual(status, 1)
-        self.assertIn("accompanying documentation update", errors.getvalue())
-
-
-if __name__ == "__main__":
-    unittest.main()
+        assert status == 1
+        assert "accompanying documentation update" in errors.getvalue()

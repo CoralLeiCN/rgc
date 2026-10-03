@@ -1,28 +1,23 @@
 """Reject inconsistent category contracts before any silver output changes."""
 
-import json
 import hashlib
+import json
+import shutil
 from copy import deepcopy
 from pathlib import Path
-import shutil
-import sys
-import tempfile
-import unittest
 
-
-PLUGIN_ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(PLUGIN_ROOT))
-
+import pytest
 from category_processing.pipeline import build_silver_dataset
 from category_processing.profiles import load_profile, resolve_profile
 from fixture_archive import import_document
 
+PLUGIN_ROOT = Path(__file__).resolve().parents[1]
 
-class ProfileValidationTests(unittest.TestCase):
-    def setUp(self):
-        self.temporary = tempfile.TemporaryDirectory()
-        self.addCleanup(self.temporary.cleanup)
-        self.base = Path(self.temporary.name)
+
+class ProfileValidationTests:
+    @pytest.fixture(autouse=True)
+    def setup(self, tmp_path):
+        self.base = tmp_path
         self.profile = self.base / "profile"
         self.packaged_coffee = resolve_profile(PLUGIN_ROOT / "profiles/coffee")
         shutil.copytree(self.packaged_coffee, self.profile, ignore=shutil.ignore_patterns("dataset-contract.json"))
@@ -42,10 +37,9 @@ class ProfileValidationTests(unittest.TestCase):
 
     def test_pinned_profiles_load_with_consistent_contracts(self):
         for category in ("chocolate", "coffee"):
-            with self.subTest(category=category):
-                profile, unused_mappings, unused_design, unused_recipe, hashes = load_profile(resolve_profile(category=category))
-                self.assertEqual(profile["category"], category)
-                self.assertEqual(len(hashes), 5)
+            profile, unused_mappings, unused_design, unused_recipe, hashes = load_profile(resolve_profile(category=category))
+            assert (profile["category"]) == (category)
+            assert (len(hashes)) == (5)
 
     def test_pinned_reference_metadata_must_match_verified_payload_meaning(self):
         names = ("profile.json", "source-mappings.json", "model-design.json", "product.schema.json", "pipeline.json")
@@ -67,16 +61,15 @@ class ProfileValidationTests(unittest.TestCase):
         load_profile(self.profile)
         for field in ("category", "market", "schema_version", "mapping_version", "model_design_version",
                       "pipeline_version", "attribute_count"):
-            with self.subTest(field=field):
-                changed = deepcopy(reference)
-                changed[field] = reference[field] + 1 if field == "attribute_count" else "different-" + reference[field]
-                if field == "category":
-                    changed["contract_set"] = "category-processing/" + changed[field]
-                    for name, metadata in changed["files"].items():
-                        metadata["path"] = "contracts/" + changed["contract_set"] + "/" + name
-                marker.write_text(json.dumps(changed) + "\n", encoding="utf-8")
-                with self.assertRaisesRegex(ValueError, "dataset reference metadata: " + field):
-                    load_profile(self.profile)
+            changed = deepcopy(reference)
+            changed[field] = reference[field] + 1 if field == "attribute_count" else "different-" + reference[field]
+            if field == "category":
+                changed["contract_set"] = "category-processing/" + changed[field]
+                for name, metadata in changed["files"].items():
+                    metadata["path"] = "contracts/" + changed["contract_set"] + "/" + name
+            marker.write_text(json.dumps(changed) + "\n", encoding="utf-8")
+            with pytest.raises(ValueError, match="dataset reference metadata: " + field):
+                load_profile(self.profile)
 
     def test_new_canonical_label_requires_matching_validator_before_publication(self):
         self.edit("profile.json", lambda doc: doc["attributes"]["coffee.roast"]["allowed_values"].append("ultra"))
@@ -93,48 +86,45 @@ class ProfileValidationTests(unittest.TestCase):
         marker = output / "existing-snapshot.txt"
         marker.write_bytes(b"Preserve the previous snapshot.\n")
         before = {path.name: path.read_bytes() for path in output.iterdir()}
-        with self.assertRaisesRegex(ValueError, "validator vocabulary differs"):
+        with pytest.raises(ValueError, match="validator vocabulary differs"):
             build_silver_dataset(archive, output, self.profile)
-        self.assertEqual({path.name: path.read_bytes() for path in output.iterdir()}, before)
+        assert ({path.name: path.read_bytes() for path in output.iterdir()}) == (before)
 
     def test_value_type_drift_in_either_schema_branch_is_rejected(self):
         for location in ("nullable", "known"):
-            with self.subTest(location=location):
-                self.edit("product.schema.json", lambda doc: self.value_schema(doc, "identity.name", location).update(type="boolean"))
-                with self.assertRaisesRegex(ValueError, "attribute type differs"):
-                    load_profile(self.profile)
-                shutil.copyfile(self.packaged_coffee / "product.schema.json", self.profile / "product.schema.json")
+            self.edit("product.schema.json", lambda doc: self.value_schema(doc, "identity.name", location).update(type="boolean"))
+            with pytest.raises(ValueError, match="attribute type differs"):
+                load_profile(self.profile)
+            shutil.copyfile(self.packaged_coffee / "product.schema.json", self.profile / "product.schema.json")
 
     def test_numeric_minimum_and_maximum_drift_in_either_branch_is_rejected(self):
         for location in ("nullable", "known"):
             for constraint, value in (("minimum", 100), ("maximum", 250), ("exclusiveMinimum", 0)):
-                with self.subTest(location=location, constraint=constraint):
-                    self.edit("product.schema.json", lambda doc: self.value_schema(doc, "quantity.net_weight_g", location).update({constraint: value}))
-                    with self.assertRaisesRegex(ValueError, "numeric bounds differ|Unsupported product validator value constraints"):
-                        load_profile(self.profile)
-                    shutil.copyfile(self.packaged_coffee / "product.schema.json", self.profile / "product.schema.json")
+                self.edit("product.schema.json", lambda doc: self.value_schema(doc, "quantity.net_weight_g", location).update({constraint: value}))
+                with pytest.raises(ValueError, match="numeric bounds differ|Unsupported product validator value constraints"):
+                    load_profile(self.profile)
+                shutil.copyfile(self.packaged_coffee / "product.schema.json", self.profile / "product.schema.json")
 
     def test_numeric_profile_bound_change_requires_validator_update(self):
         self.edit("profile.json", lambda doc: doc["attributes"]["quantity.net_weight_g"].update(minimum=10))
-        with self.assertRaisesRegex(ValueError, "numeric bounds differ"):
+        with pytest.raises(ValueError, match="numeric bounds differ"):
             load_profile(self.profile)
 
     def test_unit_drift_is_rejected(self):
         self.edit("product.schema.json", lambda doc: doc["properties"]["attributes"]["properties"]["quantity.net_weight_g"]["properties"]["unit"].update(const="kg"))
-        with self.assertRaisesRegex(ValueError, "attribute unit differs"):
+        with pytest.raises(ValueError, match="attribute unit differs"):
             load_profile(self.profile)
 
     def test_list_item_vocabulary_and_type_drift_are_rejected(self):
         for location in ("nullable", "known"):
-            with self.subTest(location=location):
-                self.edit("product.schema.json", lambda doc: self.value_schema(doc, "origin.countries", location)["items"].update(enum=["Colombia"]))
-                with self.assertRaisesRegex(ValueError, "list vocabulary differs"):
-                    load_profile(self.profile)
-                shutil.copyfile(self.packaged_coffee / "product.schema.json", self.profile / "product.schema.json")
-                self.edit("product.schema.json", lambda doc: self.value_schema(doc, "origin.countries", location)["items"].update(type="number"))
-                with self.assertRaisesRegex(ValueError, "list item type differs"):
-                    load_profile(self.profile)
-                shutil.copyfile(self.packaged_coffee / "product.schema.json", self.profile / "product.schema.json")
+            self.edit("product.schema.json", lambda doc: self.value_schema(doc, "origin.countries", location)["items"].update(enum=["Colombia"]))
+            with pytest.raises(ValueError, match="list vocabulary differs"):
+                load_profile(self.profile)
+            shutil.copyfile(self.packaged_coffee / "product.schema.json", self.profile / "product.schema.json")
+            self.edit("product.schema.json", lambda doc: self.value_schema(doc, "origin.countries", location)["items"].update(type="number"))
+            with pytest.raises(ValueError, match="list item type differs"):
+                load_profile(self.profile)
+            shutil.copyfile(self.packaged_coffee / "product.schema.json", self.profile / "product.schema.json")
 
     def test_enum_order_does_not_change_its_contract(self):
         def reorder(document):
@@ -149,38 +139,33 @@ class ProfileValidationTests(unittest.TestCase):
             for location in ("nullable", "known"):
                 self.value_schema(document, "origin.countries", location)["items"]["enum"] = []
         self.edit("product.schema.json", add_empty_validator)
-        with self.assertRaisesRegex(ValueError, "Profile list vocabulary requires"):
+        with pytest.raises(ValueError, match="Profile list vocabulary requires"):
             load_profile(self.profile)
 
     def test_known_status_requires_its_own_consistent_value_contract(self):
         self.edit("product.schema.json", lambda doc: doc["properties"]["attributes"]["properties"]["coffee.roast"]["allOf"].pop(0))
-        with self.assertRaisesRegex(ValueError, "known-status value condition"):
+        with pytest.raises(ValueError, match="known-status value condition"):
             load_profile(self.profile)
 
     def test_validator_category_and_market_must_match_profile(self):
         for key in ("category", "market"):
-            with self.subTest(key=key):
-                self.edit("product.schema.json", lambda doc: doc["properties"][key].update(const="other"))
-                with self.assertRaisesRegex(ValueError, "Product validator " + key + " differs"):
-                    load_profile(self.profile)
-                shutil.copyfile(self.packaged_coffee / "product.schema.json", self.profile / "product.schema.json")
+            self.edit("product.schema.json", lambda doc: doc["properties"][key].update(const="other"))
+            with pytest.raises(ValueError, match="Product validator " + key + " differs"):
+                load_profile(self.profile)
+            shutil.copyfile(self.packaged_coffee / "product.schema.json", self.profile / "product.schema.json")
 
     def test_selected_model_vocabulary_may_be_subset_but_not_outside_profile(self):
         self.edit("model-design.json", lambda doc: doc["predictors"]["coffee.roast"].update(allowed_values=["light", "dark"]))
         load_profile(self.profile)
         self.edit("model-design.json", lambda doc: doc["predictors"]["coffee.roast"]["allowed_values"].append("ultra"))
-        with self.assertRaisesRegex(ValueError, "Model predictor vocabulary exceeds"):
+        with pytest.raises(ValueError, match="Model predictor vocabulary exceeds"):
             load_profile(self.profile)
 
     def test_selected_model_type_and_unit_must_match_profile(self):
         self.edit("model-design.json", lambda doc: doc["predictors"]["coffee.roast"].update(type="numeric"))
-        with self.assertRaisesRegex(ValueError, "Numeric model predictor requires"):
+        with pytest.raises(ValueError, match="Numeric model predictor requires"):
             load_profile(self.profile)
         shutil.copyfile(self.packaged_coffee / "model-design.json", self.profile / "model-design.json")
         self.edit("model-design.json", lambda doc: doc["predictors"]["quantity.net_weight_g"].update(unit="kg"))
-        with self.assertRaisesRegex(ValueError, "Model predictor unit differs"):
+        with pytest.raises(ValueError, match="Model predictor unit differs"):
             load_profile(self.profile)
-
-
-if __name__ == "__main__":
-    unittest.main()

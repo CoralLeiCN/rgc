@@ -5,11 +5,10 @@ are never changed. A JSON pointer identifies each supporting value in the captur
 Shopify ``grams`` is deliberately excluded: it can describe shipping weight.
 """
 
-from decimal import Decimal, InvalidOperation
-from html.parser import HTMLParser
 import math
 import re
-
+from decimal import Decimal, InvalidOperation
+from html.parser import HTMLParser
 
 INFO = "/raw_record/information"
 IDENTITY = "/raw_record/identity"

@@ -13,6 +13,15 @@ Retain explicit unknown/conflict states, separate attributes from observations,
 and distinguish candidates from reviewed model inputs. Brand identity and seller
 role remain distinct, with brand, retail and unknown partitions.
 
+Collection sections and processing fields, units, quantity and pricing basis
+belong to each study. `init-profile` validates five aligned local working
+contracts without copying a packaged profile. Structural discovery preserves
+unconfigured raw fields and creates schema-extension worksheets; interpretation,
+predictor selection and durable proposal decisions require evidence assessment.
+The agent may apply supported local changes without user approval. A changed
+schema requires a detailed release summary and user review before its Hugging
+Face commit under the [standing decision](../decisions/agent-led-schema-maintenance.md).
+
 Training requires reviewed scope, identities, price/quantity basis and features,
 comparison groups, validation grouped by family, preprocessing learned from
 training rows, support checks and a defined policy for missing values. Insights

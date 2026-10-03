@@ -9,10 +9,16 @@ additional product fields accept free JSON independently of a feature taxonomy.
   "contract_version": "1",
   "study": {
     "study_id": "category-study",
-    "category": "chocolate",
+    "category": "furniture",
     "market": "uk",
     "currency": "GBP",
     "scope": "Products listed by the selected UK sources."
+  },
+  "collection_sections": {
+    "description": ["description", "bodyhtml"],
+    "prices": ["price"],
+    "materials": ["material"],
+    "dimensions": ["dimension", "height", "width", "depth"]
   },
   "products": [
     {
@@ -29,7 +35,9 @@ additional product fields accept free JSON independently of a feature taxonomy.
       "information": {
         "original_source_product": {},
         "original_source_variant": {},
-        "additional_source_fields": "Retain source wording, units, offers and availability."
+        "additional_source_fields": "Retain source wording, units, offers and availability.",
+        "materials": ["Source-stated solid wood"],
+        "dimensions": "Source-stated 90 x 45 x 75 cm"
       },
       "source_artifacts": [
         {
@@ -102,15 +110,49 @@ Transfers are cached by URL per run; original bytes are copied into each product
 folder. Shared catalogs, original import JSON values, and full run reports are
 retained alongside the product folders.
 
-Presence reports for raw sections record explicit source fields. Ingredient presence requires
+The category label is unrestricted by a bundled category list; records retain
+arbitrary fields for food, electronics, apparel, furniture and other product
+types. The importer does not discover or extract those fields automatically.
+The calling agent supplies source-specific records and obtains evidence through
+its authorized retrieval tools.
+
+Optional `collection_sections` maps nonempty section names to nonempty arrays of
+field-key markers. Markers are matched as substrings of source keys after Unicode
+NFKC normalization, case-folding and retaining letters and numbers; for example, `battery capacity`
+matches `battery_capacity_wh`. Only `information` is inspected. Each observation
+records matching paths and `source_field_present` or `unknown`, with
+`completeness: not_verified`. Nonempty fields include numeric zero and Boolean
+false. These heuristic observations cannot establish substantive content,
+category applicability or source completeness. No observation is an import
+requirement. Omit the configuration to observe description (`description`,
+`bodyhtml`), prices (`price`) and availability (`availability`, `available`,
+`stock`); supply `{}` to disable all observations. Supplied configuration replaces
+the defaults and is retained in captures and reports, alongside
+`section_presence_contract_version: category-research-sections-2`.
+Source keys in other languages are supported: an English section label such as
+`materials` may use an original source marker such as `材料`. Normalization applies
+only to matching; configured markers, matching source paths and all raw evidence
+retain their original wording and language.
+
+An explicitly configured section named `ingredients` retains the conservative
+legacy ingredient heuristic. Ingredient presence requires
 substantive source text, lists, or candidate data; metadata, status fields, and
 unknown placeholders do not count. An ingredient field can be
 `source_field_present` or `unknown`; neither means its text or composition is
-complete or independently verified. The CLI's `ingredient_fields_unknown` count
-uses this conservative heuristic based on field names; it is not an authoritative ingredient
-coverage measurement. Original page text or unfamiliar field names require
-separate evidence review. Previously archived presence reports retain the
-heuristic used at capture time. `status: saved` describes
+complete or independently verified. New product run outcomes use
+`section_field_statuses`, and CLI summaries use the `section_fields_unknown` map.
+The legacy `ingredient_field_status` and `ingredient_fields_unknown` compatibility
+fields are emitted only when `ingredients` is explicitly selected. Calling the
+Python `section_presence(information)` helper without markers still provides the
+legacy six-section heuristic; `import_document` uses the generic defaults above.
+Original page text or unfamiliar field names require separate evidence review.
+Previously archived presence reports retain the heuristic used at capture time;
+captures without a section-report version use the legacy behavior. The evidence
+archive remains `category-research-raw-1`, with its paths, original records and
+immutable earlier captures unchanged. Consumers of ingredient counters should
+select that section explicitly or read the generic status map.
+
+`status: saved` describes
 artifact storage; `source_retrieval_status` and HTTP status describe retrieval.
 Failed/truncated responses, artifacts containing only references, and image limits produce
 partial capture/report status. Even a fully stored supplied record remains

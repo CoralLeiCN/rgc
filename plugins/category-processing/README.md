@@ -15,17 +15,34 @@ eligibility, a processing ledger and grouped artifacts for mapping review in one
 silver dataset. The calling harness uses the skill and evidence batches to
 prepare mapping changes; there is no external dispatcher or scheduler.
 
-The package includes its engine, helpers for model preparation and pinned references
-to chocolate/coffee contracts in the
+The package includes its engine, generic profile authoring, model-preparation
+helpers and optional pinned chocolate/coffee example references in the
 [Hugging Face dataset](https://huggingface.co/datasets/CoralLeiCN/rgc-collections).
-Category JSON payloads live in the dataset. The plugin verifies files against an
-immutable commit revision, SHA-256 hashes and byte lengths. It runs independently
-of repository sibling modules and other plugin installations. Copy the whole
-package when moving it; run its CLI directly when native installation is unavailable.
+Category JSON payloads are dataset artifacts rather than Git content. The plugin
+uses a commit revision and per-file SHA-256/size checks, without repository sibling
+modules or another plugin installation. Category-specific fields, units,
+comparable groups and price bases belong to a supplied profile. It does not fit
+a regression. Copy the whole package when moving it; run its CLI directly when
+native plugin installation is unavailable. The package version is `0.3.2`.
+
+Within an authorized study, the agent reviews, decides and applies supported
+local schema, mapping and parser improvements without requiring user review,
+confirmation or approval. Evidence justification, five-contract versioning,
+relevant tests, impact comparison and model-eligibility checks still apply.
+An identified agent may provide the required review decisions; missing evidence
+remains unresolved until those checks are satisfied.
+When a schema changes, finish local implementation, contracts, rebuild and
+validation, then present a detailed summary for user review and wait for
+authorization before committing to Hugging Face. Include field/contract changes,
+evidence, mapping/unit/scope/price/predictor impacts, before/after counts and
+eligibility, tests/gaps, and the exact dataset repository/revision, files and
+manifest hashes. The calling harness owns this publication review step; the
+plugin does not implement an uploader or automatic popup UI.
 
 ```text
-python3 <plugin-root>/cli.py process --archive-root <collections-root> --category chocolate --output <silver-root>
-python3 <plugin-root>/cli.py process --archive-root <collections-root> --profile <custom-profile-folder> --output <silver-root>
+python3 <plugin-root>/cli.py init-profile --input <category-definition.json> --output <profile-folder>
+python3 <plugin-root>/cli.py process --archive-root <collections-root> --profile <profile-folder> --output <silver-root>
+python3 <plugin-root>/cli.py process --archive-root <collections-root> --category chocolate --contracts-cache <cache-root> --output <silver-root> [--offline]
 python3 <plugin-root>/cli.py summarize --silver-root <silver-root> --output <summary-output>
 python3 <plugin-root>/cli.py prepare-model --silver-root <silver-root> --output <model-preparation-root> --validation-fraction 0.2
 ```
@@ -47,12 +64,49 @@ repository, immutable revision and reference fingerprint.
 
 Read the skill's references for the
 [processing/archive contract](skills/category-processing/references/processing-contract.md),
+[category definition](skills/category-processing/references/profile-definition.md),
 [profile configuration](skills/category-processing/references/profile-contract.md),
 [mapping maintenance](skills/category-processing/references/mapping-maintenance.md), and
 [model handoff](skills/category-processing/references/model-handoff.md).
 Chocolate has a broad profile with 103 attributes and conservative source parsing;
 coffee is a small starter for structured sources that demonstrates category
 independence, with extraction limited to configured inputs.
+
+For a new category, define its attributes and structured source pointers, choose
+an observed numeric quantity (item, pack, mass, volume, length or time), currency,
+normalization base and reviewed tax basis, then run `init-profile`. This creates
+all five aligned contracts and validates them before publishing a new directory;
+an existing profile is never overwritten. Definitions use
+`category-processing-definition-1`. No food attributes, grams, GBP, or assumed
+item count are inserted. Declare multiplicative unit conversions in mappings.
+For minor-unit prices, `price.minor_unit_factor` selects the explicit divisor
+(legacy profiles default to 100). A design selects one reviewed tax basis through
+`eligibility.allowed_tax_bases`; no currency or tax conversion is inferred.
+Structured money uses plain decimal amounts with explicit currency; locale
+punctuation or currency symbols do not establish a conversion. Existing £/GBP
+prefixes are supported only for explicitly GBP observations.
+
+New categories reuse the structured engine without editing its Python core.
+Category/source-specific free-text extraction may still need prepared structured
+evidence or an additional adapter. Generated contracts establish configuration,
+not reviewed facts, complete source coverage, or a validated category model.
+
+Processing also discovers meaningful raw fields outside configured extraction.
+It writes full typed values and source pointers to `discovered-fields.jsonl`
+(`category-unmapped-fields-1`) and an evidence/justification worksheet to
+`schema-extension-review.md`. Known fields and exact archive/control metadata
+are excluded; missing leaves are omitted, while zero, false and nested evidence
+remain preserved. Optional recipe `discovery` controls raw roots, additional
+ignored pointers or explicit disabling; the report records the effective policy.
+Discovery is structural and leaves meaning, units and scope unresolved. It does
+not infer concepts hidden within already-used prose or update schema/predictors.
+The [discovery/proposal workflow](skills/category-processing/references/schema-discovery.md)
+describes durable agent proposals, evidence review, contract impacts and tests.
+`summarize` copies the new discovery artifacts from verified snapshots alongside
+mapping review; older snapshots without them remain supported.
+Reusing a packet for an older snapshot removes the two generated discovery files
+if they are obsolete, retaining unrelated files. Displayed source data use escaped,
+bounded JSON previews; complete evidence remains in JSONL.
 
 Profile loading checks typed attributes, units, enum/list vocabularies and bounds
 against the validator's supported template for nullable and known values, plus
@@ -61,25 +115,34 @@ constraints fail explicitly; this runtime does not execute arbitrary JSON Schema
 Values valid for the category but outside a selected model domain remain in
 silver, with candidate exclusion reasons rather than a failed build.
 
-Raw discovery, original source/image retrieval and import remain collection
+Source discovery, original source/image retrieval and import remain collection
 responsibilities. The category-research collection package can produce the
-common raw archive consumed here; any compatible producer works. Review examples
-and stable seller review keys are in the profile reference.
+common raw archive consumed here; any compatible producer works. There is no
+runtime dependency on that package. Review examples and stable seller review
+keys are in the profile reference.
+Raw category/market directories use the collection format's case-folded,
+hyphen-normalized slugs, with exact safe-name fallback for compatible producers.
+Original envelope values and seller UID inputs remain exact.
 
-Run the bundled tests from the package root:
+Run development checks from the repository root:
 
 ```text
-python3 -B -m unittest discover -s tests -v
+uv sync --locked
+uv run pytest plugins/category-processing/tests
+uv run ruff check .
 ```
 
-The bundled tests cover drift in typed contracts, exclusions from selected model
-domains, reference/cache routing and execution of a copied plugin with isolated
-Python. Prior verification passed coffee processing, review and model preparation,
-real chocolate preservation/hash/repeated build checks and skill structure checks.
-Category integration tests require a populated default cache or access to the
-public dataset on their first run. Resolver unit tests use mocked downloads and
-synthetic references without category payload fixtures. Native installation in
-multiple harnesses remains unverified.
+For a copied package, install pytest in a development environment and run
+`python3 -m pytest tests` from the package root. The runtime uses the standard
+library; pytest and Ruff are development tools.
+
+Bundled tests cover generic profile generation, non-food quantity/price bases,
+discovery, typed-contract drift, selected-model domain exclusions, reference/cache
+routing and isolated copied-plugin execution. Category integration
+tests resolve the pinned contracts, requiring a populated default cache or access
+to the public dataset on their first run. Resolver unit tests use mocked downloads
+and synthetic references without category payload fixtures. These checks establish
+package behavior; native installation in multiple harnesses remains unverified.
 
 Dataset eligibility is separate from package correctness: unreviewed evidence and
 unresolved price basis remain excluded. Current real chocolate has mapping gaps

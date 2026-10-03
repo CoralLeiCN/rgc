@@ -1,22 +1,39 @@
 """Build a portable evidence-backed silver snapshot from raw category captures."""
 
-from collections import Counter, defaultdict
-from copy import deepcopy
 import hashlib
 import json
 import math
+from collections import Counter, defaultdict
+from copy import deepcopy
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 
 from .adapters import extract_capture
-from .archive import (ARCHIVE_VERSION, aware_time, confirm_raw_snapshot,
-                      deduplicate_archive, digest, inside, json_bytes,
-                      load_raw_archive, normalized_price, pointer_value,
-                      positive, read_json, sha256)
-from .profiles import CONTRACT_FILES, load_profile, profile_provenance, resolve_profile
+from .archive import (
+    ARCHIVE_VERSION,
+    aware_time,
+    confirm_raw_snapshot,
+    deduplicate_archive,
+    digest,
+    inside,
+    json_bytes,
+    load_raw_archive,
+    normalized_price,
+    pointer_value,
+    positive,
+    read_json,
+    sha256,
+)
+from .discovery import discover_fields, discovery_policy
 from .model import ModelContractError, _predictor_value
-from .values import standardize_value, unknown_attribute, validate_evidence, validate_product
-
+from .profiles import CONTRACT_FILES, load_profile, profile_provenance, resolve_profile
+from .schema_suggestions import render_schema_suggestions
+from .values import (
+    standardize_value,
+    unknown_attribute,
+    validate_evidence,
+    validate_product,
+)
 
 LAYER_VERSION = "category-processing-silver-1"
 
@@ -136,10 +153,12 @@ def build_silver_dataset(archive_root, output, profile_root, reviews=None):
     context = {"category": category, "market": market, "schema_version": schema, "dataset_version": version,
                "source_dataset_version": source_version}
     products, assertions, prices, candidates, queue, errors, field_failures = [], [], [], [], [], [], []
+    discovered = []
     seen_prices, seen_reviews = set(), set()
     quantity_name, quantity_unit = recipe["quantity"]["attribute"], recipe["quantity"]["unit"]
     base_quantity = recipe["quantity"]["base_quantity"]
     target_currency = design.get("target", {}).get("currency") or recipe.get("price", {}).get("currency")
+    allowed_tax_bases = design.get("eligibility", {}).get("allowed_tax_bases", ["consumer_tax_included"])
     group_name = recipe.get("group_attribute", "identity.product_group")
 
     for row in sources:
@@ -197,6 +216,7 @@ def build_silver_dataset(archive_root, output, profile_root, reviews=None):
                 field_failures.append(failure)
 
         for capture in captures.values():
+            extracted = None
             try:
                 extracted = extract_capture(capture, recipe)
             except (ValueError, TypeError, AttributeError, KeyError, IndexError) as error:
@@ -204,6 +224,40 @@ def build_silver_dataset(archive_root, output, profile_root, reviews=None):
                 queue.append({**row_context, "reason": "extraction_failed", "error": str(error),
                               "value": str(error), "scope": "observation", "source_format": recipe["adapter"],
                               "evidence": [_evidence(capture, "/raw_record")]})
+            handled = []
+            if extracted is not None:
+                # Missing adapter features cite their enclosing raw object as
+                # context; they do not establish coverage of that object. A
+                # provisional group can also cite /raw_record when its name
+                # is missing. Explicit configured fields remain covered by
+                # discovery's recipe handling, including whole-object fields.
+                handled.extend(item["pointer"] for item in extracted["attributes"]
+                               if item.get("value") is not None and item.get("value") != "unknown"
+                               and item.get("method") != "not_established_by_available_source_evidence"
+                               and item["pointer"] not in (
+                                   "/raw_record", "/raw_record/information", "/raw_record/identity"))
+                handled.extend(item["pointer"] for name in ("quantities", "prices")
+                               for item in extracted[name])
+                handled.extend(extracted.get("handled_pointers", []))
+            for item in discover_fields(capture, recipe, handled):
+                pointer = item["field_pointer"]
+                evidence = [_evidence(capture, pointer)]
+                field_id = "source-field-" + digest({"category": category, "market": market,
+                                                      "field_pointer": pointer})[:24]
+                record = {"discovery_format_version": "category-unmapped-fields-1", **context, **row_context,
+                          "mapping_version": mappings["mapping_version"], "field_id": field_id,
+                          "capture_id": capture["capture_id"], **item, "evidence": evidence,
+                          "scope": None, "unit": None, "qualifier": None,
+                          "source_format": recipe["adapter"], "reason": "unconfigured_source_field"}
+                discovered.append(record)
+                queue.append({**row_context, "attribute": "source-field:" + pointer,
+                              "field_id": field_id, "field_pointer": pointer,
+                              "value": json.dumps(item["raw_value"], sort_keys=True, ensure_ascii=False, allow_nan=False),
+                              "raw_value": deepcopy(item["raw_value"]), "evidence": evidence,
+                              "scope": None, "unit": None, "qualifier": None,
+                              "source_format": recipe["adapter"], "reason": "unmapped_claim",
+                              "unmapped_reason": "unconfigured_source_field"})
+            if extracted is None:
                 continue
             for item in extracted["attributes"]:
                 add(item, capture)
@@ -350,7 +404,7 @@ def build_silver_dataset(archive_root, output, profile_root, reviews=None):
                 reasons.append("observation_quantity_unreviewed")
             if not review or not {"regular_price", "currency", "tax_basis", "observed_at", "available"} <= set(review):
                 reasons.append("regular_price_context_review_incomplete")
-            if not supported_currency or price.get("tax_basis") != "consumer_tax_included":
+            if not supported_currency or price.get("tax_basis") not in allowed_tax_bases:
                 reasons.append("currency_or_tax_basis_unsupported")
             if not aware_time(price.get("observed_at")) or price.get("available") is not True:
                 reasons.append("observation_time_or_availability_unverified")
@@ -403,11 +457,13 @@ def build_silver_dataset(archive_root, output, profile_root, reviews=None):
     if eligible:
         from .model import validate_candidates
         validate_candidates(eligible, design)
-    from .tracking import build_ledger
     from .review_batches import build_review_batches, render_summary
+    from .tracking import build_ledger
     ledger = build_ledger(sources, processing_fingerprint, failed_capture_ids=[error["capture_id"] for error in errors])
     batches = build_review_batches(queue, category, market, schema, mappings["mapping_version"])
     summary = render_summary(batches, category, market, schema, mappings["mapping_version"])
+    discovered.sort(key=lambda row: (row["field_id"], row["seller_uid"], row["capture_id"], digest(row)))
+    schema_review = render_schema_suggestions(discovered, category, market, schema, mappings["mapping_version"])
     counts = {"listings": len(products), "tracked_attributes": len(profile["attributes"]), "assertions": len(assertions),
               "price_observations": len(prices), "training_candidates": len(candidates), "eligible_model_inputs": len(eligible),
               "unmapped_claims": sum(len(row["unmapped_claims"]) for row in products), "review_items": len(queue),
@@ -415,10 +471,13 @@ def build_silver_dataset(archive_root, output, profile_root, reviews=None):
               "accepted_raw_listing_folders": sum(len(row["source_listing_ids"]) for row in sources),
               "captures": sum(len(row["captures"]) for row in sources), "duplicate_source_listings_removed": sum(len(row["source_listing_ids"]) - 1 for row in sources),
               "archive_errors": len(archive["errors"]), "unsupported_records": len(archive["unsupported"]),
-              "mapping_review_batches": len(batches)}
+              "mapping_review_batches": len(batches), "discovered_field_occurrences": len(discovered),
+              "discovered_source_fields": len({row["field_id"] for row in discovered})}
     report = {"report_format_version": "category-processing-silver-report-1", "layer_version": LAYER_VERSION, **context,
               "mapping_version": mappings["mapping_version"], "model_design_version": design.get("model_design_version"),
               "processing_fingerprint": processing_fingerprint, "counts": counts,
+              "field_discovery": {"discovery_format_version": "category-unmapped-fields-1",
+                                  "policy": discovery_policy(recipe), "coverage": "structural raw fields; semantic meaning remains unreviewed"},
               "status": "partial" if archive["errors"] or archive["unsupported"] or errors else "complete_snapshot",
               "source_role_counts": dict(Counter(row["source_role"] for row in sources)), "deduplication": deduplication,
               "archive_errors": archive["errors"], "unsupported_records": archive["unsupported"],
@@ -441,12 +500,13 @@ def build_silver_dataset(archive_root, output, profile_root, reviews=None):
     prices.sort(key=lambda row: row["observation_id"])
     candidates.sort(key=lambda row: row["observation_id"])
     queue.sort(key=lambda row: (row["listing_id"], row.get("attribute", ""), row["reason"], digest(row)))
-    files = {"quality-report.json": json_bytes(report), "mapping-review-summary.md": summary.encode("utf-8")}
+    files = {"quality-report.json": json_bytes(report), "mapping-review-summary.md": summary.encode("utf-8"),
+             "schema-extension-review.md": schema_review.encode("utf-8")}
     for name in CONTRACT_FILES:
         files[name] = (profile_root / name).read_bytes()
     tables = {"products": products, "source-listings": sources, "listing-aliases": aliases, "assertions": assertions,
               "prices": prices, "training-candidates": candidates, "model-inputs": eligible, "review-queue": queue,
-              "processing-ledger": ledger, "mapping-review-batches": batches}
+              "processing-ledger": ledger, "mapping-review-batches": batches, "discovered-fields": discovered}
     for name, rows in tables.items():
         files[name + ".jsonl"] = _rows_bytes(rows)
     for role in ("brand", "retail", "unknown"):
