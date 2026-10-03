@@ -445,7 +445,7 @@ def test_promoted_gold_and_working_snapshot_contract_preserve_model_and_provenan
     report, run = build_matched_run(promoted, tmp_path / "models", contract_path, review,
                                    verified_gold_candidates=True)
     assert report["counts"]["training_rows"] == 40
-    assert report["counts"]["training_rows"] == 40
+    assert report["counts"]["candidates"] == 40
     assert report["counts"]["complete_required_inputs"] == 40
     assert report["fixture_fitted"]
     assert "eligibility_provenance" not in report

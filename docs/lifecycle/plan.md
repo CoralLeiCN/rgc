@@ -1,5 +1,41 @@
 # Project implementation plan
 
+## Main refresh to the inferred-Gold model release
+
+Merged local main `137ed9e4d497f903041182fdbb435a2baceeaec0` into
+`codex/matched-retailer` after fetching GitHub main
+`364bafc70008b384250dc6d309592e22adad47a3`. Local main includes that remote
+revision. The merge applied cleanly and preserves the matched estimator and
+its task history. Incoming changes include the price-slice terrain interface,
+Gold inferred preparation, and the separately published LightGBM without brand
+model. This integration does not itself refit or publish a model.
+
+Validation: locked Python dependencies and all four offline contract caches
+verified; Ruff and the documentation guard passed. Node 24.20.0 typechecking,
+price-slice invariants and the production build passed, including source-data,
+asset, pinned model and all eight API trace checks. All 588 pytest cases passed
+in 38.23 seconds without skips; final whitespace checks passed.
+
+## Latest main integration for the matched retailer branch
+
+Integrated local main `082c1857261b77244f07152345d6a75c8fced1ba` into
+`codex/matched-retailer` after fetching GitHub main. The fetched remote head was
+`c4a6de4bb9482a80275e3ae77628dd8c7aab5ea8`, an ancestor of local main. Resolved
+the matched estimator and guide conflicts using the current Gold population
+rules: every Gold candidate is considered automatically, model-facing rows
+omit eligibility fields, and actual price, quantity, identity and context still
+determine fit readiness. Retained the separate matched estimator, shared target
+binding, immutable runs, numerical diagnostics, CLI dispatch and task history.
+The incoming retailer baseline and Gold inferred web collection remain distinct
+interfaces. No dataset rebuild or real model fit was performed for this merge.
+
+Validation: `uv sync --locked` and all four offline contract caches passed.
+The full pytest run passed 568 cases, with six web serving cases initially skipped
+because their fixture was absent. After a locked Node 24.20.0 install and pinned
+fixture preparation, all six passed in the focused suite. Ruff and the
+documentation guard passed. Node 24 typechecking and the production build passed
+snapshot, asset, model and all eight API trace checks. Whitespace checks passed.
+
 The raw, combined Silver and immutable Parquet Gold architecture, chocolate
 schema, model preparation, documentation maintenance and standalone processing
 package have passed implementation checks. Experimental training code and
