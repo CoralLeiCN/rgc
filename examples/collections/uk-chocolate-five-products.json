@@ -1,0 +1,403 @@
+{
+  "sample_schema_version": "draft-1",
+  "study_id": "uk-chocolate-five-products-2026-10-03",
+  "category": "chocolate",
+  "market": "United Kingdom",
+  "retrieved_on": "2026-10-03",
+  "date_timezone": "Europe/London",
+  "scope": "Five illustrative chocolate bars listed by UK retailers; not an exhaustive market inventory.",
+  "collection_method": "Web product-page retrieval and browser inspection of linked front-pack images.",
+  "limitations": [
+    "Postcode-specific stock and checkout were not tested.",
+    "Prices exclude delivery and retain promotions separately.",
+    "Claims are reported by sellers or brands, not independently audited.",
+    "Only front-pack images were visually inspected; back and side panels were not fully extracted.",
+    "Missing claims remain unknown. No listed nut ingredient does not mean nut-free.",
+    "This sample format is provisional and is not an implemented plugin contract."
+  ],
+  "products": [
+    {
+      "product_id": "cadbury-dairy-milk-110g",
+      "brand": "Cadbury",
+      "name": "Dairy Milk Chocolate Bar",
+      "form": "bar",
+      "net_weight_g": 110,
+      "sources": {
+        "retailer": "https://www.tesco.com/shop/en-GB/products/284117451",
+        "front_pack": "https://digitalcontent.api.tesco.com/v2/media/ghs/c4b7648a-a552-417a-8fef-cc26f6b6a1bd/c5dd3809-6526-4707-bc2b-f402c851c420_1157468839.jpeg?h=960&w=960"
+      },
+      "price_observations": [
+        {
+          "source_key": "retailer",
+          "retailer": "Tesco",
+          "currency": "GBP",
+          "pack_price": 1.85,
+          "price_basis": "ordinary displayed price",
+          "price_per_100g": 1.681818,
+          "add_control_observed": true,
+          "tax_basis": "not explicitly stated in retrieved product text"
+        },
+        {
+          "source_key": "retailer",
+          "retailer": "Tesco",
+          "currency": "GBP",
+          "pack_price": 1.5,
+          "price_basis": "Clubcard member offer",
+          "price_per_100g": 1.363636,
+          "delivery_offer_start": "2026-09-09",
+          "delivery_offer_end": "2026-10-06"
+        }
+      ],
+      "composition": {
+        "source_key": "retailer",
+        "source_section": "Ingredients and Allergy Information",
+        "chocolate_type": "milk",
+        "cocoa_solids_percent": 20,
+        "cocoa_value_basis": "minimum",
+        "milk_solids_percent": 23,
+        "milk_value_basis": "actual stated value; minimum 20%",
+        "nut_ingredients_status": "not listed",
+        "nut_ingredients": [],
+        "nut_cross_contact_warning": true,
+        "other_cross_contact": ["wheat"],
+        "other_extracted_components": ["milk", "palm fat", "shea fat", "emulsifiers"]
+      },
+      "claims": [
+        {"name": "vegetarian suitability", "status": "stated", "source_key": "retailer", "source_section": "Description"},
+        {"name": "Fairtrade certification", "status": "unknown", "source_key": "retailer"},
+        {"name": "organic certification", "status": "unknown", "source_key": "retailer"}
+      ],
+      "nutrition_per_100g": {
+        "source_key": "retailer",
+        "source_section": "Nutrition information",
+        "energy_kcal": 534,
+        "sugars_g": 56,
+        "fat_g": 30,
+        "protein_g": 7.3
+      },
+      "origin": {
+        "country_of_manufacture": null,
+        "ingredient_origin_claim": "Fresh milk sourced from the British Isles and Ireland.",
+        "source_key": "retailer",
+        "source_section": "Highlights"
+      },
+      "packaging": {
+        "visual_source_key": "front_pack",
+        "inspection_scope": "front image",
+        "dominant_color": "purple",
+        "visual_emphasis": ["large range name", "gold brand script", "pouring-milk motif", "chocolate-piece image"],
+        "material_claim": "Wrapper described as 80% recycled plastic allocated through an ISCC-certified mass-balance approach.",
+        "material_claim_source_key": "retailer",
+        "material_claim_source_section": "Highlights"
+      },
+      "promotional_themes": {
+        "source_key": "retailer",
+        "source_section": "Highlights and Description",
+        "themes": ["creaminess", "fresh milk", "brand heritage", "sharing", "portable treat", "recycled packaging"]
+      }
+    },
+    {
+      "product_id": "tonys-chocolonely-milk-180g",
+      "brand": "Tony's Chocolonely",
+      "name": "Milk Chocolate",
+      "form": "bar",
+      "net_weight_g": 180,
+      "sources": {
+        "retailer": "https://www.ocado.com/products/tony-s-chocolonely-milk-chocolate/452004011",
+        "manufacturer": "https://uk.tonyschocolonely.com/products/milk-chocolate-32-180g",
+        "front_pack": "https://uk.tonyschocolonely.com/cdn/shop/files/TC_packshot_UKBM180_front_rgb.png?v=1749831926"
+      },
+      "price_observations": [
+        {
+          "source_key": "retailer",
+          "retailer": "Ocado",
+          "currency": "GBP",
+          "pack_price": 4,
+          "price_basis": "ordinary price shown alongside offer",
+          "price_per_100g": 2.222222,
+          "add_control_observed": true,
+          "tax_basis": "not explicitly stated in retrieved product text"
+        },
+        {
+          "source_key": "retailer",
+          "retailer": "Ocado",
+          "currency": "GBP",
+          "pack_price": 3.25,
+          "price_basis": "temporary product offer",
+          "price_per_100g": 1.805556,
+          "order_offer_end": "2026-10-07",
+          "maximum_promotional_items": 18
+        },
+        {
+          "source_key": "manufacturer",
+          "retailer": "Tony's Chocolonely UK shop",
+          "currency": "GBP",
+          "pack_price": 4.75,
+          "price_basis": "direct brand-shop displayed price",
+          "price_per_100g": 2.638889,
+          "tax_basis": "VAT included"
+        }
+      ],
+      "composition": {
+        "source_key": "retailer",
+        "source_section": "Ingredients and Allergen Information",
+        "chocolate_type": "milk",
+        "cocoa_solids_percent": 32,
+        "cocoa_value_basis": "minimum",
+        "milk_solids_percent": 21,
+        "milk_value_basis": "minimum",
+        "nut_ingredients_status": "not listed",
+        "nut_ingredients": [],
+        "nut_cross_contact_warning": true,
+        "other_cross_contact": ["gluten", "egg"],
+        "other_extracted_components": ["milk", "soya lecithin"]
+      },
+      "claims": [
+        {"name": "Fairtrade cocoa and sugar", "status": "stated", "source_key": "retailer", "source_section": "Other Information"},
+        {"name": "vegetarian suitability", "status": "stated", "source_key": "retailer", "source_section": "Product attributes"},
+        {"name": "palm-oil-free", "status": "stated", "source_key": "manufacturer", "source_section": "Product highlights"},
+        {"name": "organic certification", "status": "unknown", "source_key": "retailer"}
+      ],
+      "nutrition_per_100g": {
+        "source_key": "retailer",
+        "source_section": "Nutritional data",
+        "energy_kcal": 545,
+        "sugars_g": 51,
+        "fat_g": 33,
+        "protein_g": 7.7
+      },
+      "origin": {"country_of_origin": "Belgium", "source_key": "retailer", "source_section": "Country of origin"},
+      "packaging": {
+        "visual_source_key": "front_pack",
+        "inspection_scope": "manufacturer front image; seller packaging may differ",
+        "dominant_color": "red",
+        "visual_emphasis": ["large blue and white branding", "yellow milk-flavor stripe", "circular Open Chain badge"],
+        "material_claim": "FSC-certified paper wrapper.",
+        "material_claim_source_key": "manufacturer",
+        "material_claim_source_section": "Product highlights"
+      },
+      "promotional_themes": {
+        "source_key": "manufacturer",
+        "source_section": "Product description and highlights",
+        "themes": ["creamy texture", "cocoa traceability", "farmer income", "ending cocoa exploitation", "palm-oil-free recipe"]
+      },
+      "source_conflicts": [
+        {
+          "field": "fairtrade_ingredient_share_percent",
+          "reported_values": [
+            {"source_key": "retailer", "value": 77, "source_section": "Other Information"},
+            {"source_key": "manufacturer", "value": 76, "source_section": "Fairtrade statement"}
+          ],
+          "resolution": "Unresolved; no single value selected."
+        }
+      ]
+    },
+    {
+      "product_id": "lindt-excellence-70-dark-100g",
+      "brand": "Lindt",
+      "name": "Excellence 70% Cocoa Dark Chocolate Bar",
+      "form": "bar",
+      "net_weight_g": 100,
+      "sources": {
+        "retailer": "https://www.ocado.com/products/lindt-excellence-70-cocoa-dark-chocolate-bar/11332011",
+        "front_pack": "https://www.ocado.com/images-v3/eafa5127-d256-497b-9609-4869092accd6/10006692-170a-4f70-bb56-e250a148e7c0/500x500.jpg"
+      },
+      "price_observations": [
+        {
+          "source_key": "retailer",
+          "retailer": "Ocado",
+          "currency": "GBP",
+          "pack_price": 3.5,
+          "price_basis": "ordinary price shown alongside offer",
+          "price_per_100g": 3.5,
+          "add_control_observed": true,
+          "tax_basis": "not explicitly stated in retrieved product text"
+        },
+        {
+          "source_key": "retailer",
+          "retailer": "Ocado",
+          "currency": "GBP",
+          "pack_price": 3,
+          "price_basis": "temporary product offer",
+          "price_per_100g": 3,
+          "order_offer_end": "2026-10-06",
+          "maximum_promotional_items": 18
+        }
+      ],
+      "composition": {
+        "source_key": "retailer",
+        "source_section": "Ingredients and Allergen Information",
+        "chocolate_type": "dark",
+        "cocoa_solids_percent": 70,
+        "cocoa_value_basis": "minimum",
+        "nut_ingredients_status": "not listed",
+        "nut_ingredients": [],
+        "nut_cross_contact_warning": true,
+        "other_cross_contact": ["milk", "soya", "sesame"],
+        "other_extracted_components": ["vanilla"]
+      },
+      "claims": [
+        {"name": "vegetarian suitability", "status": "stated", "source_key": "retailer", "source_section": "Dietary Information"},
+        {"name": "sustainably sourced cocoa", "status": "stated", "source_key": "retailer", "source_section": "Features"},
+        {"name": "Lindt and Sprungli Cocoa Farming Program", "status": "stated", "source_key": "retailer", "source_section": "Further description"},
+        {"name": "Fairtrade certification", "status": "unknown", "source_key": "retailer"},
+        {"name": "organic certification", "status": "unknown", "source_key": "retailer"}
+      ],
+      "nutrition_per_100g": {
+        "source_key": "retailer",
+        "source_section": "Nutritional data",
+        "energy_kcal": 566,
+        "sugars_g": 29,
+        "fat_g": 41,
+        "protein_g": 9.5
+      },
+      "origin": {"country_of_manufacture": "France", "source_key": "retailer", "source_section": "Other Information"},
+      "packaging": {
+        "visual_source_key": "front_pack",
+        "inspection_scope": "front image",
+        "dominant_colors": ["white", "black", "gold"],
+        "visual_emphasis": ["prominent 70% cocoa", "intense-dark positioning", "chocolate-piece image"],
+        "material": null
+      },
+      "promotional_themes": {
+        "source_key": "retailer",
+        "source_section": "Product Information and Features",
+        "themes": ["luxury", "chocolatier craftsmanship", "brand heritage", "smooth texture", "intense cocoa", "vanilla and citrus tasting notes", "drink pairings", "sustainable cocoa"]
+      }
+    },
+    {
+      "product_id": "green-and-blacks-organic-70-dark-90g",
+      "brand": "Green & Black's",
+      "name": "Organic 70% Dark Chocolate Bar",
+      "form": "bar",
+      "net_weight_g": 90,
+      "sources": {
+        "retailer": "https://www.waitrose.com/ecom/products/green-blacks-organic-70-dark-chocolate-bar/065343-33115-33116",
+        "front_pack": "https://ecom-su-static-prod.wtrecom.com/images/products/4/LN_065343_BP_4.jpg"
+      },
+      "price_observations": [
+        {
+          "source_key": "retailer",
+          "retailer": "Waitrose",
+          "currency": "GBP",
+          "pack_price": 3.5,
+          "price_basis": "ordinary displayed price; no product offer shown",
+          "price_per_100g": 3.888889,
+          "add_control_observed": true,
+          "tax_basis": "not explicitly stated in retrieved product text"
+        }
+      ],
+      "composition": {
+        "source_key": "retailer",
+        "source_section": "Product description, Ingredients, and Allergy Advice",
+        "chocolate_type": "dark",
+        "cocoa_solids_percent": 70,
+        "cocoa_value_basis": "stated percentage; no minimum qualifier in retrieved text",
+        "nut_ingredients_status": "not listed",
+        "nut_ingredients": [],
+        "nut_cross_contact_warning": true,
+        "other_cross_contact": ["milk"],
+        "other_extracted_components": ["cane sugar", "vanilla extract"]
+      },
+      "claims": [
+        {"name": "organic", "status": "stated", "source_key": "retailer", "source_section": "Description and Ingredients"},
+        {"name": "Fairtrade", "status": "stated", "source_key": "retailer", "source_section": "Description"},
+        {"name": "vegetarian suitability", "status": "unknown", "source_key": "retailer"},
+        {"name": "vegan suitability", "status": "unknown", "source_key": "retailer"}
+      ],
+      "nutrition_per_100g": {
+        "source_key": "retailer",
+        "source_section": "Nutrition",
+        "energy_kcal": 580,
+        "sugars_g": 29,
+        "fat_g": 42,
+        "protein_g": 9.1
+      },
+      "origin": {"country_of_origin": "Poland", "source_key": "retailer", "source_section": "Product Details"},
+      "packaging": {
+        "visual_source_key": "front_pack",
+        "inspection_scope": "front image",
+        "dominant_colors": ["dark brown", "black"],
+        "visual_emphasis": ["gold branding", "organic claim", "70% cocoa", "brand-specific intensity level 9"],
+        "material": null
+      },
+      "promotional_themes": {
+        "source_key": "retailer",
+        "source_section": "Product description",
+        "themes": ["organic ingredients", "Fairtrade", "sun-dried cocoa", "intense flavor", "smooth texture"],
+        "brand_specific_intensity_level": 9,
+        "intensity_note": "Brand scale; not a standardized quality or sensory measurement."
+      }
+    },
+    {
+      "product_id": "ritter-sport-whole-hazelnuts-milk-100g",
+      "brand": "Ritter Sport",
+      "name": "Milk Chocolate with Whole Hazelnuts",
+      "form": "square bar",
+      "net_weight_g": 100,
+      "sources": {
+        "retailer": "https://www.tesco.com/shop/en-GB/products/294926549",
+        "front_pack": "https://digitalcontent.api.tesco.com/v2/media/ghs/b1038dac-264f-4a9f-8019-d103e70d882d/afcd134d-2f17-4a0e-a95e-c49fa95ff171_1991402915.jpeg?h=960&w=960"
+      },
+      "price_observations": [
+        {
+          "source_key": "retailer",
+          "retailer": "Tesco",
+          "currency": "GBP",
+          "pack_price": 2.2,
+          "price_basis": "ordinary displayed price; no product offer shown",
+          "price_per_100g": 2.2,
+          "add_control_observed": true,
+          "tax_basis": "not explicitly stated in retrieved product text"
+        }
+      ],
+      "composition": {
+        "source_key": "retailer",
+        "source_section": "Description, Ingredients, and Allergy Information",
+        "chocolate_type": "milk",
+        "cocoa_solids_percent": 30,
+        "cocoa_value_basis": "minimum in milk chocolate; not necessarily percentage of the entire nut-containing bar",
+        "milk_solids_percent": 18,
+        "milk_value_basis": "minimum in milk chocolate",
+        "nut_ingredients_status": "listed",
+        "nut_ingredients": ["hazelnuts"],
+        "hazelnut_percent_of_product": 25,
+        "nut_processing": "whole roasted",
+        "nut_cross_contact_warning": true,
+        "other_nut_cross_contact": ["peanuts", "other nuts"],
+        "other_cross_contact": ["gluten-containing cereals", "egg"],
+        "other_extracted_components": ["milk-derived ingredients", "soya lecithin"]
+      },
+      "claims": [
+        {"name": "Rainforest Alliance cocoa", "status": "stated", "source_key": "retailer", "source_section": "Description and Ingredients", "scope": "cocoa, not all ingredients"},
+        {"name": "no added flavors", "status": "stated", "source_key": "retailer", "source_section": "Highlights"},
+        {"name": "Fairtrade certification", "status": "unknown", "source_key": "retailer"},
+        {"name": "organic certification", "status": "unknown", "source_key": "retailer"}
+      ],
+      "nutrition_per_100g": {
+        "source_key": "retailer",
+        "source_section": "Nutrition information",
+        "energy_kcal": 566,
+        "sugars_g": 43,
+        "fat_g": 37,
+        "protein_g": 9
+      },
+      "origin": {"country_of_manufacture": null, "note": "Manufacturer address was not treated as proof of country of manufacture."},
+      "packaging": {
+        "visual_source_key": "front_pack",
+        "inspection_scope": "front image",
+        "dominant_color": "brown",
+        "visual_emphasis": ["square format", "whole-hazelnut imagery", "nut-selection range name", "green no-added-flavors badge"],
+        "material": null
+      },
+      "promotional_themes": {
+        "source_key": "retailer",
+        "source_section": "Highlights and Description",
+        "themes": ["whole roasted hazelnuts", "crunch", "no added flavors", "selected ingredients", "family-business heritage", "certified cocoa"]
+      }
+    }
+  ],
+  "derived_field_definition": {
+    "price_per_100g": "pack_price / net_weight_g * 100; rounded to six decimal places in records"
+  }
+}

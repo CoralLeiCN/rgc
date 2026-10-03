@@ -1,0 +1,44 @@
+You can find more information on this dataset at
+https://github.com/coveooss/SIGIR-ecom-data-challenge
+
+This repository explores product-feature classification and pricing across many
+categories. The current collection study is chocolate sold in the UK. Original
+product information and evidence are preserved before designing the analytical
+schema or fitting a pricing model.
+
+Project documents and implementation:
+
+- Intention: docs/intention.md
+- Specification: docs/spec.md
+- Agent Plugins 1.0.0 package: plugins/category-research/README.md
+- Plugin manifest: plugins/category-research/plugin.json
+- Discoverable skill: plugins/category-research/skills/category-research/SKILL.md
+- Raw collection guide and coverage: collections/chocolate/uk/README.md
+
+Project lifecycle documents:
+docs/lifecycle/intent.md - problem, intended outcome, and constraints
+docs/lifecycle/spec.md - requirements and design
+docs/lifecycle/plan.md - files, work order, risks, and proof
+
+The category-research plugin bundles a skill, a standard-library Python CLI, and
+a callable Python API. Another plugin can use those entry points directly.
+Packaging follows https://agent-plugins.org/specification. Native installation
+and execution in multiple harnesses still need verification.
+
+Each source product/variant has its own folder with a broad product.json index,
+original source artifacts where accessible, original downloaded images, and
+immutable capture history. Unknown fields and raw source prices are retained.
+Discovery catalogues, source failures, cached-text limitations, unavailable
+products, and ingredient gaps remain inspectable. Source listing counts are not
+deduplicated market-wide product counts or proof of exhaustive UK coverage.
+
+Import a prepared collection through the plugin from the repository root:
+
+    python3 -B plugins/category-research/cli.py import --input <collection.json> --output collections --download-images --workers 4
+
+The CLI reports a run-report path. Subsequent imports append evidence and retain
+earlier captures. The import contract is documented inside the plugin skill.
+The legacy script scripts/archive_product_sources.py reproduces only the initial
+five-product exploratory sample.
+
+All repository content must be written in English, regardless of prompt language.
