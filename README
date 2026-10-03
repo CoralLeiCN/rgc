@@ -7,6 +7,8 @@ and evidence before deriving an analytical schema or fitting a pricing model.
 | Document | Purpose |
 | --- | --- |
 | [Intention](docs/intention.md) | Goals, delivery order and constraints. |
+| [EAT_HACK Retail Futures brief](docs/eat-hack-track-two.md) | Track 2 challenge, submission requirements and judging criteria. |
+| [retail frontier project description](PROJECT.md) | Project explanation, implementation status, running instructions and submission fields. |
 | [Specification](docs/spec.md) | Contracts, pricing methodology and acceptance requirements. |
 | [Chocolate silver](docs/chocolate-silver.md) | Raw/silver workflow, outputs, evidence resolution and reproducibility. |
 | [Chocolate schema](docs/chocolate-schema.md) | Typed fields, evidence reviews and model handoff. |

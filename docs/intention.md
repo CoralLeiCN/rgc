@@ -7,6 +7,16 @@ The tool and both plugins must support arbitrary product categories through
 category-specific configuration. Chocolate is an example. New categories must
 not require copying food assumptions into the collection or processing core.
 
+The team is entering EAT_HACK on 3 October 2026 in Track 2, Retail Futures.
+The [hackathon brief](eat-hack-track-two.md) covers the Track 2 challenge,
+submission requirements and judging criteria. The entry should support a concrete
+brand or retail decision and disclose substantial work completed before the event.
+
+The hackathon project is named **retail frontier**. Its
+[project description](../PROJECT.md) follows the challenge, submission and judging
+structure, distinguishing the implemented workflow from proposed modelling.
+The team confirms that no substantial project work existed before EAT_HACK.
+
 ## 1. Category research and a pricing model
 
 For a chosen product category and market, collect enough product data to fit a
