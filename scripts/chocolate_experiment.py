@@ -10,7 +10,12 @@ import random
 from collections import Counter, defaultdict
 from copy import deepcopy
 
-from chocolate_model import PRICE_TARGET_POLICY, ModelContractError, validate_candidates
+from chocolate_model import (
+    PRICE_TARGET_POLICY,
+    ModelContractError,
+    _validate_identity,
+    validate_candidates,
+)
 from train_chocolate_model import checksum, json_bytes
 
 SEED = 1729
@@ -264,3 +269,39 @@ def representatives(rows, seed=SEED):
         group_seed = int(hashlib.sha256(json_bytes([seed, retailer, family])).hexdigest(), 16)
         selected.append(random.Random(group_seed).choice(identities))
     return deepcopy(selected)
+
+
+SPLIT_SEED = 1729
+SPLIT_ALGORITHM = "sha256_json_seed_family_rank_round_60_20_remainder_v1"
+
+
+def freeze_partitions(rows, seed=SPLIT_SEED):
+    """Rank whole families without examining outcomes, brands, or row counts."""
+    from train_chocolate_model import json_bytes
+
+    rows = list(rows)
+    _validate_identity(rows)
+    if type(seed) is not int or not 0 <= seed <= 2**32 - 1:
+        raise ModelContractError("split seed must be an unsigned 32-bit integer")
+    families = sorted({row["family_id"] for row in rows}, key=lambda family: (
+        hashlib.sha256(json_bytes([seed, family])).hexdigest(), family))
+    if len(families) < 3:
+        raise ModelContractError("three partitions require at least three reviewed families")
+    fitting = max(1, min(len(families) - 2, int(len(families) * 0.6 + 0.5)))
+    calibration = max(1, min(len(families) - fitting - 1, int(len(families) * 0.2 + 0.5)))
+    assignments = {family: ("fitting" if i < fitting else
+                           "calibration" if i < fitting + calibration else "final_testing")
+                   for i, family in enumerate(families)}
+    partitions = {name: sorted((row for row in rows if assignments[row["family_id"]] == name),
+                              key=lambda row: row["observation_id"])
+                  for name in ("fitting", "calibration", "final_testing")}
+    listings = {}
+    for row in rows:
+        partition = assignments[row["family_id"]]
+        if listings.setdefault(row["listing_id"], partition) != partition:
+            raise ModelContractError("seller listing spans family partitions")
+    return partitions, {"algorithm": SPLIT_ALGORITHM, "seed": seed,
+                        "requested_fractions": [0.6, 0.2, 0.2],
+                        "within_brand_quotas": False, "family_assignments": assignments,
+                        "ranked_families": families,
+                        "observations": {key: len(value) for key, value in partitions.items()}}

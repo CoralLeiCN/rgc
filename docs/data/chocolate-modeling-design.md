@@ -542,6 +542,17 @@ price indicator must use out-of-fold benchmarks and be labeled price position.
 
 The [independent LightGBM with brand implementation](chocolate-lightgbm-with-brand.md) implements the assigned estimator under a separate unpublished working experiment. Native fitting, calibration and attribution are exercised with synthetic fixtures; its recorded historical real-data attempt had zero eligible inputs and absent shared handoff fields. The current published Gold makes all candidates eligible, while migration of this frozen trainer to the current-price policy and shared fields remains pending. Other estimators and the common comparison are outside this session.
 
+
+The independent [retailer median refit](analysis/retailer-median-training.md#refit-after-integrating-main-and-the-published-gold-snapshot)
+uses all 2,134 eligible rows from the exact published Gold revision
+`95c5fbd0ab5fa9a41fa5333648321d95f16927a7`. The current displayed-price target
+produces 630 GBP/100 g values. Missing variant IDs and population boundary values
+in every row, plus other family/quantity/context gaps, prevent fitting. Its
+trainer preserves the original Gold/evidence bytes, applies the published
+current target to its selected retailer/type predictors, and records the exact
+Gold publication pin, target contracts and per-row readiness. Historical regular
+mode remains available; no real baseline fit or upload is claimed.
+
 ## Independent regular-price hedonic implementation
 
 The [hedonic_without_brand implementation](analysis/hedonic-without-brand-implementation.md)

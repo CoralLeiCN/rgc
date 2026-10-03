@@ -25,6 +25,101 @@ Canonical requirements: [specification](../spec.md),
 
 ## Current work and files
 
+The retailer median branch integrated local main
+`cd9e7df8eb7f50aee33d3fce5ca9f0509aff8deb`, retaining both experiment interfaces
+and the independent baseline. It downloaded and verified the 24 manifest-pinned
+Gold files at immutable revision `95c5fbd0ab5fa9a41fa5333648321d95f16927a7`.
+Fresh run `retailer-median-cb2a4f9f896cd54f275d5031` binds the exact Gold publication
+pin, accepts 2,134 eligible rows and derives 630 current targets. Zero complete
+inputs remain because product identities and population/context values are
+missing. All 29 managed artifacts and an identical replay verified; no real
+model or upload resulted. The [integration/refit record](../data/analysis/retailer-median-training.md#refit-after-integrating-main-and-the-published-gold-snapshot)
+contains the exact command and remaining blockers.
+
+
+The current-price retailer median refit follows the user's superseding target
+instruction. The published target pin is revision
+`d743cb8dbca37f5241cccd444a16165523304f6c`, contract set
+`contracts/chocolate-current-price/`, policy `current-consumer-price-1`.
+The trainer applies its exact target to the baseline's selected features,
+preserves Gold/source bytes and saves target contracts, explicit current fields,
+documented aliases, actual model sample and per-row readiness. Its default scope
+is the entire immutable snapshot; optional UTC bounds filter source capture times.
+Promotion, tax and price review are retained as limitations, with no target veto.
+
+Real run `retailer-median-385414893ddde39bcfb27060` accepted all 2,134 eligible
+rows and derived 630 unit-price targets. Missing variant IDs and population
+boundary values in every row, plus quantity/family/context gaps, leave zero
+complete model inputs. Its 28 managed artifacts record concrete blockers. No
+real fitted model or upload resulted. Synthetic current-price run
+`retailer-median-6d261c66b3340160dc8efb92` fitted 100 observations in 50 families;
+final MAE is GBP 0.40/100 g and GBP 0.32/pack with 100% support. These are software
+validation metrics. The [current refit record](../data/analysis/retailer-median-training.md#refit-with-the-published-current-price-target)
+owns the command, contract identity, full missingness and artifact inventory.
+
+Current-price verification: the locked environment and all four contract caches
+passed offline checks; all 422 pytest cases passed. Ruff, documentation and
+whitespace checks passed. All 28 real-readiness and 34 fixture managed artifacts
+matched their hashes/lengths, and both immutable runs passed identical replay.
+The final real Gold manifest retained its supplied hash. Required data completion
+is upstream variant/family and population/quantity/context values; fitting and
+model upload remain blocked by those actual gaps.
+
+
+The explicit eligibility snapshot `gold-8b897101474becaef946922b` has been copied
+and verified against supplied manifest SHA-256
+`e3a7a1dc3c4a4c4b454b241b3f2738d196eb47897e3169c9c6531e9fdf315d90`.
+Integrated Gold bulk-eligibility loading validates the complete embedded parent
+and exact analytical preservation. The trainer binds authorization provenance
+and reports missing values rather than treating old eligibility flags as blockers.
+Refit `retailer-median-07a021020a85a1f4dfcc6b64` accepted all 2,134 eligible rows,
+then stopped on 2,134 missing targets/variant IDs and 1,732 missing family IDs,
+plus other required inputs and an undeclared window. It saved immutable readiness
+artifacts; no real model fitted or uploaded. The
+[latest refit report](../data/analysis/retailer-median-training.md#refit-using-explicitly-authorized-gold-eligibility)
+records commands, full counts and integration checks.
+
+Bulk-eligibility integration proof: `uv sync --locked`, all published contract
+caches verified offline, all 409 pytest cases passed, Ruff, documentation guard
+and whitespace checks passed. All 17 fresh run artifacts verified, with an
+identical replay. Eight loader tests and 26 baseline tests cover promotion,
+analytical/parent integrity, actual input failure reports and price-policy gates.
+
+The independent [retailer median implementation](../data/analysis/retailer-median-training.md)
+is implemented and fixture-validated. `scripts/train_chocolate_retailer_median.py`,
+`scripts/chocolate_retailer_median.py`, `scripts/chocolate_experiment.py`, and
+`scripts/prepare_chocolate_retailer_contract.py` implement the assigned baseline,
+frozen family partitions, support/fallback rules, weighted metrics and immutable
+readiness/model runs. Tests cover leakage, weighting, fallback, unsupported
+inputs, target/context gates, artifact integrity and fixture labeling.
+
+The published and explicit working-contract rebuilds both retain 3,743 seller
+listings, 4,347 captures and 2,134 candidates, with zero eligible observations.
+Working Gold `gold-56817976905f24210105f069` led to readiness run
+`retailer-median-149182b8694b50266cdc217c`. Missing reviewed price/tax, population,
+quantity and identity evidence, plus an explicit source-price window, block real
+fitting. No fixture has been uploaded as a real model. Shared regression feature
+evidence/identification, common-row comparison and comparator/release gates remain
+pending. Contract publication requires the separate release review and portable
+alignment where affected.
+
+Verification: `uv sync --locked`, all three published caches verified offline,
+399 pytest cases passed (24 baseline cases), Ruff, documentation guard and
+`git diff --check`. Fixture run `retailer-median-642d5f0deb303a5a29f00316` supports
+20 test rows in 10 synthetic families; unit/pack MAE is £0.40/100 g and £0.32.
+Those metrics validate the implementation and do not establish market performance,
+calibration or release readiness. Full identities and commands are in the report.
+
+After the user confirmed Gold verification, a fresh local/remote inventory and
+training retry accepted that confirmation and reloaded the actual files. Both
+available real Gold snapshots passed integrity checks but still contained zero
+eligible rows, zero regular-price targets and zero tax-inclusive price
+observations. Hugging Face main remained `d549ad91d63fb452af605df4a939c4e1f0a59bfa`
+with no Gold directory. The retry audit is saved in
+`data/current-gold-verification-audit.json`; a different verified snapshot's
+location is required for fitting/upload. Eligibility and missing values were
+preserved. These current checks are separate from historical readiness reports.
+
 ### Conflict resolution and remote integration
 
 On 2026-10-03, resolved the interrupted rebase onto `a147e12`, preserving the
@@ -718,6 +813,12 @@ one squash commit. The source and target file trees must match and both
 worktrees must be clean after landing. Real-data model fitting remains subject
 to each training chat's preparation and identification gates.
 
+
+The local main/current-price integration passed all 467 pytest cases, the locked
+environment sync, all four offline contract sets, Ruff, documentation guard and
+whitespace checks. The published-Gold refit verified its 29 managed artifacts
+and immutable replay. No source values or model eligibility flags were rewritten.
+
 ### Original published Silver retirement
 
 On 2026-10-03, the user requested removal of the original published Silver
@@ -1128,3 +1229,12 @@ matched numerical/artifact suites passed. Ruff, documentation checks against
 main and whitespace checks passed. Web implementation matches main; the prior
 web validation remains recorded above. No real matched fit or model publication
 is established: published Gold has 630 current targets and no exact variant IDs.
+
+
+Retailer median landing validation integrated the refreshed main branch while
+preserving other estimators and application changes. The locked environment,
+all four offline contract sets, Ruff, documentation checks against main and
+whitespace checks passed. The complete Python run passed 549 tests; seven
+optional web extraction/serving tests skipped because this model worktree lacks
+npm dependencies and the prepared web model cache. All model training tests
+passed. Generated inspection and model artifacts remain outside Git.

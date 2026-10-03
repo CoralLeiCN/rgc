@@ -113,7 +113,7 @@ def validate_training_contract(design):
     return training
 
 
-def validate_price_targets(candidates, observations, design=None):
+def validate_price_targets(candidates, observations, design=None, *, require_price_eligibility=True):
     """Bind accepted targets to the copied regular consumer price observations."""
     if design is not None and design["target"].get("price_basis_contract_version") == "current-consumer-price-1":
         from chocolate_current_price import validate_current_price_targets
@@ -129,7 +129,8 @@ def validate_price_targets(candidates, observations, design=None):
         if price is None:
             raise ModelContractError("Training target has no matching regular price observation")
         if (not regular_price_basis_supported(price) or price.get("review_status") != "reviewed"
-                or price.get("quantity_status") != "reviewed" or price.get("model_eligible") is not True
+                or price.get("quantity_status") != "reviewed"
+                or (require_price_eligibility and price.get("model_eligible") is not True)
                 or not aware_time(price.get("observed_at")) or price.get("available") is not True):
             raise ModelContractError("Training target requires reviewed regular tax-inclusive consumer price context")
         for name in ("listing_id", "source_role", "dataset_version", "source_dataset_version", "schema_version"):

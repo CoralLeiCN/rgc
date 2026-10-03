@@ -107,3 +107,17 @@ The fixture retains its historical target and synthetic status. A real model
 replacement requires a new verified reference and serving compatibility proof.
 The [serving guide](data/analysis/web-fixture-pricing.md) records Node evaluation,
 native-equivalent SHAP verification and the public interface.
+
+
+## Retailer median training
+
+The independent [retailer median implementation](data/analysis/retailer-median-training.md)
+runs with `uv run python scripts/train_chocolate_retailer_median.py --gold-root
+<immutable-snapshot> --current-price-proxy`. Generated readiness/model runs stay
+under ignored `data/models/chocolate/uk/retailer_median/`. Each run retains the
+Gold publication pin, exact current-price target contracts, effective working
+design, source observations, selected sample, frozen family partitions and
+managed artifact hashes. Historical regular-price mode remains available.
+Fixture validation passed; the latest declared-protocol real attempt has no
+complete model inputs and no fitted or published real model. A limited exploratory
+sample is distinct from that protocol and would require its own recorded scope.

@@ -1,5 +1,15 @@
 # Chocolate schema, reviews and pricing handoff in silver
 
+The [authorized Gold eligibility override](chocolate-gold.md) changes Gold's
+training flags in a new immutable snapshot with retained parent/provenance.
+The baseline trainer accepts those flags and records actual missing inputs.
+The user's current-price study supersedes the regular target requirement for
+this baseline: `current-consumer-price-1` uses collected displayed GBP prices
+and actual matching edible pack weight. The latest refit has 2,134 eligible rows
+and 630 current GBP/100 g targets; missing variant IDs and population boundary
+values prevent fitting. Original observations and historical target meanings
+are preserved.
+
 The initial schema, `chocolate-schema-1`, tracks broad chocolate information
 within the combined silver layer. This guide owns field meanings,
 standardization, reviews supported by evidence and the pricing model handoff.
@@ -7,6 +17,29 @@ The [silver guide](chocolate-silver.md) owns raw/silver responsibilities, the
 build command, dataset outputs, evidence resolution and current build status.
 
 ## Machine contracts
+
+The [current-price dataset pin](../../schemas/chocolate/current-price/dataset-contract.json)
+references `contracts/chocolate-current-price/` at immutable revision
+`d743cb8dbca37f5241cccd444a16165523304f6c`. This set retains `chocolate-schema-1`,
+103 attributes and `chocolate-source-mappings-2`, and supplies
+`chocolate-pricing-current-price-design-1`. The retailer median applies its exact
+target definition to `chocolate-retailer-median-design-1-current-price-1`.
+Derived modeling rows carry `current_price_per_100g_gbp` and
+`log_current_price_per_100g_gbp`. Equal `regular_*` compatibility aliases in those
+rows mean current-price proxies. The original Gold Parquet columns and input
+bytes retain their historical meanings. No regular/reference fallback or weight
+imputation is permitted. The published target, pin, working design and derived
+rows are saved and hashed in each current-price run.
+
+
+The independent [retailer median trainer](analysis/retailer-median-training.md)
+uses an explicitly prepared unpublished working model design. It requires
+reviewed single-pack/boundary context alongside retailer, type, brand, source
+role, group, weight and family identities. Published contracts and OLS snapshots
+retain their meanings. The current target is published; the effective baseline
+working design remains unpublished. Actual input gaps block the real fit; common
+comparison feature evidence and baseline design publication remain pending.
+
 
 | Contract | Version | Responsibility |
 | --- | --- | --- |
@@ -531,6 +564,17 @@ The all-eligible Gold data is now published at immutable dataset revision
 [small Gold reference](../../schemas/chocolate/gold-dataset.json) records the
 source manifest and managed file hashes. This publication packages the existing
 source interpretation and user eligibility; it changes no typed product fields.
+
+
+The independent [retailer median refit](analysis/retailer-median-training.md#refit-after-integrating-main-and-the-published-gold-snapshot)
+uses all 2,134 eligible rows from the exact published Gold revision
+`95c5fbd0ab5fa9a41fa5333648321d95f16927a7`. The current displayed-price target
+produces 630 GBP/100 g values. Missing variant IDs and population boundary values
+in every row, plus other family/quantity/context gaps, prevent fitting. Its
+trainer preserves the original Gold/evidence bytes, applies the published
+current target to its selected retailer/type predictors, and records the exact
+Gold publication pin, target contracts and per-row readiness. Historical regular
+mode remains available; no real baseline fit or upload is claimed.
 
 ## Local hedonic handoff
 

@@ -303,6 +303,16 @@ contract is independently pinned at revision
 establish a successful fit or model release readiness.
 
 
+The independent [retailer median refit](analysis/retailer-median-training.md#refit-after-integrating-main-and-the-published-gold-snapshot)
+uses all 2,134 eligible rows from the exact published Gold revision
+`95c5fbd0ab5fa9a41fa5333648321d95f16927a7`. The current displayed-price target
+produces 630 GBP/100 g values. Missing variant IDs and population boundary values
+in every row, plus other family/quantity/context gaps, prevent fitting. Its
+trainer preserves the original Gold/evidence bytes, applies the published
+current target to its selected retailer/type predictors, and records the exact
+Gold publication pin, target contracts and per-row readiness. Historical regular
+mode remains available; no real baseline fit or upload is claimed.
+
 ## Public dataset default loader
 
 Following the user's request to keep raw files locally, the verified dataset

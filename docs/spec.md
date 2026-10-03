@@ -1,5 +1,25 @@
 # Product Feature Classification and Pricing Specification
 
+The [Gold eligibility override](data/chocolate-gold.md) can apply an explicit user
+instruction to both training views in a new immutable snapshot. The complete
+parent, original analytical values and authorization provenance are verified.
+The retailer median trainer records the promoted row counts/provenance and saves
+readiness artifacts for missing-input failures. Original auxiliary Silver
+eligibility flags do not veto the override. The current retailer median study
+uses `current-consumer-price-1` under the user's superseding target instruction;
+actual quantities, identities and model domain requirements continue to apply.
+
+The independent [retailer median implementation](data/analysis/retailer-median-training.md)
+implements only `retailer_median`: fitting-only family-weighted retailer/type
+medians, flagged retailer-wide fallback, frozen whole-family splits and support
+rules, weighted evaluation, and immutable artifacts. Its unpublished working
+contract applies the published current-price target to its selected retailer/type
+predictors and requires stored single-pack supermarket population context.
+Synthetic validation passed; the latest real Gold attempt has 2,134 eligible
+rows and 630 normalized targets, but no complete model inputs or fitted model. Common comparison evidence,
+cross-model metrics, calibration/release decisions and baseline design publication
+remain pending. Existing `chocolate-pricing-design-3` experimental OLS is separate.
+
 This specification defines data, modeling and acceptance requirements for the
 scope in [intention](intention.md). The [lifecycle plan](lifecycle/plan.md) records
 implementation and verification evidence.

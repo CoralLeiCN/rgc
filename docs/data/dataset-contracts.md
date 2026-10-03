@@ -143,6 +143,13 @@ compared byte for byte and loaded with the verified Gold interface. The
 [Gold guide](chocolate-gold.md#published-all-eligible-training-snapshot) describes
 its exact path and current-price trainer handoff.
 
+
+Retailer median runs retain the exact Gold publication pin under
+`inputs/gold-dataset-reference.json` and record its repository, immutable
+revision, path and SHA-256. A matching Gold snapshot whose manifest or managed
+inventory disagrees with that publication reference is rejected before output.
+All four current-price target contracts and their pin remain separately retained.
+
 ## Original published Silver retirement
 
 The user requested removal of `silver/chocolate/uk/silver-6e246156b7292dd4bb49ebf0/`

@@ -19,6 +19,7 @@ REFERENCES = (
     "schemas/chocolate/dataset-contract.json",
     "plugins/category-processing/profiles/chocolate/dataset-contract.json",
     "plugins/category-processing/profiles/coffee/dataset-contract.json",
+    "schemas/chocolate/current-price/dataset-contract.json",
 )
 
 
@@ -57,7 +58,7 @@ class DocumentationMaintenanceTests:
         change(document)
         path.write_text(json.dumps(document, indent=2) + "\n", encoding="utf-8")
 
-    def cached_contracts(self, category="chocolate", portable=False):
+    def cached_contracts(self, category="chocolate", portable=False, current=False):
         """Build minimal temporary fixtures, never copy authoritative schema bodies."""
         name = (
             "plugins/category-processing/profiles/"
@@ -66,6 +67,8 @@ class DocumentationMaintenanceTests:
             if portable
             else REFERENCES[0]
         )
+        if current:
+            name = REFERENCES[-1]
         manifest = json.loads((self.root / name).read_text(encoding="utf-8"))
         manifest["attribute_count"] = 1
         attributes = {
@@ -177,6 +180,12 @@ class DocumentationMaintenanceTests:
     def test_mutable_dataset_revision_is_rejected(self):
         self.reference(REFERENCES[0], lambda doc: doc.update(revision="main"))
         self.assert_error("Unreadable dataset contract reference")
+
+    def test_current_price_cache_tampering_is_reported(self):
+        _, directory = self.cached_contracts(current=True)
+        assert guard.check(self.root) == []
+        (directory / "model-design.json").write_bytes(b"{}")
+        self.assert_error("Invalid cached dataset contracts " + REFERENCES[-1])
 
     def test_malformed_file_hash_is_rejected(self):
         self.reference(

@@ -73,6 +73,17 @@ features to the final price. Examples include fair trade, brand, and nuts.
 
 ### Evidence layers and the chocolate schema
 
+For the current chocolate training task, the user explicitly requested every
+Gold entity be model eligible. Apply that instruction in a new immutable Gold
+snapshot, record authorization provenance and retain the complete parent.
+Training honors the promoted flags and preserves actual analytical values.
+The user subsequently superseded the regular-price requirement for this study:
+use the collected current displayed price as the target, normalize by actual
+edible weight, and retain promotion and tax metadata as limitations. Independently
+verified regular prices, non-promotional classification and confirmed tax
+inclusion must not block this study. Missing quantities or identities still
+require a concrete failure report. The [Gold guide](data/chocolate-gold.md) owns this operation.
+
 Keep the original raw archive and one combined silver dataset. Silver performs
 deduplication within each seller followed by schema, unit and vocabulary
 standardization, price normalization, evidence review and training eligibility.

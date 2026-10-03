@@ -1,5 +1,17 @@
 # Product features and pricing
 
+The latest [retailer median refit](docs/data/analysis/retailer-median-training.md#refit-with-the-published-current-price-target)
+uses the published current-price contract and all 2,134 eligible Gold rows.
+Displayed prices and matching edible weights produce 630 GBP/100 g targets.
+Missing variant IDs and population boundary values prevent a real fit. The
+trainer preserves source evidence and saves exact input readiness artifacts.
+
+Run the [Retailer Median Price Baseline](docs/data/analysis/retailer-median-training.md)
+with `uv run python scripts/train_chocolate_retailer_median.py --gold-root <snapshot> --current-price-proxy`.
+It has passed synthetic fitting validation. This study accepts displayed offers
+and unverified tax metadata, with recorded limitations. Published historical OLS
+and portable profiles retain their existing target contracts.
+
 This repository studies how product features relate to prices across categories.
 Chocolate sold in the UK is the current example. Preserve original information
 and evidence before deriving an analytical schema or fitting a pricing model.
