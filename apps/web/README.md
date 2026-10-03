@@ -11,6 +11,7 @@ See the [architecture](../../docs/vercel-architecture.md),
 Use Node 24 and npm. From the repository root:
 
 ```sh
+python3 -B scripts/fetch_web_pricing_model.py
 cd apps/web
 npm ci
 npm run dev
@@ -24,9 +25,12 @@ npm run build
 npm start
 ```
 
-Build verifies snapshot hashes, counts, evidence shards and packaged assets,
-then checks snapshot inclusion in all seven API function traces. It does not
-fetch Hugging Face or run Python. No database or external credentials are needed
+Build prepares the pinned pricing model if it is absent, then verifies snapshot
+hashes, counts, evidence shards and packaged assets,
+then checks snapshot inclusion in all eight API function traces and the pinned
+pricing model in the prediction trace. It does not
+fetch the collection snapshot or run Python. A clean build downloads the two
+immutable model artifacts; cached builds verify them offline. No database or external credentials are needed
 to explore the collection; image/text extraction needs one provider below.
 
 ## Terrain and product configuration
@@ -203,5 +207,35 @@ See the lifecycle plan for hosted verification.
 Local browser checks verified example selection, custom uploads, resizing,
 removal, the two-photo limit, preservation of draft edits and the missing-provider
 error. Terrain/WebGL review and live model extraction remain pending. Codex's
-in-process app-server has not been verified here. No fitted pricing benchmark
-is connected.
+in-process app-server has not been verified here. The synthetic fixture is
+connected locally; a real market pricing benchmark is not validated. The hosted
+preview above predates this feature.
+
+## Synthetic price prediction
+
+The product configurator includes **Predict a price**, using the published
+LightGBM without brand fixture. Confirm a single chocolate bar pack, supply
+50–150 g edible weight, choose dark/milk/white, plain/inclusion/filled, nuts
+evidence and Waitrose/Ocado, then press **Predict demo price**. Type, retailer
+and weight share the draft inputs. The result shows GBP/pack and GBP/100 g,
+signed field allocations, family percentages, raw SHAP and the model reference.
+Other schema fields are listed as not modeled. The form labels generated
+training data and the lack of intervals validated on real products.
+
+`python3 -B scripts/fetch_web_pricing_model.py --offline` verifies cached bytes.
+`npm run verify:model` checks immutable model hashes. The two artifacts stay in ignored `model-cache/`. `npm run prepare:model`
+downloads absent files at the immutable revision and verifies their hashes;
+prebuild runs this preparation so clean Vercel builds work. Cached files are
+verified and corrupt bytes fail the build. Requests never download models or
+invoke Python. No inference credentials
+are required; extraction still needs its separate provider configuration.
+`POST /api/predict-price` accepts only model fields and explicit scope; it rejects
+proposed price, unknown categories, missing required fields and weights outside
+the fitted range. Legacy nuts `absent` needs user review before the model's
+`explicitly_absent` choice. See [the serving guide](../../docs/data/analysis/web-fixture-pricing.md).
+
+The web runtime computes exact stored-path SHAP in Node and is checked against
+LightGBM 4.6.0 native contributions across 324 input combinations. Pounds and
+percentages use proportional exponential allocation; raw SHAP units are log
+GBP/100 g. These allocations describe this prediction relative to its reference.
+The hosted preview documented above has not been redeployed with this addition.

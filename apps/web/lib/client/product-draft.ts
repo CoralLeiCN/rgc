@@ -6,6 +6,7 @@ import { unitPrice } from "./display";
 export interface ProductDraft {
   name: string; packPrice: string; weightGrams: string;
   values: Record<string, string>;
+  pricing?: { recipeClass?: string; nutsPresence?: string };
 }
 export interface ConfiguredProductMarker { name: string; price: number; score: number; }
 export interface DraftEvaluation {
@@ -109,6 +110,7 @@ export function applyExtractedTraits(draft: ProductDraft, candidates: { key: str
     else if (field.key === "quantity.total_edible_weight_g") {
       if (typeof parsed.value === "number" && parsed.value > 0) next.weightGrams = raw;
     } else next.values[field.key] = raw;
+    if (field.key === "composition.nuts_presence") next.pricing = { ...next.pricing, nutsPresence: undefined };
   }
   return next;
 }

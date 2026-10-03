@@ -91,3 +91,19 @@ Retain that immutable historical location and its explicit fixture labels. Its
 verified model/metadata files. Input/source/runtime payloads are excluded. The
 published model remains synthetic and not release ready; its historical regular
 price basis is distinct from the current-price study.
+
+## Web fixture serving
+
+[The web reference](../apps/web/pricing-model.json) selects the original
+LightGBM without brand fixture at immutable revision
+`06680d7248ccc4487726b9a97e59aa8f586fb54e`. The source model/manifest hashes
+match the published run. `python3 -B scripts/fetch_web_pricing_model.py`
+materializes only those two verified files in ignored `apps/web/model-cache/`;
+`--offline` verifies existing bytes. Node `npm run prepare:model` also prepares missing cache files during clean
+Vercel builds, verifies bounded responses before writing, and traces both
+files into the prediction function. Cached builds verify bytes offline. Runtime repeats hash and identity checks.
+No generated model artifacts are committed to Git or fetched on requests.
+The fixture retains its historical target and synthetic status. A real model
+replacement requires a new verified reference and serving compatibility proof.
+The [serving guide](data/analysis/web-fixture-pricing.md) records Node evaluation,
+native-equivalent SHAP verification and the public interface.

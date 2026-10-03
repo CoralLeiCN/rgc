@@ -102,3 +102,18 @@ browser prepares temporary copies within the extraction request limits. Selectin
 the example loads the photos, and **Extract traits** requests candidates from the
 configured provider. It provides no prefilled traits. Review/apply preserves
 the proposed price and keeps the draft outside observed statistics.
+
+## Product prediction demo
+
+The product configurator now separately uses the published synthetic
+`lightgbm_without_brand` fixture to predict supported single bar packs and
+explain field contributions. Its immutable revision differs from this Silver
+web snapshot. Prepare it with `python3 -B scripts/fetch_web_pricing_model.py`;
+Git retains only [the pinned reference](../apps/web/pricing-model.json), while
+the original model and manifest stay in ignored `apps/web/model-cache/`.
+Predictions and exact stored-path SHAP run inside `POST /api/predict-price`
+without Python or a network hop. They do not alter observed statistics, review
+states, source evidence or eligibility. The fixture retains its historical
+regular-price basis and explicit synthetic status. The
+[serving guide](data/analysis/web-fixture-pricing.md) owns inputs, attribution
+units, verification and limitations. The hosted preview predates this feature.

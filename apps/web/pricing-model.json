@@ -1,0 +1,12 @@
+{
+  "repoId": "CoralLeiCN/rgc-collections",
+  "revision": "06680d7248ccc4487726b9a97e59aa8f586fb54e",
+  "path": "model/lightgbm_without_brand/fixtures/model-run-643f7148c9f44c42e5f42212/run",
+  "runId": "model-run-643f7148c9f44c42e5f42212",
+  "modelId": "lightgbm_without_brand",
+  "fixture": true,
+  "files": {
+    "model.json": {"sha256": "85d109fa2c3cc03115fb1352893b664a305bb0b81c6aaa256a05c4659bb36ed6", "byteLength": 1504993},
+    "manifest.json": {"sha256": "067b1b50e9c32b183aa6911ee7c8ee0d2a8e789b2a8bea5560a37f3d378bb6d9", "byteLength": 5739}
+  }
+}

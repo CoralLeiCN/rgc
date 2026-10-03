@@ -176,3 +176,36 @@
 .config-apply-row { display: flex; align-items: center; gap: 8px; margin-top: 11px; }
 .config-apply-row .button { min-height: 31px; font-size: 9px; border-color: #768b63; color: #d7e7b9; background: #354a30; }
 .config-apply-row .button > span { min-width: 15px; height: 15px; border-radius: 3px; background: #4d643d; font-size: 8px; display: grid; place-items: center; }
+
+.config-pricing { padding: 18px 0 20px; border-top: 1px solid #39505d; }
+.config-pricing h3 { color: #d4dfcf; font-size: 15px; }
+.config-pricing h4 { color: #c8d9d9; font-size: 11px; margin: 15px 0 8px; }
+.pricing-demo-tag { display: inline-block; padding: 4px 6px; margin-top: 9px; border: 1px solid #78653e; border-radius: 4px; color: #efd5a3; font-size: 8px; letter-spacing: .5px; }
+.pricing-disclosure, .pricing-weight { color: #a3b5b8; font-size: 10px; line-height: 1.6; margin: 9px 0; }
+.pricing-scope { display: flex; align-items: center; gap: 8px; color: #c0cfd0; font-size: 10px; line-height: 1.6; margin: 12px 0; }
+.product-configurator .pricing-scope input { width: 14px; height: 14px; flex-shrink: 0; }
+.pricing-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 13px 0; }
+.pricing-inputs label { display: grid; gap: 6px; font-size: 9px; color: #a6bdc8; min-width: 0; }
+.pricing-inputs select { width: 100%; min-width: 0; }
+.config-pricing > .button { width: 100%; margin: 4px 0; }
+.pricing-estimate { margin-top: 15px; padding: 14px; background: #273328; border: 1px solid #506046; border-radius: 6px; }
+.pricing-estimate > span, .pricing-estimate > small { display: block; color: #adbea6; font-size: 10px; }
+.pricing-estimate > output { display: block; color: #eed6a9; font-size: 28px; margin: 8px 0; font-variant-numeric: tabular-nums; }
+.pricing-table-scroll { overflow-x: auto; }
+.pricing-contributions { width: 100%; border-collapse: collapse; font-size: 9px; }
+.pricing-contributions caption { font-size: 9px; text-align: left; color: #93aeb6; padding: 8px 0; }
+.pricing-contributions th { text-align: left; color: #b2c6cc; font-weight: 500; }
+.pricing-contributions td { text-align: right; color: #b9c5d0; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.pricing-contributions th, .pricing-contributions td { padding: 8px 3px; border-bottom: 1px solid #29414d; }
+.pricing-contributions th:not(:first-child) { text-align: right; }
+.pricing-contributions th small { display: block; color: #8097a1; margin-top: 3px; font-size: 8px; }
+.pricing-contributions .pricing-negative { color: #e9ac9f; }
+.pricing-contributions .pricing-positive { color: #b1d6b3; }
+.pricing-total { border-top: 1px solid #677b60; }
+.pricing-details { margin-top: 12px; color: #9db7c1; font-size: 10px; line-height: 1.6; }
+.pricing-details summary { cursor: pointer; }
+.pricing-details dl { margin: 8px 0; }
+.pricing-details dl > div { display: flex; justify-content: space-between; gap: 8px; padding: 3px 0; font-size: 9px; }
+.pricing-details dd { margin: 0; font-variant-numeric: tabular-nums; }
+.pricing-details p, .pricing-provenance { color: #91aab4; font-size: 9px; line-height: 1.7; }
+.pricing-provenance { overflow-wrap: anywhere; margin-top: 15px; }

@@ -71,12 +71,13 @@ review and Apply. OpenAI or the local Codex bridge needs configured provider
 access; the live Codex path remains unverified. Source evidence, missing values
 and conflicting claims remain inspectable.
 
-The user cancelled pricing-model integration. The upstream Gold, reviewed
-family and experimental training work stays in the repository, with no pricing
-model connected to the web application. The application remains an evidence
-explorer with a declared prototype score; supported benchmarks and prediction
-intervals require separate validation and renewed integration scope. Current
-application status is recorded in the [integration guide](../collection-integration.md).
+The user authorized connecting the published LightGBM without brand synthetic
+fixture to the product configurator. The demo predicts supported single chocolate
+bar packs and shows signed field SHAP values, allocated pounds and percentages,
+family totals and the model reference. Its generated training data and historical
+regular-price basis remain explicit. Real market benchmarks and intervals require
+separate validation. Current status is recorded in the
+[fixture serving guide](../data/analysis/web-fixture-pricing.md).
 
 Maintain the current Vercel application and its operational documentation.
 Retired visual prototypes, generated static explorers, intermediate design notes

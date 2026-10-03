@@ -26,10 +26,11 @@ internal retailer data or a customer relationship is not assumed.
 
 The retail frontier entry includes the **Piece of Cake Pricing** web workspace.
 Current application work covers evidence exploration, a declared prototype trait
-score, product configuration and candidate extraction. The user cancelled
-pricing-model integration; merging the upstream training and Gold work does not
-connect it to this application. The broader research goals below retain their
-review and validation requirements.
+score, product configuration and candidate extraction. The user subsequently authorized the published LightGBM without brand fixture
+for a clearly labelled synthetic prediction demo. The form should calculate a
+price from supported inputs and show signed SHAP field contributions relative
+to the model reference. Real market benchmarks retain their separate review
+and validation requirements.
 
 ## 1. Category research and a pricing model
 
@@ -311,9 +312,10 @@ support is retained for those prototypes. The active terrain, product
 configuration, extraction workflow and declared trait-derived demo score remain.
 
 The teammate's pricing research and upstream experimental training remain
-separate from this application. The user cancelled pricing-model integration;
-no hosted prediction adapter, model endpoint or fitted score is connected. The
-full local raw text-evidence archive remains available for separate modeling
+separate from this application. The user subsequently authorized the published
+synthetic fixture for the local price prediction and field SHAP demo. The hosted
+preview still predates that feature; a real market benchmark remains unvalidated.
+The full local raw text-evidence archive remains available for separate modeling
 work, with image bytes deliberately omitted from the export. Application
 requests use their pinned snapshot and do not automatically adopt a new Gold
 release or model artifact.

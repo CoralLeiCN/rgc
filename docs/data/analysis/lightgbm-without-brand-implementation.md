@@ -228,3 +228,14 @@ The publication parent `95c5fbd0ab5fa9a41fa5333648321d95f16927a7` includes newer
 from another session. Earlier readiness audits describe this session's pinned
 regular-price snapshot. They do not assess that newer snapshot or establish
 that a current-price model has been fitted by this trainer.
+
+## Web scenario demo
+
+The user subsequently authorized using this published synthetic fixture in the
+web product form. [The serving guide](web-fixture-pricing.md) defines the
+immutable reference and restricted single bar pack interface. Node evaluates
+the original booster and computes exact stored-path SHAP, verified against
+native LightGBM 4.6.0 for every field across 324 supported input combinations.
+It labels estimates as synthetic, retains `regular-consumer-price-1`, and shows
+signed price allocations and excluded traits. No real training, current-price
+migration or market-release claim follows from this UI integration.

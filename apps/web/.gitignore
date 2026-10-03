@@ -1,4 +1,5 @@
 node_modules/
+model-cache/
 .next/
 .vercel/
 *.tsbuildinfo

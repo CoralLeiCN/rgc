@@ -78,8 +78,10 @@ provides its own regular-price working experiment, seeded family partitions,
 family balancing, fitting-only grouped tuning, retailer calibration and native
 raw-log TreeSHAP reconstruction. It saves immutable runs and supports verified
 run loading. Synthetic validation is published separately from real fitting.
-Current-price migration, full comparisons and released product scenario
-interfaces remain pending. [Model maintenance](../model-maintenance.md)
+The web product form now serves the published historical synthetic fixture
+through a bounded Node prediction API, with native-equivalent field SHAP values
+and reconciled price allocations. Current-price migration, real market
+comparisons and released real-data scenario interfaces remain pending. [Model maintenance](../model-maintenance.md)
 owns artifact storage in Hugging Face and immutable receipts in Git.
 
 The independent [hedonic trainer](../data/analysis/hedonic-without-brand-implementation.md) implements family-weighted fitting, calibration and support under a local working policy. The published Gold handoff and reviewed real data are insufficient: no real model or release is established, and aligned producer/portable contract migration remains pending.

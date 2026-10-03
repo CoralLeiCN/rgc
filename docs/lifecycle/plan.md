@@ -75,9 +75,10 @@ The current hackathon app is `apps/web`, with a Vercel frontend/backend, private
 snapshot, leaf-colour terrain, typed filters, product configurator, gap finder and
 brand analysis. Price is adjustable by slider; a read-only trait recipe supplies
 the demo score. Image/text extraction supports server-side OpenAI or a local
-Codex bridge; live provider configuration remains pending. The user cancelled
-the new pricing-model integration and requested removal of added tests, retired
-prototypes and intermediate demo documents.
+Codex bridge; live provider configuration remains pending. After the earlier
+cleanup, the user authorized the published LightGBM synthetic fixture for product
+price prediction and SHAP contributions. The current implementation is described
+in the [fixture serving guide](../data/analysis/web-fixture-pricing.md).
 
 The repository now keeps one current web app and the operational
 [architecture](../vercel-architecture.md), [data guide](../collection-integration.md)
@@ -233,6 +234,53 @@ sellers in validation. Missing evidence cannot justify new taxonomy values.
 ## Proof
 
 ### Web application verification
+
+#### Synthetic product prediction and SHAP
+
+The user authorized the published `lightgbm_without_brand` fixture for a labelled
+web demo. The form and `POST /api/predict-price` now use its immutable model,
+five supported fields and explicit single bar pack scope. It displays synthetic
+GBP/pack and GBP/100 g, raw field SHAP, the model reference, signed allocated
+pounds/percentages, family totals and excluded schema fields. Its historical
+`regular-consumer-price-1` basis and unavailable real-data interval are explicit.
+The [serving guide](../data/analysis/web-fixture-pricing.md) records the interface.
+No real training or remote publication was performed.
+
+Validation on 3 October 2026:
+
+- `uv sync --locked` installed the locked environment; four pinned contract sets
+  passed `python3 -B scripts/fetch_contracts.py --all --offline`.
+- All 476 cases passed with `uv run pytest`, including six serving tests. They
+  compare raw price, reference and every field SHAP against native LightGBM 4.6.0
+  over 324 supported combinations, and exercise allocation cancellation,
+  negative values, zero/near-zero deviation, leakage/domain rejection, request
+  validation and absent/corrupt model failures.
+- `uv run ruff check .`, documentation and whitespace checks passed.
+- TypeScript and the production build passed. All eight API traces retain the
+  private snapshot, and prediction tracing includes both verified model files;
+  the largest trace is 29.9 MiB before Vercel packaging.
+- Clean `npm run prepare:model` downloaded and verified the pinned two-file
+  model cache. Preparation supports clean Vercel builds; cached builds and
+  `npm run verify:model` verify offline. Requests use no network or Python.
+- Browser checks on the local production build showed a GBP 4.71 demo price
+  for a 100 g dark plain bar, unknown nuts evidence and Waitrose. The reference
+  was GBP 4.82; all five signed field allocations were visible. Changing proposed
+  price retained the prediction, changing recipe hid it immediately, and 200 g
+  returned the supported weight-range error. Screenshot proof is local.
+
+Local web checks used Node 26.10.0; deployment configuration still selects Node
+24. This feature has not been deployed to the existing protected preview.
+Live extraction configuration and broad WebGL rendering retain their separate
+verification limits. Fixture parity establishes implementation fidelity, not
+market prediction accuracy or a validated real-product interval.
+
+Integration with `main` at `f86f20b` retained the example photos and multiple
+image uploads. All 476 tests, Ruff, TypeScript, the production build, five public
+asset hashes, model hashes, all eight API traces, four offline contract caches,
+documentation coverage against `main` and whitespace checks passed after
+integration. The combined revision has not been deployed.
+
+#### Example photos and multiple image uploads
 
 On 2026-10-03 the sample photo revision passed `uv sync --locked`, fetching all
 pinned contracts followed by

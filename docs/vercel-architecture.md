@@ -36,7 +36,9 @@ input is required; missing claims are not treated as absent. The result is a
 transparent prototype assumption, not an estimate of quality, demand or fair
 price. Price and listing identity do not enter the recipe. The proposed-price
 slider changes the draft's X coordinate only; validated traits determine Y/Z.
-The teammate's fitted pricing model remains a separate, unconnected service.
+The product form separately serves the published LightGBM without brand
+synthetic fixture. Its model predictions and SHAP values do not change the
+terrain recipe or observed-price analysis.
 
 ```mermaid
 flowchart LR
@@ -64,19 +66,21 @@ No database is needed for the initial immutable collection explorer. Server
 functions never write files or invoke the processing pipeline. Dataset refresh
 is an explicit local preparation step followed by a new deployment.
 
-The teammate is developing the pricing/scoring model separately. The user selected a hosted prediction API; a future
-same-origin backend adapter will hold service credentials and call the teammate's
-endpoint after its contract is supplied. Raw-archive processing and model training do not run during
-page requests. No scoring endpoint is connected yet.
+The product form calls `POST /api/predict-price`, which runs the immutable
+synthetic LightGBM fixture directly in Node. Model files are verified during
+preparation, build and runtime loading. No external inference credentials are
+needed. Raw processing, model fetching and training run outside page requests.
+The hosted preview recorded above predates this addition.
 
 `scripts/build_web_snapshot.py` verifies the pinned manifest and all
 required file hashes, loads that snapshot's four chocolate contracts, validates
 every product using the existing schema validator, and derives the application
 snapshot. The original source files remain in ignored `data/hf-snapshot/`.
-The deployment includes `apps/web/snapshot/`, the application, public
-visualization assets and the supplied packaging photos used as demo inputs.
-A generated manifest records hashes for the derived JSON. Snapshot assets are
-bundled server-side; they are never placed under `public/`.
+The deployment includes `apps/web/snapshot/`, the application, verified
+`apps/web/model-cache/` artifacts, public visualization assets and the supplied
+packaging photos used as demo inputs. A generated manifest records hashes for
+the derived JSON. Snapshot and model assets are bundled server-side; they are
+never placed under `public/`.
 
 ## API contract
 
@@ -93,6 +97,7 @@ without local paths or stack traces. JSON errors have `{error:{code,message}}`.
 | `/api/analysis` | Cohort filters; `range=core` (default) or `full` | Full-cohort unit-price summary and brand medians; 20-bin histogram and gaps. |
 | `/api/terrain` | Cohort filters; leaf `color`; numeric leaf `z`; `range=core|full`; `limit` (default 1000, max 2000) | Exact price/trait-score/Z rows, category shares, range/completeness counts and score definition. |
 | `/api/extract-traits` (POST) | Description and/or up to two base64 images | Validated candidate traits with evidence and warnings; never writes observed data. |
+| `/api/predict-price` (POST) | Five exact model keys and confirmed single bar pack scope | Synthetic unit/pack prediction, signed field SHAP, reference and reconciled price allocations; no interval validated on real products. |
 | `/api/compare` | Comma-separated `ids`, maximum four distinct listings | Ordered product summaries for the trait matrix. |
 
 Cohort inputs are `search`, `source`, `role` (`all`, `brand`, `retail`, `unknown`),
@@ -279,5 +284,22 @@ interaction still requires browser review.
 
 A synthetic live Codex extraction previously failed before contacting a model because its
 in-process app-server could not initialize (`Operation not permitted`). Live laptop extraction and an authenticated tunnel remain to
-be verified. No API key has been provisioned by this change. These limits are
-separate from the teammate's pending fitted-model integration.
+be verified. No API key has been provisioned by this change. These limits are separate from the locally connected synthetic price demo.
+The new prediction endpoint and form still need a hosted deployment.
+
+## Synthetic pricing function
+
+[The serving guide](data/analysis/web-fixture-pricing.md) defines
+`POST /api/predict-price`. Its original fixture model and manifest are downloaded
+at an immutable revision into ignored `apps/web/model-cache/`, verified by hash
+and identity, and included in the Node function trace. Prebuild prepares missing
+model artifacts through a bounded Node download, so clean Git deployments can
+materialize them without Python. Cached builds verify existing bytes offline. No Python or external
+inference service runs on requests. Thirty-two coalitions evaluate exact
+stored-path SHAP for five fields, matching native LightGBM 4.6.0 contributions.
+Runtime reconstructs the raw prediction and reconciles signed field/family
+allocations with the model reference. The form presents synthetic prices,
+raw SHAP and pounds/percentages using the documented allocation convention.
+Excluded schema fields are explicitly not modeled. Model input edits hide stale
+results, while proposed price edits never enter the model. The prediction form
+is connected locally; the existing protected preview requires a new deployment.

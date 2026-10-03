@@ -4,6 +4,7 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     "/api/*": ["./snapshot/**/*.json"],
     "/api/products/*": ["./snapshot/**/*.json"],
+    "/api/predict-price": ["./model-cache/*.json"],
   },
   poweredByHeader: false,
   async headers() {

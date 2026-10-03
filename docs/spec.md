@@ -13,7 +13,7 @@ implemented capabilities, the collection workflow and current limitations.
 | Stage | Requested outcome | Implementation status |
 | --- | --- | --- |
 | 1 | Collect original product information, images and prices through a portable plugin; provide another plugin for processing within each seller, category profiles, mapping maintenance and model preparation; fit a regression explaining feature contributions. | Raw collection, combined chocolate silver/schema, model preparation and documentation maintenance are implemented and verified. The processing package passed package, isolated copy and collected data validation. Classification review/evaluation and model fitting/validation remain outstanding. |
-| 2 | Let a retailer review a SKU's current or proposed price against a validated model and its range; also support a brand testing a newly designed product. | Draft configuration and observed price exploration are implemented. Supported model-based price testing requires a validated category model. |
+| 2 | Let a retailer review a SKU's current or proposed price against a validated model and its range; also support a brand testing a newly designed product. | Draft configuration, observed price exploration and a labelled synthetic LightGBM prediction/SHAP demo are implemented. Supported market price testing requires a validated category model. |
 | 3 | Score category value for money and assess brand premium. | Research only; scoring implementation is deferred. |
 
 The product must support many categories over time. Chocolate sold in the United
@@ -104,6 +104,25 @@ the proposed price must not refit the model or change its benchmark. Keep
 within-retailer estimates distinct from pooled-market or other reference-context
 benchmarks, and display the chosen context. Retailer price-ladder views show
 recorded/proposed price relationships, not predicted substitution or sales.
+
+#### Synthetic product price demo
+
+The user authorized the published `lightgbm_without_brand` fixture for the web
+form. [The serving guide](data/analysis/web-fixture-pricing.md) owns the immutable
+reference, accepted keys, missing-evidence semantics and attribution validation.
+`POST /api/predict-price` uses five supported inputs and explicit single bar pack
+scope, returns synthetic GBP/100 g and GBP/pack with exact stored-path field
+SHAP, and rejects extra keys including proposed price. It retains the fixture's
+historical `regular-consumer-price-1` basis; the current study's displayed-price
+proxy does not rewrite that artifact. The Node implementation is verified
+against LightGBM 4.6.0 native predictions and each contribution.
+
+The form exposes model reference, signed field/family allocations using section
+5.2.1, raw log contributions, excluded schema fields and synthetic status. No
+real-data interval or causal feature premium is claimed. Changing modeled
+inputs cancels stale work; proposed price never enters prediction. Local model
+files must pass immutable hash/identity checks before serving; missing or corrupt
+files return unavailable. Inputs remain local scenarios and do not enter training.
 
 ### 2.4 Agent plugin for collecting product information
 

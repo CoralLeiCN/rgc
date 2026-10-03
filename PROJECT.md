@@ -18,7 +18,9 @@ The working product produces reproducible datasets, review reports, eligibility
 decisions and immutable Parquet Gold training snapshots. An experimental OLS
 trainer is implemented. All 2,134 Gold candidates are model eligible under the
 user instruction, and current-price preparation produces 630 unit-price targets.
-Actual missing quantities and identities still constrain fitting. Validated pricing benchmarks, LightGBM predictions and AI
+Actual missing quantities and identities still constrain real fitting. The web
+form now serves the published LightGBM synthetic fixture with price predictions
+and signed SHAP field contributions. Validated market benchmarks and AI
 explanations remain planned.
 
 ## Our data
@@ -48,7 +50,8 @@ purpose, outputs and current status.
 | Retain evidence references, missing values, conflicts and review requirements. | Implemented in derived records and quality/review reports. |
 | Prepare eligible model inputs and keep related product families together during validation splits. | Helpers implemented. The user marked all 2,134 Gold candidates model eligible; current-price preparation produces 630 targets per 100 g. |
 | Export immutable Gold and train an experimental OLS model. | Export and trainer implemented. Current-price targets use collected displayed prices; missing quantities and identities still limit fitting. |
-| Validate pricing benchmarks, compare retailer contexts and explain predictions with SHAP and AI. | Proposed designs; validation and explanations remain pending. |
+| Predict a demo price and inspect field SHAP contributions. | Implemented locally using the published LightGBM synthetic fixture; real market accuracy and intervals are unvalidated. |
+| Validate pricing benchmarks, compare retailer contexts and generate AI explanations. | Proposed designs; market validation and AI explanations remain pending. |
 
 The standalone [processing plugin](plugins/category-processing/README.md)
 packages this workflow for other product categories. It accepts category
@@ -64,8 +67,10 @@ the proposed modelling stage.
 
 ## Limitations
 
-The chocolate models use the collected current displayed selling price as the
-study's regular-price proxy. A separate verified regular-price target is not
+The current chocolate study uses collected displayed selling prices as its
+regular-price proxy. The web demo uses a historical synthetic fixture with
+`regular-consumer-price-1`; that fixture does not estimate current market prices.
+For the current study, a separate verified regular-price target is not
 required. Where edible pack weight is available, the target is current GBP per
 100 g; regressions use its natural logarithm.
 

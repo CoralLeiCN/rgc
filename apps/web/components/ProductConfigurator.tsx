@@ -7,6 +7,7 @@ import { familyColor, familyKeys, familyLabel } from "../lib/client/families";
 import { createProductDraft, draftFromProduct, evaluateDraft, type ProductDraft } from "../lib/client/product-draft";
 import { TRAIT_DEMO_BASE, TRAIT_DEMO_RULES, TRAIT_DEMO_DEFINITION } from "../lib/trait-demo";
 import { ProductExtraction } from "./ProductExtraction";
+import { ProductPricing } from "./ProductPricing";
 import { HelpTip } from "./HelpTip";
 import { Icon } from "./Icons";
 
@@ -72,7 +73,7 @@ export function ProductConfigurator({ schema, draft, onChange, selectedProduct, 
   const updateValue = (key: string, value: string) => {
     const values = { ...draft.values };
     if (value === "") delete values[key]; else values[key] = value;
-    update({ values });
+    update({ values, ...(key === "composition.nuts_presence" ? { pricing: { ...draft.pricing, nutsPresence: undefined } } : {}) });
   };
   function search(value: string) {
     setQuery(value);
@@ -93,7 +94,7 @@ export function ProductConfigurator({ schema, draft, onChange, selectedProduct, 
   }
 
   return <aside id="product-configurator" className="product-configurator panel" aria-labelledby="product-configurator-title">
-    <div className="config-heading"><div><p className="eyebrow"><span className="config-marker-symbol" aria-hidden="true" />YOUR PRODUCT</p><div className="heading-with-help"><h2 id="product-configurator-title">Make it your own.</h2><HelpTip label="About your product draft"><p>Configure a product and place it on the price distribution. Pack price and edible weight determine its GBP per 100 g position. The trait-derived prototype score determines its vertical position in All families. Within a family, the chart shows your price guide without inventing a family score.</p><p>Six recognized traits calculate a transparent prototype score. It is not a fitted pricing model or quality rating. No recommended or suggested price is calculated.</p><p>Use selected listing copies supported known values only when you press the button. Switching the selected source listing leaves your draft unchanged. Reset restores starting price inputs and leaves scoring traits unspecified.</p></HelpTip></div></div><span className="config-draft-tag">DRAFT</span></div>
+    <div className="config-heading"><div><p className="eyebrow"><span className="config-marker-symbol" aria-hidden="true" />YOUR PRODUCT</p><div className="heading-with-help"><h2 id="product-configurator-title">Make it your own.</h2><HelpTip label="About your product draft"><p>Configure a product and place it on the price distribution. Pack price and edible weight determine its GBP per 100 g position. The trait-derived prototype score determines its vertical position in All families. Within a family, the chart shows your price guide without inventing a family score.</p><p>Six recognized traits calculate a transparent prototype score. It is not a fitted pricing model or quality rating. The separate price predictor uses a model trained on generated test data and labels its estimates as synthetic.</p><p>Use selected listing copies supported known values only when you press the button. Switching the selected source listing leaves your draft unchanged. Reset restores starting price inputs and leaves scoring traits unspecified.</p></HelpTip></div></div><span className="config-draft-tag">DRAFT</span></div>
     <div className="config-source-actions"><button type="button" className="button" onClick={seedFromSelection} disabled={selectedLoading || !selectedProduct}><Icon name="layers" size={14} />Use selected listing</button><button type="button" className="text-button" onClick={resetDraft}>Reset</button></div>
     <p className="config-selected-source" title={selectedProduct?.name} aria-live="polite">{selectedLoading ? "Loading selected listing…" : selectedProduct ? selectedProduct.name : "No listing selected"}</p>
     {notice && <p className="config-action-status" role="status">{notice}</p>}
@@ -122,6 +123,7 @@ export function ProductConfigurator({ schema, draft, onChange, selectedProduct, 
         })}
       </div>
     </form>
+    <ProductPricing key={extractionSession} draft={draft} fields={schema.fields} onChange={onChange} />
     {children && <details className="config-source-evidence"><summary><span><Icon name="layers" size={14} />Source evidence</span><Icon name="chevron" size={13} /></summary>{children}</details>}
   </aside>;
 }

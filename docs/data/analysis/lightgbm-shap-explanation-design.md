@@ -243,3 +243,14 @@ status. No model performance or explanation correctness is claimed before these
 checks are implemented and results are reviewed.
 
 The [implemented LightGBM with brand workflow](../chocolate-lightgbm-with-brand.md) uses LightGBM 4.6.0 native exact contributions and independent reconstruction checks, with a deterministic narrative. Its explicit working policy is unpublished, the real-data eligible view is empty, and external AI integration and comparator release decisions remain pending.
+
+## Synthetic web attribution display
+
+The user authorized the published LightGBM without brand fixture for the web
+configurator. [The serving guide](web-fixture-pricing.md) documents exact
+stored-path SHAP through subset enumeration in Node, verified against native
+LightGBM 4.6.0 per-feature contributions over 324 inputs. It presents signed
+field allocations in GBP/pack and percentages, model reference, raw log SHAP
+and family totals using the convention in section 3.1. This is a deterministic
+synthetic demo; real market accuracy, intervals and generated AI narratives
+remain unvalidated. Historical fixture price basis is preserved.

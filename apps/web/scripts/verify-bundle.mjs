@@ -7,13 +7,16 @@ const app = fileURLToPath(new URL("../", import.meta.url));
 const snapshot = path.join(app, "snapshot");
 const manifest = JSON.parse(await readFile(path.join(snapshot, "manifest.json"), "utf8"));
 const expected = ["manifest.json", ...Object.keys(manifest.files)].map(relative => path.join(snapshot, relative));
-const routes = ["schema", "products", "products/[id]", "compare", "analysis", "terrain", "extract-traits"];
+const routes = ["schema", "products", "products/[id]", "compare", "analysis", "terrain", "extract-traits", "predict-price"];
 let largest = 0;
 for (const route of routes) {
   const tracePath = path.join(app, ".next/server/app/api", route, "route.js.nft.json");
   const trace = JSON.parse(await readFile(tracePath, "utf8"));
   const files = new Set(trace.files.map(relative => path.resolve(path.dirname(tracePath), relative)));
   for (const file of expected) assert.ok(files.has(file), `Snapshot omitted from API trace: ${route}: ${path.basename(file)}`);
+  if (route === "predict-price") {
+    for (const name of ["model.json", "manifest.json"]) assert.ok(files.has(path.join(app, "model-cache", name)), `Pricing model omitted from API trace: ${name}`);
+  }
   let bytes = 0;
   for (const file of files) bytes += (await stat(file)).size;
   largest = Math.max(largest, bytes);
