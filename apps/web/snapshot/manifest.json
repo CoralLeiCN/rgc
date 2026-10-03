@@ -1,0 +1,108 @@
+{
+  "formatVersion": 1,
+  "revision": "d4ebef3df5ac17145e8dbd2f8a7ae2b10c0afe70",
+  "datasetVersion": "silver-6e246156b7292dd4bb49ebf0",
+  "schemaVersion": "chocolate-schema-1",
+  "files": {
+    "index.json": {
+      "sha256": "8f08cc6f1cb5c1d7e921073fd5981fffc1d08fe5d0a7e6d40b8462dd67332395",
+      "byteLength": 7228619
+    },
+    "evidence/asda.json": {
+      "sha256": "247a7ed582360e1ccf30de6758dda95887d9e75b4c2a66d4087644aa6e54c76e",
+      "byteLength": 38648
+    },
+    "evidence/cadbury-gifts-direct.json": {
+      "sha256": "d61537892b1e847d6fa4adfc5a35e3809f668587436abca0bce463911f05cd0b",
+      "byteLength": 2739659
+    },
+    "evidence/chococo.json": {
+      "sha256": "3f5058e2e4a780111a2683e012e1facfe24bb9b54b8c8222911ce598f5c00d04",
+      "byteLength": 1024479
+    },
+    "evidence/chocolarder.json": {
+      "sha256": "63df175d3c0242b57de1a2049cf6e096a0aab2f69fc03dd244b92d81192c19f5",
+      "byteLength": 227464
+    },
+    "evidence/chocolate-co-uk.json": {
+      "sha256": "7a51c3323e897f0d0af5009171926c5c6907c5e3d3a482b6301c1c63cb4f64ed",
+      "byteLength": 542974
+    },
+    "evidence/chocolate-shop.json": {
+      "sha256": "d4766accd28df95ebcb27f99a8bd2efec61fec8887f14150ecf8e91c9d95a124",
+      "byteLength": 1271468
+    },
+    "evidence/chocolate-trading-co.json": {
+      "sha256": "582039af92972af2491042d62364903a76a58ef471b99a0e0a06bc94dd993fe6",
+      "byteLength": 594654
+    },
+    "evidence/cocoa-runners.json": {
+      "sha256": "692ffcc23d4edbc56d40ecd05bcc8b82a7da6fdb48bca28093fb6e65e114736c",
+      "byteLength": 4153
+    },
+    "evidence/coop.json": {
+      "sha256": "87ef4656940e767a02cc6c9da225aca6b6ad0996b2203c7f96f0fa4ac05b978c",
+      "byteLength": 16989
+    },
+    "evidence/divine.json": {
+      "sha256": "9cbeaba6eedbded9a735b2ed6b67a52f9918d292634a110f124cb4bb4498b73c",
+      "byteLength": 394567
+    },
+    "evidence/firetree.json": {
+      "sha256": "18f81525c74985a54e2309187a07702e106b9192fa0bdbdba84fd216af3095c6",
+      "byteLength": 132131
+    },
+    "evidence/fortnum-mason.json": {
+      "sha256": "afbfa8e614f00f9f21854f84f7ac4e64c75751172f6be1b93685a69cb3955690",
+      "byteLength": 292513
+    },
+    "evidence/lindt-uk.json": {
+      "sha256": "e8affc4e69ff135115ac54fbdb69e2a88350e450aedda9d81d081a40c48ef006",
+      "byteLength": 99373
+    },
+    "evidence/love-cocoa.json": {
+      "sha256": "2c33a1df9a480dd5dbcd23eea1857a7ed6e48ea7d9b509ba3f5a5acc98b72b3e",
+      "byteLength": 202732
+    },
+    "evidence/montezumas.json": {
+      "sha256": "ec9ad84ee5abd276993e3afeef682ef1d135ee6f8fdba101500c2389f44f1933",
+      "byteLength": 749280
+    },
+    "evidence/moo-free.json": {
+      "sha256": "6f92bffb1bdbfeb8354c1453d88f6707869fcd7199afe1f74789f37ffab1b109",
+      "byteLength": 653589
+    },
+    "evidence/morrisons.json": {
+      "sha256": "785443bee1e87068524bc58399c62d5bce635aadc7d1d9ae5483e71bde004085",
+      "byteLength": 90604
+    },
+    "evidence/nomo.json": {
+      "sha256": "980f9165f205b574e278c1382234479aa5acd9682eb967f926093acecd7b4319",
+      "byteLength": 516427
+    },
+    "evidence/ocado.json": {
+      "sha256": "71d632d1117c35d53c7dbab6f5bcf069a1c91fbaf8c2b0a01d49b6b198040e92",
+      "byteLength": 7084771
+    },
+    "evidence/pump-street.json": {
+      "sha256": "bd2ff4727fe647c30d79600c7a2b6d56456d574611567ebf61fc04ea512b9040",
+      "byteLength": 469511
+    },
+    "evidence/sainsburys.json": {
+      "sha256": "dab972c2eb1d3a9280299eb1c87ab26f873f472294d1a18fbbdf742a27b6ba6a",
+      "byteLength": 113559
+    },
+    "evidence/seed-and-bean.json": {
+      "sha256": "4b46c0acfc8e87f8f4c9d0fdd91f0f6b118affc877ac077a058b437c20c15e7b",
+      "byteLength": 83936
+    },
+    "evidence/tonys-uk.json": {
+      "sha256": "58fd43eafbaac6bc2c6652d7be06cbb6628081e7b36699fe620e1c3cfb69d72e",
+      "byteLength": 1209571
+    },
+    "evidence/waitrose.json": {
+      "sha256": "3463d0458786e63438ae166d233db1d1eb9811cb8fef46de5a300f10a14efa38",
+      "byteLength": 2238999
+    }
+  }
+}

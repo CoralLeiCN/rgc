@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>RGC / Collection intelligence</title>
+  <link rel="stylesheet" href="price-terrain.css"><link rel="stylesheet" href="collection-explorer.css">
+  <script defer src="vendor/plotly-gl3d-3.1.0.min.js"></script>
+  <script defer src="data/collection-snapshot.js"></script>
+  <script defer src="collection-explorer-model.js"></script><script defer src="collection-explorer.js"></script>
+</head>
+<body>
+<header class="masthead"><a class="wordmark" href="layered-price-landscape.html">RGC<span class="wordmark-dot"></span></a><span class="masthead-label">CATEGORY INTELLIGENCE / COLLECTION WORKSPACE</span><span class="status">REAL COLLECTION · SNAPSHOT</span></header>
+<main>
+  <div class="intro"><div><p class="eyebrow">From collected evidence to a pricing decision</p><h1>Know <span>your category.</span></h1><p class="subtitle">Explore the products. See the gaps. Build a defensible comparison.</p></div><div class="disclosure"><strong>Real source listings · observed prices</strong><br><span id="schema-readiness-note">Loading the snapshot's model-readiness status.</span></div></div>
+  <div class="kpis" id="collection-kpis" aria-label="Snapshot totals"></div>
+  <div class="schema-banner"><span id="schema-summary"></span><span id="schema-version"></span></div>
+  <div class="collection-filters">
+    <label class="search-label">Find a listing<input id="collection-search" type="search" placeholder="Product, brand, retailer or ID"></label>
+    <label>Seller role<select id="collection-role"><option value="all">All roles</option><option value="retail">Retail</option><option value="brand">Brand</option><option value="unknown">Unknown role</option></select></label>
+    <label>Source<select id="collection-source"><option value="all">All sources</option></select></label>
+    <label>Show<select id="collection-status"><option value="all">All listings</option><option value="priced">Unit price available</option><option value="unpriced">Unit price unavailable</option><option value="conflicts">Conflicting evidence</option></select></label>
+    <button id="collection-clear">Clear filters</button>
+  </div>
+  <section class="schema-workbench" aria-labelledby="schema-cohort-title">
+    <div class="schema-heading"><div><p class="eyebrow">DEFINE YOUR COMPARISON</p><h2 id="schema-cohort-title">Combine the traits that matter</h2></div><span>All conditions must match · missing values stay explicit</span></div>
+    <div class="schema-filter-controls">
+      <label>Trait<select id="schema-trait"></select></label>
+      <label>Condition<select id="schema-operator"></select></label>
+      <div id="schema-range" class="schema-range"><label>Minimum<input id="schema-min" type="number" placeholder="No minimum"></label><span>to</span><label>Maximum<input id="schema-max" type="number" placeholder="No maximum"></label><span id="schema-range-unit"></span></div>
+      <label id="schema-value-label" hidden>Value<select id="schema-value"></select></label>
+      <button id="schema-add-rule">Add condition</button><button id="schema-clear-rules">Clear conditions</button>
+    </div>
+    <p id="schema-filter-description" class="schema-hint"></p><p id="schema-filter-error" class="schema-error" role="alert" hidden></p>
+    <div id="schema-rules" class="schema-chips" aria-label="Active trait conditions"></div>
+  </section>
+  <div class="collection-layout">
+    <div class="collection-main">
+      <section class="landscape" aria-labelledby="collection-cloud-title">
+        <div class="scene-header"><div><p class="eyebrow">01 / OBSERVED PRICE CLOUD</p><h2 id="collection-cloud-title">Explore the evidence in three dimensions</h2></div><div class="camera-buttons"><button id="collection-orbit">3D</button><button id="collection-top">Top</button></div></div>
+        <div class="controls"><label>X<select id="collection-x"></select></label><label>Y<select id="collection-y"></select></label><label>Z<select id="collection-z"></select></label></div>
+        <div class="chart-shell"><div id="collection-scene" role="img" aria-label="Three-dimensional scatter of real source listings with available axis values"></div><div class="scene-tag"><span class="signal"></span><span id="collection-plot-count"></span></div><p class="gesture">DRAG TO ORBIT · CLICK A POINT TO INSPECT</p><p id="collection-plot-error" hidden role="alert">3D rendering is unavailable. The searchable matrix and evidence panel below remain usable.</p></div>
+        <div class="collection-legend"><span><i class="retail-dot"></i>Retail</span><span><i class="brand-dot"></i>Brand</span><span><i class="unknown-dot"></i>Unknown seller role</span><span>Colors describe sellers, not quality.</span></div>
+        <p class="context-note" id="collection-plot-note"></p>
+      </section>
+      <section class="matrix" aria-labelledby="collection-matrix-title">
+        <div class="matrix-header"><div><p class="eyebrow">02 / DYNAMIC TRAIT MATRIX</p><h2 id="collection-matrix-title">Every known value. Every unknown.</h2></div><span id="collection-results" aria-live="polite"></span></div>
+        <div class="controls"><label>Trait family<select id="collection-group"><option value="all">All families</option></select></label><label>Find a trait<input id="collection-trait-search" type="search" placeholder="Cocoa, organic, sugar…"></label><label>Columns<select id="collection-columns"><option value="8">Top 8 + pinned</option><option value="16">Top 16 + pinned</option><option value="all">All traits</option></select></label><label class="schema-toggle"><input id="schema-model-only" type="checkbox">Pricing inputs</label></div>
+        <div id="schema-pinned" class="schema-chips" aria-label="Pinned trait columns"></div>
+        <div class="table-scroll"><table id="collection-table"><caption class="visually-hidden">Filtered source listings and trait values. Unknown and conflicting values are explicitly labeled.</caption><thead id="collection-thead"></thead><tbody id="collection-tbody"></tbody></table></div>
+        <div class="pagination"><button id="collection-prev">Previous</button><span id="collection-page"></span><button id="collection-next">Next</button></div>
+      </section>
+      <section class="matrix comparison-section" id="schema-comparison" aria-labelledby="schema-comparison-title" hidden>
+        <div class="matrix-header"><div><p class="eyebrow">SIDE-BY-SIDE SHORTLIST</p><h2 id="schema-comparison-title">Compare selected listings</h2></div><button id="schema-clear-comparison">Clear shortlist</button></div>
+        <p class="schema-hint">Up to four source listings. Uses the visible trait columns. Your shortlist stays when filters change; this does not establish product comparability.</p>
+        <div class="table-scroll"><table id="schema-comparison-table"><caption class="visually-hidden">Selected listings compared using schema-defined traits and explicit evidence states.</caption><thead id="schema-comparison-head"></thead><tbody id="schema-comparison-body"></tbody></table></div>
+      </section>
+    </div>
+    <aside class="collection-review" aria-labelledby="collection-selected-title">
+      <p class="eyebrow">LISTING / EVIDENCE</p><h2 id="collection-selected-title">Select a listing</h2><p class="product-id" id="collection-selected-id"></p><div id="collection-selected-tags" class="trait-tags"></div>
+      <button id="schema-compare-product" class="schema-compare-button">Add to comparison</button><p id="schema-compare-status" class="schema-hint" aria-live="polite"></p>
+      <div class="observation-card"><span class="eyebrow">LATEST DISPLAYED PRICE /100 g</span><strong id="collection-selected-price">—</strong><p id="collection-price-context"></p><p id="collection-price-time"></p></div>
+      <p class="coverage-caption" id="collection-coverage"></p><div class="coverage-track"><span id="collection-coverage-bar"></span></div>
+      <label class="input-label" for="collection-field">Inspect a trait</label><select id="collection-field"></select>
+      <div class="schema-definition"><div id="schema-field-tags" class="schema-tags"></div><p id="schema-field-description"></p><p id="schema-field-constraints"></p><p id="schema-field-coverage"></p><details><summary>Meaning and model use</summary><p id="schema-field-qualifier"></p><p id="schema-field-model"></p></details><button id="schema-pin-trait">Pin this trait to the matrix</button></div>
+      <div class="field-card"><span id="collection-field-state"></span><p id="collection-field-value"></p><p id="collection-field-method"></p><div id="collection-evidence"></div></div>
+      <p id="collection-evidence-loading" aria-live="polite"></p>
+      <details open><summary>Why pricing is not ready</summary><p id="collection-exclusion-intro"></p><ul id="collection-exclusions"></ul></details>
+      <details><summary>All price observations for this listing</summary><div id="collection-price-history"></div></details>
+      <a class="source-link" id="collection-snapshot-link" target="_blank" rel="noopener noreferrer">Open the pinned source snapshot ↗</a>
+    </aside>
+  </div>
+  <section class="readiness"><div><p class="eyebrow">03 / NEXT BUILD STEP</p><h2>Review a comparable cohort, then fit.</h2><p>Validate product scope, physical identity, edible weight and regular consumer price context. Resolve conflicting traits before training. The existing layered demo remains available with fictional data.</p></div><a href="layered-price-landscape.html">Open the 500-product design study ↗</a></section>
+  <footer><span id="collection-provenance"></span><a href="../collection-integration.md">Snapshot and implementation notes ↗</a></footer>
+</main><noscript><p class="no-script">Enable JavaScript to explore the downloaded collection.</p></noscript>
+</body></html>
