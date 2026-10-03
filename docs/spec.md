@@ -236,6 +236,14 @@ their immutable references, caches and publication behavior. Contract publicatio
 preserves existing raw export and silver files. It neither rebuilds silver nor
 establishes reviewed observations or model readiness.
 
+Silver snapshots use immutable `silver/chocolate/uk/<dataset-version>/` paths;
+`silver/chocolate/uk/latest.json` selects one with its manifest checksum and
+readiness state. Coverage/value-frequency and verification reports use
+`analysis/chocolate/uk/<dataset-version>/` and record immutable input provenance.
+Each snapshot keeps its exact contracts; a historical snapshot does not adopt
+new contract releases. Publication verifies content hashes and preserves prior
+raw exports and snapshots.
+
 | Material | Publication rule |
 | --- | --- |
 | `products/*/product.json` | Include complete original records: source facts, prices, ingredients/nutrition where available, unknown fields and fields specific to a source, identities, and provenance. |
@@ -305,8 +313,9 @@ The canonical chocolate workflow has two layers:
 | Raw, `data/collections/chocolate/uk` | Preserve product indexes, arbitrary fields, source/image artifacts and immutable history under section 3.1. |
 | Silver, `data/silver/chocolate/uk` | Verify raw index/history consistency; deduplicate exact seller listings; apply schema/unit/vocabulary standardization; normalize supported prices; apply reviews supported by evidence and model eligibility; report provenance, missingness, exclusions and readiness. |
 
-`scripts/build_chocolate_silver.py --archive-root data/collections` builds silver
-in one command. Deduplication and standardization are internal operations of
+`uv run --script scripts/build_chocolate_silver.py --archive-root data/collections`
+builds silver in one command with pandas 2.2.3. Direct Python execution requires
+that dependency in its interpreter. Deduplication and standardization are internal operations of
 this layer. The build reads raw and writes one silver dataset directly.
 The [silver guide](chocolate-silver.md) owns its CLI, output contract and evidence
 resolution; the [schema guide](chocolate-schema.md) owns attribute meanings,
@@ -342,6 +351,19 @@ index/history consistency does not newly verify every original artifact byte.
 The standalone deduplication and standardization CLIs, and the earlier cleanup,
 provide compatibility and diagnostics with their own helper outputs. Report
 seller counts and market coverage under section 2.1.
+
+The canonical build uses pandas 2.2.3 for exact seller grouping, stable role
+partitions, coverage/exclusion counts and derived row envelopes. Original source
+values remain opaque Python objects; nullable seller keys keep their meaning.
+The combined API defaults to pandas and the CLI selects it explicitly. Component
+builders default to the standard library for compatibility; the portable package
+keeps its independent runtime. Install the locked development environment for
+direct Python calls, or use the CLI's PEP 723 dependency metadata through `uv`.
+
+`processing_runtime` records backend, Python implementation/full version and
+pandas/NumPy versions in the manifest and quality report. Runtime and table-helper
+hashes contribute to derived fingerprints. A changed runtime produces a new
+snapshot without rewriting original captures or previously published outputs.
 
 ### 3.2 Later analytical schema and feature classification
 
@@ -493,6 +515,28 @@ these decisions with reviewer, reason, and valid capture/pointer evidence.
 Current facts derived from sources remain unreviewed and tax basis is unresolved, so
 the initial build has no eligible training rows. Apply the readiness requirements
 in sections 4–5 before fitting.
+
+`scripts/analyze_chocolate_schema.py` provides a separate read-only pandas
+analysis of a downloaded silver snapshot. It verifies the SHA-256 hashes of
+`products.jsonl`, `profile.json` and `model-design.json` against that snapshot's
+manifest and atomically writes a JSON report outside the silver input directory
+and separate from any supplied profile or manifest. The caller supplies an
+immutable dataset revision and can supply an analysis date; these provenance
+labels do not independently establish a remote download. Every profile field
+appears in coverage counts, with known, unknown, conflict and not-applicable
+states and review status kept separate. Value frequencies count exact selected
+known values and show both all-listing and known-listing denominators. Numeric
+quantiles also retain scope and qualifier; text excerpts describe exact string
+repetition rather than semantic ingredient or claim popularity.
+
+Source coverage, variant repetition, unresolved aliases and extraction defects
+limit descriptive frequencies. An unknown claim does not establish absence,
+and zero coverage does not establish that a schema concept is irrelevant. These
+reports do not change taxonomy, raw evidence, silver snapshots, review status,
+model eligibility or release readiness. An optional pinned portable chocolate
+profile comparison checks definitions only; it does not describe frequencies
+in a portable snapshot. The [schema guide](chocolate-schema.md) owns its command
+and report details.
 
 #### Portable processing and maintenance from captures to mappings
 

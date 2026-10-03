@@ -2,9 +2,10 @@
 
 import hashlib
 import json
-from collections import Counter, defaultdict
 from pathlib import Path
 from urllib.parse import urlsplit
+
+from chocolate_tables import get_table_backend
 
 from .sources import SOURCES
 
@@ -48,20 +49,18 @@ def source_identity(raw):
     return source, hostname, str(pid), None if vid is None else str(vid)
 
 
-def deduplicate_listings(listings, captures, latest):
+def deduplicate_listings(listings, captures, latest, *, table_backend="stdlib"):
     """Group exact source identities, keeping every original capture unchanged.
 
     The supplied index dictionaries are updated in place. Canonical listing IDs
     are the first original folder IDs in lexical order. Returned aliases retain
     all original folder IDs, and original_latest retains each folder's pointer.
     """
-    grouped = defaultdict(list)
-    for listing in listings:
-        key = source_identity(captures[listing][latest[listing]]["raw_record"])
-        grouped[key if key is not None else ("unresolved", listing)].append(listing)
+    tables = get_table_backend(table_backend)
+    identities = [(listing, source_identity(captures[listing][latest[listing]]["raw_record"]))
+                  for listing in listings]
     original_latest, aliases, duplicate_groups = dict(latest), {}, []
-    for ids in grouped.values():
-        ids.sort()
+    for ids in tables.identity_groups(identities):
         canonical = ids[0]
         aliases[canonical] = ids
         if len(ids) == 1:
@@ -164,16 +163,19 @@ def confirm_raw_snapshot(archive):
             raise RuntimeError("Raw import started during the build; retry after imports finish.")
 
 
-def build_deduplicated_dataset(archive_root, output):
+def build_deduplicated_dataset(archive_root, output, *, table_backend="stdlib"):
     root = Path(archive_root).expanduser().resolve()
     output = Path(output).expanduser().resolve()
     if inside(output, root) or inside(root, output):
         raise ValueError("Deduplicated output must be separate from the raw archive (no overlap).")
-    implementation = {p.name: hashlib.sha256(p.read_bytes()).hexdigest()
-                      for p in (Path(__file__), Path(__file__).with_name("sources.py"))}
+    tables = get_table_backend(table_backend)
+    runtime = tables.runtime()
+    implementation_paths = (Path(__file__), Path(__file__).with_name("sources.py"),
+                            Path(__file__).resolve().parents[1] / "chocolate_tables.py")
+    implementation = {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in implementation_paths}
     archive = load_raw_archive(root)
     listings, captures, latest = archive["listings"], archive["captures"], archive["latest"]
-    aliases, groups, original_latest = deduplicate_listings(listings, captures, latest)
+    aliases, groups, original_latest = deduplicate_listings(listings, captures, latest, table_backend=tables)
     rows, alias_rows = [], []
     for listing in sorted(listings):
         current = captures[listing][latest[listing]]["raw_record"]
@@ -195,10 +197,10 @@ def build_deduplicated_dataset(archive_root, output):
                           for alias in aliases[listing])
     confirm_raw_snapshot(archive)
     if implementation != {p.name: hashlib.sha256(p.read_bytes()).hexdigest()
-                          for p in (Path(__file__), Path(__file__).with_name("sources.py"))}:
+                          for p in implementation_paths} or tables.runtime() != runtime:
         raise RuntimeError("Deduplication implementation changed during the build; retry after edits finish.")
     version = "deduplicated-" + digest({"layer_version": LAYER_VERSION, "inputs": archive["inputs"],
-                                        "implementation": implementation, "rule": RULE,
+                                        "implementation": implementation, "processing_runtime": runtime, "rule": RULE,
                                         "inventory": [path.relative_to(root).as_posix() for path in archive["inventory"]],
                                         "archive_errors": archive["errors"],
                                         "unsupported_records": archive["unsupported"]})[:24]
@@ -211,7 +213,8 @@ def build_deduplicated_dataset(archive_root, output):
               "unsupported_records": len(archive["unsupported"]), "archive_errors": len(archive["errors"])}
     report = {"report_format_version": "chocolate-raw-deduplication-report-1", "layer_version": LAYER_VERSION,
               "dataset_version": version, "counts": counts,
-              "source_role_counts": dict(Counter(row["source_role"] for row in rows)),
+              "processing_runtime": runtime,
+              "source_role_counts": tables.counts(rows, "source_role"),
               "deduplication": {"scope": "within_selling_source_only", "rule": RULE,
                                 "duplicate_groups": groups, "cross_source_merges": 0},
               "unsupported_records": archive["unsupported"], "archive_errors": archive["errors"],
@@ -225,14 +228,14 @@ def build_deduplicated_dataset(archive_root, output):
     files = {"quality-report.json": json_bytes(report)}
     for name, values in (("products.jsonl", rows), ("listing-aliases.jsonl", alias_rows)):
         files[name] = b"".join((json.dumps(row, sort_keys=True, ensure_ascii=True, allow_nan=False) + "\n").encode() for row in values)
-    for role in ("brand", "retail", "unknown"):
+    for role, partition in tables.partitions(rows).items():
         files[role + "/products.jsonl"] = b"".join(
             (json.dumps(row, sort_keys=True, ensure_ascii=True, allow_nan=False) + "\n").encode()
-            for row in rows if row["source_role"] == role)
+            for row in partition)
     manifest = {"manifest_format_version": "chocolate-raw-deduplication-manifest-1", "layer_version": LAYER_VERSION,
                 "dataset_version": version, "source_layer": "raw_collections", "source_archive_format": ARCHIVE_VERSION,
                 "input_reference_base": "supplied collections root", "inputs": archive["inputs"],
-                "implementation_sha256": implementation, "deduplication_rule": RULE,
+                "implementation_sha256": implementation, "processing_runtime": runtime, "deduplication_rule": RULE,
                 "managed_files": {name: {"sha256": hashlib.sha256(data).hexdigest(), "byte_length": len(data)} for name, data in files.items()}}
     files["manifest.json"] = json_bytes(manifest)
     output.mkdir(parents=True, exist_ok=True)

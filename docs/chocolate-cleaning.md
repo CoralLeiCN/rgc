@@ -234,3 +234,13 @@ python3 -B scripts/check_documentation.py
 ```
 
 Current canonical processing leads from raw through combined Silver to immutable Parquet [Gold](chocolate-gold.md). Compatibility cleanup uses `uk-chocolate-clean-2` and the finalized `regular-consumer-price-1` target: reject unsupported regular or tax-inclusive basis without substituting displayed offers. The [schema guide](chocolate-schema.md) owns reusable family mappings; these preserve seller listings and require independent evidence review.
+
+## Table backend provenance
+
+The compatibility CLI uses the standard-library table backend. Shared helpers
+also accept an explicit pandas backend for the combined silver build; grouping
+and partitions retain seller identity and original captures. Backend runtime and
+the shared table helper enter the deduplication fingerprint. Cleanup fingerprints
+include the shared helper and fixed-target model helper. The
+[silver guide](chocolate-silver.md#deduplication-within-each-seller) owns the
+canonical pandas workflow.

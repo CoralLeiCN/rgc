@@ -196,7 +196,8 @@ def normalized(price, weight):
 def build_dataset(archive_root, output, reviews=None):
     implementation_paths = tuple(Path(__file__).with_name(name) for name in
                                  ("core.py", "adapters.py", "deduplication.py", "sources.py"))
-    implementation_paths += (Path(__file__).resolve().parents[1] / "chocolate_model.py",)
+    implementation_paths += tuple(Path(__file__).resolve().parents[1] / name
+                                  for name in ("chocolate_model.py", "chocolate_tables.py"))
     implementation = {path.name: hashlib.sha256(path.read_bytes()).hexdigest() for path in implementation_paths}
     root = Path(archive_root).expanduser().resolve()
     output = Path(output).expanduser().resolve()

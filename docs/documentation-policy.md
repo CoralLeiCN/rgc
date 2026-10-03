@@ -121,7 +121,10 @@ generated quality report for semantic accuracy and evidence review. Verify
 execution after copying a package and native client installation independently.
 
 pytest is the repository test framework and Ruff checks Python source and tests.
-Their development versions and dependencies are pinned in `uv.lock`. A full
+Their development versions and dependencies are pinned in `uv.lock`, including
+pandas 2.2.3 for canonical chocolate silver and schema analysis. The script-local
+metadata also supports `uv run --script`; the guard remains usable offline
+without pandas or contract caches. A full
 verification uses `uv run pytest`; focused commands above select the affected
 suite. Runtime plugins continue to use the standard library. Verify populated
 contract caches with `python3 -B scripts/fetch_contracts.py --all --offline`.

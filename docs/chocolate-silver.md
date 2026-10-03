@@ -36,10 +36,11 @@ current feature mapping; raw can collect evidence beyond that taxonomy.
 
 ## Build silver
 
-Run from the repository root with Python 3.9 or later:
+Run from the repository root with Python 3.9 or later. The script pins pandas
+2.2.3 for execution through `uv`:
 
 ```sh
-python3 -B scripts/build_chocolate_silver.py \
+uv run --script scripts/build_chocolate_silver.py \
   --archive-root data/collections \
   --output data/silver/chocolate/uk
 ```
@@ -72,6 +73,19 @@ silver dataset version, derived from content. Deduplication and standardization
 reuse internal components. Source collection, regression fitting and publication
 are separate operations; see [compatibility helpers](#compatibility-helpers-and-documentation-maintenance)
 for optional intermediate outputs.
+
+The canonical build uses pandas 2.2.3 for exact seller grouping, stable role
+partitions, coverage/exclusion counts and derived row envelopes. Original source
+values remain opaque Python objects; nullable seller keys keep their meaning.
+The combined API defaults to pandas and the CLI selects it explicitly. Component
+builders default to the standard library for compatibility; the portable package
+keeps its independent runtime. Install the locked development environment for
+direct Python calls, or use the CLI's PEP 723 dependency metadata through `uv`.
+
+`processing_runtime` records backend, Python implementation/full version and
+pandas/NumPy versions in the manifest and quality report. Runtime and table-helper
+hashes contribute to derived fingerprints. A changed runtime produces a new
+snapshot without rewriting original captures or previously published outputs.
 
 ## Deduplication within each seller
 
@@ -145,6 +159,18 @@ consistency. Extraction coverage and model readiness are reported separately.
 The CLI exits 0 for a complete snapshot, 1 for a partial snapshot with reported input gaps,
 and 2 if the build cannot complete. Inspect report coverage and readiness even
 when the exit code is 0.
+
+## Published pandas snapshot
+
+The [publication receipt](analysis/chocolate-pandas-publication-2026-10-03.json)
+records the verified `silver-2f97cfe8b8c50ecfa79ebf46` snapshot at immutable dataset
+revision `c1725ff8bbeef8f78c7182fd67af5bde75ef65ef` and its analysis reports at
+`db32e43635793a0edd1308df4bd0dee112ddbe44`. The snapshot and reports retain their
+original input, runtime, implementation and contract hashes. They predate the
+current family mapping and `chocolate-pricing-design-3` release, and do not
+represent a rebuild with those newer rules. All 23 snapshot files and two reports
+passed remote content checks; original raw exports and earlier snapshots were
+preserved. Rebuilds using current contracts produce their own derived versions.
 
 ## Review, training and interpretation boundaries
 

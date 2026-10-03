@@ -43,6 +43,9 @@ Canonical requirements: [specification](../spec.md),
 | Train experimental OLS from verified Gold with family holdout and bootstrap uncertainty. | `scripts/chocolate_regression.py`, `scripts/train_chocolate_model.py`, model design and tests | Implemented and fixture fits/failure gates verified. Real Gold has zero eligible observations; no model fitted or released. |
 | Reconcile Gold/modeling work with main and prepare the dataset contract release before landing. | `docs/analysis/gold-modeling-contract-release.md`, integration code/tests and dataset references | Combined-main checks and corpus rebuild complete. User approved the refreshed exact release, published at `d549ad91d63fb452af605df4a939c4e1f0a59bfa` with all 16 remote files verified. Real-pin tests, offline caches, Ruff and documentation checks pass; landing uses one local main squash commit. |
 
+| Use pandas for canonical chocolate grouping, partitions, counts and row envelopes. | `scripts/chocolate_tables.py`, shared components, silver CLI and tests | Implemented; integrated with main's family mappings, fixed-price target, Gold and locked pytest/Ruff development environment. Integration verification is recorded below. |
+| Analyze every chocolate schema attribute and publish verified derived output. | `scripts/analyze_chocolate_schema.py`, reports and publication receipt | Verified original pandas snapshot and 103-field analysis published at immutable revisions. Current contracts retain the subsequent Gold/family/target release. |
+
 ## Risks and controls
 
 Preserve raw evidence and seller identity independently of brand. Keep unsupported
@@ -127,3 +130,77 @@ behavior. Native client installation needs separate verification.
    versioned diffs, tests and impact review within the task; accepted changes
    rebuild history with stable seller identities and immutable data/model snapshots.
 5. Research methods for value for money before implementing scoring.
+
+### Original pandas verification and publication
+
+This proof predates main's later family taxonomy and fixed-target contract
+release. It describes the preserved immutable outputs and the original runtime,
+rather than the merged implementation or current dataset contracts.
+
+
+The original pandas build selected pandas for seller grouping, role partitions,
+coverage/exclusion aggregation and top-level derived envelopes.
+Component builders retain a standard-library default; the portable processing
+package remains self-contained. `processing_runtime` records backend, Python
+implementation/full version and pandas/NumPy versions in report, manifest and
+derived fingerprints. Original captures and versioned analytical contracts
+retain their existing meanings. Both canonical and analysis scripts pin pandas
+2.2.3 in PEP 723 metadata; direct Python callers must install that dependency.
+
+The analysis helper uses an explicitly supplied local silver snapshot, verifies
+product/profile/model-design hashes and reports every profile field with
+separate evidence/review states, exact selected-value frequencies, source
+coverage and numeric quantiles by scope and qualifier. It records caller-supplied
+immutable dataset provenance rather than fetching evidence. Attribute, group,
+source and value counts for all 103 fields in the inspected snapshot match the
+preceding report exactly.
+
+Verification completed on 2026-10-03 using CPython 3.12.14, pandas 2.2.3 and
+NumPy 2.3.5. All 184 repository script tests, 13 collection-plugin tests and 75
+portable processing-plugin tests passed (272 total). The full corpus build
+completed with `complete_snapshot`, no archive/extraction errors and
+`release_ready=false`. The previous implementation produced
+`silver-eef578e917ea00f9bd59f7a8`; the pandas implementation produced
+`silver-2f97cfe8b8c50ecfa79ebf46`. Both used the same raw snapshot,
+`raw-snapshot-70239771976a75a48c5d99db`.
+
+Strict canonical-JSON record multiset comparisons matched across all 17 JSONL
+tables after removing only the top-level `dataset_version` and
+`source_dataset_version` fields. Every nested original capture remained
+identical. Quality-report statistics and limitations matched after removing
+runtime/version metadata. All 22 managed output hashes and byte lengths were
+verified, and all four copied contracts matched byte for byte. A repeat build
+reproduced the same pandas dataset version, byte-identical manifest and all
+managed file hashes and lengths. The
+[verification record](../analysis/chocolate-pandas-processing-verification-2026-10-03.json)
+records these results. On 2026-10-03, the verified pandas output was published
+as an [immutable silver snapshot](https://huggingface.co/datasets/CoralLeiCN/rgc-collections/tree/c1725ff8bbeef8f78c7182fd67af5bde75ef65ef/silver/chocolate/uk/silver-2f97cfe8b8c50ecfa79ebf46) at dataset revision
+`c1725ff8bbeef8f78c7182fd67af5bde75ef65ef`. The latest pointer selects this snapshot.
+The [schema analysis](https://huggingface.co/datasets/CoralLeiCN/rgc-collections/blob/db32e43635793a0edd1308df4bd0dee112ddbe44/analysis/chocolate/uk/silver-2f97cfe8b8c50ecfa79ebf46/schema-popularity.json) and pandas verification report were published
+at revision `db32e43635793a0edd1308df4bd0dee112ddbe44`; the analysis records the snapshot
+revision and exact input hashes. Its 103-field statistics match the previous
+analysis, with 24 attributes populated and 79 having zero known-value coverage.
+
+All 23 snapshot files and both analysis reports passed remote size/content-hash
+checks; analysis reports and selected metadata were also downloaded and checked
+with SHA-256. Raw exports, previous snapshots and contract bytes were preserved.
+Hugging Face appended six LFS storage rules for new snapshot paths while retaining
+all existing rules. The [publication receipt](../analysis/chocolate-pandas-publication-2026-10-03.json)
+records both immutable revisions and per-file hashes. Contract semantic versions
+and existing immutable manifest pins remain unchanged. The snapshot remains
+`release_ready=false`; publication does not resolve extraction or review gaps.
+
+
+### Pandas integration with current main
+
+The pandas source commit was merged with main's Gold, reviewed family mappings,
+regular consumer-price policy, pytest and Ruff changes. The merged build retains
+`family_mappings` alongside the pandas backend, identity-mapping fingerprints,
+managed family registries/review packets and current immutable contract pins.
+The original 272-test report remains historical; the integration uses the locked
+CPython 3.13 development environment with pandas 2.2.3, NumPy 2.2.6 and PyArrow
+21.0.0. All 391 pytest cases passed, including exact pandas/standard-library
+record parity, evidence preservation, family identity and Silver/Gold/training
+gates. Ruff, the documentation guard, whitespace checks and all three verified
+contract caches passed. Both parents' existing capabilities and contract pins
+are retained for the local squash landing.

@@ -1,0 +1,143 @@
+{
+  "publication_date": "2026-10-03",
+  "repo_id": "CoralLeiCN/rgc-collections",
+  "previous_revision": "d4ebef3df5ac17145e8dbd2f8a7ae2b10c0afe70",
+  "snapshot_revision": "c1725ff8bbeef8f78c7182fd67af5bde75ef65ef",
+  "analysis_revision": "db32e43635793a0edd1308df4bd0dee112ddbe44",
+  "snapshot_prefix": "silver/chocolate/uk/silver-2f97cfe8b8c50ecfa79ebf46",
+  "dataset_version": "silver-2f97cfe8b8c50ecfa79ebf46",
+  "source_dataset_version": "raw-snapshot-70239771976a75a48c5d99db",
+  "processing_runtime": {
+    "numpy_version": "2.3.5",
+    "pandas_version": "2.2.3",
+    "python_implementation": "CPython",
+    "python_version": "3.12.14",
+    "table_backend": "pandas"
+  },
+  "status": "complete_snapshot",
+  "release_ready": false,
+  "snapshot_files": {
+    "assertions.jsonl": {
+      "sha256": "ccd4fa37691191c81221a6b11bfc1fd2091cb071c6b91beb2172405fef1dc727",
+      "byte_length": 30346134
+    },
+    "brand/prices.jsonl": {
+      "sha256": "cedd59dd56d50ee4d0f3719355536045ee29bbb9707209f24274f3ceeec0c88c",
+      "byte_length": 1782132
+    },
+    "brand/products.jsonl": {
+      "sha256": "63b1f846829cc6fdc9f35b606397cf8d85316da043712f03454a7453e2b5e430",
+      "byte_length": 17102815
+    },
+    "brand/source-listings.jsonl": {
+      "sha256": "2417460a02d91b667551bfa6780fbe74108b51001cea9b5597994c9e9cb4d017",
+      "byte_length": 96584646
+    },
+    "listing-aliases.jsonl": {
+      "sha256": "d9b13bb869f36212a9c23bf0c656aacb0ce880efefa49fc1f8be16789346bf86",
+      "byte_length": 1326275
+    },
+    "model-design.json": {
+      "sha256": "ff5d0c11d90268ba91899a181c7b0c49bd6cd12f77a108090b855d2d78c16e48",
+      "byte_length": 20374
+    },
+    "model-inputs.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_length": 0
+    },
+    "prices.jsonl": {
+      "sha256": "8b3b26a39c0ea46ebfb85cc8cfbb3a3c06f1f0ed5586970db68d815fbe9731af",
+      "byte_length": 9414982
+    },
+    "product.schema.json": {
+      "sha256": "555074d78b34295115d815ffd236867f44d5aefc0f5e8364d3ad4d606cd0aa5b",
+      "byte_length": 327232
+    },
+    "products.jsonl": {
+      "sha256": "fd3e942568e113f1b81e57d23b43a262e2b56424bde48e612f3f05053aeb6a3e",
+      "byte_length": 92179640
+    },
+    "profile.json": {
+      "sha256": "2052755d0602ca684cf77f026a39e75d7b97257903435a70959991145760d8fe",
+      "byte_length": 64643
+    },
+    "quality-report.json": {
+      "sha256": "a18025ed60f3a03b2f337ce845b5573db10f1044f1c123099c7ac90510d79ecd",
+      "byte_length": 5505
+    },
+    "retail/prices.jsonl": {
+      "sha256": "ecd9ba0b80431c27df706c2dcaf018c94e87faec6f01bec251470bd621d7792b",
+      "byte_length": 7632850
+    },
+    "retail/products.jsonl": {
+      "sha256": "e4ee3122cee96da0ecf5c97bbcf3e6f449375fa0dd36158648ca456adef242d0",
+      "byte_length": 29965473
+    },
+    "retail/source-listings.jsonl": {
+      "sha256": "ee0eee4f844bf624d8680806514891cc9060cb5751217099cebff54f304baea2",
+      "byte_length": 117998759
+    },
+    "review-queue.jsonl": {
+      "sha256": "54b507746da212990afb0dae7ea22a3e17bfcc4e1eb99475e97b60127915fb2e",
+      "byte_length": 90083896
+    },
+    "source-listings.jsonl": {
+      "sha256": "a5b46fa82f7e1070e499790e2eec860964791595515549e2b5a96d80e483b716",
+      "byte_length": 541629596
+    },
+    "source-mappings.json": {
+      "sha256": "ca66ee75f49b2d2f6914b956bfe9b1ab48154e5c2b12896cee6fa25e44295ea4",
+      "byte_length": 17040
+    },
+    "training-candidates.jsonl": {
+      "sha256": "866582fa94f9a15b48fd2577f72325bb3b852a4a9edf9e558d85e1433f96f9eb",
+      "byte_length": 4919317
+    },
+    "unknown/prices.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_length": 0
+    },
+    "unknown/products.jsonl": {
+      "sha256": "59ec4c89156ad853260b0701e3483aa98042fa55a1a904f020963c312512e128",
+      "byte_length": 45111352
+    },
+    "unknown/source-listings.jsonl": {
+      "sha256": "08557b5a19923472e47e46347b89f8fa8c6ef15283ec9e7aac4cf27671d5362a",
+      "byte_length": 327046191
+    },
+    "manifest.json": {
+      "sha256": "7005d19bf34049ce11ccebf3d6ecd517e1495c0a8fefd64b9be85fa701cb77bc",
+      "byte_length": 1920595
+    }
+  },
+  "analysis_files": {
+    "analysis/chocolate/uk/silver-2f97cfe8b8c50ecfa79ebf46/schema-popularity.json": {
+      "sha256": "74b9cc7d3d7741231cb9b78004f9faea3226a2ff511c59ce73595f16f64d5972",
+      "byte_length": 444911
+    },
+    "analysis/chocolate/uk/silver-2f97cfe8b8c50ecfa79ebf46/pandas-verification.json": {
+      "sha256": "6a53ff1c712dd67e520d7d3f7bf3fce4c1e413ac6ce0da2cdc2e158e73f4d0d8",
+      "byte_length": 2104
+    }
+  },
+  "verification": {
+    "all_23_snapshot_file_sizes_and_content_hashes_match": true,
+    "all_analysis_file_bytes_downloaded_and_sha256_verified": true,
+    "latest_pointer_and_manifest_downloaded_and_sha256_verified": true,
+    "prior_raw_contracts_and_snapshot_files_preserved": true,
+    "gitattributes_existing_rules_preserved": true,
+    "automatic_lfs_rules_added": [
+      "silver/chocolate/uk/silver-2f97cfe8b8c50ecfa79ebf46/assertions.jsonl filter=lfs diff=lfs merge=lfs -text",
+      "silver/chocolate/uk/silver-2f97cfe8b8c50ecfa79ebf46/brand/source-listings.jsonl filter=lfs diff=lfs merge=lfs -text",
+      "silver/chocolate/uk/silver-2f97cfe8b8c50ecfa79ebf46/retail/source-listings.jsonl filter=lfs diff=lfs merge=lfs -text",
+      "silver/chocolate/uk/silver-2f97cfe8b8c50ecfa79ebf46/review-queue.jsonl filter=lfs diff=lfs merge=lfs -text",
+      "silver/chocolate/uk/silver-2f97cfe8b8c50ecfa79ebf46/source-listings.jsonl filter=lfs diff=lfs merge=lfs -text",
+      "silver/chocolate/uk/silver-2f97cfe8b8c50ecfa79ebf46/unknown/source-listings.jsonl filter=lfs diff=lfs merge=lfs -text"
+    ],
+    "unexpected_paths": [],
+    "final_repository_file_count": 70,
+    "analysis_statistics_match_prior_103_field_report": true
+  },
+  "contract_note": "Contract bytes and semantic versions are unchanged; existing immutable contract references remain valid.",
+  "provenance_note": "Schema analysis reads the verified pandas silver snapshot at snapshot_revision. The original-code parity baseline is local verification data. Publication adds an immutable snapshot and reports, and updates the latest pointer and dataset card."
+}

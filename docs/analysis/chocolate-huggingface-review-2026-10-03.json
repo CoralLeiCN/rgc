@@ -1,0 +1,945 @@
+{
+  "review_date": "2026-10-03",
+  "review_scope": "Read-only audit of the current public Hugging Face chocolate raw export and silver snapshot. Structural checks cover all active records; semantic checks cover specified extraction patterns and targeted evidence examples. No dataset, contract, mapping, review, or pipeline changes were applied.",
+  "dataset": {
+    "repo_id": "CoralLeiCN/rgc-collections",
+    "revision": "d4ebef3df5ac17145e8dbd2f8a7ae2b10c0afe70",
+    "revision_url": "https://huggingface.co/datasets/CoralLeiCN/rgc-collections/tree/d4ebef3df5ac17145e8dbd2f8a7ae2b10c0afe70",
+    "silver_dataset_version": "silver-6e246156b7292dd4bb49ebf0",
+    "raw_source_dataset_version": "raw-snapshot-70239771976a75a48c5d99db",
+    "schema_version": "chocolate-schema-1",
+    "quality_report_url": "https://huggingface.co/datasets/CoralLeiCN/rgc-collections/blob/d4ebef3df5ac17145e8dbd2f8a7ae2b10c0afe70/silver/chocolate/uk/silver-6e246156b7292dd4bb49ebf0/quality-report.json",
+    "manifest_url": "https://huggingface.co/datasets/CoralLeiCN/rgc-collections/blob/d4ebef3df5ac17145e8dbd2f8a7ae2b10c0afe70/silver/chocolate/uk/silver-6e246156b7292dd4bb49ebf0/manifest.json",
+    "export_manifest_url": "https://huggingface.co/datasets/CoralLeiCN/rgc-collections/blob/d4ebef3df5ac17145e8dbd2f8a7ae2b10c0afe70/export-manifest.json"
+  },
+  "headline": "Raw publication and silver structural integrity passed. Source-format coverage gaps and confirmed semantic extraction defects require cleanup in derived processing. No blanket row removal or deduplication is justified.",
+  "counts": {
+    "accepted_raw_listing_folders": 3743,
+    "archive_errors": 0,
+    "assertions": 45944,
+    "captures": 4347,
+    "duplicate_source_listings_removed": 0,
+    "eligible_model_inputs": 0,
+    "extraction_errors": 0,
+    "listings": 3743,
+    "price_observations": 2134,
+    "product_folders": 3743,
+    "review_items": 373859,
+    "tracked_attributes": 103,
+    "training_candidates": 2134,
+    "unmapped_claims": 2033,
+    "unsupported_records": 0,
+    "selling_sources": 24,
+    "listings_with_silver_prices": 1839,
+    "listings_without_silver_prices": 1904,
+    "attributes_with_any_known_values": 24,
+    "unique_evidence_pointers_resolved": 32636,
+    "latest_raw_identity_brand_missing": 815
+  },
+  "integrity_checks": {
+    "raw_bundle_sha256": "b95dfe3e0963bd59ffb82f07febd2c004827351d4e9c11c264de115362f4cbaa",
+    "raw_index_sha256": "e319925df678e97ea487c709794ea256b0cdd6eb85cf608459efe5b1b27754c2",
+    "export_manifest_sha256": "f85def5f40c831a79fdfb9e4e300105785a4fa29d3e2a009128b1ffe25380f04",
+    "raw_bundle_included_files_verified": 22372,
+    "raw_bundle_included_bytes_verified": 3608764602,
+    "raw_bundle_member_mismatches": 0,
+    "raw_history_capture_mismatches": 0,
+    "raw_index_projection_mismatches": 0,
+    "silver_manifest_sha256": "5894687c00a9096db98b524f76d4a23025cdc8fd6f6b3d114be9e494b2380284",
+    "downloaded_silver_files_verified": {
+      "assertions.jsonl": {
+        "byte_length": 30346134,
+        "sha256": "760d16c7a07aa867a6c10c6c44afc1823995d54713f414564c41c7b6fbe2e2e1"
+      },
+      "listing-aliases.jsonl": {
+        "byte_length": 1326275,
+        "sha256": "0560b544d30838f32ee082bdc7d30b8653d64cbbf2bd5b4c370bb04909bad839"
+      },
+      "model-design.json": {
+        "byte_length": 20374,
+        "sha256": "ff5d0c11d90268ba91899a181c7b0c49bd6cd12f77a108090b855d2d78c16e48"
+      },
+      "model-inputs.jsonl": {
+        "byte_length": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "prices.jsonl": {
+        "byte_length": 9414982,
+        "sha256": "6140cefea256891b773c9d698b76d748fbc7ccb12efd21b21c5ff8d6d62ff547"
+      },
+      "product.schema.json": {
+        "byte_length": 327232,
+        "sha256": "555074d78b34295115d815ffd236867f44d5aefc0f5e8364d3ad4d606cd0aa5b"
+      },
+      "products.jsonl": {
+        "byte_length": 92179640,
+        "sha256": "b79f3e93f1163a3ec26a56a133b237a667272c8d9acecc1184d752868d631666"
+      },
+      "profile.json": {
+        "byte_length": 64643,
+        "sha256": "2052755d0602ca684cf77f026a39e75d7b97257903435a70959991145760d8fe"
+      },
+      "quality-report.json": {
+        "byte_length": 5310,
+        "sha256": "c23818da34f75a1c2fc4ef89a9f25b320920b9fba908b8bc44529638e6053d8c"
+      },
+      "review-queue.jsonl": {
+        "byte_length": 90083896,
+        "sha256": "0caab9af65e2f98a35348ca47d039753e8c69b6759da6f939a3244bc5b7a817f"
+      },
+      "source-listings.jsonl": {
+        "byte_length": 541629596,
+        "sha256": "dd550b46bea8f361ea30eb1fc5abfd9c9037eb8109cd954f96af0f6bdd21144c"
+      },
+      "source-mappings.json": {
+        "byte_length": 17040,
+        "sha256": "ca66ee75f49b2d2f6914b956bfe9b1ab48154e5c2b12896cee6fa25e44295ea4"
+      },
+      "training-candidates.jsonl": {
+        "byte_length": 4919317,
+        "sha256": "1b5bab9ef29a0d99cdc8934b411aee6a7d85adcbe27b0ad06247af2b54dbbdfc"
+      }
+    },
+    "product_schema_validated_rows": 3743,
+    "product_schema_validation_errors": 0,
+    "primary_key_duplicate_excess": {
+      "products.jsonl": 0,
+      "prices.jsonl": 0,
+      "training-candidates.jsonl": 0,
+      "listing-aliases.jsonl": 0
+    },
+    "exact_duplicate_seller_identity_excess": 0,
+    "missing_referenced_listing_ids": {
+      "products.jsonl": [],
+      "prices.jsonl": [],
+      "training-candidates.jsonl": [],
+      "listing-aliases.jsonl": [],
+      "assertions.jsonl": [],
+      "review-queue.jsonl": []
+    },
+    "invalid_evidence_pointers": [],
+    "capture_identity_errors": [],
+    "quality_report_count_mismatches": [],
+    "normalization_arithmetic_failures": 0,
+    "note": "The locally preserved raw export bundle was reused only after its full SHA-256 matched the newly downloaded immutable public export manifest. Seller partition copies were not separately downloaded; parent tables and all four copied contracts were verified."
+  },
+  "source_listing_counts": {
+    "asda": 23,
+    "cadbury-gifts-direct": 1268,
+    "chococo": 167,
+    "chocolarder": 43,
+    "chocolate-co-uk": 86,
+    "chocolate-shop": 208,
+    "chocolate-trading-co": 241,
+    "cocoa-runners": 5,
+    "coop": 11,
+    "divine": 57,
+    "firetree": 53,
+    "fortnum-mason": 127,
+    "lindt-uk": 56,
+    "love-cocoa": 30,
+    "montezumas": 91,
+    "moo-free": 74,
+    "morrisons": 51,
+    "nomo": 60,
+    "ocado": 301,
+    "pump-street": 66,
+    "sainsburys": 64,
+    "seed-and-bean": 13,
+    "tonys-uk": 237,
+    "waitrose": 411
+  },
+  "source_role_counts": {
+    "unknown": 1899,
+    "retail": 1173,
+    "brand": 671
+  },
+  "known_attribute_listing_counts": {
+    "certifications.fair_trade_claim": 1,
+    "certifications.fairtrade_claim": 142,
+    "certifications.organic_claim": 183,
+    "composition.allergen_text": 300,
+    "composition.chocolate_type": 1455,
+    "composition.cocoa_percentage": 719,
+    "composition.ingredients_text": 795,
+    "composition.may_contain_nuts_presence": 566,
+    "composition.nuts_presence": 146,
+    "dietary.vegan_claim": 411,
+    "identity.brand": 2928,
+    "identity.gtin": 1294,
+    "identity.name": 3743,
+    "identity.product_group": 3301,
+    "identity.retailer": 3743,
+    "identity.sku": 957,
+    "identity.source_product_id": 3693,
+    "identity.source_role": 1844,
+    "identity.source_variant_id": 1551,
+    "identity.variant_name": 295,
+    "marketing.claim_text": 307,
+    "nutrition.source_text": 129,
+    "quantity.pack_count": 73,
+    "quantity.total_edible_weight_g": 1813
+  },
+  "conflicting_attribute_listing_counts": {
+    "composition.allergen_text": 330,
+    "composition.cocoa_percentage": 103,
+    "composition.ingredients_text": 119,
+    "marketing.claim_text": 529,
+    "nutrition.source_text": 278,
+    "quantity.total_edible_weight_g": 101
+  },
+  "cleanup_priorities": [
+    {
+      "priority": 1,
+      "issue": "Nutrition quantities are interpreted as selling-unit mass.",
+      "status": "confirmed_parser_defect",
+      "affected_listings": 101,
+      "affected_sources": {
+        "moo-free": 70,
+        "nomo": 31
+      },
+      "evidence": {
+        "conflicted_listings": 101,
+        "conflicts_with_nutrition_grams_asserted_as_pack_mass": 101,
+        "by_source": {
+          "moo-free": 70,
+          "nomo": 31
+        },
+        "examples": {
+          "moo-free-15018802610563-54991652389251": {
+            "source_key": "moo-free",
+            "nutrient_values_misasserted_as_pack_mass_g": [
+              0.02,
+              1.6,
+              19.7,
+              31.9,
+              42.8,
+              62.3
+            ],
+            "evidence": [
+              {
+                "capture_id": "20261003T081439735671Z-91571548df-000315",
+                "pointer": "/raw_record/information/body_html"
+              }
+            ]
+          },
+          "moo-free-15018802610563-54991652422019": {
+            "source_key": "moo-free",
+            "nutrient_values_misasserted_as_pack_mass_g": [
+              0.02,
+              1.6,
+              19.7,
+              31.9,
+              42.8,
+              62.3
+            ],
+            "evidence": [
+              {
+                "capture_id": "20261003T081439735671Z-91571548df-000316",
+                "pointer": "/raw_record/information/body_html"
+              }
+            ]
+          },
+          "moo-free-15086446412163-55206709789059": {
+            "source_key": "moo-free",
+            "nutrient_values_misasserted_as_pack_mass_g": [
+              0.08,
+              2.2,
+              3.0,
+              18.8,
+              29.9,
+              43.3,
+              63.5
+            ],
+            "evidence": [
+              {
+                "capture_id": "20261003T081439735671Z-91571548df-000266",
+                "pointer": "/raw_record/information/body_html"
+              }
+            ]
+          }
+        },
+        "all_affected_ids": [
+          "moo-free-15018802610563-54991652389251",
+          "moo-free-15018802610563-54991652422019",
+          "moo-free-15086446412163-55206709789059",
+          "moo-free-15358181278083-56351939330435",
+          "moo-free-15358181278083-56351939363203",
+          "moo-free-15360490209667-56367305916803",
+          "moo-free-15360490209667-56367338946947",
+          "moo-free-15365081334147-56384396263811",
+          "moo-free-15365081334147-56384396296579",
+          "moo-free-15365098307971-62465352270211",
+          "moo-free-15365098307971-62465352302979",
+          "moo-free-15567199863171-57140962361731",
+          "moo-free-15567199863171-57140962394499",
+          "moo-free-15620366762371-57307820949891",
+          "moo-free-15620366762371-57307820982659",
+          "moo-free-15620703715715-57308750610819",
+          "moo-free-15620703715715-57308750643587",
+          "moo-free-15857381605763-57666910519683",
+          "moo-free-15857381605763-57666910552451",
+          "moo-free-15884821168515-57741824295299",
+          "moo-free-15884821168515-57741824328067",
+          "moo-free-15964123267459-58034426806659",
+          "moo-free-15964428140931-58035140821379",
+          "moo-free-16003869344131-58164933067139",
+          "moo-free-16259255665027-62427843789187",
+          "moo-free-16259255665027-62427843821955",
+          "moo-free-16269224018307-62459722563971",
+          "moo-free-16269224018307-62459722596739",
+          "moo-free-16270594605443-62464008716675",
+          "moo-free-16270594605443-62464008749443",
+          "moo-free-16270623113603-62464234127747",
+          "moo-free-16270623113603-62464234160515",
+          "moo-free-16270808187267-62465059750275",
+          "moo-free-16344400429443-62683459944835",
+          "moo-free-16344400429443-62683459977603",
+          "moo-free-416110280737-29228368461847",
+          "moo-free-416110280737-40596682113071",
+          "moo-free-4636807692335-47306272440640",
+          "moo-free-4751868493871-32652192088111",
+          "moo-free-4751868493871-32652192120879",
+          "moo-free-4751963422767-32652616794159",
+          "moo-free-4751963422767-32652616826927",
+          "moo-free-4766669537327-32689780424751",
+          "moo-free-4766669537327-32689780457519",
+          "moo-free-4781659160623-40474004488239",
+          "moo-free-4781659160623-40477012492335",
+          "moo-free-4781841383471-40474097025071",
+          "moo-free-4781841383471-40477047816239",
+          "moo-free-4783000780847-40474073890863",
+          "moo-free-4783000780847-40477025665071",
+          "moo-free-4783009857583-32721992810543",
+          "moo-free-4783009857583-32721992843311",
+          "moo-free-6747130298415-39990674260015",
+          "moo-free-6747130298415-41275445641263",
+          "moo-free-6775422550063-40123182678063",
+          "moo-free-6775422550063-40123182710831",
+          "moo-free-6897526931503-40587725733935",
+          "moo-free-7022951596079-40885144911919",
+          "moo-free-7032547409967-40913878941743",
+          "moo-free-7032547409967-41409295974447",
+          "moo-free-7048412692527-41064612167727",
+          "moo-free-8165651218752-44504239079744",
+          "moo-free-8165651218752-44504239112512",
+          "moo-free-8682802970944-46733538066752",
+          "moo-free-8682802970944-46734010548544",
+          "moo-free-8695663296832-46796502466880",
+          "moo-free-8695663296832-46796502499648",
+          "moo-free-9593396101440-49695437062464",
+          "moo-free-9593396101440-49695437095232",
+          "moo-free-9608973320512-49763070804288",
+          "nomo-15166279319931-55592263844219",
+          "nomo-15376417587579-56226618769787",
+          "nomo-15376417587579-56226618802555",
+          "nomo-15425765441915-56386809037179",
+          "nomo-15425768063355-56386817524091",
+          "nomo-15425770389883-56386821882235",
+          "nomo-4762104758408-53555657605499",
+          "nomo-4762104758408-53555657638267",
+          "nomo-4762109313160-55021784400251",
+          "nomo-4762109313160-55021784433019",
+          "nomo-4762110656648-55021798457723",
+          "nomo-4762110656648-55021798490491",
+          "nomo-5141180383368-55021781975419",
+          "nomo-5141180383368-55021782008187",
+          "nomo-6620768960648-55551029772667",
+          "nomo-6620772270216-40651637031048",
+          "nomo-6772151812232-39952492134536",
+          "nomo-7341832634504-53555649773947",
+          "nomo-7341832634504-53555649806715",
+          "nomo-7341872152712-55548094906747",
+          "nomo-7411296927880-41179405516936",
+          "nomo-7412051738760-41180840394888",
+          "nomo-7964928311432-55551016894843",
+          "nomo-8308074217608-53555641581947",
+          "nomo-8308074217608-53555641614715",
+          "nomo-8308113047688-53555646431611",
+          "nomo-8308113047688-53555646464379",
+          "nomo-8311204806792-53555665895803",
+          "nomo-8311204806792-53555665928571",
+          "nomo-8351301206152-42899577634952",
+          "nomo-8351400689800-42899822870664"
+        ]
+      },
+      "recommended_action": "Preserve table structure and section boundaries; exclude nutrient gram amounts from edible pack-mass extraction. Rebuild assertions and prices; retain genuine remaining ambiguity."
+    },
+    {
+      "priority": 1,
+      "issue": "Multipack prices use one component as the denominator.",
+      "status": "two_confirmed_interpretation_errors_plus_review_candidates",
+      "confirmed_examples": [
+        {
+          "listing_id": "moo-free-16242416517507-62363326251395",
+          "name": "Space Rocks Moofreesas (35g) — 3x Bags",
+          "observed_pack_price_gbp": 4.8,
+          "silver_mass_g": 35.0,
+          "silver_displayed_gbp_per_100g": 13.71428571,
+          "component_mass_g": 35,
+          "pack_count_from_selected_variant": 3,
+          "quantity_evidence": [
+            {
+              "capture_id": "20261003T081439735671Z-91571548df-000293",
+              "pointer": "/raw_record/identity/name"
+            }
+          ],
+          "price_evidence": [
+            {
+              "capture_id": "20261003T081439735671Z-91571548df-000293",
+              "pointer": "/raw_record/information/selected_variant/price"
+            }
+          ],
+          "disposition": "Do not modify raw source; correct derived pack interpretation after review.",
+          "evidence_supported_expected_total_mass_g": 105,
+          "proposed_displayed_gbp_per_100g": 4.571428571428571,
+          "formal_review_applied": false
+        },
+        {
+          "listing_id": "moo-free-16242416517507-62363329855875",
+          "name": "Space Rocks Moofreesas (35g) — Case of 20x Bags",
+          "observed_pack_price_gbp": 28.8,
+          "silver_mass_g": 35.0,
+          "silver_displayed_gbp_per_100g": 82.28571429,
+          "component_mass_g": 35,
+          "pack_count_from_selected_variant": 20,
+          "quantity_evidence": [
+            {
+              "capture_id": "20261003T081439735671Z-91571548df-000294",
+              "pointer": "/raw_record/identity/name"
+            }
+          ],
+          "price_evidence": [
+            {
+              "capture_id": "20261003T081439735671Z-91571548df-000294",
+              "pointer": "/raw_record/information/selected_variant/price"
+            }
+          ],
+          "disposition": "Do not modify raw source; correct derived pack interpretation after review.",
+          "evidence_supported_expected_total_mass_g": 700,
+          "proposed_displayed_gbp_per_100g": 4.114285714285714,
+          "formal_review_applied": false
+        }
+      ],
+      "cadbury_outer_pack_review_candidates": 195,
+      "cadbury_review_listing_ids": [
+        "cadbury-gifts-direct-1869",
+        "cadbury-gifts-direct-1871",
+        "cadbury-gifts-direct-1875",
+        "cadbury-gifts-direct-1876",
+        "cadbury-gifts-direct-1901",
+        "cadbury-gifts-direct-1917",
+        "cadbury-gifts-direct-1932",
+        "cadbury-gifts-direct-1956",
+        "cadbury-gifts-direct-2068",
+        "cadbury-gifts-direct-2093",
+        "cadbury-gifts-direct-2135",
+        "cadbury-gifts-direct-2330",
+        "cadbury-gifts-direct-2338",
+        "cadbury-gifts-direct-2346",
+        "cadbury-gifts-direct-2351",
+        "cadbury-gifts-direct-2356",
+        "cadbury-gifts-direct-2357",
+        "cadbury-gifts-direct-2361",
+        "cadbury-gifts-direct-2363",
+        "cadbury-gifts-direct-2365",
+        "cadbury-gifts-direct-2369",
+        "cadbury-gifts-direct-2376",
+        "cadbury-gifts-direct-2378",
+        "cadbury-gifts-direct-2382",
+        "cadbury-gifts-direct-2390",
+        "cadbury-gifts-direct-2391",
+        "cadbury-gifts-direct-2393",
+        "cadbury-gifts-direct-2394",
+        "cadbury-gifts-direct-2395",
+        "cadbury-gifts-direct-2416",
+        "cadbury-gifts-direct-2419",
+        "cadbury-gifts-direct-2421",
+        "cadbury-gifts-direct-2422",
+        "cadbury-gifts-direct-2424",
+        "cadbury-gifts-direct-2425",
+        "cadbury-gifts-direct-2426",
+        "cadbury-gifts-direct-2428",
+        "cadbury-gifts-direct-2429",
+        "cadbury-gifts-direct-2430",
+        "cadbury-gifts-direct-2432",
+        "cadbury-gifts-direct-2433",
+        "cadbury-gifts-direct-2435",
+        "cadbury-gifts-direct-2439",
+        "cadbury-gifts-direct-2441",
+        "cadbury-gifts-direct-2445",
+        "cadbury-gifts-direct-2448",
+        "cadbury-gifts-direct-2449",
+        "cadbury-gifts-direct-2450",
+        "cadbury-gifts-direct-2451",
+        "cadbury-gifts-direct-2452",
+        "cadbury-gifts-direct-2453",
+        "cadbury-gifts-direct-2454",
+        "cadbury-gifts-direct-2455",
+        "cadbury-gifts-direct-2459",
+        "cadbury-gifts-direct-2461",
+        "cadbury-gifts-direct-2462",
+        "cadbury-gifts-direct-2463",
+        "cadbury-gifts-direct-2464",
+        "cadbury-gifts-direct-2465",
+        "cadbury-gifts-direct-2476",
+        "cadbury-gifts-direct-2485",
+        "cadbury-gifts-direct-2500",
+        "cadbury-gifts-direct-2505",
+        "cadbury-gifts-direct-2508",
+        "cadbury-gifts-direct-2520",
+        "cadbury-gifts-direct-2522",
+        "cadbury-gifts-direct-2528",
+        "cadbury-gifts-direct-2558",
+        "cadbury-gifts-direct-2572",
+        "cadbury-gifts-direct-2577",
+        "cadbury-gifts-direct-2599",
+        "cadbury-gifts-direct-2600",
+        "cadbury-gifts-direct-2601",
+        "cadbury-gifts-direct-2629",
+        "cadbury-gifts-direct-2643",
+        "cadbury-gifts-direct-2795",
+        "cadbury-gifts-direct-2812",
+        "cadbury-gifts-direct-2971",
+        "cadbury-gifts-direct-2977",
+        "cadbury-gifts-direct-2981",
+        "cadbury-gifts-direct-3002",
+        "cadbury-gifts-direct-3021",
+        "cadbury-gifts-direct-3145",
+        "cadbury-gifts-direct-3203",
+        "cadbury-gifts-direct-3205",
+        "cadbury-gifts-direct-3222",
+        "cadbury-gifts-direct-3334",
+        "cadbury-gifts-direct-3365",
+        "cadbury-gifts-direct-3367",
+        "cadbury-gifts-direct-3370",
+        "cadbury-gifts-direct-3371",
+        "cadbury-gifts-direct-3372",
+        "cadbury-gifts-direct-3394",
+        "cadbury-gifts-direct-3476",
+        "cadbury-gifts-direct-3552",
+        "cadbury-gifts-direct-3554",
+        "cadbury-gifts-direct-3581",
+        "cadbury-gifts-direct-3584",
+        "cadbury-gifts-direct-3586",
+        "cadbury-gifts-direct-3604",
+        "cadbury-gifts-direct-3727",
+        "cadbury-gifts-direct-3751",
+        "cadbury-gifts-direct-3932",
+        "cadbury-gifts-direct-3989",
+        "cadbury-gifts-direct-4403",
+        "cadbury-gifts-direct-4457",
+        "cadbury-gifts-direct-4565",
+        "cadbury-gifts-direct-4779",
+        "cadbury-gifts-direct-4851",
+        "cadbury-gifts-direct-4875",
+        "cadbury-gifts-direct-4878",
+        "cadbury-gifts-direct-4896",
+        "cadbury-gifts-direct-4899",
+        "cadbury-gifts-direct-5075",
+        "cadbury-gifts-direct-5150",
+        "cadbury-gifts-direct-5285",
+        "cadbury-gifts-direct-5318",
+        "cadbury-gifts-direct-5333",
+        "cadbury-gifts-direct-5812",
+        "cadbury-gifts-direct-5818",
+        "cadbury-gifts-direct-5824",
+        "cadbury-gifts-direct-5827",
+        "cadbury-gifts-direct-5847",
+        "cadbury-gifts-direct-5880",
+        "cadbury-gifts-direct-5886",
+        "cadbury-gifts-direct-5898",
+        "cadbury-gifts-direct-5907",
+        "cadbury-gifts-direct-5916",
+        "cadbury-gifts-direct-5919",
+        "cadbury-gifts-direct-5927",
+        "cadbury-gifts-direct-5945",
+        "cadbury-gifts-direct-5948",
+        "cadbury-gifts-direct-5954",
+        "cadbury-gifts-direct-5960",
+        "cadbury-gifts-direct-5966",
+        "cadbury-gifts-direct-5981",
+        "cadbury-gifts-direct-6170",
+        "cadbury-gifts-direct-7747",
+        "cadbury-gifts-direct-7750",
+        "cadbury-gifts-direct-7753",
+        "cadbury-gifts-direct-8056",
+        "cadbury-gifts-direct-8104",
+        "cadbury-gifts-direct-8302",
+        "cadbury-gifts-direct-8416",
+        "cadbury-gifts-direct-8495",
+        "cadbury-gifts-direct-8513",
+        "cadbury-gifts-direct-8519",
+        "cadbury-gifts-direct-8576",
+        "cadbury-gifts-direct-8578",
+        "cadbury-gifts-direct-8632",
+        "cadbury-gifts-direct-8635",
+        "cadbury-gifts-direct-8644",
+        "cadbury-gifts-direct-8647",
+        "cadbury-gifts-direct-8650",
+        "cadbury-gifts-direct-8711",
+        "cadbury-gifts-direct-8714",
+        "cadbury-gifts-direct-8781",
+        "cadbury-gifts-direct-8857",
+        "cadbury-gifts-direct-8894",
+        "cadbury-gifts-direct-8948",
+        "cadbury-gifts-direct-8960",
+        "cadbury-gifts-direct-8993",
+        "cadbury-gifts-direct-9020",
+        "cadbury-gifts-direct-9023",
+        "cadbury-gifts-direct-9029",
+        "cadbury-gifts-direct-9035",
+        "cadbury-gifts-direct-9038",
+        "cadbury-gifts-direct-9041",
+        "cadbury-gifts-direct-9048",
+        "cadbury-gifts-direct-9063",
+        "cadbury-gifts-direct-9069",
+        "cadbury-gifts-direct-9075",
+        "cadbury-gifts-direct-9110",
+        "cadbury-gifts-direct-9113",
+        "cadbury-gifts-direct-9203",
+        "cadbury-gifts-direct-9212",
+        "cadbury-gifts-direct-9221",
+        "cadbury-gifts-direct-9224",
+        "cadbury-gifts-direct-9227",
+        "cadbury-gifts-direct-9257",
+        "cadbury-gifts-direct-9263",
+        "cadbury-gifts-direct-9278",
+        "cadbury-gifts-direct-9308",
+        "cadbury-gifts-direct-9311",
+        "cadbury-gifts-direct-9320",
+        "cadbury-gifts-direct-9326",
+        "cadbury-gifts-direct-9380",
+        "cadbury-gifts-direct-9383",
+        "cadbury-gifts-direct-9473",
+        "cadbury-gifts-direct-9488",
+        "cadbury-gifts-direct-9546",
+        "cadbury-gifts-direct-9552",
+        "cadbury-gifts-direct-9558",
+        "cadbury-gifts-direct-9573",
+        "cadbury-gifts-direct-9705"
+      ],
+      "recommended_action": "Resolve component mass and selected selling-unit count from the same observation capture. Distinguish total-pack versus per-unit declarations and nested packs; do not multiply every ambiguous title automatically."
+    },
+    {
+      "priority": 2,
+      "issue": "New source identities and structured evidence are unsupported by existing source mappings/adapters.",
+      "status": "confirmed_processing_coverage_gap",
+      "unknown_seller_role_listings": 1899,
+      "unknown_seller_role_sources": {
+        "asda": 23,
+        "cadbury-gifts-direct": 1268,
+        "chocolate-trading-co": 241,
+        "cocoa-runners": 5,
+        "coop": 11,
+        "firetree": 53,
+        "fortnum-mason": 127,
+        "lindt-uk": 56,
+        "morrisons": 51,
+        "sainsburys": 64
+      },
+      "listings_with_structured_price_evidence_but_no_silver_price": 1689,
+      "price_evidence_sources": {
+        "cadbury-gifts-direct": {
+          "listing_count": 1268,
+          "example_ids": [
+            "cadbury-gifts-direct-1869",
+            "cadbury-gifts-direct-1871",
+            "cadbury-gifts-direct-1875"
+          ]
+        },
+        "chocolate-trading-co": {
+          "listing_count": 241,
+          "example_ids": [
+            "chocolate-trading-co-10119-variant-3492",
+            "chocolate-trading-co-10128-variant-3503",
+            "chocolate-trading-co-10129-variant-3504"
+          ],
+          "additional_source_context_counts": {
+            "explicit_incl_VAT": 165,
+            "explicit_in_stock": 175,
+            "explicit_net_mass": 171
+          }
+        },
+        "firetree": {
+          "listing_count": 53,
+          "example_ids": [
+            "firetree-14652881437046-53558417850742",
+            "firetree-14655189877110-53563989033334",
+            "firetree-14859293950326-54835315605878"
+          ]
+        },
+        "fortnum-mason": {
+          "listing_count": 127,
+          "example_ids": [
+            "fortnum-mason-2006798",
+            "fortnum-mason-2006829",
+            "fortnum-mason-2006976"
+          ],
+          "additional_source_context_counts": {
+            "stock_status_0": 127,
+            "explicit_unit_price_string": 126,
+            "stock_is_in_stock_1": 114
+          }
+        }
+      },
+      "cadbury_preserved_ingredient_sections": 1244,
+      "cadbury_preserved_nutrition_sections": 1237,
+      "recommended_action": "Add evidence-backed seller roles and adapters for the recorded source formats, including price, selected quantity, ingredients and nutrition. Preserve original fields and listing identities. Source-field presence requires extraction validation and does not establish model readiness."
+    },
+    {
+      "priority": 3,
+      "issue": "Cocoa and chocolate type lose component/product scope.",
+      "status": "confirmed_parser_and_mapping_defects",
+      "milk_solids_misparsed_as_cocoa_listings": 2,
+      "cocoa_evidence_examples": [
+        {
+          "listing": "chococo-10602653942026-53584171893002",
+          "source": "chococo",
+          "name": "Nothing but Nibs 47% Milk Chocolate Bar with cocoa nibs",
+          "selected_status": "conflict",
+          "selected_value": null,
+          "false_value": 23.0,
+          "source_excerpt": "ract), (6.7%) Ecuador roasted chopped cocoa nibs. 47% (min) cocoa solids 23% milk solids.\nNutritional Information per 100g: En",
+          "pointer": "/raw_record/information/product_page_information/source_sections/0/text",
+          "capture_id": "20261003T081437558349Z-efc34e4da7-000088"
+        },
+        {
+          "listing": "chococo-10602653942026-53584171893002",
+          "source": "chococo",
+          "name": "Nothing but Nibs 47% Milk Chocolate Bar with cocoa nibs",
+          "selected_status": "conflict",
+          "selected_value": null,
+          "false_value": 23.0,
+          "source_excerpt": "ract), (6.7%) Ecuador roasted chopped cocoa nibs. 47% (min) cocoa solids 23% milk solids.\nNutritional Information per 100g: En",
+          "pointer": "/raw_record/information/product_page_information/source_sections/1/text",
+          "capture_id": "20261003T081437558349Z-efc34e4da7-000088"
+        },
+        {
+          "listing": "chococo-10602654597386-53584172548362",
+          "source": "chococo",
+          "name": "Simply The Best Letterbox Bar Gift Set - Bestsellers (6 Bars)",
+          "selected_status": "known",
+          "selected_value": 23.0,
+          "false_value": 23.0,
+          "source_excerpt": "ract), (6.7%) Ecuador roasted chopped cocoa nibs. 47% (min) cocoa solids 23% milk solids.\nNutritional Information per 100g: En",
+          "pointer": "/raw_record/information/product_page_information/source_sections/0/text",
+          "capture_id": "20261003T081437558349Z-efc34e4da7-000138"
+        }
+      ],
+      "explicit_mixed_selections_assigned_one_type": [
+        {
+          "listing": "cadbury-gifts-direct-3105",
+          "source": "cadbury-gifts-direct",
+          "name": "Fry's Collection Milk & Dark Chocolate Gift Bag",
+          "value": "dark",
+          "group": "assorted_box"
+        },
+        {
+          "listing": "cadbury-gifts-direct-3145",
+          "source": "cadbury-gifts-direct",
+          "name": "Fry's Collection Milk & Dark Chocolate Selection Box 249g (Box of 10)",
+          "value": "dark",
+          "group": "assorted_box"
+        },
+        {
+          "listing": "firetree-14864098034038-54846962401654",
+          "source": "firetree",
+          "name": "Signature Milk & Dark Chocolate Letterbox Selection",
+          "value": "dark",
+          "group": "assorted_box"
+        },
+        {
+          "listing": "firetree-15139901505910-55452769943926",
+          "source": "firetree",
+          "name": "Milk & Dark Chocolate Library Set",
+          "value": "dark",
+          "group": "chocolate_pieces"
+        },
+        {
+          "listing": "fortnum-mason-5103887",
+          "source": "fortnum-mason",
+          "name": "Milk & Dark Chocolate Caramels Selection Box, 54g",
+          "value": "dark",
+          "group": "assorted_box"
+        },
+        {
+          "listing": "fortnum-mason-5177113",
+          "source": "fortnum-mason",
+          "name": "Fortnum's Favourites Milk, Dark & White Chocolate Selection, 105g",
+          "value": "white",
+          "group": "assorted_box"
+        },
+        {
+          "listing": "fortnum-mason-5177115",
+          "source": "fortnum-mason",
+          "name": "Fortnum's Favourites Milk, Dark & White Chocolate Selection, 290g",
+          "value": "white",
+          "group": "assorted_box"
+        },
+        {
+          "listing": "fortnum-mason-5177117",
+          "source": "fortnum-mason",
+          "name": "Fortnum's Favourites Milk, Dark & White Chocolate Selection, 525g",
+          "value": "white",
+          "group": "assorted_box"
+        },
+        {
+          "listing": "fortnum-mason-5177118",
+          "source": "fortnum-mason",
+          "name": "Fortnum's Favourites Milk, Dark & White Chocolate Selection, 785g",
+          "value": "white",
+          "group": "assorted_box"
+        },
+        {
+          "listing": "fortnum-mason-5216496",
+          "source": "fortnum-mason",
+          "name": "Milk & Dark Chocolate Selection Box, 250g",
+          "value": "dark",
+          "group": "assorted_box"
+        },
+        {
+          "listing": "fortnum-mason-5216497",
+          "source": "fortnum-mason",
+          "name": "Milk & Dark Chocolate Selection Box, 2.275kg",
+          "value": "dark",
+          "group": "assorted_box"
+        },
+        {
+          "listing": "fortnum-mason-5216499",
+          "source": "fortnum-mason",
+          "name": "Milk & Dark Chocolate Selection Box, 115g",
+          "value": "dark",
+          "group": "assorted_box"
+        },
+        {
+          "listing": "fortnum-mason-5216501",
+          "source": "fortnum-mason",
+          "name": "Milk & Dark Chocolate Selection Box, 470g",
+          "value": "dark",
+          "group": "assorted_box"
+        },
+        {
+          "listing": "fortnum-mason-5216505",
+          "source": "fortnum-mason",
+          "name": "Milk & Dark Chocolate Selection Box, 950g",
+          "value": "dark",
+          "group": "assorted_box"
+        },
+        {
+          "listing": "fortnum-mason-5216510",
+          "source": "fortnum-mason",
+          "name": "Milk & Dark Chocolate Cream Selection, 130g",
+          "value": "dark",
+          "group": "assorted_box"
+        },
+        {
+          "listing": "fortnum-mason-5216511",
+          "source": "fortnum-mason",
+          "name": "Milk & Dark Chocolate Cream Selection, 265g",
+          "value": "dark",
+          "group": "assorted_box"
+        },
+        {
+          "listing": "fortnum-mason-5252011",
+          "source": "fortnum-mason",
+          "name": "Christmas Milk Dark & White Chocolate Selection, 510g",
+          "value": "white",
+          "group": "assorted_box"
+        },
+        {
+          "listing": "montezumas-9444423827791-49320234615119",
+          "source": "montezumas",
+          "name": "Mixed Milk and Dark Chocolate Bar Library",
+          "value": "dark",
+          "group": "bar"
+        },
+        {
+          "listing": "ocado-670494011",
+          "source": "ocado",
+          "name": "Green and Blacks Organic Dark, Milk & White Chocolate Taste Collection",
+          "value": "white",
+          "group": "assorted_box"
+        }
+      ],
+      "recommended_action": "Bind percentage to its named constituent and preserve minimum/exact qualifiers and ingredient/whole-product scope. Treat explicit mixed selections according to the mixed vocabulary rather than selecting the final chocolate-type phrase. Do not assign a component bar percentage to an assorted gift set."
+    },
+    {
+      "priority": 4,
+      "issue": "Equivalent text and nutrition-table rows create avoidable scalar conflicts.",
+      "status": "confirmed_text_processing_issue",
+      "ingredient_conflicts": 119,
+      "ingredient_conflicts_equal_after_lexical_normalization": 73,
+      "additional_shorter_longer_ingredient_excerpt_candidates": 16,
+      "ocado_nutrition_conflict_listings": 253,
+      "recommended_action": "Normalize entities, whitespace and repeated headings only in derived text. Preserve originals and evidence links. Assemble nutrition rows into one bounded table representation. Review excerpt containment before consolidation; retain genuine recipe/allergen differences."
+    },
+    {
+      "priority": 5,
+      "issue": "Regular-price, tax, observation, physical-family and predictor review remain incomplete.",
+      "status": "existing_model_admission_gates_correctly_exclude_rows",
+      "price_and_context_counts": {
+        "products": 3743,
+        "price_observations": 2134,
+        "price_listing_ids": 1839,
+        "products_without_silver_prices": 1904,
+        "training_candidates": 2134,
+        "eligible_candidates": 0,
+        "regular_prices_present": 0,
+        "known_tax_bases": 0,
+        "price_mass_known": 1211,
+        "price_mass_unknown": 822,
+        "price_mass_conflict": 101,
+        "displayed_unit_prices_present": 1210,
+        "promotional_prices": 534,
+        "reference_prices_present": 544,
+        "availability_unknown": 997,
+        "availability_false": 156,
+        "observation_time_missing": 172,
+        "cached_price_observations": 432,
+        "price_observation_duplicates": 0,
+        "normalization_arithmetic_failures": 0
+      },
+      "recommended_action": "Review explicit regular/final price and tax statements, availability and observation dates, then physical-product families and observation-matched predictors. Keep displayed, promotional and reference prices distinct. Do not infer absent dietary/certification claims as false."
+    },
+    {
+      "priority": 6,
+      "issue": "Review queue needs grouped prioritization.",
+      "status": "workflow_recommendation",
+      "review_items": 373859,
+      "reason_counts": {
+        "unknown": 353680,
+        "active_predictor_unreviewed": 16685,
+        "standardization_failed": 1,
+        "unmapped_claim": 2033,
+        "conflict": 1460
+      },
+      "unknown_item_share_percent": 94.6,
+      "recommended_action": "Prioritize confirmed extraction defects and evidence-present mapping gaps, then group missingness by source and attribute. Unknown markers are retained coverage signals, not 353,680 independent source corrections."
+    }
+  ],
+  "small_normalization_flags": {
+    "brand_labels": [
+      "Chocolarder",
+      "Chocolarder "
+    ],
+    "invalid_source_gtin": {
+      "listing_id": "cadbury-gifts-direct-9516",
+      "raw_value": "BEST4318834",
+      "disposition": "Preserve raw value; investigate identifier mapping. Current standardization correctly rejects it as a GTIN."
+    }
+  },
+  "interpretation_and_preservation": [
+    "A listing/variant is not a verified distinct physical product. Cadbury contributes 1,268 listings (33.9%), including seasonal and personalized templates; this is not a representative UK market sample.",
+    "There were no exact seller-identity duplicate groups. Keep variants and offers from different sellers separate; add reviewed physical/family links for analysis and grouped validation.",
+    "All 4,347 captures have completeness not_verified. Structural completeness and schema validity do not establish feature accuracy.",
+    "Image and transfer-cache omissions follow the published export policy; they are not accidental broken files.",
+    "Twenty-four retired product/history records under discovery are intentional historical evidence, not active listings to delete.",
+    "The Hugging Face train split is a loader convention. The eligible modeling table is empty and release_ready remains false."
+  ],
+  "limitations": [
+    "This audit identifies concrete defects and review patterns; it is not an exhaustive manual semantic review of all 103 attributes for every product.",
+    "No formal evidence-review decisions, processing changes, contract revisions, dataset publication, model fitting or market-wide price inference were performed.",
+    "Proposed multipack recalculations are evidence-supported audit findings; they have not been applied as reviewed dataset values."
+  ]
+}

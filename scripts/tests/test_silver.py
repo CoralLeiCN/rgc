@@ -18,6 +18,7 @@ from build_chocolate_silver import main as silver_main
 from chocolate_archive_fixture import ChocolateArchiveFixture
 from chocolate_cleanup.core import pointer_value
 from chocolate_silver import build_silver_dataset
+from chocolate_tables import TableBackend
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -360,6 +361,92 @@ class ChocolateSilverTests:
         second = self.build()
         assert first == second
         assert self.snapshot(self.output) == before
+
+    def test_pandas_and_compatibility_backends_preserve_exact_table_records(self):
+        product = self.product("first-copy")
+        product["identity"]["source_product_id"] = 9007199254740993
+        product["identity"]["source_variant_id"] = None
+        product["information"]["arbitrary_source_fields"] = {
+            "integer": 9007199254740993,
+            "padded_string": "00123",
+            "null": None,
+            "boolean": False,
+            "float": 1.0,
+            "list": [0, None, True],
+            "wording": "Original café.\u2028Preserved\u2029source.\n",
+        }
+        alias = deepcopy(product)
+        alias["product_id"] = "second-copy"
+        alias["identity"]["source_product_id"] = "9007199254740993"
+        self.collect(
+            [
+                product,
+                alias,
+                self.product("brand", "montezumas"),
+                self.product("unknown", "unknown-shop"),
+            ]
+        )
+        pandas_report = self.build()
+        compatible_output = self.base / "silver-stdlib"
+        standard_report = build_silver_dataset(
+            self.archive, compatible_output, offline=True, table_backend="stdlib"
+        )
+        assert pandas_report["counts"] == standard_report["counts"]
+        assert (
+            pandas_report["source_dataset_version"]
+            == standard_report["source_dataset_version"]
+        )
+        assert pandas_report["dataset_version"] != standard_report["dataset_version"]
+
+        def records(path):
+            result = []
+            with path.open(encoding="utf-8") as stream:
+                for line in stream:
+                    row = json.loads(line)
+                    for name in ("dataset_version", "source_dataset_version"):
+                        row.pop(name, None)
+                    result.append(
+                        json.dumps(
+                            row, sort_keys=True, ensure_ascii=True, allow_nan=False
+                        )
+                    )
+            return sorted(result) if path.name == "assertions.jsonl" else result
+
+        for path in self.output.rglob("*.jsonl"):
+            assert records(path) == records(
+                compatible_output / path.relative_to(self.output)
+            )
+        manifest = json.loads((self.output / "manifest.json").read_text())
+        assert manifest["processing_runtime"]["table_backend"] == "pandas"
+        for name in (
+            "pandas_version",
+            "numpy_version",
+            "python_version",
+            "python_implementation",
+        ):
+            assert manifest["processing_runtime"][name]
+        assert "scripts/chocolate_tables.py" in manifest["implementation_sha256"]
+        assert "scripts/build_chocolate_silver.py" in manifest["implementation_sha256"]
+
+    def test_runtime_dependency_changes_version_without_changing_source_or_observation_ids(
+        self,
+    ):
+        self.collect([self.product()])
+        original = self.build()
+        original_ids = [row["observation_id"] for row in self.rows("prices")]
+        original_inputs = self.snapshot(self.archive)
+        changed_runtime = {
+            **original["processing_runtime"],
+            "numpy_version": "fixture-changed-runtime",
+        }
+        with patch.object(TableBackend, "runtime", return_value=changed_runtime):
+            changed = self.build()
+        assert changed["dataset_version"] != original["dataset_version"]
+        assert changed["source_dataset_version"] == original["source_dataset_version"]
+        assert [row["observation_id"] for row in self.rows("prices")] == original_ids
+        assert self.snapshot(self.archive) == original_inputs
+        manifest = json.loads((self.output / "manifest.json").read_text())
+        assert manifest["processing_runtime"] == changed_runtime
 
     def test_reviews_reuse_stable_observation_ids_and_keep_source_snapshot_version(
         self,

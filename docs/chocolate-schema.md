@@ -156,6 +156,73 @@ helper supports compatibility or diagnostics with an explicit persisted
 deduplicated snapshot. Its historical `data/standardized/chocolate/uk` output
 is an optional helper snapshot in the canonical raw/silver workflow.
 
+## Inspect field coverage and value frequencies
+
+
+The historical [published pandas report](https://huggingface.co/datasets/CoralLeiCN/rgc-collections/blob/db32e43635793a0edd1308df4bd0dee112ddbe44/analysis/chocolate/uk/silver-2f97cfe8b8c50ecfa79ebf46/schema-popularity.json) covers all 103 attributes from the
+verified silver snapshot at revision `c1725ff8bbeef8f78c7182fd67af5bde75ef65ef`.
+At that publication revision, both chocolate profiles have matching attribute definitions; frequencies use
+3,743 silver seller listings. Twenty-four attributes have known selected values
+and 79 have zero coverage. The [publication receipt](analysis/chocolate-pandas-publication-2026-10-03.json)
+records the immutable report revision and checksums.
+
+Use the pandas analysis helper with an explicitly supplied local silver snapshot:
+
+```sh
+uv run --script scripts/analyze_chocolate_schema.py \
+  --silver-root /path/to/downloaded/silver \
+  --dataset-revision <immutable-40-character-dataset-commit> \
+  --analysis-date <YYYY-MM-DD> \
+  --output data/analysis/chocolate-schema-popularity.json
+```
+
+Both scripts pin pandas 2.2.3 through PEP 723 metadata. The helper also supports
+direct Python execution when pandas is installed. It performs no download and
+checks product, profile and model-design SHA-256 hashes against the local
+manifest before analysis. The caller must establish which immutable dataset
+commit supplied those inputs; `--dataset-revision` records that commit rather
+than proving a remote association. `--analysis-date` accepts an ISO date and
+defaults to the interpreter's current local date when omitted. Supply it
+explicitly for a reproducible report.
+
+Replace the example input path, commit token and date token with the downloaded
+snapshot directory, its verified 40-character Hugging Face commit and an ISO
+analysis date. `--output` must be outside the supplied silver directory and
+separate from any supplied profile or manifest. The helper writes the result
+atomically after its input checks and analysis complete.
+
+The JSON report describes all attributes in the snapshot's profile:
+
+- Field coverage uses every seller/variant listing as its denominator and keeps
+  `known`, `unknown`, `conflict` and `not_applicable` counts separate. Review
+  counts, field families, source coverage and active model predictors remain
+  explicit, including fields with zero known values.
+- Value frequencies count exact selected values only when status is `known`,
+  with percentages of all listings and of known listings. Controlled categories
+  include allowed values with zero counts; labels and numeric values retain
+  their full exact distributions. String lists are counted as exact lists.
+- Numeric summaries report count, minimum, quartiles, median and maximum using
+  linear-interpolated quantiles, both pooled and separated by scope and
+  qualifier. Component-specific percentages and minimum claims retain those
+  different meanings.
+- Other text and identifier fields show their ten most repeated exact strings,
+  with original-prefix excerpts of up to 240 characters, character counts and
+  exact-value hashes. Repeated text is not a semantic ingredient or claim count.
+- Provenance records input hashes, dataset/silver versions, analysis date,
+  Python/pandas versions and the analysis script hash.
+
+Optional `--portable-profile /path/to/profile.json` verifies a portable chocolate
+profile against `--portable-manifest`, which defaults to the checked-in portable
+chocolate dataset reference. It compares attribute definitions with the baseline
+profile; all frequency counts still use the supplied baseline silver products.
+
+Known values remain subject to extraction and review limitations. Missing claims
+do not mean absence; source imbalance, repeated variants, unresolved aliases,
+pack-basis ambiguities and parser defects can affect counts. The report describes
+collected seller listings, without estimating sales, preferences or UK market
+share. It writes a separate analysis artifact and does not modify evidence,
+classification decisions, contracts or model readiness.
+
 ## Reviews supported by evidence
 
 Use a review file with a separate format from the earlier cleanup reviews:

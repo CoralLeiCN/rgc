@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# /// script
+# requires-python = ">=3.9"
+# dependencies = ["pandas==2.2.3"]
+# ///
 """Build the combined chocolate silver layer directly from preserved raw data."""
 
 import argparse
@@ -22,7 +26,8 @@ def main(argv=None):
     args = parser.parse_args(argv)
     try:
         report = build_silver_dataset(args.archive_root, args.output, reviews=args.reviews,
-                                     schema_root=args.schema_root, offline=args.offline, family_mappings=args.family_mappings)
+                                     schema_root=args.schema_root, offline=args.offline,
+                                     family_mappings=args.family_mappings, table_backend="pandas")
         print(json.dumps({"dataset_version": report["dataset_version"], "status": report["status"],
                           "counts": report["counts"], "release_ready": report["release_ready"],
                           "report_path": str(args.output.resolve() / "quality-report.json")}))

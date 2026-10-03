@@ -1,0 +1,55 @@
+{
+  "original_dataset_version": "silver-eef578e917ea00f9bd59f7a8",
+  "pandas_dataset_version": "silver-2f97cfe8b8c50ecfa79ebf46",
+  "source_dataset_version": "raw-snapshot-70239771976a75a48c5d99db",
+  "processing_runtime": {
+    "numpy_version": "2.3.5",
+    "pandas_version": "2.2.3",
+    "python_implementation": "CPython",
+    "python_version": "3.12.14",
+    "table_backend": "pandas"
+  },
+  "tables_checked": {
+    "assertions.jsonl": 45944,
+    "brand/prices.jsonl": 676,
+    "brand/products.jsonl": 671,
+    "brand/source-listings.jsonl": 671,
+    "listing-aliases.jsonl": 3743,
+    "model-inputs.jsonl": 0,
+    "prices.jsonl": 2134,
+    "products.jsonl": 3743,
+    "retail/prices.jsonl": 1458,
+    "retail/products.jsonl": 1173,
+    "retail/source-listings.jsonl": 1173,
+    "review-queue.jsonl": 373859,
+    "source-listings.jsonl": 3743,
+    "training-candidates.jsonl": 2134,
+    "unknown/prices.jsonl": 0,
+    "unknown/products.jsonl": 1899,
+    "unknown/source-listings.jsonl": 1899
+  },
+  "matched_after_top_level_version_envelopes_removed": true,
+  "report_statistics_and_contract_bytes_match": true,
+  "all_new_output_hashes_verified": true,
+  "analysis_date": "2026-10-03",
+  "repeat_build_manifest_and_all_output_hashes_identical": true,
+  "schema_analysis_reproduces_prior_103_field_statistics": true,
+  "source_dataset_revision": "d4ebef3df5ac17145e8dbd2f8a7ae2b10c0afe70",
+  "comparison_ignored_only_top_level_fields": [
+    "dataset_version",
+    "source_dataset_version"
+  ],
+  "test_suites": {
+    "scripts": {
+      "passed": 184
+    },
+    "category_research": {
+      "passed": 13
+    },
+    "category_processing": {
+      "passed": 75
+    }
+  },
+  "tests_passed": 272,
+  "provenance_note": "The comparison used the complete local raw archive and an original-code checkout from HEAD. Verification preceded publication; the later verified Hugging Face publication is recorded in chocolate-pandas-publication-2026-10-03.json. The original-code comparison baseline remains local verification data."
+}

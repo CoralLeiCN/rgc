@@ -3,7 +3,7 @@
 import hashlib
 import json
 import math
-from collections import Counter, defaultdict
+from collections import defaultdict
 from copy import deepcopy
 from pathlib import Path
 
@@ -17,6 +17,7 @@ from chocolate_model import (
     regular_price_basis_supported,
     validate_target_policy,
 )
+from chocolate_tables import get_table_backend
 from dataset_contracts import SCHEMA_REFERENCE, resolve_contract_root
 
 from .identity import (
@@ -179,11 +180,14 @@ def selected_attribute(name, values, profile):
     return result
 
 
-def build_standardized_dataset(deduplicated_root, output, reviews=None, schema_root=None, offline=False, family_mappings=None):
+def build_standardized_dataset(deduplicated_root, output, reviews=None, schema_root=None, offline=False,
+                               family_mappings=None, *, table_backend="stdlib"):
     source = Path(deduplicated_root).expanduser().resolve()
     output = Path(output).expanduser().resolve()
     if inside(output, source) or inside(source, output):
         raise ValueError("Standardized output must not overlap the deduplicated input.")
+    tables = get_table_backend(table_backend)
+    runtime = tables.runtime()
     schema_root = resolve_contract_root(schema_root, offline=offline)
     profile, mappings, design, contract_hashes = load_contract(schema_root, offline=offline)
     manifest, manifest_hash = verify_snapshot(source)
@@ -195,12 +199,13 @@ def build_standardized_dataset(deduplicated_root, output, reviews=None, schema_r
                             Path(__file__).with_name("identity.py"),
                             ROOT / "scripts/chocolate_cleanup/adapters.py", ROOT / "scripts/chocolate_cleanup/core.py",
                             ROOT / "scripts/chocolate_cleanup/deduplication.py", ROOT / "scripts/chocolate_model.py",
+                            ROOT / "scripts/chocolate_tables.py",
                             ROOT / "scripts/dataset_contracts.py",
                             ROOT / "plugins/category-processing/category_processing/dataset_contracts.py", SCHEMA_REFERENCE]
     implementation = {str(path.relative_to(ROOT)): sha256(path) for path in implementation_paths}
     version = "standardized-" + digest({"input_manifest": manifest_hash, "contracts": contract_hashes,
                                         "reviews": decisions, "identity_mappings": identity_decisions,
-                                        "implementation": implementation})[:24]
+                                        "implementation": implementation, "processing_runtime": runtime})[:24]
     products, assertions, prices, candidates, queue = [], [], [], [], []
     seen_listings, seen_prices = set(), set()
     errors, unmapped_count = [], 0
@@ -473,25 +478,28 @@ def build_standardized_dataset(deduplicated_root, output, reviews=None, schema_r
         raise ValueError("Review IDs do not resolve in this deduplicated dataset.")
     if verify_snapshot(source)[1] != manifest_hash:
         raise RuntimeError("Deduplicated snapshot changed during standardization.")
-    if load_contract(schema_root, offline=offline)[3] != contract_hashes or {str(path.relative_to(ROOT)): sha256(path) for path in implementation_paths} != implementation:
+    if (load_contract(schema_root, offline=offline)[3] != contract_hashes
+            or {str(path.relative_to(ROOT)): sha256(path) for path in implementation_paths} != implementation
+            or tables.runtime() != runtime):
         raise RuntimeError("Standardization contracts or code changed during the build.")
     if load_identity_mappings(family_mappings) != identity_decisions:
         raise RuntimeError("Identity mapping decisions changed during the build.")
-    eligible = [row for row in candidates if row["model_eligible"]]
+    eligible = tables.select(candidates, "model_eligible", True)
     if eligible:
         from chocolate_model import validate_candidates
         validate_candidates(eligible, design)
-    known = Counter(name for row in products for name, attribute in row["attributes"].items() if attribute["status"] == "known")
-    conflicts = Counter(name for row in products for name, attribute in row["attributes"].items() if attribute["status"] == "conflict")
+    known, conflicts = tables.attribute_counts(products)
+    review_counts = tables.counts(queue, "reason")
     report = {"report_format_version": "chocolate-standardization-report-1", "schema_version": SCHEMA_VERSION,
               "dataset_version": version, "source_dataset_version": manifest["dataset_version"],
               "counts": {"listings": len(products), "tracked_attributes": len(profile["attributes"]),
                          "assertions": len(assertions), "price_observations": len(prices),
                          "training_candidates": len(candidates), "eligible_model_inputs": len(eligible),
-                         "unmapped_claims": unmapped_count, "review_items": len(queue), "extraction_errors": len(errors)},
-              "source_role_counts": dict(Counter(row["source_role"] for row in products)),
+                         "unmapped_claims": unmapped_count, "review_items": sum(review_counts.values()), "extraction_errors": len(errors)},
+              "processing_runtime": runtime,
+              "source_role_counts": tables.counts(products, "source_role"),
               "known_attribute_listing_counts": dict(known), "conflicting_attribute_listing_counts": dict(conflicts),
-              "exclusion_counts": dict(Counter(reason for row in candidates for reason in row["exclusion_reasons"])),
+              "exclusion_counts": tables.exclusion_counts(candidates),
               "product_identity_mapping": identity_mapper.summary(),
               "extraction_errors": errors, "release_ready": False,
               "input_status": source_report.get("status", "not_declared"),
@@ -511,13 +519,13 @@ def build_standardized_dataset(deduplicated_root, output, reviews=None, schema_r
                        ("training-candidates", candidates), ("model-inputs", eligible), ("review-queue", queue)):
         files[name + ".jsonl"] = b"".join((json.dumps(row, sort_keys=True, ensure_ascii=True, allow_nan=False) + "\n").encode() for row in rows)
     files["family-review-packets.jsonl"] = b"".join((json.dumps(row, sort_keys=True, ensure_ascii=True, allow_nan=False) + "\n").encode() for row in identity_mapper.packets())
-    for role in ("brand", "retail", "unknown"):
-        for name, rows in (("products", products), ("prices", prices)):
-            files[role + "/" + name + ".jsonl"] = b"".join((json.dumps(row, sort_keys=True, ensure_ascii=True, allow_nan=False) + "\n").encode() for row in rows if row["source_role"] == role)
+    for name, rows in (("products", products), ("prices", prices)):
+        for role, partition in tables.partitions(rows).items():
+            files[role + "/" + name + ".jsonl"] = b"".join((json.dumps(row, sort_keys=True, ensure_ascii=True, allow_nan=False) + "\n").encode() for row in partition)
     output_manifest = {"manifest_format_version": "chocolate-standardized-manifest-1", "schema_version": SCHEMA_VERSION,
                        "dataset_version": version, "source_dataset_version": manifest["dataset_version"],
                        "source_manifest_sha256": manifest_hash, "contract_sha256": contract_hashes,
-                       "implementation_sha256": implementation, "reviews": decisions,
+                       "implementation_sha256": implementation, "processing_runtime": runtime, "reviews": decisions,
                        "identity_mapping_format_version": MAPPING_VERSION,
                        "identity_taxonomy_version": TAXONOMY_VERSION,
                        "identity_mappings_sha256": hashlib.sha256(files["family-mappings.json"]).hexdigest(),

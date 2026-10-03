@@ -55,7 +55,7 @@ typed schema/unit/vocabulary standardization, price normalization, evidence
 review and model eligibility. Build directly from raw:
 
 ```sh
-python3 -B scripts/build_chocolate_silver.py --archive-root data/collections --output data/silver/chocolate/uk
+uv run --script scripts/build_chocolate_silver.py --archive-root data/collections --output data/silver/chocolate/uk
 ```
 
 Silver preserves each shop's listings, separates brand from seller identity/role,
@@ -68,6 +68,27 @@ predictors and model helpers.
 The [plan](docs/lifecycle/plan.md) records current review, price/tax, extraction
 and model validation gaps. Standalone deduplication, standardization and cleanup
 CLIs serve compatibility and diagnostics.
+
+The canonical chocolate build uses pandas 2.2.3. Direct Python callers need
+that dependency installed; `uv sync --locked` installs it for development.
+Runtime provenance and the table helper contribute to derived snapshot versions.
+
+Inspect all-field coverage and exact selected-value frequencies in a downloaded
+silver snapshot:
+
+```sh
+uv run --script scripts/analyze_chocolate_schema.py \
+  --silver-root /path/to/downloaded/silver \
+  --dataset-revision <immutable-40-character-dataset-commit> \
+  --analysis-date <YYYY-MM-DD> \
+  --output data/analysis/chocolate-schema-popularity.json
+```
+
+Replace the input path, commit and date with verified snapshot provenance.
+Output must be outside the input directory. The helper verifies hashes and keeps
+unknown/conflicting/review states separate. Counts describe collected seller
+listings. See the [schema analysis guide](docs/chocolate-schema.md#inspect-field-coverage-and-value-frequencies)
+and [publication receipt](docs/analysis/chocolate-pandas-publication-2026-10-03.json).
 
 Analytical JSON contracts are authoritative in the
 [Hugging Face dataset](https://huggingface.co/datasets/CoralLeiCN/rgc-collections)

@@ -8,6 +8,7 @@ dependencies = []
 
 [dependency-groups]
 dev = [
+    "pandas==2.2.3",
     "numpy==2.2.6",
     "pyarrow==21.0.0",
     "pytest>=8.4,<10",

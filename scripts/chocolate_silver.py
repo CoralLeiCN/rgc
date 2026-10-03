@@ -2,6 +2,7 @@
 
 import hashlib
 import json
+from itertools import islice
 from pathlib import Path
 from tempfile import NamedTemporaryFile, TemporaryDirectory
 
@@ -16,12 +17,14 @@ from chocolate_standardization.pipeline import (
     read_json,
     sha256,
 )
+from chocolate_tables import get_table_backend
 from dataset_contracts import resolve_contract_root
 
 ROOT = Path(__file__).resolve().parents[1]
 LAYER_VERSION = "chocolate-silver-1"
 IMPLEMENTATION_FILES = (
-    "scripts/chocolate_silver.py", "scripts/chocolate_cleanup/deduplication.py",
+    "scripts/chocolate_silver.py", "scripts/build_chocolate_silver.py", "scripts/chocolate_tables.py",
+    "scripts/chocolate_cleanup/deduplication.py",
     "scripts/chocolate_cleanup/sources.py", "scripts/chocolate_cleanup/adapters.py",
     "scripts/chocolate_cleanup/core.py", "scripts/chocolate_standardization/pipeline.py",
     "scripts/chocolate_standardization/values.py", "scripts/chocolate_model.py",
@@ -50,21 +53,20 @@ def confirm_source(root, initial_inventory, inputs):
             raise RuntimeError("Raw archive changed during the silver build: " + item["path"])
 
 
-def table_bytes(path, version, source_version):
+def table_bytes(path, version, source_version, *, table_backend="stdlib"):
     """Rewrite derived row envelopes; leave nested original evidence untouched."""
+    tables = get_table_backend(table_backend)
     lines = []
     with path.open(encoding="utf-8") as stream:
-        for line in stream:
-            row = json.loads(line)
-            row["dataset_version"] = version
-            row["source_dataset_version"] = source_version
-            if "layer_version" in row:
-                row["layer_version"] = LAYER_VERSION
-            lines.append((json.dumps(row, sort_keys=True, ensure_ascii=True, allow_nan=False) + "\n").encode())
+        rows = (json.loads(line) for line in stream)
+        while batch := list(islice(rows, 1000)):
+            for row in tables.envelopes(batch, version, source_version, LAYER_VERSION):
+                lines.append((json.dumps(row, sort_keys=True, ensure_ascii=True, allow_nan=False) + "\n").encode())
     return b"".join(lines)
 
 
-def build_silver_dataset(archive_root, output, reviews=None, schema_root=None, offline=False, family_mappings=None):
+def build_silver_dataset(archive_root, output, reviews=None, schema_root=None, offline=False,
+                         family_mappings=None, *, table_backend="pandas"):
     """Deduplicate seller listings, standardize attributes, and gate model inputs.
 
     Intermediate tables are temporary implementation details. Published evidence
@@ -74,15 +76,18 @@ def build_silver_dataset(archive_root, output, reviews=None, schema_root=None, o
     output = Path(output).expanduser().resolve()
     if inside(output, source) or inside(source, output):
         raise ValueError("Silver output must be separate from the raw archive (no overlap).")
+    tables = get_table_backend(table_backend)
+    runtime = tables.runtime()
     schema_root = resolve_contract_root(schema_root, offline=offline)
     initial_inventory = inventory(source)
     implementation = implementation_hashes()
     with TemporaryDirectory(prefix="chocolate-silver-") as temporary:
         scratch = Path(temporary)
         deduplicated, standardized = scratch / "deduplicated", scratch / "standardized"
-        dedup_report = build_deduplicated_dataset(source, deduplicated)
+        dedup_report = build_deduplicated_dataset(source, deduplicated, table_backend=tables)
         report = build_standardized_dataset(deduplicated, standardized, reviews=reviews,
-                                            schema_root=schema_root, offline=offline, family_mappings=family_mappings)
+                                            schema_root=schema_root, offline=offline,
+                                            family_mappings=family_mappings, table_backend=tables)
         dedup_manifest = read_json(deduplicated / "manifest.json")
         standard_manifest = read_json(standardized / "manifest.json")
         source_version = "raw-snapshot-" + digest({
@@ -93,9 +98,9 @@ def build_silver_dataset(archive_root, output, reviews=None, schema_root=None, o
         version = "silver-" + digest({"layer_version": LAYER_VERSION, "source_dataset_version": source_version,
                                       "deduplication_step": dedup_manifest["dataset_version"],
                                       "standardization_step": standard_manifest["dataset_version"],
-                                      "implementation": implementation})[:24]
+                                      "implementation": implementation, "processing_runtime": runtime})[:24]
         report.update(report_format_version="chocolate-silver-report-1", layer_version=LAYER_VERSION,
-                      dataset_version=version, source_dataset_version=source_version,
+                      dataset_version=version, source_dataset_version=source_version, processing_runtime=runtime,
                       status="partial" if dedup_report["status"] != "complete_snapshot" or report["counts"]["extraction_errors"] else "complete_snapshot",
                       deduplication=dedup_report["deduplication"],
                       archive_errors=dedup_report["archive_errors"], unsupported_records=dedup_report["unsupported_records"])
@@ -107,13 +112,13 @@ def build_silver_dataset(archive_root, output, reviews=None, schema_root=None, o
             if name == "quality-report.json":
                 continue
             path = standardized / name
-            files[name] = table_bytes(path, version, source_version) if name.endswith(".jsonl") else path.read_bytes()
+            files[name] = table_bytes(path, version, source_version, table_backend=tables) if name.endswith(".jsonl") else path.read_bytes()
         for name in standard_manifest["contract_sha256"]:
             files[name] = (Path(schema_root).resolve() / name).read_bytes()
-        files["source-listings.jsonl"] = table_bytes(deduplicated / "products.jsonl", version, source_version)
-        files["listing-aliases.jsonl"] = table_bytes(deduplicated / "listing-aliases.jsonl", version, source_version)
+        files["source-listings.jsonl"] = table_bytes(deduplicated / "products.jsonl", version, source_version, table_backend=tables)
+        files["listing-aliases.jsonl"] = table_bytes(deduplicated / "listing-aliases.jsonl", version, source_version, table_backend=tables)
         for role in ("brand", "retail", "unknown"):
-            files[role + "/source-listings.jsonl"] = table_bytes(deduplicated / role / "products.jsonl", version, source_version)
+            files[role + "/source-listings.jsonl"] = table_bytes(deduplicated / role / "products.jsonl", version, source_version, table_backend=tables)
         manifest = {
             "manifest_format_version": "chocolate-silver-manifest-1", "layer_version": LAYER_VERSION,
             "schema_version": standard_manifest["schema_version"], "dataset_version": version,
@@ -126,6 +131,7 @@ def build_silver_dataset(archive_root, output, reviews=None, schema_root=None, o
                 "standardization": {"fingerprint": standard_manifest["dataset_version"]},
             },
             "contract_sha256": standard_manifest["contract_sha256"], "implementation_sha256": implementation,
+            "processing_runtime": runtime,
             "reviews": standard_manifest["reviews"],
             "identity_mapping_format_version": standard_manifest["identity_mapping_format_version"],
             "identity_taxonomy_version": standard_manifest["identity_taxonomy_version"],
@@ -144,7 +150,7 @@ def build_silver_dataset(archive_root, output, reviews=None, schema_root=None, o
                     or any(parent.is_symlink() for parent in target.parents if inside(parent, output))):
                 raise ValueError("Silver output paths must stay within the output directory.")
         confirm_source(source, initial_inventory, dedup_manifest["inputs"])
-        if implementation_hashes() != implementation:
+        if implementation_hashes() != implementation or tables.runtime() != runtime:
             raise RuntimeError("Silver implementation changed during the build.")
         resolve_contract_root(schema_root, offline=offline)
         for name, checksum in standard_manifest["contract_sha256"].items():

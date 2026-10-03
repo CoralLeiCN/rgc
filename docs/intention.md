@@ -50,6 +50,10 @@ Keep the original raw archive and one combined silver dataset. Silver performs
 deduplication within each seller followed by schema, unit and vocabulary
 standardization, price normalization, evidence review and training eligibility.
 The [silver guide](chocolate-silver.md) defines these responsibilities in one build.
+Use pandas for the combined chocolate silver table operations and schema coverage
+and exact value-frequency analysis, preserving evidence and explicit states.
+Publish verified chocolate snapshots and analysis to the dataset with immutable
+revisions and per-file hashes.
 
 Combine repeated listings only within one selling source. Keep records from
 direct brand stores and retailers separate, and retain the same physical product
