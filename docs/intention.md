@@ -277,6 +277,16 @@ then explicitly applies them to the draft. Applying candidates can replace
 matching name, weight or trait inputs, but never changes proposed pack price.
 Original source evidence remains available in a collapsed disclosure.
 
+Keep the supplied front and back photos of Well&Truly Fudge & Brownie Oat M!lk
+Chocolate, 30 g, as repository demo data and offer them as a selectable example
+in the extraction panel. Users can also upload their own photos, including both
+sides of a pack. Selecting an example loads its images for the same explicit
+extraction and review workflow; it does not supply prefilled traits. Preserve
+original photos and prepare temporary browser copies that fit request limits.
+Retain label qualifiers: component cocoa minimums and “fairly traded” wording
+must not imply an exact whole-product cocoa percentage or a named certification.
+Demo photos and local drafts stay outside the training corpus.
+
 The extraction route supports a configured OpenAI API provider or an
 authenticated local Codex bridge, including the requested laptop connection
 through Tailscale. The extraction model has a separate purpose from the cancelled

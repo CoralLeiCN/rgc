@@ -91,3 +91,14 @@ a fitted pricing benchmark or causal trait effects. Extraction candidates requir
 explicit review/apply, and the local configured product stays separate from all
 observed statistics. Provider setup and current verification are recorded in the
 [app README](../apps/web/README.md) and [lifecycle plan](lifecycle/plan.md).
+
+The extraction panel also offers the supplied Well&Truly Fudge & Brownie 30 g
+front and back photos as a selectable example. Original JPEG bytes live in
+`apps/web/public/examples/well-and-truly/front.jpg` and `back.jpg`; they are
+repository demo inputs served as public app assets. They are outside the pinned
+Silver export, training corpus and local raw text-evidence export. Users can
+select these photos or upload up to two of their own PNG/JPEG/WebP images. The
+browser prepares temporary copies within the extraction request limits. Selecting
+the example loads the photos, and **Extract traits** requests candidates from the
+configured provider. It provides no prefilled traits. Review/apply preserves
+the proposed price and keeps the draft outside observed statistics.

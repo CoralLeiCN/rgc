@@ -132,6 +132,17 @@
 .config-extraction h3 { color: #c2d5c6; font-size: 12px; }
 .config-extraction .heading-with-help { margin-bottom: 12px; }
 .config-extraction .help-tip-trigger { width: 17px; height: 17px; font-size: 9px; }
+.config-example { display: flex; align-items: center; gap: 10px; padding: 10px; margin-bottom: 13px; border: 1px solid #476256; border-radius: 5px; background: #172c2b; }
+.config-example-photos { display: flex; flex-shrink: 0; gap: 4px; }
+.config-example-photos img { width: 35px; height: 67px; object-fit: cover; border-radius: 3px; background: #102025; }
+.config-example > div:last-child { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.config-example strong { color: #d0dfc6; font-size: 11px; }
+.config-example span { color: #a2b6a8; font-size: 8px; line-height: 1.4; }
+.config-example .config-example-label { color: #b9c58f; font-size: 7px; text-transform: uppercase; letter-spacing: .8px; }
+.config-example .text-button { align-self: start; color: #d4e1b0; font-size: 9px; margin-top: 3px; text-decoration: underline; text-underline-offset: 3px; }
+.config-example .text-button:focus-visible { outline: 2px solid #d4e1b0; outline-offset: 3px; }
+.config-image-upload.is-disabled { opacity: .5; cursor: wait; }
+.config-image-preview small { display: block; color: #88a895; font-size: 7px; margin-top: 4px; }
 .config-extract-label { display: block; color: #95afa7; font-size: 9px; margin-bottom: 6px; }
 .config-extraction > textarea { box-sizing: border-box; width: 100%; min-height: 65px; resize: vertical; background: #10232a; border: 1px solid #36514f; border-radius: 4px; padding: 8px; color: #d0dfd5; font: 10px/1.6 Arial,sans-serif; }
 .config-extraction > textarea::placeholder { color: #739185; }

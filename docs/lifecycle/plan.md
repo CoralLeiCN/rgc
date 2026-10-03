@@ -13,7 +13,8 @@ unverified; scoring value for money awaits research.
 The Vercel retailer workspace implements a layered trait terrain, typed cohorts,
 product configuration, observed-price analysis and extraction adapters. Its
 published snapshot and disclosed demo recipe have their own verification below.
-Live browser/WebGL and configured model extraction remain unverified.
+Browser checks verify the photo selection and upload flow; terrain/WebGL review
+and configured model extraction remain unverified.
 
 Canonical requirements: [specification](../spec.md),
 [silver responsibilities](../data/chocolate-silver.md),
@@ -48,9 +49,27 @@ verified offline. The [GitHub validation run](https://github.com/CoralLeiCN/rgc/
 also passed for merged commit `f72604a`, including locked dependencies, Ruff,
 documentation maintenance and the Python suite on Linux. No code fixes were
 required. The README now records the native macOS dependency for LightGBM and
-test collection. Existing browser/WebGL and live extraction limitations remain.
+test collection. Terrain/WebGL and live extraction limitations remain; later
+sample photo checks are recorded below.
 
 ### Application and model status
+
+The supplied front and back photos of Well&Truly Fudge & Brownie Oat M!lk
+Chocolate, 30 g, are retained as original JPEGs under
+`apps/web/public/examples/well-and-truly/`. The extraction panel offers
+**Use example photos** alongside custom uploads of up to two PNG/JPEG/WebP
+images. Browser preparation accepts readable originals up to 20 MiB and
+40 megapixels each, then resizes and compresses temporary copies to at most
+2,400 pixels on the longest edge and
+1 MiB each. Selection loads photos; **Extract traits** calls the provider, then
+explicit review/apply merges selected candidates while preserving proposed
+price. The example has no prefilled traits or automatic score. These app assets
+remain outside collection/training snapshots. Label instructions preserve the
+component scope of the cocoa minimum and do not infer named Fairtrade
+certification from “fairly traded.” This workflow is implemented and passed
+local build, contract and browser checks recorded below. Provider configuration
+and live extraction remain unverified. This revision has not been deployed;
+the earlier protected preview retains its previous application version.
 
 The current hackathon app is `apps/web`, with a Vercel frontend/backend, private
 snapshot, leaf-colour terrain, typed filters, product configurator, gap finder and
@@ -73,7 +92,7 @@ traces, pinned Plotly integrity and documentation links. The simplified offline
 snapshot builder reproduces all 26 JSON files byte-for-byte. The cleaned
 [protected preview](https://rgc-mgr5btzho-ptyyyy-s-projects.vercel.app) is READY;
 27 hosted route/asset checks and eight Next.js assets passed. Retired routes and
-parameters are unavailable. Live browser/WebGL and actual model extraction remain unverified.
+parameters are unavailable. Terrain/WebGL and actual model extraction remain unverified.
 Codex startup is blocked by this workspace before a model request; no Funnel
 has been published. Provider setup remains in the app README.
 
@@ -163,6 +182,7 @@ documentation or rewrite eligibility/targets.
 | --- | --- | --- |
 | Deploy the retailer workspace with typed cohorts, family matrix, comparison and layered terrain with gap/brand analysis. | `apps/web/app/`, `apps/web/components/`, `apps/web/lib/client/` | Implemented; cleanup build, types and integrity verification are recorded above. Live browser/WebGL review remains. |
 | Serve bounded schema, product, terrain, evidence, comparison and analysis data, plus trait extraction adapters. | `apps/web/app/api/`, `apps/web/lib/server/`, `apps/web/lib/contracts.ts` | Implemented with typed queries and a 4 MB response cap; live extraction awaits provider configuration. |
+| Select supplied packaging photos or upload front/back images for candidate extraction. | `apps/web/public/examples/well-and-truly/`, product configurator, browser image preparation, extraction contract and providers | Implemented with up to two prepared images and legacy single-image input, explicit extraction/review/apply, original sample bytes preserved and asset hashes pinned. Local build, request/provider checks and browser selection/upload checks passed; live extraction and deployment of this revision remain pending. |
 | Validate pinned snapshot contracts and derive private JSON plus an integrity manifest. | `scripts/build_web_snapshot.py`, `apps/web/snapshot/` | Implemented for the app's immutable revision; all 3,743 listings validate and evidence references are retained. |
 | Package the Vercel application with pinned dependencies and snapshot/asset verification. | `apps/web/package.json`, lockfile, Next/Vercel configuration and verification scripts | Node 24 London functions use Vercel Authentication; cleanup verifies all seven API snapshot traces; hosted checks passed on the protected preview recorded below. |
 | Demonstrate the built retail frontier workflow. | `PROJECT.md`, intention, lifecycle intent and `README` | Project description focuses on implemented collection, processing, evidence review and model preparation, with a brief description of the chocolate data, a runnable collection demo and explicit modelling limits. Event information, judging criteria and submission fields were removed from the project description. |
@@ -213,6 +233,34 @@ sellers in validation. Missing evidence cannot justify new taxonomy values.
 ## Proof
 
 ### Web application verification
+
+On 2026-10-03 the sample photo revision passed `uv sync --locked`, fetching all
+pinned contracts followed by
+`python3 -B scripts/fetch_contracts.py --all --offline`, all 465 tests with
+`uv run pytest`, and `uv run ruff check .`. With Node 24, `npm ci`,
+`npm run typecheck` and `npm run build` passed. The final build verifies all five
+public assets, including the two original JPEG hashes, and snapshot inclusion in
+all seven API traces. Temporary checks covered image count/byte/body limits,
+legacy single-image input, delivery of every image to both mocked providers and
+cleanup of local Codex input files. `python3 -B scripts/check_documentation.py`
+and `git diff --check` passed. These checks did not invoke a live model.
+
+Browser checks against the rebuilt local production server verified example
+selection with two complete 1,800 × 2,400 previews, custom upload of both original
+JPEGs, removal of one photo, appending the other and rejection of a three-photo
+selection while preserving the existing pair. Selecting the example preserved
+a manually entered draft name and GBP 2.25 proposed price. **Extract traits**
+submitted the selected pair and displayed the expected 503 provider-configuration
+error. Live extraction and its returned candidates remain unverified. No
+deployment was performed for this revision; the hosted preview proof below
+describes the earlier application. Terrain/WebGL interaction requires its own
+browser review.
+
+The photo revision was integrated with local `main` at `3c94377`, retaining the
+local raw-evidence storage policy and both validation records. Locked dependency
+verification, all four offline contract caches, all 470 Python tests, Ruff,
+documentation coverage against `main` and whitespace checks passed. The web
+application files match the previously verified photo revision byte for byte.
 
 Integration with main preserves the app snapshot's verified contract independently
 of newer training taxonomy and target-policy requirements. The updated adapter

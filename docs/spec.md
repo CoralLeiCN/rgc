@@ -1153,15 +1153,41 @@ can extend display axes without changing the observed cohort/range or clamping
 the draft onto an invented price. Drafts never enter source listings, terrain
 smoothing, gap calculations, brand statistics or model training.
 
-The extractor accepts a description of at most 12,000 characters and/or a PNG,
-JPEG or WebP image of at most 2 MiB. `POST /api/extract-traits` receives JSON
-`{description, image?: {mimeType, data}}`, where `data` is base64 without a data-URL
-prefix. It validates body limits, image contents and field values. The response
+The extractor accepts a description of at most 12,000 characters and/or up to two
+PNG, JPEG or WebP images. The browser accepts readable originals of at most
+20 MiB and 40 megapixels each, resizes as needed to at most 2,400 pixels on the
+longest edge and compresses each prepared image to at most 1 MiB.
+`POST /api/extract-traits` receives JSON
+`{description, images?: [{mimeType, data}]}`, where `data` is canonical base64
+without a data-URL prefix. Legacy single `image` requests remain accepted. The
+server permits 2 MiB per image within the combined decoded image budget of
+2 MiB; the total JSON body cap is 3,000,000 bytes. Validation checks body limits,
+image signatures and field values. Both provider adapters receive every
+submitted image. The response
 contains provider/model metadata, candidate `{key, value, evidence}` traits and
 warnings. Unsupported or schema-invalid candidates are omitted; missing values
 are never filled automatically. Generated candidate claims are not independently
 verified source facts, and neither extraction nor applying them grants model
 eligibility.
+
+**Use example photos** loads the supplied Well&Truly Fudge & Brownie Oat M!lk
+Chocolate, 30 g, front and back photos from
+`apps/web/public/examples/well-and-truly/front.jpg` and `back.jpg`. The repository
+retains their original JPEG bytes and checks their SHA-256 hashes through the
+public asset manifest; browser preparation creates temporary copies. Users can
+select the example or add/remove their own photos within the two-image limit.
+Uploads append when room remains and replace the selected pair when two are
+present. Successful example preparation replaces the photos and clears the
+description. Example selection does not call an extraction provider or prefill
+candidates. **Extract traits** submits the current inputs. Sample photos are
+app demo assets outside the immutable collection and training snapshots.
+
+Extraction instructions preserve label scope and qualifiers. The sample's
+43% minimum cocoa statement applies to its chocolate component and cannot be
+emitted as an exact whole-product cocoa percentage. “Fairly traded” does not
+establish a named Fairtrade certification. Extraction remains subject to review,
+and the existing score stays unavailable when no recognized scoring trait is
+supported by the selected evidence.
 
 Image previews and description inputs remain local until extraction is requested.
 The user reviews checkboxes and evidence, then explicitly applies candidates.

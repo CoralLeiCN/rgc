@@ -3,7 +3,7 @@ import type { ExtractionRequest, ExtractionResponse } from "../extraction-contra
 import type { FieldDefinition } from "../contracts";
 import { loadSnapshot } from "./data";
 import { ApiError } from "./errors";
-import { extractionInstructions, extractionSchema, readExtractionInput, validateExtractionOutput } from "./extraction-core";
+import { extractionInstructions, extractionSchema, readExtractionInput, validateExtractionInput, validateExtractionOutput } from "./extraction-core";
 
 type Settings = { provider?: string; apiKey?: string; model?: string; bridgeUrl?: string; bridgeToken?: string };
 type Dependencies = { fetch?: typeof fetch; fields?: FieldDefinition[]; settings?: Settings };
@@ -26,21 +26,22 @@ async function providerJson(fetcher: typeof fetch, url: string, init: RequestIni
 }
 
 export async function extractWithProvider(input: ExtractionRequest, fields: FieldDefinition[], settings: Settings, fetcher = fetch): Promise<ExtractionResponse> {
+  const validatedInput = validateExtractionInput(input);
   const provider = settings.provider || (settings.bridgeUrl ? "codex" : "openai");
   const signal = AbortSignal.timeout(provider === "codex" ? 100_000 : 45_000);
   if (provider === "codex") {
     let url: URL;
     try { url = new URL(settings.bridgeUrl || ""); } catch { throw new ApiError(503, "EXTRACTOR_NOT_CONFIGURED", "The local Codex extractor is not connected yet."); }
     if (url.protocol !== "https:" || url.username || url.password || !settings.bridgeToken || settings.bridgeToken.length < 32) throw new ApiError(503, "EXTRACTOR_NOT_CONFIGURED", "Configure the local extractor HTTPS URL and its server-side secret.");
-    const result = await providerJson(fetcher, url.href, { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${settings.bridgeToken}` }, body: JSON.stringify(input), signal });
+    const result = await providerJson(fetcher, url.href, { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${settings.bridgeToken}` }, body: JSON.stringify(validatedInput), signal });
     const validated = validateExtractionOutput(result, fields);
     return { provider: "codex", model: "Codex on your laptop", ...validated };
   }
   if (provider !== "openai") throw new ApiError(503, "EXTRACTOR_NOT_CONFIGURED", "Choose an extraction provider in the server configuration.");
   if (!settings.apiKey) throw new ApiError(503, "EXTRACTOR_NOT_CONFIGURED", "Trait extraction is not connected yet. Configure OpenAI or the local Codex bridge in Vercel.");
   const model = settings.model || "gpt-4.1-mini";
-  const content: Record<string, unknown>[] = [{ type: "input_text", text: input.description || "Extract supported traits visible on this product image." }];
-  if (input.image) content.push({ type: "input_image", image_url: `data:${input.image.mimeType};base64,${input.image.data}`, detail: "high" });
+  const content: Record<string, unknown>[] = [{ type: "input_text", text: validatedInput.description || "Extract supported traits visible across these product images." }];
+  for (const image of validatedInput.images) content.push({ type: "input_image", image_url: `data:${image.mimeType};base64,${image.data}`, detail: "high" });
   const raw = await providerJson(fetcher, "https://api.openai.com/v1/responses", {
     method: "POST", signal, headers: { "Content-Type": "application/json", Authorization: `Bearer ${settings.apiKey}` },
     body: JSON.stringify({ model, store: false, max_output_tokens: 6000, instructions: extractionInstructions(fields), input: [{ role: "user", content }], text: { format: { type: "json_schema", name: "product_traits", strict: true, schema: extractionSchema(fields) } } })

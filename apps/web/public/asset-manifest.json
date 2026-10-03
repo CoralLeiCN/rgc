@@ -12,6 +12,14 @@
     "vendor/README.md": {
       "sha256": "2468586f9fcf12956af9f494710599281e6c265c2ea6f2fbf7f7582b5f5688e3",
       "byteLength": 507
+    },
+    "examples/well-and-truly/front.jpg": {
+      "sha256": "d0d25e58eb68868323fb73abbe89d9457b666af280a3b2b703b136380adb680d",
+      "byteLength": 2647817
+    },
+    "examples/well-and-truly/back.jpg": {
+      "sha256": "384cc491c75d1a163cec1ea4f507137f68430509d6b3ba67f5fb476fffd3efb5",
+      "byteLength": 2732556
     }
   }
 }

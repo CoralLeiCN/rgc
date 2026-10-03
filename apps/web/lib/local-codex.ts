@@ -55,10 +55,10 @@ export async function runLocalCodex(input: ExtractionRequest, fields: readonly F
       "--output-schema", schemaFile, "--output-last-message", outputFile, "--color", "never",
       "-c", 'approval_policy="never"', "-c", 'web_search="disabled"', "-c", "project_doc_max_bytes=0", "-c", "mcp_servers={}",
       "--enable", "skip_host_skill_discovery", ...DISABLED_FEATURES.flatMap(feature => ["--disable", feature])];
-    if (validated.image) {
-      const extension = { "image/png": "png", "image/jpeg": "jpg", "image/webp": "webp" }[validated.image.mimeType];
-      const imageFile = path.join(directory, `product.${extension}`);
-      await writeFile(imageFile, Buffer.from(validated.image.data, "base64"), { mode: 0o600 });
+    for (const [index, image] of validated.images.entries()) {
+      const extension = { "image/png": "png", "image/jpeg": "jpg", "image/webp": "webp" }[image.mimeType];
+      const imageFile = path.join(directory, `product-${index + 1}.${extension}`);
+      await writeFile(imageFile, Buffer.from(image.data, "base64"), { mode: 0o600 });
       args.push("--image", imageFile);
     }
     args.push("-");

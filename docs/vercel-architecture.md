@@ -73,9 +73,10 @@ page requests. No scoring endpoint is connected yet.
 required file hashes, loads that snapshot's four chocolate contracts, validates
 every product using the existing schema validator, and derives the application
 snapshot. The original source files remain in ignored `data/hf-snapshot/`.
-The deployment includes only `apps/web/snapshot/`, the application and public
-visualization assets. A generated manifest records hashes for the derived JSON.
-These assets are bundled server-side; they are never placed under `public/`.
+The deployment includes `apps/web/snapshot/`, the application, public
+visualization assets and the supplied packaging photos used as demo inputs.
+A generated manifest records hashes for the derived JSON. Snapshot assets are
+bundled server-side; they are never placed under `public/`.
 
 ## API contract
 
@@ -91,7 +92,7 @@ without local paths or stack traces. JSON errors have `{error:{code,message}}`.
 | `/api/products/[id]` | Exact listing ID | Product summary and original attribute/price evidence from its source shard. |
 | `/api/analysis` | Cohort filters; `range=core` (default) or `full` | Full-cohort unit-price summary and brand medians; 20-bin histogram and gaps. |
 | `/api/terrain` | Cohort filters; leaf `color`; numeric leaf `z`; `range=core|full`; `limit` (default 1000, max 2000) | Exact price/trait-score/Z rows, category shares, range/completeness counts and score definition. |
-| `/api/extract-traits` (POST) | Description and/or base64 image | Validated candidate traits with evidence and warnings; never writes observed data. |
+| `/api/extract-traits` (POST) | Description and/or up to two base64 images | Validated candidate traits with evidence and warnings; never writes observed data. |
 | `/api/compare` | Comma-separated `ids`, maximum four distinct listings | Ordered product summaries for the trait matrix. |
 
 Cohort inputs are `search`, `source`, `role` (`all`, `brand`, `retail`, `unknown`),
@@ -158,6 +159,19 @@ Invalid price/mass/traits suppress the marker; missing Z prompts for that trait.
 Out-of-range drafts extend display bounds without changing observed statistics.
 Source evidence remains under a disclosure; drafts are not persisted or trained on.
 
+The extraction panel offers **Use example photos** for the front and back of
+Well&Truly Fudge & Brownie Oat M!lk Chocolate, 30 g. Their original JPEG bytes are
+repository demo assets in `apps/web/public/examples/well-and-truly/`. Selection
+loads both images for preview and clears the description after preparation
+succeeds; a separate **Extract traits** action submits the current inputs. The
+example supplies no prefilled candidates. Users can also add or remove their own
+PNG/JPEG/WebP images, up to two at once. Uploads append when room remains and
+replace the selected pair when two are present. Each original must be readable
+and at most 20 MiB and 40 megapixels. Browser preparation resizes as needed to a
+longest edge of 2,400 pixels and compresses each image to at most 1 MiB. It creates temporary
+copies while preserving the original sample files. The public asset manifest
+pins both originals by SHA-256 and the asset verifier checks them during build.
+
 Core uses full-cohort Tukey price fences and reports omitted tails; Full includes
 all usable prices. Zero IQR falls back to Full. Gap selection highlights an exact
 price interval on the terrain floor and 2D projections. The primary dashboard requests observed-price analysis from `/api/analysis`.
@@ -194,15 +208,27 @@ does not imply verified claims, a fitted fair-price line, or model eligibility.
 
 ## Image/text extraction and local Codex bridge
 
-`POST /api/extract-traits` accepts JSON `{description,image?:{mimeType,data}}`.
-Description is bounded to 12,000 characters; PNG/JPEG/WebP images to 2 MiB with
-matching signatures and canonical base64; total request body to 3 MB. Requests
+`POST /api/extract-traits` accepts JSON
+`{description,images?:[{mimeType,data}]}`. The legacy single `image` input is also
+accepted. Description is bounded to 12,000 characters; up to two PNG/JPEG/WebP
+images use matching signatures and canonical base64. The server accepts at most
+2 MiB per image and 2 MiB of decoded image bytes in total; browser preparation
+targets at most 1 MiB per image. The total JSON request body cap is 3,000,000
+bytes. Requests
 with a foreign Origin are rejected. Responses are no-store. Validation uses the
 snapshot's allowed keys, types, vocabulary, numeric bounds and short supporting
 evidence. Output is `{provider,model,traits:[{key,value,evidence}],warnings}`.
 Invalid candidates are omitted with warnings; duplicate keys and malformed model
 responses fail. Source identity is not fabricated and no extraction result changes
 reviewed/model-eligible status or the immutable snapshot.
+
+Both provider adapters receive every submitted image. Extraction instructions
+preserve qualifiers and component scope: the example's 43% minimum cocoa claim
+for its chocolate component cannot become an exact whole-product cocoa value,
+and “fairly traded” cannot establish a named Fairtrade certification. Candidates
+still require user review. These photos and user uploads do not enter the
+collection snapshot or training corpus, and missing recognized scoring traits
+leave the existing demo score unavailable.
 
 The default `openai` provider uses server-only `OPENAI_API_KEY`, optional
 `OPENAI_EXTRACTION_MODEL` (default `gpt-4.1-mini`), Responses API with image inputs,
@@ -244,8 +270,14 @@ and Z counts are disclosed, and raw snapshot eligibility remains zero. The app's
 at the user's request. Current validation uses TypeScript, production compilation,
 asset/data verification and hosted HTTP checks, recorded in the lifecycle plan.
 
-Actual browser layout and WebGL rendering remain unverified in this sandbox.
-A synthetic live Codex extraction failed before contacting a model because its
+Local browser checks verified example selection, custom upload and resizing of
+both original JPEGs, removal/appending, the two-image limit and preservation of
+draft name and price. Extraction reached the API and displayed the expected 503
+for missing provider configuration. This photo-input revision has not been
+deployed; the hosted preview above retains the earlier version. Terrain/WebGL
+interaction still requires browser review.
+
+A synthetic live Codex extraction previously failed before contacting a model because its
 in-process app-server could not initialize (`Operation not permitted`). Live laptop extraction and an authenticated tunnel remain to
 be verified. No API key has been provisioned by this change. These limits are
 separate from the teammate's pending fitted-model integration.

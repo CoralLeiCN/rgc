@@ -52,12 +52,30 @@ for explicit organic, Fairtrade, bean-to-bar, single-origin and gift-pack claims
 The score cannot be edited directly. Price changes only the draft's price position.
 This is a disclosed prototype recipe, not the teammate's fitted model.
 
-Upload a PNG/JPEG/WebP image (up to 2 MiB) and/or description (up to 12,000
-characters) to extract candidate traits. Review evidence and explicitly apply
-selected candidates; the current draft and proposed price are preserved.
+Choose **Use example photos** to load the supplied front and back photos of
+Well&Truly Fudge & Brownie Oat M!lk Chocolate, 30 g, or upload your own images.
+Add or remove up to two readable PNG/JPEG/WebP photos, each at most 20 MiB and
+40 megapixels before preparation. A new upload appends when room remains or
+replaces both photos when two are selected. Optionally add a description of up
+to 12,000 characters. The browser resizes images as needed to at most 2,400
+pixels on the longest edge and
+compresses each to at most 1 MiB for extraction. Selecting the example replaces
+the photos and clears the description after successful preparation; **Extract
+traits** submits the current inputs to the configured provider.
+Review evidence and explicitly apply selected candidates; applying candidates
+merges them into the current draft and preserves the proposed price.
 Copying a selected listing/resetting the draft clears stale extraction review.
 Drafts stay local and never enter observed gap, brand or training analyses.
 Original source evidence remains under a disclosure in the configurator.
+
+The original JPEGs are preserved in `public/examples/well-and-truly/front.jpg`
+and `back.jpg` as repository demo data, with hashes checked through
+`public/asset-manifest.json`. Image preparation creates temporary browser copies.
+The example has no prefilled extracted traits. Its label's
+43% minimum cocoa statement qualifies the chocolate component, and “fairly
+traded” does not establish a named Fairtrade certification. Review those meanings
+before applying candidates. The example may lack a supported input for the
+existing demo score; selecting photos does not supply a score or training row.
 
 Core range uses full-cohort Tukey bounds and discloses omitted tails. Full range
 includes every usable price. Gap finder highlights interior empty price bands;
@@ -173,12 +191,17 @@ correctly reports missing provider configuration without calling a provider.
 Temporary verification credentials were revoked and deleted. Production and
 earlier previews remain unchanged.
 
+The example-photo and custom-upload revision is verified locally and has not
+been deployed to this preview.
+
 ## Validation limits
 
 The snapshot has 3,743 listings, 103 traits and zero eligible model rows. The test fixtures added during this demo have been removed. TypeScript,
 production build and data/asset integrity checks validate the current app.
 See the lifecycle plan for hosted verification.
 
-Browser layout/WebGL rendering and live model extraction remain separate from
-build and HTTP checks. This sandbox cannot launch the browser or Codex's
-in-process app-server. No fitted pricing benchmark is connected.
+Local browser checks verified example selection, custom uploads, resizing,
+removal, the two-photo limit, preservation of draft edits and the missing-provider
+error. Terrain/WebGL review and live model extraction remain pending. Codex's
+in-process app-server has not been verified here. No fitted pricing benchmark
+is connected.
