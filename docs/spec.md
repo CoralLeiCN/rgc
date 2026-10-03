@@ -231,7 +231,7 @@ publication is a filtered derivative of the local raw archive. Local image and
 source preservation requirements in section 3.1 continue to apply.
 
 The Hugging Face dataset also hosts separately published silver snapshots and
-analytical contracts. [Dataset contract storage](dataset-contracts.md) defines
+analytical contracts. [Dataset contract storage](data/dataset-contracts.md) defines
 their immutable references, caches and publication behavior. Contract publication
 preserves existing raw export and silver files. It neither rebuilds silver nor
 establishes reviewed observations or model readiness.
@@ -306,7 +306,12 @@ an approval gate.
 
 ### 3.1.2 Raw and combined silver responsibilities
 
-The canonical chocolate workflow has two layers:
+Raw preservation and combined Silver own the processing responsibilities below.
+The [stage descriptions and data flow](data/chocolate-silver.md#stage-descriptions)
+use **bronze** as a presentation name for raw and show the implemented
+immutable Parquet **Gold** training interface downstream of Silver. Section 10
+and the [Gold guide](data/chocolate-gold.md) define its contracts and readiness
+boundary; current chocolate has no eligible inputs or fitted model.
 
 | Layer | Responsibility |
 | --- | --- |
@@ -317,8 +322,8 @@ The canonical chocolate workflow has two layers:
 builds silver in one command with pandas 2.2.3. Direct Python execution requires
 that dependency in its interpreter. Deduplication and standardization are internal operations of
 this layer. The build reads raw and writes one silver dataset directly.
-The [silver guide](chocolate-silver.md) owns its CLI, output contract and evidence
-resolution; the [schema guide](chocolate-schema.md) owns attribute meanings,
+The [silver guide](data/chocolate-silver.md) owns its CLI, output contract and evidence
+resolution; the [schema guide](data/chocolate-schema.md) owns attribute meanings,
 reviews and the pricing handoff.
 
 Deduplicate exact `source_key` + source URL hostname + `source_product_id` +
@@ -430,7 +435,7 @@ against a reviewed sample; a confidence score alone is insufficient.
 The earlier `scripts/clean_chocolate_data.py`, implemented in
 `scripts/chocolate_cleanup/`, reads raw with draft profile `uk-chocolate-clean-1`
 and writes a helper dataset for compatibility and diagnostics. The
-[cleanup guide](chocolate-cleaning.md) owns its CLI, complete outputs, seller
+[cleanup guide](data/chocolate-cleaning.md) owns its CLI, complete outputs, seller
 partitions, evidence resolver, current/historical flags and review contract.
 Repeated imports of an identical price observation combine its evidence.
 
@@ -455,13 +460,13 @@ The [dataset manifest](../schemas/chocolate/dataset-contract.json) pins an
 immutable dataset commit, every file's SHA-256 and the contract versions. The
 files define tracked attributes, source aliases/normalization, standardized shape
 and the initial training/insight contract respectively. The
-[schema guide](chocolate-schema.md) documents their application and extension.
+[schema guide](data/chocolate-schema.md) documents their application and extension.
 
 Default builds resolve that pin into the ignored `data/contract-cache/`, verifying
 file lengths and hashes before reuse. A cache miss requires network access;
 `--offline` fails if pinned files are missing and never selects a moving revision.
 An explicit `--schema-root` supports custom local contracts. See
-[dataset contract storage](dataset-contracts.md) for fetching and provenance.
+[dataset contract storage](data/dataset-contracts.md) for fetching and provenance.
 
 The schema tracks over 100 attributes across identity, composition, dietary claims,
 certification claims, nutrition, origin, packaging, processing, storage,
@@ -496,7 +501,7 @@ sales market, and reference prices from regular selling prices. Unknown or
 conflicting mappings enter the review queue. Production and packaging facts
 require supporting evidence rather than deductions from quality adjectives.
 
-The [silver guide](chocolate-silver.md) owns the complete output contract,
+The [silver guide](data/chocolate-silver.md) owns the complete output contract,
 including products, assertions, observations, candidate/eligible rows, reviews,
 quality/reproducibility reports and exact contract copies. Build coverage and
 exclusion reasons belong in the quality report. Follow the
@@ -535,7 +540,7 @@ and zero coverage does not establish that a schema concept is irrelevant. These
 reports do not change taxonomy, raw evidence, silver snapshots, review status,
 model eligibility or release readiness. An optional pinned portable chocolate
 profile comparison checks definitions only; it does not describe frequencies
-in a portable snapshot. The [schema guide](chocolate-schema.md) owns its command
+in a portable snapshot. The [schema guide](data/chocolate-schema.md) owns its command
 and report details.
 
 #### Portable processing and maintenance from captures to mappings
@@ -619,8 +624,8 @@ discovery files; unrelated files are retained and unsafe paths fail before write
 Source-derived labels and excerpts are escaped JSON code spans, while full typed
 evidence remains in JSONL. Agent rationales belong in separate durable proposal documents,
 preserving immutable generated evidence. The initial
-[seller review metrics](schema-proposals/seller-review-metrics.md) and
-[selling plan terms](schema-proposals/selling-plan-terms.md) proposals are pending
+[seller review metrics](data/schema-proposals/seller-review-metrics.md) and
+[selling plan terms](data/schema-proposals/selling-plan-terms.md) proposals are pending
 agent assessment; discovery alone accepts no schema extension. Automatic prose concept
 investigation, a proposal/decision registry and cross-snapshot proposal comparison
 remain future improvements.
@@ -669,7 +674,7 @@ encoders learned from training rows and frozen for validation, and design
 matrices. Targets use `regular_unit_price`/`log_regular_unit_price` with a saved
 basis defined by the profile; both starters use regular GBP/100 g. Regression and
 uncertainty fitting remain subsequent work. The
-[portable processing guide](category-processing.md) owns commands, versions,
+[portable processing guide](data/category-processing.md) owns commands, versions,
 outputs and workflow details; the [lifecycle plan](lifecycle/plan.md) records
 package verification independently of data/model readiness.
 
@@ -729,10 +734,10 @@ average weighted by sales requires sales data.
 
 ## 5. Pricing regression
 
-The [UK chocolate model design](chocolate-modeling-design.md) consolidates the
+The [UK chocolate model design](data/chocolate-modeling-design.md) consolidates the
 initial cohort, baseline, hedonic and LightGBM architecture, feature handling,
 validation, uncertainty and prediction contract. The
-[LightGBM and explanation design](analysis/lightgbm-shap-explanation-design.md)
+[LightGBM and explanation design](data/analysis/lightgbm-shap-explanation-design.md)
 specifies TreeSHAP and grounded AI interpretation. These remain designs; no
 pricing model has been fitted.
 
@@ -1120,10 +1125,10 @@ Resolve these decisions before the corresponding implementation or release commi
 
 ## 10. Gold and the finalized training basis
 
-The canonical chocolate architecture is raw → combined Silver → immutable Parquet Gold. Silver retains seller rows, evidence, reviews and eligibility. Gold copies `training-candidates.jsonl` to `training-data.parquet` and `model-inputs.jsonl` to `model-inputs.parquet`, with typed empty tables, Zstandard compression, manifests, logical row checks and exact contract/price/identity decision provenance. Existing snapshots cannot be overwritten with changed bytes. The [Gold guide](chocolate-gold.md) defines CLI, versions, review annotations and verified trainer handoff.
+The canonical chocolate architecture is raw → combined Silver → immutable Parquet Gold. Silver retains seller rows, evidence, reviews and eligibility. Gold copies `training-candidates.jsonl` to `training-data.parquet` and `model-inputs.jsonl` to `model-inputs.parquet`, with typed empty tables, Zstandard compression, manifests, logical row checks and exact contract/price/identity decision provenance. Existing snapshots cannot be overwritten with changed bytes. The [Gold guide](data/chocolate-gold.md) defines CLI, versions, review annotations and verified trainer handoff.
 
 Every pricing model uses `regular-consumer-price-1`: regular, non-promotional, consumer-tax-inclusive selling price, with `fallback_policy: reject`. Retain displayed/promotional/reference amounts as evidence; none substitutes for the target, and no tax guess or reverse discount is permitted. A separately evidenced regular amount alongside a promotional offer is supported. Chocolate normalizes GBP per 100g and logs it; other categories retain their declared currency and quantity basis. This fixed monetary basis supersedes earlier examples allowing excluded-tax model targets, without changing the preserved observations. Generated custom profiles retain this basis.
 
-`chocolate-source-mappings-2` adds reusable `chocolate-product-identity-1` family taxonomy. Evidence-backed Codex assignments populate product and candidate IDs; related range grouping prevents validation leakage while seller rows and prices stay separate. Unknown/conflicting relationships remain in grouped review packets. Family assignment alone does not confer eligibility. Exact physical pack identity, reviewed scope, price/tax/time/availability, edible quantity and predictors remain separate requirements. [The schema guide](chocolate-schema.md) and [registry guide](../reviews/chocolate/README.md) own mapping details.
+`chocolate-source-mappings-2` adds reusable `chocolate-product-identity-1` family taxonomy. Evidence-backed Codex assignments populate product and candidate IDs; related range grouping prevents validation leakage while seller rows and prices stay separate. Unknown/conflicting relationships remain in grouped review packets. Family assignment alone does not confer eligibility. Exact physical pack identity, reviewed scope, price/tax/time/availability, edible quantity and predictors remain separate requirements. [The schema guide](data/chocolate-schema.md) and [registry guide](../reviews/chocolate/README.md) own mapping details.
 
-The experimental `chocolate-pricing-design-3` trainer reads verified Gold, with Silver compatibility, and saves immutable runs. It implements log-price OLS, family holdout, training-only encoders, support/rank/confounding gates and family-cluster bootstrap coefficient intervals. It validates eligible targets against the copied regular-price observations. Zero eligible rows yield a readiness report and no fitted artifact. This implemented experimental baseline does not establish release readiness or supersede the proposed LightGBM/SHAP research design. [The published contract release](analysis/gold-modeling-contract-release.md) documents the verified publication and exact changes.
+The experimental `chocolate-pricing-design-3` trainer reads verified Gold, with Silver compatibility, and saves immutable runs. It implements log-price OLS, family holdout, training-only encoders, support/rank/confounding gates and family-cluster bootstrap coefficient intervals. It validates eligible targets against the copied regular-price observations. Zero eligible rows yield a readiness report and no fitted artifact. This implemented experimental baseline does not establish release readiness or supersede the proposed LightGBM/SHAP research design. [The published contract release](data/analysis/gold-modeling-contract-release.md) documents the verified publication and exact changes.

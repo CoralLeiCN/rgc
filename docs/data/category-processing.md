@@ -1,11 +1,11 @@
 # Portable category processing
 
-The [category-processing plugin](../plugins/category-processing/README.md) packages
+The [category-processing plugin](../../plugins/category-processing/README.md) packages
 processing after collection: verified raw archives, exact seller deduplication,
 standardization using category profiles, normalized price observations,
 review/eligibility, processing fingerprints, grouped mapping gaps and preparation
 of model inputs. Its discoverable
-[skill](../plugins/category-processing/skills/category-processing/SKILL.md) guides
+[skill](../../plugins/category-processing/skills/category-processing/SKILL.md) guides
 the calling harness through evidence review and proposed mapping improvements.
 
 The package targets [Agent Plugins 1.0.0](https://agent-plugins.org/specification)
@@ -54,7 +54,7 @@ python3 -B plugins/category-processing/cli.py init-profile \
 ```
 
 Read the self-contained
-[definition contract](../plugins/category-processing/skills/category-processing/references/profile-definition.md)
+[definition contract](../../plugins/category-processing/skills/category-processing/references/profile-definition.md)
 for a complete non-food example. `category-processing-definition-1` declares
 category/market, contract versions, typed attributes, source mappings, structured
 field pointers, comparable group, observed quantity, currency and model design.
@@ -112,8 +112,8 @@ A category profile consists of five aligned JSON contracts: `profile.json`,
 `contracts/category-processing/<category>/` in the
 [Hugging Face dataset](https://huggingface.co/datasets/CoralLeiCN/rgc-collections).
 The package tracks the
-[chocolate manifest](../plugins/category-processing/profiles/chocolate/dataset-contract.json)
-and [coffee manifest](../plugins/category-processing/profiles/coffee/dataset-contract.json),
+[chocolate manifest](../../plugins/category-processing/profiles/chocolate/dataset-contract.json)
+and [coffee manifest](../../plugins/category-processing/profiles/coffee/dataset-contract.json),
 with immutable dataset commits, per-file SHA-256 hashes and version metadata.
 The portable loader verifies files in a local ignored profile cache; it never
 substitutes the latest dataset revision for a pinned revision. The documentation
@@ -124,7 +124,7 @@ replace a pinned profile's authoritative dataset revision. The recipe configures
 category/market, structured field pointers
 or the bundled chocolate adapter, source-role registry and price/quantity basis.
 It does not load arbitrary Python adapters. Read the
-[profile contract](../plugins/category-processing/skills/category-processing/references/profile-contract.md)
+[profile contract](../../plugins/category-processing/skills/category-processing/references/profile-contract.md)
 before extending one. It defines validator agreement for category/market,
 attribute types, units, enum/list vocabularies and numeric bounds in nullable
 branches and conditions for known values. Selected model types/units must match
@@ -211,7 +211,7 @@ contract copies, quality/manifest and brand/retail/unknown partitions. It also
 writes `processing-ledger.jsonl`, `mapping-review-batches.jsonl`,
 `mapping-review-summary.md`, `discovered-fields.jsonl` and
 `schema-extension-review.md`. The
-[processing contract](../plugins/category-processing/skills/category-processing/references/processing-contract.md)
+[processing contract](../../plugins/category-processing/skills/category-processing/references/processing-contract.md)
 defines their roles and raw evidence resolution.
 The portable layer is `category-processing-silver-1`, with manifest
 `category-processing-silver-manifest-1` and report
@@ -236,7 +236,7 @@ remains in JSONL. The skill guides
 the calling Codex harness to triage aliases, new concepts, parser defects,
 missing data and conflicts. For requested maintenance it proposes a versioned
 diff, focused tests and impact review in the current task. The standing
-[agent-led maintenance decision](decisions/agent-led-schema-maintenance.md)
+[agent-led maintenance decision](../decisions/agent-led-schema-maintenance.md)
 requires no user review, confirmation or approval for local changes: the agent
 assesses, accepts, rejects, defers and applies supported changes within the
 authorized study. When the schema changes, finish the versioned implementation,
@@ -277,7 +277,7 @@ When reusing a review-packet directory for an older snapshot, `summarize` remove
 the two obsolete generated discovery files and keeps unrelated files. Unsafe
 output paths fail before packet changes.
 Keep narrative proposals separate from generated snapshot files. Read the
-[schema-discovery reference](../plugins/category-processing/skills/category-processing/references/schema-discovery.md).
+[schema-discovery reference](../../plugins/category-processing/skills/category-processing/references/schema-discovery.md).
 
 Two verified proposals are
 [seller review metrics](schema-proposals/seller-review-metrics.md) and
@@ -288,7 +288,7 @@ automatic proposal/decision registry remain future improvements.
 
 ## Pricing model preparation and verification
 
-The [model handoff](../plugins/category-processing/skills/category-processing/references/model-handoff.md)
+The [model handoff](../../plugins/category-processing/skills/category-processing/references/model-handoff.md)
 defines `prepare-model` outputs, saved versions/units/support/split and conditional
 contrast arithmetic. Families stay together across seller rows. Training alone
 defines vocabularies, references, numeric domains and removal of constant terms;
@@ -307,9 +307,9 @@ uv run ruff check .
 python3 -B scripts/check_documentation.py
 ```
 
-The [lifecycle plan](lifecycle/plan.md) records actual validation and remaining
+The [lifecycle plan](../lifecycle/plan.md) records actual validation and remaining
 work. Update this guide, the package README, specification and plan with portable
-processing behavior under the [documentation policy](documentation-policy.md).
+processing behavior under the [documentation policy](../documentation-policy.md).
 Verification includes both category profiles, a workflow executed from an independent
 package copy, reviewed positive and excluded model preparation, capture preservation,
 contract/output hashes, fingerprint invalidation and deterministic repeated

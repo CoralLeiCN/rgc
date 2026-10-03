@@ -2,7 +2,7 @@
 
 Status: proposed; pending agent evidence and contract assessment. User review or
 approval is not required under the
-[standing maintenance decision](../decisions/agent-led-schema-maintenance.md).
+[standing maintenance decision](../../decisions/agent-led-schema-maintenance.md).
 No attributes, mappings,
 model predictors or existing datasets are changed by this document.
 

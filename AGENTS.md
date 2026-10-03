@@ -69,4 +69,4 @@ environment with `uv sync --locked`, then run `uv run pytest` and
 tests, or verify existing caches with `python3 -B scripts/fetch_contracts.py --all --offline`.
 Use the task's existing authorization for documentation maintenance.
 
-Gold changes also update `docs/chocolate-gold.md`. Keep raw → combined Silver → immutable Parquet Gold as the chocolate training architecture; Silver owns existing processing, review and eligibility decisions. Preserve `regular-consumer-price-1` for every pricing model. Family taxonomy decisions need source evidence and stable reusable IDs, without merging seller rows.
+Gold changes also update `docs/data/chocolate-gold.md`. Keep raw → combined Silver → immutable Parquet Gold as the chocolate training architecture; Silver owns existing processing, review and eligibility decisions. Preserve `regular-consumer-price-1` for every pricing model. Family taxonomy decisions need source evidence and stable reusable IDs, without merging seller rows.

@@ -10,7 +10,7 @@ workflow status in a new snapshot. It preserves Silver's source values and
 eligibility decisions.
 
 The [schema guide](chocolate-schema.md) continues to own logical field meanings,
-evidence reviews and eligibility. The [specification](spec.md) owns cross-layer
+evidence reviews and eligibility. The [specification](../spec.md) owns cross-layer
 and release requirements. The portable category-processing plugin keeps its
 separate prepare-only interface and profile versions.
 

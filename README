@@ -8,14 +8,15 @@ and evidence before deriving an analytical schema or fitting a pricing model.
 | --- | --- |
 | [Intention](docs/intention.md) | Goals, delivery order and constraints. |
 | [EAT_HACK Retail Futures brief](docs/eat-hack-track-two.md) | Track 2 challenge, submission requirements and judging criteria. |
-| [retail frontier project description](PROJECT.md) | Project explanation, implementation status, running instructions and submission fields. |
+| [retail frontier project description](PROJECT.md) | Built capabilities, implementation status and a runnable collection demo. |
+| [Data documentation](docs/data) | Data architecture, processing guides, model designs, review evidence and schema proposals. |
 | [Specification](docs/spec.md) | Contracts, pricing methodology and acceptance requirements. |
-| [Chocolate silver](docs/chocolate-silver.md) | Raw/silver workflow, outputs, evidence resolution and reproducibility. |
-| [Chocolate schema](docs/chocolate-schema.md) | Typed fields, evidence reviews and model handoff. |
-| [Portable processing](docs/category-processing.md) | Profiles, mapping maintenance and model preparation. |
-| [Compatibility guides](docs/chocolate-deduplication.md), [cleanup](docs/chocolate-cleaning.md) | Standalone diagnostic helpers and their distinct contracts. |
-| [Chocolate pricing design](docs/chocolate-modeling-design.md), [LightGBM/SHAP explanations](docs/analysis/lightgbm-shap-explanation-design.md) | Proposed models, comparisons, calibration and explanations. |
-| [Chocolate contract manifest](schemas/chocolate/dataset-contract.json), [dataset contract guide](docs/dataset-contracts.md) | Pinned schema, mappings, validator and model design; storage, caches and offline use. |
+| [Chocolate silver](docs/data/chocolate-silver.md), [data flow diagram](docs/data/chocolate-silver.md#data-flow) | Raw/silver workflow, outputs, evidence resolution and reproducibility. |
+| [Chocolate schema](docs/data/chocolate-schema.md) | Typed fields, evidence reviews and model handoff. |
+| [Portable processing](docs/data/category-processing.md) | Profiles, mapping maintenance and model preparation. |
+| [Compatibility guides](docs/data/chocolate-deduplication.md), [cleanup](docs/data/chocolate-cleaning.md) | Standalone diagnostic helpers and their distinct contracts. |
+| [Chocolate pricing design](docs/data/chocolate-modeling-design.md), [LightGBM/SHAP explanations](docs/data/analysis/lightgbm-shap-explanation-design.md) | Proposed models, comparisons, calibration and explanations. |
+| [Chocolate contract manifest](schemas/chocolate/dataset-contract.json), [dataset contract guide](docs/data/dataset-contracts.md) | Pinned schema, mappings, validator and model design; storage, caches and offline use. |
 | [Collection package](plugins/category-research/README.md), [processing package](plugins/category-processing/README.md) | Agent Plugins 1.0.0 packages, skills, CLI and Python API. |
 | [Lifecycle intent](docs/lifecycle/intent.md), [design](docs/lifecycle/spec.md), [plan](docs/lifecycle/plan.md) | Navigation, implementation status, risks, proof and remaining work. |
 | [Documentation policy](docs/documentation-policy.md), [agent rules](AGENTS.md) | Document ownership, update conditions, language and writing style. |
@@ -60,10 +61,10 @@ uv run --script scripts/build_chocolate_silver.py --archive-root data/collection
 
 Silver preserves each shop's listings, separates brand from seller identity/role,
 and links typed products to unchanged raw evidence through source listings and
-aliases. See the [silver guide](docs/chocolate-silver.md) for the complete outputs
+aliases. See the [silver guide](docs/data/chocolate-silver.md) for the complete outputs
 and seller partitions. Add `--reviews <reviews.json>` for
 `chocolate-schema-reviews-1` decisions described in the
-[schema guide](docs/chocolate-schema.md). That guide also owns `chocolate-schema-1` with 103 attributes, the 11 selected
+[schema guide](docs/data/chocolate-schema.md). That guide also owns `chocolate-schema-1` with 103 attributes, the 11 selected
 predictors and model helpers.
 The [plan](docs/lifecycle/plan.md) records current review, price/tax, extraction
 and model validation gaps. Standalone deduplication, standardization and cleanup
@@ -87,8 +88,8 @@ uv run --script scripts/analyze_chocolate_schema.py \
 Replace the input path, commit and date with verified snapshot provenance.
 Output must be outside the input directory. The helper verifies hashes and keeps
 unknown/conflicting/review states separate. Counts describe collected seller
-listings. See the [schema analysis guide](docs/chocolate-schema.md#inspect-field-coverage-and-value-frequencies)
-and [publication receipt](docs/analysis/chocolate-pandas-publication-2026-10-03.json).
+listings. See the [schema analysis guide](docs/data/chocolate-schema.md#inspect-field-coverage-and-value-frequencies)
+and [publication receipt](docs/data/analysis/chocolate-pandas-publication-2026-10-03.json).
 
 Analytical JSON contracts are authoritative in the
 [Hugging Face dataset](https://huggingface.co/datasets/CoralLeiCN/rgc-collections)
@@ -96,7 +97,7 @@ under `contracts/chocolate/` and `contracts/category-processing/<category>/`.
 Git retains human documentation and `dataset-contract.json` manifests with
 immutable commit pins, per-file SHA-256 hashes and versions. Loaders download
 missing pinned files into ignored caches and verify them before use. Cached runs
-can be offline; the [dataset contract guide](docs/dataset-contracts.md) defines
+can be offline; the [dataset contract guide](docs/data/dataset-contracts.md) defines
 cache and publication behavior.
 
 The standalone processing package includes its runtime, five contract references,
@@ -124,7 +125,7 @@ python3 -B plugins/category-processing/cli.py summarize --silver-root data/silve
 python3 -B plugins/category-processing/cli.py prepare-model --silver-root data/silver/category-processing/chocolate/uk --output data/model-preparation/chocolate/uk
 ```
 
-The [portable guide](docs/category-processing.md) and package references cover
+The [portable guide](docs/data/category-processing.md) and package references cover
 versions, review examples, outputs and mapping changes. Processing rebuilds fully;
 the ledger reports input/rule changes. The harness maintains mappings within the
 current task using evidence, versioned diffs, tests and impact review. Incremental processing caches,
@@ -136,8 +137,8 @@ validation remain future work. The original chocolate CLI keeps its established 
 Structural discovery records unconfigured raw fields in `discovered-fields.jsonl`
 and generates `schema-extension-review.md`. Keep hypotheses and decisions in
 durable proposals linked to this evidence; see the initial
-[seller review metrics](docs/schema-proposals/seller-review-metrics.md) and
-[selling plan terms](docs/schema-proposals/selling-plan-terms.md) proposals.
+[seller review metrics](docs/data/schema-proposals/seller-review-metrics.md) and
+[selling plan terms](docs/data/schema-proposals/selling-plan-terms.md) proposals.
 The [standing maintenance decision](docs/decisions/agent-led-schema-maintenance.md)
 allows supported local schema, mapping and parser changes without user approval.
 When a schema changes, finish implementation and validation, present a detailed
@@ -188,7 +189,7 @@ The dataset also contains separately published silver snapshots and analytical
 contracts. `scripts/publish_contracts.py` publishes contracts with immutable
 reference manifests while preserving raw exports and silver files. Published
 silver requires separate evidence of review and model readiness. See the
-[dataset contract guide](docs/dataset-contracts.md).
+[dataset contract guide](docs/data/dataset-contracts.md).
 
 The exporter discovers all studies under `data/collections/`. Generated files in
 `data/huggingface-export/` are ignored by Git. Publication is a single run;
@@ -198,11 +199,11 @@ Original dataset reference: https://github.com/coveooss/SIGIR-ecom-data-challeng
 
 ## Gold, experimental training and product families
 
-The [Gold guide](docs/chocolate-gold.md) defines immutable Parquet training snapshots, provenance and user-directed bulk review. Build and train with the locked development environment:
+The [Gold guide](docs/data/chocolate-gold.md) defines immutable Parquet training snapshots, provenance and user-directed bulk review. Build and train with the locked development environment:
 
 ```sh
 uv run python -B scripts/build_chocolate_gold.py --silver-root data/silver/chocolate/uk --output data/gold/chocolate/uk
 uv run python -B scripts/train_chocolate_model.py --gold-root data/gold/chocolate/uk/<gold-version> --output data/models/chocolate/uk --group bar
 ```
 
-The raw-to-Silver builder includes reviewed family mappings from the [registry](reviews/chocolate/README.md), with `--family-mappings` overrides and grouped Codex review packets. Every price model uses regular, non-promotional, tax-inclusive consumer price. The current rebuilt corpus has family IDs on 402 candidates and zero eligible model inputs; no real-data regression has fitted. [The published release](docs/analysis/gold-modeling-contract-release.md) records the verified contract publication and validation. Existing main features, discovery and proposed LightGBM/SHAP design remain available.
+The raw-to-Silver builder includes reviewed family mappings from the [registry](reviews/chocolate/README.md), with `--family-mappings` overrides and grouped Codex review packets. Every price model uses regular, non-promotional, tax-inclusive consumer price. The current rebuilt corpus has family IDs on 402 candidates and zero eligible model inputs; no real-data regression has fitted. [The published release](docs/data/analysis/gold-modeling-contract-release.md) records the verified contract publication and validation. Existing main features, discovery and proposed LightGBM/SHAP design remain available.

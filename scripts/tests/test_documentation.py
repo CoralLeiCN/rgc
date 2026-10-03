@@ -283,8 +283,8 @@ class DocumentationMaintenanceTests:
         changed = {"scripts/chocolate_standardization/values.py"}
         required = {
             "docs/spec.md",
-            "docs/chocolate-schema.md",
-            "docs/chocolate-silver.md",
+            "docs/data/chocolate-schema.md",
+            "docs/data/chocolate-silver.md",
             "docs/lifecycle/plan.md",
         }
         errors = guard.check(self.root, changed=changed)
@@ -306,21 +306,21 @@ class DocumentationMaintenanceTests:
     def test_component_changes_require_their_canonical_documents(self):
         silver = {
             "docs/spec.md",
-            "docs/chocolate-schema.md",
-            "docs/chocolate-silver.md",
+            "docs/data/chocolate-schema.md",
+            "docs/data/chocolate-silver.md",
             "docs/lifecycle/plan.md",
         }
         cleanup = {
             "docs/spec.md",
-            "docs/chocolate-cleaning.md",
-            "docs/chocolate-deduplication.md",
-            "docs/chocolate-silver.md",
+            "docs/data/chocolate-cleaning.md",
+            "docs/data/chocolate-deduplication.md",
+            "docs/data/chocolate-silver.md",
             "docs/lifecycle/plan.md",
         }
         cases = (
             (
                 "scripts/dataset_contracts.py",
-                silver | {"docs/dataset-contracts.md", "README"},
+                silver | {"docs/data/dataset-contracts.md", "README"},
             ),
             (REFERENCES[0], silver),
             ("scripts/chocolate_silver.py", silver),
@@ -341,7 +341,7 @@ class DocumentationMaintenanceTests:
                 "plugins/category-processing/category_processing/pipeline.py",
                 {
                     "docs/spec.md",
-                    "docs/category-processing.md",
+                    "docs/data/category-processing.md",
                     "plugins/category-processing/README.md",
                     "docs/lifecycle/plan.md",
                 },

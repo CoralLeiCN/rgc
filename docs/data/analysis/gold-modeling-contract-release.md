@@ -50,7 +50,7 @@ Published the exact 16 files below: 14 contract JSON files, `contracts/manifest.
 
 Publication verified every uploaded byte and updated the three Git reference manifests with the returned immutable revision and exact hashes. All three caches were materialized for final offline verification and behavioral checks before the Git squash commit.
 
-The approval requirement comes from the [accepted maintenance decision](../decisions/agent-led-schema-maintenance.md): present the completed release and wait for authorization of the specific Hugging Face commit. Local evidence decisions and implementation are already authorized.
+The approval requirement comes from the [accepted maintenance decision](../../decisions/agent-led-schema-maintenance.md): present the completed release and wait for authorization of the specific Hugging Face commit. Local evidence decisions and implementation are already authorized.
 
 ## Publication parent refresh on 2026-10-03
 

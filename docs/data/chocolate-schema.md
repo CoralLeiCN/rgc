@@ -17,7 +17,7 @@ build command, dataset outputs, evidence resolution and current build status.
 
 These four files are authoritative under `contracts/chocolate/` in the
 [Hugging Face dataset](https://huggingface.co/datasets/CoralLeiCN/rgc-collections).
-The [dataset manifest](../schemas/chocolate/dataset-contract.json) in Git pins
+The [dataset manifest](../../schemas/chocolate/dataset-contract.json) in Git pins
 the immutable dataset commit, file paths, SHA-256 hashes and version metadata.
 Runtime loading verifies downloaded and cached bytes, including byte lengths,
 under ignored `data/contract-cache/`. Git stores the manifest instead of the
@@ -27,7 +27,7 @@ downloading them. See [dataset contracts](dataset-contracts.md) for cache,
 publication and verification rules.
 
 Machine contracts define the complete field list and allowed values; this guide
-explains their intent and use. The [project specification](spec.md) owns
+explains their intent and use. The [project specification](../spec.md) owns
 requirements across layers and for release.
 
 Loading rejects drift between each profile attribute and the product validator's
@@ -43,7 +43,7 @@ The proposed pricing explanation groups modeled traits by the attribute families
 below, with seller observation inputs in a selling-context family. Each predicted
 price will report individual trait contributions and one signed percentage per
 trait family, plus a model reference percentage, under
-[specification section 5.2.1](spec.md#521-trait-and-trait-family-percentages-of-predicted-price).
+[specification section 5.2.1](../spec.md#521-trait-and-trait-family-percentages-of-predicted-price).
 Trait groups differ from product identity families. This output awaits a versioned
 model mapping, implementation and validation; existing contracts and helpers do
 not produce it.
@@ -325,7 +325,7 @@ does not abort the silver build or become an unknown/reference value. Keep this
 declared check of the study domain distinct from support learned later by the
 encoder.
 
-[scripts/chocolate_model.py](../scripts/chocolate_model.py) provides helpers to
+[scripts/chocolate_model.py](../../scripts/chocolate_model.py) provides helpers to
 validate eligible rows, split by reviewed `family_id`, learn a frozen encoder
 from training rows, and transform rows held out of training with that encoder.
 Related physical/family designs stay in one split while seller rows remain unique;
@@ -370,7 +370,7 @@ consumer willingness to pay.
 Use the [silver build status](chocolate-silver.md#review-training-and-interpretation-boundaries)
 for current review and price/tax gaps. Silver remains a standardized candidate
 dataset until evidence review, extraction evaluation, support checks and the
-[specification's release gates](spec.md) pass.
+[specification's release gates](../spec.md) pass.
 
 ## Extending the schema and keeping documentation current
 
@@ -383,13 +383,13 @@ dataset until evidence review, extraction evaluation, support checks and the
 4. Rebuild silver and inspect coverage, exclusions and review changes.
 5. For schema changes, present the completed release summary and wait for user
   review before its Hugging Face commit under the
-  [maintenance decision](decisions/agent-led-schema-maintenance.md). Supported
+  [maintenance decision](../decisions/agent-led-schema-maintenance.md). Supported
   local changes require no user approval.
 6. Publish reviewed contracts to a new immutable dataset revision, verify bytes
   and update manifest pins/hashes under
   [dataset contract maintenance](dataset-contracts.md#maintenance-and-verification).
 7. Update this guide and the applicable documents under the
-  [documentation policy](documentation-policy.md); run
+  [documentation policy](../documentation-policy.md); run
   `python3 -B scripts/check_documentation.py`.
 
 New tracked fields can remain unknown or excluded from the model until evidence,

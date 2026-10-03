@@ -1,22 +1,94 @@
 # UK chocolate raw and silver workflow
 
-The canonical chocolate dataset has two layers: raw preserves original evidence,
-and silver combines deduplication within each seller, schema standardization,
-price normalization, evidence review and model eligibility in one build.
+The chocolate workflow preserves raw evidence, builds one combined silver
+dataset, and exports immutable Parquet Gold training snapshots. Silver combines
+deduplication within each seller, schema standardization, price normalization,
+evidence review and model eligibility in one build.
 
 The [schema guide](chocolate-schema.md) owns the chocolate contract with 103 attributes,
 standardization rules, review format and pricing model handoff. The
-[project specification](spec.md) owns requirements across layers and for release.
+[project specification](../spec.md) owns requirements across layers and for release.
 
 Machine contracts are authoritative under `contracts/chocolate/` in the
 [Hugging Face dataset](https://huggingface.co/datasets/CoralLeiCN/rgc-collections).
-The [dataset manifest](../schemas/chocolate/dataset-contract.json) pins their
+The [dataset manifest](../../schemas/chocolate/dataset-contract.json) pins their
 immutable revision, versions, file paths and SHA-256 hashes. The build verifies
 file byte lengths and hashes under ignored `data/contract-cache/`; a cache miss
 requires network access, and verified cached bytes can be reused offline.
 Generated silver snapshots retain exact contract copies and their dataset
 provenance. Follow [dataset contracts](dataset-contracts.md) for cache resolution
 and verification.
+
+## Data flow
+
+The agent gathers product information and source evidence, then the collection
+plugin imports those prepared records. Processing reads the preserved raw
+archive, builds one combined silver snapshot and exports its training views to
+immutable Gold snapshots.
+
+### Stage descriptions
+
+| Stage | Purpose | Data and outputs | Current status |
+| --- | --- | --- | --- |
+| **Bronze / raw** | Preserve what each source reported so later interpretations can be checked. | Original product records, prices and claims; source text and available images; seller identity and immutable capture history. | Implemented in the raw archive. Bronze is the presentation name for this existing layer. |
+| **Silver** | Turn preserved evidence into consistent records while retaining uncertainty and provenance. | Listings deduplicated within each seller, typed features, standardized units, normalized prices, source references, quality reports, review queues and eligibility decisions. | Implemented with pandas. Missing and conflicting values remain visible; current chocolate records still need review before training. |
+| **Gold** | Package verified training views in immutable snapshots for model use. | Parquet candidate and eligible tables, copied contracts and price/identity evidence, manifests, hashes and preservation reports. | Export and an experimental OLS trainer are implemented. Gold preserves Silver's eligibility decisions; current chocolate has zero eligible model inputs and no fitted model. Validated price benchmarks and explanations remain planned. |
+
+### Processing steps
+
+```mermaid
+flowchart TD
+    Sources["Retailer and brand product pages"] --> Agent["Agent collects records and evidence"]
+    Agent --> Collection["Collection plugin imports and preserves captures"]
+    Collection --> Raw
+
+    subgraph Bronze["Bronze / raw stage"]
+        Raw["Implemented: preserve original source evidence<br/>Product records, prices, claims, text and available images<br/>Keep seller identity and immutable capture history"]
+    end
+
+    Raw --> SilverPurpose
+
+    subgraph Silver["Silver stage: combined processing build"]
+        SilverPurpose["Implemented: turn raw evidence into consistent records<br/>Use pandas for table operations and preserve source references<br/>Keep missing values, conflicts and review status visible"] --> Verify
+        Verify["Verify capture integrity and seller listing identity"] --> Deduplicate["Deduplicate exact listings within each seller"]
+        Deduplicate --> Standardize["Standardize features, units and vocabulary"]
+        Standardize --> Prices["Create price observations and normalize supported prices"]
+        Prices --> Gates["Apply reviews, family mappings and eligibility rules"]
+    end
+
+    Contracts["Pinned schema, mappings and model rules"] --> Standardize
+    Contracts --> Gates
+    Reviews["Evidence review and family decisions"] --> Gates
+    Gates --> Dataset["Structured listings, features, prices and source references"]
+    Gates --> Reports["Quality report and review queue"]
+    Reports -.-> Reviews
+    Dataset --> Candidates["Training candidates with exclusion reasons"]
+    Dataset --> Eligible["Reviewed eligible model inputs<br/>Current chocolate data: none"]
+    Candidates --> GoldPurpose
+    Eligible --> GoldPurpose
+
+    subgraph Gold["Gold stage: immutable training snapshots"]
+        GoldPurpose["Implemented: preserve verified training views in Parquet<br/>Keep candidates and eligible inputs in separate tables<br/>Retain values, eligibility, contracts and evidence provenance"] --> Snapshot["Immutable Gold snapshot with manifests and integrity reports"]
+    end
+
+    Snapshot --> Trainer["Implemented experimental OLS trainer<br/>Family holdout, frozen encoder and bootstrap diagnostics"]
+    Trainer --> Readiness["Current chocolate: readiness report<br/>Zero eligible rows and no fitted model"]
+    Trainer -.-> Future["Planned validated pricing benchmarks<br/>LightGBM, SHAP and AI explanations"]
+```
+
+Listings from different sellers remain distinct, and derived values retain
+references to their original captures. Quality reports expose missing,
+conflicting, unmapped and excluded evidence. Applying updated reviews or
+contracts requires a new build while preserving the raw archive and earlier
+snapshots.
+
+Gold export preserves candidate and eligible rows separately, including a typed
+empty eligible table. Storage verification and optional bulk review annotations
+preserve eligibility; the trainer reports unmet readiness when no rows qualify.
+The [Gold guide](chocolate-gold.md) owns export and training commands. The
+[portable processing guide](category-processing.md) covers its separate model
+preparation interface with family splits and frozen encoders. The dashed arrow
+to future pricing outputs marks the remaining validation and explanation work.
 
 ## Layer responsibilities
 
@@ -184,7 +256,7 @@ Silver emits normalized pricing candidates and reviewed eligible inputs under
 the [schema's model handoff](chocolate-schema.md#pricing-model-handoff-and-insights).
 That guide owns the selected target and predictors, schema/model domain
 distinctions, validation and preparation helpers, and interpretation limits.
-Follow the [specification](spec.md) for model release requirements.
+Follow the [specification](../spec.md) for model release requirements.
 
 The current values extracted from sources remain unreviewed and price/tax basis
 is unresolved, so eligible model inputs remain empty and `release_ready` is
@@ -222,7 +294,7 @@ unimplemented in both workflows.
    conflicts from evidence instead of choosing the most frequent claim.
 4. Use agent evidence review to prepare and assess a mapping/parser/schema diff,
    fixtures, tests and an impact comparison under the
-   [maintenance decision](decisions/agent-led-schema-maintenance.md). Supported
+   [maintenance decision](../decisions/agent-led-schema-maintenance.md). Supported
    local changes need no user approval; present the completed schema release
    for user review before its Hugging Face commit. An alias must preserve the
    original meaning. Check whether a new concept needs a typed field or scope
@@ -247,7 +319,7 @@ impact; taxonomy growth does not establish independent support for a feature.
 
 Messaging, dispatch and scheduling require separate configuration. Review
 changes before applying them. Package validation, data review and later model
-release are separate under the [specification](spec.md).
+release are separate under the [specification](../spec.md).
 
 ## Compatibility helpers and documentation maintenance
 
@@ -260,14 +332,14 @@ Run the canonical build directly from raw to write one silver dataset.
 
 When silver behavior, identity, schema, mappings, review gates or model design
 changes, update this guide, the applicable contracts and the documents required
-by the [documentation policy](documentation-policy.md). Run
+by the [documentation policy](../documentation-policy.md). Run
 `python3 -B scripts/check_documentation.py` with the relevant behavioral tests.
 
 ## Gold and reviewed family identities
 
 Raw → combined Silver → immutable Parquet [Gold](chocolate-gold.md) is the chocolate training pipeline. Silver owns evidence-backed transformations and eligibility. Gold initially copies candidate and eligible rows without semantic changes. A user-directed bulk review creates a new snapshot with its administrative basis; it does not establish individual evidence review or fill missing targets.
 
-`--family-mappings` accepts `chocolate-family-mappings-1` decisions; without an override the build loads `reviews/chocolate/family-mappings.json` when present. Taxonomy `chocolate-product-identity-1` distinguishes conservative related ranges from exact consumer-pack identities. The [identity registry guide](../reviews/chocolate/README.md) explains exact seller/listing selectors, original-name guards, reviewer/reason/capture evidence and current-task Codex decisions. Keep every seller listing and original capture separate. New or conflicting cases become `family-review-packets.jsonl`; hints do not establish physical equality. `family-mappings.json` preserves the accepted parsed registry and candidate IDs come from its resolved typed attributes. Both files are managed and hashed in the manifest.
+`--family-mappings` accepts `chocolate-family-mappings-1` decisions; without an override the build loads `reviews/chocolate/family-mappings.json` when present. Taxonomy `chocolate-product-identity-1` distinguishes conservative related ranges from exact consumer-pack identities. The [identity registry guide](../../reviews/chocolate/README.md) explains exact seller/listing selectors, original-name guards, reviewer/reason/capture evidence and current-task Codex decisions. Keep every seller listing and original capture separate. New or conflicting cases become `family-review-packets.jsonl`; hints do not establish physical equality. `family-mappings.json` preserves the accepted parsed registry and candidate IDs come from its resolved typed attributes. Both files are managed and hashed in the manifest.
 
 A family-only assignment reviews only the family relationship. It does not review scope, price, quantities, predictors or exact physical identity. Exact physical mappings require separate pack evidence review, including changes retaining the same IDs and name. There is no unattended dispatcher. After updating a registry or dataset-owned contract, rebuild Silver into a new destination and produce a new Gold snapshot. Existing `--schema-root` custom directories and `--offline` verified-cache behavior remain supported.
 

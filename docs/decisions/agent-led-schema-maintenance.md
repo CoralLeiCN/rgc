@@ -51,5 +51,5 @@ If the prepared release materially changes after review, show the updated summar
 before committing it. The calling harness owns this review step; this decision
 does not implement a popup UI, scheduled publisher or automatic upload gate.
 
-Canonical workflow: [portable processing](../category-processing.md),
+Canonical workflow: [portable processing](../data/category-processing.md),
 [specification](../spec.md) and [intention](../intention.md).

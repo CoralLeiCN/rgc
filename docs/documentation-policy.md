@@ -8,18 +8,22 @@ rules.
 
 ## Canonical documents and ownership
 
+Data workflow guides, model designs, review evidence and schema proposals live
+under `docs/data/`. Update their links and documentation checker paths when
+changing this structure.
+
 | Document | Owns | Update condition |
 | --- | --- | --- |
 | [Intention](intention.md) | User goals, requested scope, and constraints. | User goals, requested deliverables, scope, or constraints change. |
 | [Specification](spec.md) | Contracts across layers, supported behavior, readiness, training, interpretation and release requirements. | Behavior, interface, eligibility, model basis or acceptance requirements change. |
-| [Silver guide](chocolate-silver.md) | Raw/silver responsibilities, combined pipeline, preservation of source listings and aliases, outputs, evidence resolution, manifest and CLI. | Silver behavior, identity, output, provenance, CLI, schema/review application or eligibility changes. |
-| [Portable processing guide](category-processing.md) | Standalone processing package, profile versions, stable seller envelope, generic targets, ledger/batches, harness maintenance and model preparation commands. | Portable engine, package, profile, ledger/batch, review/eligibility, model handoff or public CLI changes. |
+| [Silver guide](data/chocolate-silver.md) | Raw/silver responsibilities, combined pipeline, preservation of source listings and aliases, outputs, evidence resolution, manifest and CLI. | Silver behavior, identity, output, provenance, CLI, schema/review application or eligibility changes. |
+| [Portable processing guide](data/category-processing.md) | Standalone processing package, profile versions, stable seller envelope, generic targets, ledger/batches, harness maintenance and model preparation commands. | Portable engine, package, profile, ledger/batch, review/eligibility, model handoff or public CLI changes. |
 | [Processing package README](../plugins/category-processing/README.md), [skill](../plugins/category-processing/skills/category-processing/SKILL.md) and its references | Standalone use, decisions, archive/profile contracts, evidence triage and model handoff. | Package behavior or workflow changes; preserve complete use after copying the package without repository siblings. |
-| [Deduplication guide](chocolate-deduplication.md) | Standalone deduplication helper identity, snapshot outputs and CLI. | Shared deduplication identity, helper partitions/provenance or CLI changes; update the silver contract too. |
-| [Cleanup guide](chocolate-cleaning.md) | Earlier compatibility cleanup directly from raw and its distinct review contract. | Helper implementation, profile, review format or CLI changes; keep its relationship to silver accurate. |
-| [Chocolate schema guide](chocolate-schema.md) | Typed fields, standardization rules, evidence reviews, training handoff and insight interpretation within silver. | Chocolate schema, vocabulary, source mappings, review/eligibility, model design or related behavior changes. |
+| [Deduplication guide](data/chocolate-deduplication.md) | Standalone deduplication helper identity, snapshot outputs and CLI. | Shared deduplication identity, helper partitions/provenance or CLI changes; update the silver contract too. |
+| [Cleanup guide](data/chocolate-cleaning.md) | Earlier compatibility cleanup directly from raw and its distinct review contract. | Helper implementation, profile, review format or CLI changes; keep its relationship to silver accurate. |
+| [Chocolate schema guide](data/chocolate-schema.md) | Typed fields, standardization rules, evidence reviews, training handoff and insight interpretation within silver. | Chocolate schema, vocabulary, source mappings, review/eligibility, model design or related behavior changes. |
 | [Chocolate dataset manifest](../schemas/chocolate/dataset-contract.json) | Immutable dataset revision, paths, hashes and versions for executable contracts. | Typed attributes, vocabulary, units, mapping behavior, record shape, feature selection or model design changes. Publish affected contracts and synchronize manifest, versions and documentation. |
-| [Dataset contract guide](dataset-contracts.md) | Dataset ownership, immutable pins, caches, offline use and publication. | Manifest format, resolver, cache behavior or publication workflow changes. |
+| [Dataset contract guide](data/dataset-contracts.md) | Dataset ownership, immutable pins, caches, offline use and publication. | Manifest format, resolver, cache behavior or publication workflow changes. |
 | [README](../README) | Entry points, usable commands, and implementation overview. | A public entry point, layer, usable command, or implementation status changes. |
 | [Lifecycle intent](lifecycle/intent.md) and [lifecycle specification](lifecycle/spec.md) | Short navigation views of canonical intention and specification. | Their summarized scope or status would become inaccurate. Keep detail in canonical documents. |
 | [Lifecycle plan](lifecycle/plan.md) | Implementation work, current status, risks, proof, and remaining work. | Every behavioral, schema, pipeline, or modeling change; update affected progress and proof in the same change. |
@@ -53,12 +57,12 @@ documents when their meaning or public entry points are affected.
 
 | Changed paths | Required document updates |
 | --- | --- |
-| `scripts/build_chocolate_silver.py`, `scripts/chocolate_silver.py`, `schemas/chocolate/**`, `scripts/chocolate_standardization/**`, `scripts/standardize_chocolate_data.py`, `scripts/chocolate_model.py`, `scripts/dataset_contracts.py`, `scripts/fetch_contracts.py` | `docs/spec.md`, `docs/chocolate-schema.md`, `docs/chocolate-silver.md`, `docs/lifecycle/plan.md` |
-| `scripts/dataset_contracts.py`, `scripts/fetch_contracts.py` | Also `docs/dataset-contracts.md` and `README`. |
-| `scripts/publish_contracts.py` | `docs/spec.md`, `docs/dataset-contracts.md`, `README`, `docs/lifecycle/plan.md` |
-| `scripts/chocolate_cleanup/**`, `scripts/clean_chocolate_data.py`, `scripts/deduplicate_chocolate_data.py` | `docs/spec.md`, `docs/chocolate-cleaning.md`, `docs/chocolate-deduplication.md`, `docs/chocolate-silver.md`, `docs/lifecycle/plan.md` |
+| `scripts/build_chocolate_silver.py`, `scripts/chocolate_silver.py`, `schemas/chocolate/**`, `scripts/chocolate_standardization/**`, `scripts/standardize_chocolate_data.py`, `scripts/chocolate_model.py`, `scripts/dataset_contracts.py`, `scripts/fetch_contracts.py` | `docs/spec.md`, `docs/data/chocolate-schema.md`, `docs/data/chocolate-silver.md`, `docs/lifecycle/plan.md` |
+| `scripts/dataset_contracts.py`, `scripts/fetch_contracts.py` | Also `docs/data/dataset-contracts.md` and `README`. |
+| `scripts/publish_contracts.py` | `docs/spec.md`, `docs/data/dataset-contracts.md`, `README`, `docs/lifecycle/plan.md` |
+| `scripts/chocolate_cleanup/**`, `scripts/clean_chocolate_data.py`, `scripts/deduplicate_chocolate_data.py` | `docs/spec.md`, `docs/data/chocolate-cleaning.md`, `docs/data/chocolate-deduplication.md`, `docs/data/chocolate-silver.md`, `docs/lifecycle/plan.md` |
 | `plugins/category-research/**`, excluding its tests | `docs/spec.md`, `plugins/category-research/README.md`, `docs/lifecycle/plan.md` |
-| `plugins/category-processing/**`, excluding its tests | `docs/spec.md`, `docs/category-processing.md`, `plugins/category-processing/README.md`, `docs/lifecycle/plan.md` |
+| `plugins/category-processing/**`, excluding its tests | `docs/spec.md`, `docs/data/category-processing.md`, `plugins/category-processing/README.md`, `docs/lifecycle/plan.md` |
 | `scripts/publish_collections.py`, `scripts/archive_product_sources.py`, `scripts/verify_product_archive.py` | `docs/spec.md`, `README`, `docs/lifecycle/plan.md` |
 | `AGENTS.md`, `scripts/check_documentation.py`, `.github/workflows/validation.yml` | `docs/documentation-policy.md`, `docs/lifecycle/plan.md` |
 
@@ -145,6 +149,6 @@ deployment and communication require authorization within their own task scope.
 
 ## Gold and fixed target maintenance
 
-Changes to Gold build/review/load interfaces require `docs/spec.md`, `docs/chocolate-schema.md`, `docs/chocolate-silver.md`, `docs/chocolate-gold.md`, `README` and `docs/lifecycle/plan.md`. Experimental regression/training and family mapping changes require the schema/spec/Silver guides and lifecycle status; trainer handoff also updates Gold. Canonical contract bodies stay dataset-owned; prepare local versioned releases and update immutable references after approved verified publication. Maintain the finalized regular, non-promotional, tax-inclusive target with reject fallback across bundled and generated profiles.
+Changes to Gold build/review/load interfaces require `docs/spec.md`, `docs/data/chocolate-schema.md`, `docs/data/chocolate-silver.md`, `docs/data/chocolate-gold.md`, `README` and `docs/lifecycle/plan.md`. Experimental regression/training and family mapping changes require the schema/spec/Silver guides and lifecycle status; trainer handoff also updates Gold. Canonical contract bodies stay dataset-owned; prepare local versioned releases and update immutable references after approved verified publication. Maintain the finalized regular, non-promotional, tax-inclusive target with reject fallback across bundled and generated profiles.
 
 Locked development dependencies include NumPy 2.2.6 and PyArrow 21.0.0 so pytest exercises numerical and Parquet behavior instead of skipping it. Preserve administrative Gold review provenance separately from evidence-backed Silver eligibility. The schema-release review policy in [agent-led maintenance](decisions/agent-led-schema-maintenance.md) remains authoritative before any Hugging Face commit.

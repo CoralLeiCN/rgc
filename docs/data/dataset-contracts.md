@@ -10,9 +10,9 @@ model-ready; this storage migration does not rebuild local silver.
 
 | Contract set | Dataset path | Git reference |
 | --- | --- | --- |
-| Established chocolate schema | `contracts/chocolate/` | [Chocolate manifest](../schemas/chocolate/dataset-contract.json) |
-| Portable chocolate processing | `contracts/category-processing/chocolate/` | [Portable chocolate manifest](../plugins/category-processing/profiles/chocolate/dataset-contract.json) |
-| Portable coffee starter | `contracts/category-processing/coffee/` | [Portable coffee manifest](../plugins/category-processing/profiles/coffee/dataset-contract.json) |
+| Established chocolate schema | `contracts/chocolate/` | [Chocolate manifest](../../schemas/chocolate/dataset-contract.json) |
+| Portable chocolate processing | `contracts/category-processing/chocolate/` | [Portable chocolate manifest](../../plugins/category-processing/profiles/chocolate/dataset-contract.json) |
+| Portable coffee starter | `contracts/category-processing/coffee/` | [Portable coffee manifest](../../plugins/category-processing/profiles/coffee/dataset-contract.json) |
 
 Each set contains `profile.json`, `source-mappings.json`, `product.schema.json`
 and `model-design.json`; portable sets also contain `pipeline.json`.
@@ -52,7 +52,7 @@ remain supported for custom profiles and compatibility.
 
 Edit a local working copy, preserve source evidence, bump affected semantic
 versions when meanings change, and validate the aligned contracts. Publish them
-after the [completed schema release review](decisions/agent-led-schema-maintenance.md#review-before-a-hugging-face-commit)
+after the [completed schema release review](../decisions/agent-led-schema-maintenance.md#review-before-a-hugging-face-commit)
 to a new dataset commit, verify the published bytes, then update the Git
 manifest pins/hashes and corresponding documentation. A storage-only migration
 preserves contract bytes and existing schema/mapping/model/recipe versions.

@@ -1,9 +1,6 @@
 # retail frontier
 
-**Track:** Retail Futures. This document explains the project using the
-[EAT_HACK requirements](docs/eat-hack-track-two.md).
-
-## Project description
+## What we built
 
 retail frontier helps brands and retail buyers investigate product features and
 price positioning, starting with chocolate sold in the UK. The decision we aim
@@ -17,30 +14,31 @@ evidence review, while keeping listings from different sellers distinct. Every
 derived interpretation links back to source evidence, and missing or conflicting
 information remains visible.
 
-The working product produces reproducible datasets, review reports and
-eligibility decisions for later modelling. Interpretable pricing benchmarks,
-LightGBM predictions and AI explanations are planned; chocolate evidence still
-requires review before training and validated price testing.
+The working product produces reproducible datasets, review reports, eligibility
+decisions and immutable Parquet Gold training snapshots. An experimental OLS
+trainer is implemented; current chocolate data has no eligible reviewed inputs
+and no fitted model. Validated pricing benchmarks, LightGBM predictions and AI
+explanations remain planned.
 
-This approach makes data quality and uncertainty part of the retail decision
-process. It helps teams identify which evidence needs checking before using a
-price comparison. We built the project during EAT_HACK with no substantial
-pre-existing project work.
+## Our data
 
-## Retail problem and intended decision
+| Aspect | Details |
+| --- | --- |
+| Scope | Chocolate listings from UK retailers and direct brand stores. |
+| Record | One product offered by one seller; the same product at different shops retains separate listings and prices. |
+| Collected fields | Prices, pack sizes, ingredients, nutrition, descriptions, packaging and promotional claims, where available. |
+| Source evidence | Source links, capture dates, original text and available images. |
+| Bronze / raw archive | Original records, source evidence and capture history. |
+| Silver dataset | Standardized features, comparable price units and review flags; missing or conflicting information stays visible. |
+| Gold snapshots | Immutable Parquet candidate and eligible tables with verified contracts and evidence provenance. |
+| Current status | Review required before model training; UK market coverage is unverified. |
+| Demo sample | Five illustrative records from the study. |
 
-A brand designing a chocolate product or a buyer evaluating its price needs
-comparable evidence about ingredients, claims, pack quantities and selling
-context. Listings can repeat, use different units or leave key facts unresolved.
-These differences affect how useful a price comparison is.
+## How it works
 
-Our intended decision is to assess a proposed product's price positioning within
-a supported retail context. The current workflow establishes the evidence and
-review needed for that assessment. A validated pricing benchmark remains a
-development goal. Observed price associations alone cannot establish consumer
-willingness to pay, demand or causal effects of individual features.
-
-## Approach and implementation status
+The [data flow diagram](docs/data/chocolate-silver.md#data-flow) shows the path
+the bronze/raw, silver and Gold stages, with descriptions of their
+purpose, outputs and current status.
 
 | Part of the product | Current status |
 | --- | --- |
@@ -48,11 +46,19 @@ willingness to pay, demand or causal effects of individual features.
 | Deduplicate within sellers, standardize supported chocolate features and normalize supported prices. | Implemented through the combined silver pipeline. Listings from different sellers retain separate identities. |
 | Retain evidence references, missing values, conflicts and review requirements. | Implemented in derived records and quality/review reports. |
 | Prepare eligible model inputs and keep related product families together during validation splits. | Helpers implemented. Current chocolate evidence requires review and has no eligible reviewed training inputs. |
-| Fit pricing benchmarks, compare retailer contexts and explain predictions with SHAP and AI. | Proposed designs; fitting, validation and explanations remain pending. |
+| Export immutable Gold and train an experimental OLS model. | Export and trainer implemented; current chocolate has zero eligible inputs and no fitted model. |
+| Validate pricing benchmarks, compare retailer contexts and explain predictions with SHAP and AI. | Proposed designs; validation and explanations remain pending. |
+
+The standalone [processing plugin](plugins/category-processing/README.md)
+packages this workflow for other product categories. It accepts category
+profiles, reports mapping gaps and unfamiliar source fields, and prepares
+frozen model inputs when reviewed records are eligible. Chocolate and coffee
+profiles are included, and a profile generator creates working contracts from
+an explicit category definition.
 
 The [implementation plan](docs/lifecycle/plan.md) records verification and
-remaining work. The [pricing design](docs/chocolate-modeling-design.md) and
-[explanation design](docs/analysis/lightgbm-shap-explanation-design.md) describe
+remaining work. The [pricing design](docs/data/chocolate-modeling-design.md) and
+[explanation design](docs/data/analysis/lightgbm-shap-explanation-design.md) describe
 the proposed modelling stage.
 
 ## Running the current product
@@ -87,45 +93,18 @@ document = {
         "collection_notes": ["Illustrative record; original pages were not fetched by this demo."],
     } for product in sample["products"]],
 }
-output = Path("data/hackathon-demo")
+output = Path("data/product-demo")
 result = import_document(document, output)
 print(output / result["report_path"])
 PY
 ```
 
 Inspect the returned report and the archived records under
-`data/hackathon-demo/chocolate/uk`. This demonstrates record preservation and
+`data/product-demo/chocolate/uk`. This demonstrates record preservation and
 capture history. The sample's completeness remains unverified, and the demo
 does not establish model readiness.
 
 For the full processing workflow, use a collected raw archive and the pinned
-contracts described in the [README](README), [silver guide](docs/chocolate-silver.md)
-and [dataset contract guide](docs/dataset-contracts.md). Raw datasets and contract
+contracts described in the [README](README), [silver guide](docs/data/chocolate-silver.md)
+and [dataset contract guide](docs/data/dataset-contracts.md). Raw datasets and contract
 caches are supplied separately from this checkout.
-
-## Judging criteria and evidence
-
-| Criterion | Weight | What this project can demonstrate | Evidence still needed |
-| --- | --- | --- | --- |
-| Originality & Thinking | 30% | A workflow connecting source evidence, seller context and explicit review to the intended pricing decision. | Explain why these choices improve the chosen user's workflow. |
-| Build & Execution | 30% | Working collection and processing code, immutable captures, reproducible outputs and review gates. | Record the working workflow in the demo; present proposed models as planned work. |
-| Value & Relevance | 25% | A concrete pricing problem for a brand or retail buyer, with traceable product evidence. | Validate usefulness with a user or worked decision; evaluate prediction accuracy after eligible inputs and fitting are available. |
-| Demo & Communication | 15% | A clear walkthrough from a product record to preserved evidence and review status. | Produce the public video and explain the current capability and its limits. |
-
-## Submission fields
-
-| Submission field | Content or status |
-| --- | --- |
-| Project name | retail frontier |
-| Team members | Names have not been provided. |
-| Track | Retail Futures |
-| Project description | The 169-word description above fits the required 100–200 words. |
-| Work built during EAT_HACK | The team confirms no substantial project work existed before the event. The implemented workflow was built during EAT_HACK; modelling remains planned. |
-| Video URL | Not yet provided. The video must be at most two minutes and show the working product and what was built during EAT_HACK. |
-| Repository URL | [CoralLeiCN/rgc](https://github.com/CoralLeiCN/rgc), from the configured Git remote. Public access has not been verified. The README contains running instructions. |
-| Best Brand vote | The team's three favourite brands from The Shelf have not been provided. This vote does not affect project judging. |
-| Live product URL | Optional; none provided. Deployment adds no judging points. |
-
-Verify every submitted link is publicly accessible without signing in or
-requesting permission. Team names, the video and brand selections still need to
-be added before submission.

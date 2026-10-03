@@ -10,13 +10,13 @@ The [hackathon brief](../eat-hack-track-two.md) covers the Track 2 challenge,
 submission requirements and judging criteria, including disclosure of substantial
 work completed before the event.
 
-The [retail frontier project description](../../PROJECT.md) explains the entry,
-current implementation and submission fields. The team confirms that no
-substantial project work existed before EAT_HACK.
+The [retail frontier project description](../../PROJECT.md) demonstrates built
+capabilities, current implementation and a runnable collection workflow. The team
+confirms that no substantial project work existed before EAT_HACK.
 
 The workflow preserves original raw evidence and combines deduplication,
 standardization, price normalization, review and model eligibility in silver.
-The standalone [processing package](../category-processing.md) supplies category
+The standalone [processing package](../data/category-processing.md) supplies category
 profiles, mapping maintenance and model preparation with stable seller identity
 and immutable training snapshots.
 
@@ -52,4 +52,4 @@ release thresholds before release. Schema and silver builds can proceed while
 these decisions are open. See [requirements and design](spec.md) for contracts
 and [the plan](plan.md) for implementation status.
 
-Gold is the immutable Parquet training interface, initially preserving Silver decisions. Every pricing target uses regular, non-promotional, tax-inclusive consumer price. Codex maintains evidence-backed product-family mappings in raw-to-Silver processing; exact pack identity and other eligibility reviews remain separate. See the [Gold guide](../chocolate-gold.md) and [prepared release](../analysis/gold-modeling-contract-release.md).
+Gold is the immutable Parquet training interface, initially preserving Silver decisions. Every pricing target uses regular, non-promotional, tax-inclusive consumer price. Codex maintains evidence-backed product-family mappings in raw-to-Silver processing; exact pack identity and other eligibility reviews remain separate. See the [Gold guide](../data/chocolate-gold.md) and [prepared release](../data/analysis/gold-modeling-contract-release.md).

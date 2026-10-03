@@ -13,8 +13,9 @@ submission requirements and judging criteria. The entry should support a concret
 brand or retail decision and disclose substantial work completed before the event.
 
 The hackathon project is named **retail frontier**. Its
-[project description](../PROJECT.md) follows the challenge, submission and judging
-structure, distinguishing the implemented workflow from proposed modelling.
+[project description](../PROJECT.md) demonstrates built capabilities and a
+runnable collection workflow, distinguishing implemented features from proposed
+modelling. Keep event requirements and judging criteria in the hackathon brief.
 The team confirms that no substantial project work existed before EAT_HACK.
 
 ## 1. Category research and a pricing model
@@ -49,7 +50,7 @@ features to the final price. Examples include fair trade, brand, and nuts.
 Keep the original raw archive and one combined silver dataset. Silver performs
 deduplication within each seller followed by schema, unit and vocabulary
 standardization, price normalization, evidence review and training eligibility.
-The [silver guide](chocolate-silver.md) defines these responsibilities in one build.
+The [silver guide](data/chocolate-silver.md) defines these responsibilities in one build.
 Use pandas for the combined chocolate silver table operations and schema coverage
 and exact value-frequency analysis, preserving evidence and explicit states.
 Publish verified chocolate snapshots and analysis to the dataset with immutable
@@ -88,7 +89,7 @@ contracts from an explicit definition, then publish the authoritative contracts
 and pin their verified immutable dataset revision after release review.
 Chocolate and coffee references are optional examples; products beyond food and
 mass quantities must exercise the common core. The
-[portable processing guide](category-processing.md) owns commands and boundaries.
+[portable processing guide](data/category-processing.md) owns commands and boundaries.
 
 Normalize captures with a frozen mapping, then summarize unsupported values and
 unfamiliar vocabulary with evidence. Under the

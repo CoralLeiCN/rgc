@@ -1,7 +1,7 @@
 # UK chocolate cleanup compatibility helper
 
 The earlier cleanup helper reads preserved UK chocolate listings directly from
-raw and writes typed product, feature and price records for [spec.md](spec.md),
+raw and writes typed product, feature and price records for [spec.md](../spec.md),
 sections 3.2–4. Its `uk-chocolate-clean-1` profile provides draft mappings with
 partial taxonomy coverage for the collected sources.
 
@@ -218,7 +218,7 @@ price and quantity is only one part of dataset readiness.
 Before modeling, evaluate classification against a reviewed sample, resolve
 identity ambiguities, define the policy for missing values, inspect source and
 feature coverage, and select comparable groups. Keep related families together
-in validation. Follow [spec.md](spec.md), sections 4–5, for model support,
+in validation. Follow [spec.md](../spec.md), sections 4–5, for model support,
 uncertainty, evaluation on data held out of training, and release requirements.
 Establish readiness through classification and model validation; eligible row
 counts and automatically extracted confidence scores alone are insufficient.
