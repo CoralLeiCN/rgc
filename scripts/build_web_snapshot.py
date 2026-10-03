@@ -6,17 +6,19 @@ projection with source statuses, review gates and evidence references preserved.
 No missing attributes are inferred and no pricing model is fitted.
 """
 import argparse
-from collections import Counter, defaultdict
-from datetime import datetime
 import hashlib
 import json
-from pathlib import Path
 import re
 import tempfile
+from collections import Counter, defaultdict
+from datetime import datetime
+from pathlib import Path
 from urllib.request import Request, urlopen
 
-from chocolate_standardization.pipeline import load_contract
-from chocolate_standardization.values import validate_product
+from chocolate_standardization.values import (
+    validate_attribute_contract,
+    validate_product,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 REPO = "CoralLeiCN/rgc-collections"
@@ -30,7 +32,10 @@ def digest(data):
 
 
 def read_json(path):
-    return json.loads(path.read_text(encoding="utf-8"))
+    def reject_constant(value):
+        raise ValueError("Non-finite JSON value: " + value)
+
+    return json.loads(path.read_text(encoding="utf-8"), parse_constant=reject_constant)
 
 
 def rows(path):
@@ -100,6 +105,34 @@ def verify(root):
     return latest, metadata, manifest
 
 
+def load_snapshot_contract(root):
+    """Validate the contracts already authenticated by this snapshot's manifest.
+
+    This display adapter preserves the snapshot's model metadata. Current
+    training taxonomy and target-policy gates belong to the training pipeline;
+    applying them here would reinterpret historical snapshots.
+    """
+    names = ("profile.json", "source-mappings.json", "model-design.json", "product.schema.json")
+    documents = {name: read_json(root / name) for name in names}
+    profile, mappings, design, schema = (documents[name] for name in names)
+    version = profile.get("schema_version")
+    if version != "chocolate-schema-1" or any(document.get("schema_version") != version for document in (mappings, design)):
+        raise ValueError("Snapshot contracts must agree on the supported chocolate schema version.")
+    if schema["properties"]["schema_version"].get("const") != version:
+        raise ValueError("Product validation contract disagrees with the snapshot profile.")
+    attributes = profile["attributes"]
+    validation = schema["properties"]["attributes"]
+    if profile.get("attribute_count") != len(attributes) or set(validation["properties"]) != set(attributes) or set(validation["required"]) != set(attributes):
+        raise ValueError("Snapshot profile and product validator attribute catalogs disagree.")
+    if set(mappings.get("aliases", {})) - set(attributes) or set(design["predictors"]) - set(attributes):
+        raise ValueError("Snapshot mappings and model predictors must reference declared attributes.")
+    for name, definition in attributes.items():
+        if definition.get("standardization_rule") not in profile["standardization_rules"]:
+            raise ValueError("Every snapshot attribute needs a declared standardization rule.")
+        validate_attribute_contract(name, definition, validation["properties"][name])
+    return profile, mappings, design, {name: digest((root / name).read_bytes()) for name in names}
+
+
 def timestamp(value):
     if not value:
         return float("-inf")
@@ -154,9 +187,7 @@ def build(root, output):
     latest, metadata, manifest = verify(root)
     quality = read_json(root / "quality-report.json")
     schema = read_json(root / "product.schema.json")
-    # Use the existing runtime validator with this snapshot's immutable contracts,
-    # rather than applying newer checkout profiles to older data.
-    profile, mappings, design, contract_hashes = load_contract(root)
+    profile, mappings, design, contract_hashes = load_snapshot_contract(root)
     fields = schema["properties"]["attributes"]["properties"]
     version = manifest["dataset_version"]
     if quality["dataset_version"] != version:

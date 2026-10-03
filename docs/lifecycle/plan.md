@@ -185,6 +185,13 @@ sellers in validation. Missing evidence cannot justify new taxonomy values.
 
 ### Web application verification
 
+Integration with main preserves the app snapshot's verified contract independently
+of newer training taxonomy and target-policy requirements. The updated adapter
+validated all 3,743 listings offline and reproduced all 26 private JSON files
+byte-for-byte. Targeted Ruff, TypeScript, production build, data/asset integrity,
+all seven API snapshot traces, documentation and whitespace checks passed after
+the merge. Upstream training requirements remain enforced by their own pipeline.
+
 The current web preview, deployment `dpl_2JRVCEdm45vGfxtkPJYiSHDoMy5T`, passed
 its Vercel build and all seven API snapshot traces (largest traced dependency
 set 28.5 MiB). Hosted verification checked all active APIs, three vendor assets

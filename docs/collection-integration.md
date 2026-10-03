@@ -32,7 +32,11 @@ The downloader resolves the repository revision once, pins every download to it,
 and verifies the latest-pointer/manifest relationship. Ten managed inputs are
 checked by byte size and SHA-256: products, prices, training candidates, model
 inputs, quality report, product schema, profile, model design, source mappings
-and listing aliases. Products are validated against their snapshot's contracts.
+and listing aliases. The snapshot reader checks schema versions, the attribute
+catalog, field constraints, mapping/predictor references and standardization
+rules against these verified files, then validates every product. Historical
+display snapshots retain their own contract; current training identity and
+price-policy requirements are enforced by the training pipeline.
 Rows join by listing ID; observation IDs remain separate.
 
 Original downloaded bytes remain in ignored `data/hf-snapshot/`. Raw archives,

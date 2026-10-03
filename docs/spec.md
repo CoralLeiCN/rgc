@@ -1028,7 +1028,9 @@ verified.
 
 The application consumes a pinned, validated silver snapshot. The adapter loads
 its schema, profile, mappings and model design and validates every product
-before emitting private server-side JSON. A derived manifest hashes
+before emitting private server-side JSON. The reader checks the verified
+snapshot's schema/catalog and typed constraints independently of current
+training identity and target-policy requirements. A derived manifest hashes
 the server snapshot and evidence shards. Refreshes are explicit preparation and
 deployment operations; functions do not download or process Hugging Face data
 on each request. Original captures and machine contracts remain unchanged.
