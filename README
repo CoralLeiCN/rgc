@@ -41,4 +41,24 @@ earlier captures. The import contract is documented inside the plugin skill.
 The legacy script scripts/archive_product_sources.py reproduces only the initial
 five-product exploratory sample.
 
+Public dataset publication uses the category-independent text-evidence policy in
+docs/spec.md, section 3.1.1. It includes product records, original text/HTML/JSON
+evidence, capture histories, catalogues, discovery/run evidence, and coverage.
+Image files and HTTP transfer caches remain local; their recorded references
+are disclosed as omitted. Accepted source bytes are preserved in losslessly
+compressed category/market bundles, with a product JSONL index and manifests.
+
+Build and inspect the export without network access:
+
+    python3 -B scripts/publish_collections.py
+
+Publish the export to a public Hugging Face dataset using a cached login or
+HF_TOKEN (uv installs the script's pinned client dependency):
+
+    uv run --script scripts/publish_collections.py --upload --repo-id CoralLeiCN/rgc-collections
+
+The exporter discovers all category/market studies under data/collections/.
+Generated files under data/huggingface-export/ remain ignored by Git. No
+recurring upload job is configured; the current publication is a one-time run.
+
 All repository content must be written in English, regardless of prompt language.

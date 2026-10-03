@@ -241,6 +241,65 @@ page/image capture.
 | Raw source/image artifact | Original content where retrieved, URL, publisher, capture timestamp/timezone, retrieval method, content type, relative path, hash, and declared capture limitations. |
 | Collection record | Run ID, capture time, sources/artifacts added, outcomes, missing information or capabilities, and references to retained history. |
 
+### 3.1.1 Public dataset publication policy
+
+Public dataset uploads use the versioned `rgc-text-evidence-1` export policy.
+This policy applies to every category/market under `data/collections/`, including
+future studies; chocolate and the UK are examples, not export filters. Public
+publication is a filtered derivative of the local raw archive. Local image and
+source preservation requirements in section 3.1 continue to apply.
+
+| Material | Publication rule |
+| --- | --- |
+| `products/*/product.json` | Include complete original records: source facts, prices, ingredients/nutrition where available, unknown/source-specific fields, identities, and provenance. |
+| `products/*/sources/` and `products/*/history/` | Include original text, HTML, JSON, and losslessly compressed text evidence and immutable capture histories. |
+| `catalogs/`, `discovery/`, and `runs/` | Include text/structured discovery evidence, original catalogues, collection inputs, failure evidence, and run reports for reproducibility. Exclude executable collection scripts and runtime files. |
+| Study `README.md`, `coverage.json`, and `archive-verification.json` | Include available descriptions, coverage/missingness, and original integrity reports. Label original archive checks as historical results, not validation of the filtered export. |
+| Image URLs, captions, source roles, hashes, retrieval details, and recorded paths | Retain these metadata in original records; explicitly declare image files omitted. |
+| `products/*/images/`, other image files, and image bodies disguised as responses | Exclude all image payloads, including failed response bodies inside image folders. |
+| `transfers/` | Exclude the entire HTTP transfer cache, including cache metadata files; preserve retrieval details already present in product/source records and inventory omitted cache paths. |
+| Hidden/runtime files, symlinks, credentials, executable code, unsupported binary/encoding formats, and other locations | Exclude from the evidence allowlist and record the omission reason. Never publish other files under `data/`, such as unrelated workbooks. |
+
+The exporter validates supported evidence as UTF-8 text (or gzip-compressed
+UTF-8 text), rejecting binary content even when its extension looks textual.
+It preserves accepted original bytes, wording, language, reported values, and
+source URLs exactly. It does not translate evidence, silently fill missing
+ingredients, normalize prices, deduplicate product identities, or rewrite local
+raw records. Unsupported encodings stay local and are disclosed in the manifest;
+they must not be silently represented as included evidence.
+
+Publication consists of a root dataset card, a `products.jsonl` index, a root
+export manifest, and losslessly compressed
+`evidence/<category>/<market>.tar.gz` bundles. Each index row represents a source
+product/variant record, not a verified distinct physical product. Category,
+market, product ID, source/name/brand where available, capture metadata, original
+record path, and bundle path are directly indexable. Arbitrary identity and
+latest-information fields are encoded as JSON strings to avoid imposing a
+category-specific analytical schema. Full captures and legacy fields remain in
+the original records. The loader's `train` split name is a convention, not a
+reviewed modeling split.
+
+Each evidence bundle contains its own `export-manifest.json`: an inventory of
+included paths, byte lengths, and SHA-256 hashes plus all omitted file paths,
+sizes, and reasons. Preserve raw references without rewriting historical
+evidence. Extract bundles under one collections root to resolve included
+archive-relative paths. Consumers must consult the manifest for deliberately
+absent image/cache paths; historical host-local discovery paths are provenance,
+not portable download links. Original reports that count local images must not
+be presented as counts of uploaded images. The dataset card describes these
+limitations and does not invent a license for third-party source material.
+
+`scripts/publish_collections.py` implements this policy. It automatically
+discovers category/market studies with product folders, builds a deterministic
+export under ignored `data/huggingface-export/`, and uploads only its explicitly
+managed files to a public Hugging Face **dataset** repository. Repeated exports
+of unchanged collections produce identical bytes. Uploads use the cached or
+environment-provided Hugging Face token; tokens must never be stored in source
+files, manifests, or dataset cards. Validate local bundle contents, preservation,
+omissions, and checksums before publication, then verify the remote managed files
+and public visibility. Upload cadence is independent of this policy: the current
+request authorizes one upload, with no scheduled job.
+
 ### 3.2 Later analytical schema and feature classification
 
 After broad collection, derive a complete schema for the information and
@@ -583,6 +642,9 @@ category and plugin conformance scenarios apply across supported studies.
 | A later schema normalizes a source field differently. | Create a versioned derived interpretation with evidence references; retain the original reported value and artifact. |
 | A study uses a category whose comparison basis is price per item. | Preserve its original quantities and prices during collection; derive its analytical profile without requiring cocoa percentage, edible weight, or GBP per 100 g. |
 | Another category is added. | Reuse the minimal collection/evidence envelope, then derive its own analytical profile, dataset, and validated model domain from collected information. |
+| Any category is published as a public dataset. | Apply `rgc-text-evidence-1`: include original product records, text evidence, history, catalogues, collection reports, and coverage; omit image bytes, transfer caches, and runtime files while retaining metadata and explicit omission manifests. |
+| A binary image is stored with a text-like filename. | Exclude its bytes from public publication and record the reason; keep the original local evidence unchanged. |
+| A public record references an omitted image or cache file. | Preserve the historical reference and provide its omission entry; do not claim the file is downloadable or that local archive verification verifies the public subset. |
 | The same study request and evidence fixture are supplied through two supported harness adapters. | Both return valid collection envelopes and preserved raw bundles with compatible provenance meanings, original image/page handling, and explicit missingness; arbitrary source-specific fields remain supported. |
 | A harness cannot retrieve packaging images requested by the study. | Preserve packaging attributes supported by available text, mark unsupported attributes unknown, and declare the missing image capability/evidence and coverage limitation. |
 | The same variant appears at two retailers. | One product identity and two sourced price observations; no duplicate product-coverage claim. |
