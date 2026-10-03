@@ -1186,3 +1186,7 @@ run loading. Synthetic validation is published separately from real fitting.
 Current-price migration, full comparisons and released product scenario
 interfaces remain pending. [Model maintenance](model-maintenance.md)
 owns artifact storage in Hugging Face and immutable receipts in Git.
+
+## 11. Independent family-weighted hedonic trainer
+
+`--model-id hedonic_without_brand` selects an independent family-weighted log-linear estimator with an explicit local working contract and verified immutable Gold. It supports fitting-only grouped formula selection, known-brand rank probing without fitting another estimator, refitted family-bootstrap uncertainty, retailer-specific split conformal calibration, support rejection and final-test metrics. The existing equal-listing OLS command retains its contract. The [implementation record](data/analysis/hedonic-without-brand-implementation.md) defines the exact cohort, missingness, split, support, artifact and validation rules. The inspected historical regular-price Gold has 2,134 candidates and zero eligible rows; its contract also lacks three required cohort/core fields. No real fit or release is established. A coordinated dataset/portable producer migration and evidence reviews remain necessary before this working handoff can be supplied by the canonical pipeline.

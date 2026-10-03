@@ -62,3 +62,5 @@ run loading. Synthetic validation is published separately from real fitting.
 Current-price migration, full comparisons and released product scenario
 interfaces remain pending. [Model maintenance](../model-maintenance.md)
 owns artifact storage in Hugging Face and immutable receipts in Git.
+
+The independent [hedonic trainer](../data/analysis/hedonic-without-brand-implementation.md) implements family-weighted fitting, calibration and support under a local working policy. The published Gold handoff and reviewed real data are insufficient: no real model or release is established, and aligned producer/portable contract migration remains pending.

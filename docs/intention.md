@@ -175,3 +175,7 @@ displayed consumer price target; eligibility does not fill missing facts or esta
 successful fit.
 
 Implement and validate `lightgbm_with_brand` independently in this session, preserving the fixed regular consumer target and immutable Gold. Persist real-data readiness failures and distinguish synthetic acceptance fits from real trained models. Model artifact upload is authorized under `model/lightgbm_with_brand/<run-id>/` for completed actual real-data fits; analytical contract publication retains its separate release review requirement.
+
+## Independent chocolate estimator session
+
+Implement and attempt real-data training for `hedonic_without_brand` independently of other model sessions, preserving regular-consumer-price-1 and family partitions. Save concrete readiness blockers when eligible evidence is absent. Trained real artifacts may be uploaded under `model/hedonic_without_brand/<run-id>/`; fixture fits cannot stand in for real training. Analytical contract releases retain their separate review requirement. The [implementation record](data/analysis/hedonic-without-brand-implementation.md) distinguishes local policy, numerical validation and evidence readiness.

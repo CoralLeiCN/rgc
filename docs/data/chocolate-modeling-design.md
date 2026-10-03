@@ -541,3 +541,12 @@ and profit-maximizing price remain outside this model design. A later adjusted-
 price indicator must use out-of-fold benchmarks and be labeled price position.
 
 The [independent LightGBM with brand implementation](chocolate-lightgbm-with-brand.md) implements the assigned estimator under a separate unpublished working experiment. Native fitting, calibration and attribution are exercised with synthetic fixtures; its recorded historical real-data attempt had zero eligible inputs and absent shared handoff fields. The current published Gold makes all candidates eligible, while migration of this frozen trainer to the current-price policy and shared fields remains pending. Other estimators and the common comparison are outside this session.
+
+## Independent regular-price hedonic implementation
+
+The [hedonic_without_brand implementation](analysis/hedonic-without-brand-implementation.md)
+provides a separately fitted family-weighted historical regular-price experiment,
+validated on synthetic fixtures and published with its fixture status. It preserves
+its original target, data and working-policy identities. The current-price study
+on main is a distinct experiment; this merge does not relabel the published fit
+or relax its cohort/recipe/pack-count requirements.

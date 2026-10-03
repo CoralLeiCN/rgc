@@ -531,3 +531,7 @@ The all-eligible Gold data is now published at immutable dataset revision
 [small Gold reference](../../schemas/chocolate/gold-dataset.json) records the
 source manifest and managed file hashes. This publication packages the existing
 source interpretation and user eligibility; it changes no typed product fields.
+
+## Local hedonic handoff
+
+The independent `hedonic_without_brand` trainer consumes verified Gold under `chocolate-supermarket-hedonic-working-1`, prepared explicitly in an ignored local file. Its [implementation record](analysis/hedonic-without-brand-implementation.md) specifies family weighting, prediction support, cocoa imputation, claim states and retailer calibration. Published original and portable schema/design pins retain their current versions. Required recipe class, explicit supermarket cohort and exported single-pack count are absent from the published eleven-predictor handoff; cocoa basis also needs an optional export contract. This is a readiness blocker. The working policy does not implement those source mappings or review evidence. Contract publication requires coordinated original/portable contracts and the established release review.

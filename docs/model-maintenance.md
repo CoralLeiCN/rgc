@@ -81,3 +81,13 @@ locked dependencies and generated fixture inputs support a portable replay.
 establish accuracy on real retailer data. The
 [implementation record](data/analysis/lightgbm-without-brand-implementation.md)
 owns the trainer's current commands and limits.
+
+## Historical hedonic fixture publication
+
+The [hedonic without brand fixture](https://huggingface.co/datasets/CoralLeiCN/rgc-collections/tree/419150708bbbca16a738ff36a3c0b9373e8cda8e/model/hedonic_without_brand/model-run-89faf11be25b98e1a7761e6a)
+uses the root run directory explicitly requested before this guide was integrated.
+Retain that immutable historical location and its explicit fixture labels. Its
+[receipt](data/analysis/hedonic-without-brand-model-publication.json) records 15
+verified model/metadata files. Input/source/runtime payloads are excluded. The
+published model remains synthetic and not release ready; its historical regular
+price basis is distinct from the current-price study.

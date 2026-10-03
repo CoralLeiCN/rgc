@@ -133,3 +133,5 @@ manifest and each managed file checksum. All 25 uploaded files were downloaded,
 compared byte for byte and loaded with the verified Gold interface. The
 [Gold guide](chocolate-gold.md#published-all-eligible-training-snapshot) describes
 its exact path and current-price trainer handoff.
+
+The independent [hedonic implementation](analysis/hedonic-without-brand-implementation.md) materializes an explicit unpublished working experiment policy in an ignored directory. Its new analytical handoff is not supplied by the published producer contracts. Original and portable pins remain unchanged; a future supported producer migration must synchronize all affected contracts and pass the established release review before a Hugging Face contract commit.

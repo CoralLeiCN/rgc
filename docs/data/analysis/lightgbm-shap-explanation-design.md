@@ -7,6 +7,9 @@ provides a separate trainer and published synthetic fixture; its current-price
 migration and market evaluation remain pending.
 
 This extends the [UK chocolate pricing design](../chocolate-modeling-design.md).
+The independent [hedonic_without_brand implementation](hedonic-without-brand-implementation.md)
+provides a local comparator interface and numerical fixtures; real fitting and
+common comparison remain blocked. This session does not implement LightGBM or SHAP.
 The pipeline is reviewed product and retailer evidence → frozen LightGBM model
 → price prediction and calibrated interval → TreeSHAP → validated AI narrative.
 The AI explains the computed result; it does not determine the price.

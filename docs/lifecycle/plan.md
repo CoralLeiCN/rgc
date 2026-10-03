@@ -433,3 +433,42 @@ refreshes main from its upstream and guards the target revision before creating
 one squash commit. The source and target file trees must match and both
 worktrees must be clean after landing. Real-data model fitting remains subject
 to each training chat's preparation and identification gates.
+
+## Independent hedonic_without_brand session
+
+Implemented the assigned family-weighted log-linear estimator in `scripts/chocolate_hedonic.py`, exposed through the existing trainer under an explicit unpublished working policy. Fitting-only grouped selection, common brand-identification probing, optional cocoa preprocessing, retailer interactions, family bootstrap, split conformal calibration, support/domain outputs and immutable run verification are covered by native pytest fixtures. The [implementation record](../data/analysis/hedonic-without-brand-implementation.md) owns exact policies and reproducible commands. Real raw-to-Silver-to-Gold rebuilding preserved 3,743 listings and 4,347 captures; Gold `gold-4939405fcf8724686f9ee32c` retains 2,134 candidates and zero eligible rows. Missing reviewed regular-price/tax/quantity/identity evidence and recipe/cohort/pack-count handoff declarations block real fitting. Comparator gates, champion selection, aligned producer/portable contract migration and release review remain pending. Trained artifact upload is authorized, but no real fitted artifact is available for publication.
+
+Verification for this session: all 398 pytest cases passed, including 23 assigned
+hedonic cases; Ruff, documentation/change coverage, whitespace checks and all
+three offline pinned caches passed. The immutable real attempt is
+`model-run-b8d9ff2c6e93b65b693a3fa0` and the explicitly synthetic validated run is
+`model-run-89faf11be25b98e1a7761e6a`. The latter supports 240 testing rows in 120
+families, with fixture MAE 0.136074 GBP/100 g and 0.173709 GBP/pack, and 200
+successful family bootstrap draws. These figures describe synthetic evidence.
+After the user's Gold verification update, current local and remote inventories
+were checked and training rerun. Actual current Gold values still have zero
+positive regular targets and zero exact variant IDs; all 2,134 price observations
+have unknown tax basis. The current-value audit is saved with the readiness
+report. No real fitted artifact exists to upload; producer migration and evidence
+completion remain concrete prerequisites, without requiring another confirmation
+of the user's Gold verification.
+
+The user subsequently authorized publication of the explicitly synthetic trained
+fixture. Its 15 model/metadata files were uploaded under
+`model/hedonic_without_brand/model-run-89faf11be25b98e1a7761e6a/` in Hugging Face
+commit `419150708bbbca16a738ff36a3c0b9373e8cda8e`, preserving other dataset contents.
+Every uploaded file was downloaded and verified; the
+[publication receipt](../data/analysis/hedonic-without-brand-model-publication.json)
+records hashes. It is experimental fixture evidence, with no real-data fit or
+release claim. Source/runtime files and Gold inputs were excluded from upload.
+
+Integration with local main preserved its data-guide relocation, current-price
+contracts, eligible Gold reference and LightGBM dispatch. The historical hedonic
+working policy explicitly rejects a different price basis. The uploaded inference
+bundle was downloaded at commit `419150708bbbca16a738ff36a3c0b9373e8cda8e`: all 15
+file hashes passed and the integrated loader reproduced all 240 supported frozen
+fixture predictions. The merged locked environment and all four contract caches
+were verified. The complete integrated suite passed 461 tests; four additional
+CLI routing regressions cover both model IDs and both argument spellings. The
+focused hedonic suite now contains 27 passing cases. Ruff, documentation and
+whitespace checks passed before the requested local squash into main.

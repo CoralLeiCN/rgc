@@ -61,3 +61,5 @@ these decisions are open. See [requirements and design](spec.md) for contracts
 and [the plan](plan.md) for implementation status.
 
 Gold is the immutable Parquet training interface, initially preserving Silver decisions. The current chocolate study uses collected displayed prices as its regular-price proxy, retaining promotion/tax/date uncertainty as limitations. Historical regular-price studies retain their original basis. Codex maintains evidence-backed product-family mappings in raw-to-Silver processing; exact pack identity and other eligibility reviews remain separate. See the [Gold guide](../data/chocolate-gold.md) and [prepared release](../data/analysis/gold-modeling-contract-release.md).
+
+The assigned independent `hedonic_without_brand` session must attempt real training and preserve readiness blockers. Authorized trained artifact upload requires a real fit; synthetic numerical fixtures remain explicitly labeled. See the [implementation record](../data/analysis/hedonic-without-brand-implementation.md).

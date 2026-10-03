@@ -382,3 +382,7 @@ The user eligibility snapshot derived from source Silver
 `95c5fbd0ab5fa9a41fa5333648321d95f16927a7`. The downloaded Gold and embedded
 parent verify; Silver remains its preserved source evidence interface. See the
 [published Gold guide](chocolate-gold.md#published-all-eligible-training-snapshot).
+
+## Handoff to the independent hedonic estimator
+
+Silver continues to own evidence reviews, identities and eligibility for `hedonic_without_brand`. The [local trainer](analysis/hedonic-without-brand-implementation.md) requires explicit supermarket single-pack cohort, recipe class and pack count in its analytical handoff, in addition to eligible regular price and product identity. Existing published Silver exports do not supply that handoff. The historical regular-price rebuild in this session retained 3,743 listings, 4,347 captures, 2,134 candidates and zero eligible rows. Gold and the trainer preserve these exclusions; training and bulk Gold review cannot supply missing facts.

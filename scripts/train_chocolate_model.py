@@ -341,25 +341,55 @@ def main():
                 arguments[i:i + 1] = ["--model-id", value.split("=", 1)[1]]
                 break
         index = arguments.index("--model-id")
-        if index + 1 >= len(arguments) or arguments[index + 1] != "lightgbm_without_brand":
-            print("This session implements only lightgbm_without_brand.", file=sys.stderr)
+        if index + 1 >= len(arguments):
+            print("--model-id requires a value.", file=sys.stderr)
             return 1
-        from train_chocolate_lightgbm_without_brand import main as lightgbm_main
-        return lightgbm_main(arguments[:index] + arguments[index + 2:])
+        if arguments[index + 1] == "lightgbm_without_brand":
+            from train_chocolate_lightgbm_without_brand import main as lightgbm_main
+            return lightgbm_main(arguments[:index] + arguments[index + 2:])
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--model-id", choices=("experimental_ols", "hedonic_without_brand"), default="experimental_ols")
+    parser.add_argument("--working-contract", type=Path, help="Explicit unpublished historical regular-price hedonic policy")
+    parser.add_argument("--prepare-working-contract", type=Path, help="Write the local hedonic policy and exit")
+    parser.add_argument("--experiment-manifest", type=Path, help="Require an identical frozen experiment")
+    parser.add_argument("--fixture", action="store_true", help="Label synthetic input fits; never report real-data fitting")
     source = parser.add_mutually_exclusive_group()
     source.add_argument("--silver-root", type=Path, help="Compatibility input: a combined silver snapshot")
     source.add_argument("--gold-root", type=Path, help="Input: an immutable Parquet gold snapshot directory")
     parser.add_argument("--output", type=Path, default=ROOT / "data/models/chocolate/uk")
-    parser.add_argument("--group", required=True, help="One reviewed comparable product group, such as bar")
+    parser.add_argument("--group", help="One reviewed comparable product group, such as bar")
     parser.add_argument("--current-price-target", action="store_true", help="Use collected displayed prices under current-consumer-price-1")
     parser.add_argument("--target-contract-root", type=Path, help="Prepared local current-price contract root before publication")
     args = parser.parse_args()
     try:
-        report, destination = build_model_run(args.silver_root or ROOT / "data/silver/chocolate/uk",
-                                              args.output, args.group, gold_root=args.gold_root,
-                                              current_price_target=args.current_price_target,
-                                              target_contract_root=args.target_contract_root)
+        if args.prepare_working_contract:
+            from chocolate_hedonic import working_contract
+            data = json_bytes(working_contract())
+            path = args.prepare_working_contract
+            if path.exists() and path.read_bytes() != data:
+                raise ValueError("Refusing to overwrite a different working contract")
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(data)
+            print(json.dumps({"working_contract": str(path.resolve()), "sha256": checksum(data), "published": False}))
+            return 0
+        if not args.group:
+            raise ValueError("--group is required for training")
+        if args.model_id == "hedonic_without_brand":
+            from chocolate_hedonic import build_run
+            if args.gold_root is None or args.working_contract is None or args.group != "bar":
+                raise ValueError("hedonic_without_brand requires --gold-root, --working-contract and --group bar")
+            if args.current_price_target or args.target_contract_root:
+                raise ValueError("The hedonic working policy retains its historical regular-consumer-price-1 target")
+            output = args.output if args.output != ROOT / "data/models/chocolate/uk" else args.output / args.model_id
+            report, destination = build_run(args.gold_root, output, args.working_contract,
+                                            args.experiment_manifest, fixture=args.fixture)
+        else:
+            if args.working_contract or args.experiment_manifest or args.fixture:
+                raise ValueError("Working experiment options require --model-id hedonic_without_brand")
+            report, destination = build_model_run(args.silver_root or ROOT / "data/silver/chocolate/uk",
+                                                  args.output, args.group, gold_root=args.gold_root,
+                                                  current_price_target=args.current_price_target,
+                                                  target_contract_root=args.target_contract_root)
     except (OSError, ValueError, KeyError, ImportError) as error:
         print(json.dumps({"status": "error", "error": str(error)}), file=sys.stderr)
         return 1

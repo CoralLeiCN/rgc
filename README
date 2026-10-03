@@ -255,3 +255,5 @@ establishes synthetic implementation behavior only. This trainer requires
 explicit migration before fitting the current-price study. Follow
 [model maintenance](docs/model-maintenance.md) for Hugging Face artifacts and
 Git publication receipts.
+
+The independent [Hedonic Price Benchmark Without Brand](docs/data/analysis/hedonic-without-brand-implementation.md) is implemented under an explicit local working policy. Run `uv run python scripts/train_chocolate_model.py --model-id hedonic_without_brand --gold-root <snapshot> --working-contract <policy> --group bar`. Its numerical fixtures exercise family weighting, grouped selection, calibration and artifact integrity. This session's historical regular-price Gold rebuild has 2,134 candidates and zero eligible rows. Its fixture is published with synthetic status; no real hedonic fit or release is established. The newer current-price study retains its separate target and Gold identity.

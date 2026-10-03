@@ -1,0 +1,89 @@
+{
+  "commit_url": "https://huggingface.co/datasets/CoralLeiCN/rgc-collections/commit/419150708bbbca16a738ff36a3c0b9373e8cda8e",
+  "directory_url": "https://huggingface.co/datasets/CoralLeiCN/rgc-collections/tree/419150708bbbca16a738ff36a3c0b9373e8cda8e/model/hedonic_without_brand/model-run-89faf11be25b98e1a7761e6a",
+  "fixture": true,
+  "model_id": "hedonic_without_brand",
+  "parent_revision": "bb1c9de580c64cc13aac62b352d58704fe2dd60e",
+  "real_data_fitted": false,
+  "release_ready": false,
+  "repo_id": "CoralLeiCN/rgc-collections",
+  "revision": "419150708bbbca16a738ff36a3c0b9373e8cda8e",
+  "run_id": "model-run-89faf11be25b98e1a7761e6a",
+  "verified_files": [
+    {
+      "byte_length": 1971,
+      "path": "model/hedonic_without_brand/model-run-89faf11be25b98e1a7761e6a/README.md",
+      "sha256": "14f1068acc8b9aff71a13eb5fc286dda14eaaf5971cf3e06e4e4b767c4cb3f2a"
+    },
+    {
+      "byte_length": 73761,
+      "path": "model/hedonic_without_brand/model-run-89faf11be25b98e1a7761e6a/calibration.json",
+      "sha256": "891f4d2276e5ae0b233efdaa06e6bbf2d6f68c84a7e619718221ffee1efe0f56"
+    },
+    {
+      "byte_length": 17057,
+      "path": "model/hedonic_without_brand/model-run-89faf11be25b98e1a7761e6a/evaluation.json",
+      "sha256": "83b2832e46ea90138dbd47c3e2e1ed002fbac52ee869cb321dccaff8dbb7d9d1"
+    },
+    {
+      "byte_length": 64639,
+      "path": "model/hedonic_without_brand/model-run-89faf11be25b98e1a7761e6a/experiment.json",
+      "sha256": "8844e4498ba64ddfcd880e90769ab25481a6d84b6c1b3b0cdfe7c52225a518bc"
+    },
+    {
+      "byte_length": 3036,
+      "path": "model/hedonic_without_brand/model-run-89faf11be25b98e1a7761e6a/fitting-diagnostics.json",
+      "sha256": "189f0acfd98f1e0b8413ba2c2a82797a485e4f7dd80b83d85e03a02a8709953b"
+    },
+    {
+      "byte_length": 5889,
+      "path": "model/hedonic_without_brand/model-run-89faf11be25b98e1a7761e6a/manifest.json",
+      "sha256": "6d7d3c712528377e1b788db732a1c33be3c7bd771e6236024b67f2fee34858da"
+    },
+    {
+      "byte_length": 7546721,
+      "path": "model/hedonic_without_brand/model-run-89faf11be25b98e1a7761e6a/model.json",
+      "sha256": "04a0ecab478bba44414fc9a091937d3f8a7c2f623178cdd66f601d1817f0aad6"
+    },
+    {
+      "byte_length": 7853,
+      "path": "model/hedonic_without_brand/model-run-89faf11be25b98e1a7761e6a/original-run-manifest.json",
+      "sha256": "d430c2d740165ca94a8fd56b7a29655dae3d1fee04435dc4f0dbd303cef41fe0"
+    },
+    {
+      "byte_length": 232036,
+      "path": "model/hedonic_without_brand/model-run-89faf11be25b98e1a7761e6a/predictions.jsonl",
+      "sha256": "4608b5f6786514a881dfd4f413380791c65d92f72dbcc76af7730cec1c13cb3b"
+    },
+    {
+      "byte_length": 20299,
+      "path": "model/hedonic_without_brand/model-run-89faf11be25b98e1a7761e6a/report.json",
+      "sha256": "563db6d06cb6dd08a5e40258556bb345cc95b7b3dbfc6511bc5e09dc36154c2d"
+    },
+    {
+      "byte_length": 26600,
+      "path": "model/hedonic_without_brand/model-run-89faf11be25b98e1a7761e6a/selection.json",
+      "sha256": "a594df631b9d237a7d48a5f3d39c153d616f5e8507c5369c2e39d82e64688a34"
+    },
+    {
+      "byte_length": 22213,
+      "path": "model/hedonic_without_brand/model-run-89faf11be25b98e1a7761e6a/split.json",
+      "sha256": "b664d067292a04f9b06f7d0a515b8e920fb687405457e8dd29dcd5f16e440fc7"
+    },
+    {
+      "byte_length": 18769,
+      "path": "model/hedonic_without_brand/model-run-89faf11be25b98e1a7761e6a/support-rules.json",
+      "sha256": "d3df44d83c596a3c74007151c56362e198c7abe047c144d046ce9e27f2f73b38"
+    },
+    {
+      "byte_length": 3573,
+      "path": "model/hedonic_without_brand/model-run-89faf11be25b98e1a7761e6a/uncertainty.json",
+      "sha256": "e8cc6dad805a48347f38b65720ab70d97f4a187c4f4f8a0fc310398542e7a2e1"
+    },
+    {
+      "byte_length": 2369,
+      "path": "model/hedonic_without_brand/model-run-89faf11be25b98e1a7761e6a/working-contract.json",
+      "sha256": "ccc4c9914cea2263475c58c964c6a9d80fe1c1c6877b2b82f3d4080dd9747e4d"
+    }
+  ]
+}
