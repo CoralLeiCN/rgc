@@ -633,3 +633,15 @@ this local model configuration. A separate immutable current-price overlay at
 `d743cb8dbca37f5241cccd444a16165523304f6c` supplies the published target.
 Shared preparation requires candidate edible weight to match the price quantity;
 it does not infer missing weights. See [current-price preparation](chocolate-matched-retailer.md#current-price-study-policy).
+
+## Gold training admission
+
+The current Gold training adapter admits every candidate under
+`chocolate-gold-training-all-rows-2`, as instructed on 3 October 2026. It retains
+source review flags and exclusions as provenance. Attribute values, unknowns,
+conflicts, source evidence and the 103-field schema remain governed by their
+immutable dataset contracts. The inferred LightGBM refit selects actual usable
+price/weight/family inputs and encodes unknown feature cells as native missing;
+it does not create recipe, pack-count or cocoa-basis evidence. See the
+[refit record](analysis/lightgbm-without-brand-inferred-refit.md) for the exact
+research feature set, experiment and limitations.

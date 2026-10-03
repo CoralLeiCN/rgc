@@ -282,7 +282,7 @@ The refreshed all-eligible Gold is published at Hugging Face dataset revision
 [Gold guide](docs/data/chocolate-gold.md#published-all-eligible-training-snapshot)
 records its exact download directory and
 [checksum reference](schemas/chocolate/gold-dataset.json). It contains all
-2,134 candidates in both training views and retains its complete original parent.
+2,134 candidates in the training population and retains its complete original parent.
 Use the current-price target policy when training this study.
 
 ## Independent LightGBM without brand
@@ -335,3 +335,26 @@ Run `python3 -B scripts/fetch_contracts.py --current-price` to cache the publish
 target overlay; `--all` now verifies or fetches all four contract sets. The current
 matched design binds this overlay offline and derives 630 targets from the
 2,134-row Gold snapshot. Missing exact variant IDs prevent a matched fit.
+
+## Refit LightGBM from inferred Gold
+
+All Gold candidates enter training as eligible under
+`chocolate-gold-training-all-rows-2`; original source decisions remain
+provenance. Inferred Gold joins typed product cells with unchanged source
+prices for the current displayed-price study. With the verified snapshot and
+pinned contracts cached locally, run:
+
+```sh
+uv sync --locked
+python3 -B scripts/fetch_contracts.py --all --offline
+uv run python scripts/train_chocolate_model.py \
+  --model-id lightgbm_without_brand \
+  --gold-root data/gold-inferred/chocolate/uk/gold-inferred-5b539b9c4adbb011a40d7792
+```
+
+The [refit record](docs/data/analysis/lightgbm-without-brand-inferred-refit.md)
+links the published experimental run, selected features, family holdout results and
+limitations. Missing price, mass or family grouping still restrict numerical
+use. The 55-row Waitrose fit has no calibrated intervals or market-release
+claim. See the [Gold guide](docs/data/chocolate-gold.md) for admission, immutable
+source verification and inferred-wrapper provenance.

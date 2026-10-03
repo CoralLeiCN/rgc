@@ -1424,3 +1424,101 @@ verified offline, `uv run pytest` (567 passed, 7 optional web tests skipped),
 `uv run ruff check .`, `python3 -B scripts/check_documentation.py --base main`
 and `git diff --check`. Focused retailer and web integration coverage passed
 all 83 cases. Real model fitting remains blocked by missing actual inputs.
+
+## Inferred Gold LightGBM refit and all-row admission
+
+On 3 October 2026 the user requested the without-brand model refitted with
+the inferred layer, then directed every `gold_*` layer always training
+eligible. Implemented `chocolate-gold-training-all-rows-1` in the shared
+Gold training adapter and applied it to OLS, hedonic without brand and both
+historical LightGBM entry points. Source integrity verification retains exact
+historical bytes and counts; original exclusions and flags remain provenance
+in admitted rows and price records. The complete inferred-wrapper verifier,
+builder, CLI and eight tests were imported from its existing implementation.
+
+The [refit record](../data/analysis/lightgbm-without-brand-inferred-refit.md)
+and [machine results](../data/analysis/lightgbm-without-brand-inferred-refit.json)
+record actual run `model-run-9f56df660a6d46e7cc720002` from inferred Gold
+`gold-inferred-5b539b9c4adbb011a40d7792`. All 2,134 candidates are eligible;
+55 Waitrose bars in 15 established families have usable target/mass/grouping
+for the experiment. The 80/20 family holdout has 40 fitting and 15 testing
+rows, spanning 12 and three families. Three inner family folds select 84 trees
+and the core size/retailer/type features. Brand is excluded from every fitted
+matrix. Current displayed prices use the pinned current-price study target.
+All holdout rows yield unit MAE GBP 0.542656/100 g, pack MAE GBP 0.473168 and
+weighted median percentage error 14.6872%. Native TreeSHAP reconstructs within
+1.11e-15 log units. One test row has a domain support flag. No intervals,
+Ocado result, market release or champion claim are established.
+
+Final verification passed: `uv sync --locked` with a writable temporary uv
+cache, all four contract sets verified by
+`python3 -B scripts/fetch_contracts.py --all --offline`, 483 pytest cases,
+Ruff, `python3 -B scripts/check_documentation.py` and `git diff --check`.
+Seven existing web tests skipped because this checkout has no prepared web
+model cache or npm dependencies; web serving was not changed. The affected
+83-test selection also passed. The final model loader reproduced all 15 saved
+test predictions exactly and verified brand exclusion. Live Hugging Face
+`main` resolved to `812a03a5faaced471a2a20f4c389865ed5675826`; its inferred
+latest pointer and downloaded manifest match the actual fitting snapshot. At completion of the initial fit the local model was unpublished and used
+its own verified loader. The subsequent publication is recorded below.
+
+## Publish the inferred LightGBM refit
+
+On 3 October 2026 the user explicitly requested publication of the completed
+model. Published `model-run-9f56df660a6d46e7cc720002` under
+`model/lightgbm_without_brand/` at dataset revision
+`88b08aeada37e228fcd80334b5abddd768da6968`, guarded against parent
+`812a03a5faaced471a2a20f4c389865ed5675826`. All 16 published files were
+downloaded and verified against staging, totaling 313,788 bytes. The
+[receipt](../data/analysis/lightgbm-without-brand-inferred-model-publication.json)
+records hashes, paths and separate fit/calibration/release status. All 186
+existing remote paths and object identities were preserved.
+
+The model publication includes booster, model, preprocessing, tuning,
+evaluation, predictions and signed TreeSHAP results, experiment and target
+metadata, original run manifest, reproduction command and README. Source
+training data remain at their existing immutable dataset location. The
+published manifest inventories the model payload; the original complete local
+inventory remains in `source-run-manifest.json`. The downloaded model passed
+its loader, reproduced all 15 held-out predictions exactly and ran the README's
+native inference example. It remains experimental, uncalibrated and not
+release ready. No serving reference or champion selection was changed.
+
+Verification passed: `uv sync --locked`, all four contract caches checked
+with `python3 -B scripts/fetch_contracts.py --all --offline`, Ruff, all 39
+publication/model-integrity/documentation pytest cases,
+`python3 -B scripts/check_documentation.py` and `git diff --check`.
+The earlier full refit suite remains recorded above; no training code changed
+in this publication follow-up.
+
+## Integrate the inferred refit into main
+
+On 3 October 2026 the user requested committing and merging the published
+inferred refit into main. When local and remote main diverged, the user
+explicitly authorized merging origin/main into local main while preserving
+both histories. Main reconciliation created commit `4fb4e841`. The refit
+then integrated the canonical Gold population implementation and the other
+current model and web work from main.
+
+The inferred version 1 wrapper uses the legacy storage verifier for historical
+hashes and counters. Runtime refit rows remove selection fields, admit all
+candidates and retain prior decisions only as provenance. The integration
+adapter policy is `chocolate-gold-training-all-rows-2`. Current canonical
+Gold remains `chocolate-gold-population-1`. The already published model and
+its source manifests retain their immutable identities and original policy.
+Future fits bind the updated implementation, including the population module,
+to a new run identity.
+
+Integration verification passed: the locked environment synchronized, all four
+pinned contract caches verified offline, and the complete pytest suite passed
+580 cases. Seven web tests skipped because npm dependencies and the pinned
+web model cache are absent. The additional canonical-population admission
+case and all six inferred-refit tests passed in the final focused check.
+Ruff, the documentation guard against main and whitespace checks passed.
+
+A fresh local integration fit admitted all 2,134 candidates and selected the
+same 55 usable observations. It reproduced all 15 published holdout
+predictions, all evaluation metrics and the 84-tree selection exactly.
+Both the original complete run and the published subset payload passed the
+verified loader. This local verification fit has a new implementation-bound
+identity; the published immutable model remains the completed publication.

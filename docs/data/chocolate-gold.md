@@ -192,7 +192,7 @@ and [PROJECT.md limitations](../../PROJECT.md#limitations).
 
 ## LightGBM with brand trainer
 
-Use the [independent LightGBM with brand command](chocolate-lightgbm-with-brand.md#run-from-verified-gold) for the proposed supermarket experiment. It verifies immutable Gold, managed bytes, logical row digests, copied contracts and reviewed price observations, then saves model-specific immutable artifacts or a readiness report. It requires an explicit unpublished working contract and source-price window. The rebuilt `gold-4939405fcf8724686f9ee32c` retains 2,134 candidates and zero eligible inputs, so no real LightGBM model can fit. Existing OLS snapshots and Gold bulk review cannot supply missing population, identity or price evidence. Fixture runs retain a synthetic status through artifacts and loaded predictions.
+Use the [independent LightGBM with brand command](chocolate-lightgbm-with-brand.md#run-from-verified-gold) for the proposed supermarket experiment. It verifies immutable Gold, managed bytes, logical row digests, copied contracts and reviewed price observations, then saves model-specific immutable artifacts or a readiness report. It requires an explicit unpublished working contract and source-price window. The historical `gold-4939405fcf8724686f9ee32c` stores 2,134 candidates and zero source-eligible inputs. Its original attempt did not fit; the current population loader exposes every candidate and validates numerical usability separately. Existing OLS snapshots and Gold bulk review cannot supply missing population, identity or price evidence. Fixture runs retain a synthetic status through artifacts and loaded predictions.
 
 ## Local population migration
 
@@ -330,3 +330,49 @@ Preparation requires candidate edible weight matching the price observation:
 630 targets are available, with every exact variant ID missing. Promotions and
 unresolved tax are limitations. All 2,134 Gold rows retain their user-authorized
 eligibility and copied original values.
+
+## Current training policy: every Gold candidate is eligible
+
+The canonical Gold loader exposes every candidate without selection fields.
+The inferred refit adapter follows this population policy under
+`chocolate-gold-training-all-rows-2`. It verifies the version 1 inferred wrapper
+and its historical child with `verified_gold_storage` before removing
+`model_eligible` and `exclusion_reasons` from runtime rows. Original decisions
+remain optional `source_model_eligible` and `source_exclusion_reasons`
+provenance. Original price bytes remain in `source-prices.jsonl`. Runs save
+`gold-training-policy.json` with the training population count and any
+historical source counter. Historical counters never restrict admission.
+New canonical Gold snapshots use `training-data.parquet`; the inferred version
+1 wrapper retains its exact historical storage format and integrity checks.
+
+The inferred layer from dataset revision
+`812a03a5faaced471a2a20f4c389865ed5675826` is
+`gold-inferred-5b539b9c4adbb011a40d7792`: 3,743 products, 103 typed attributes,
+2,159 accepted decisions and 2,134 training candidates.
+`scripts/chocolate_gold_inferred.py` verifies its wrapper, full product records,
+accepted decisions, null states and conventional Gold child. Its builder and
+CLI were imported from the existing inferred-layer implementation.
+
+Refit with the pinned current displayed-price target:
+
+```sh
+uv run python scripts/train_chocolate_model.py \
+  --model-id lightgbm_without_brand \
+  --gold-root data/gold-inferred/chocolate/uk/gold-inferred-5b539b9c4adbb011a40d7792
+```
+
+This route uses `scripts/refit_chocolate_lightgbm_inferred.py` and its explicit
+local research policy. The [refit record](analysis/lightgbm-without-brand-inferred-refit.md)
+reports the actual model, family holdout, tuning and native TreeSHAP proof. All
+2,134 candidates are eligible; 55 Waitrose bar observations across 15
+established families have usable targets and pack weights for this experiment.
+No Ocado performance, reliable market accuracy or calibrated intervals are
+established. Models still require numerical inputs and declared grouping;
+Gold eligibility supplies no missing values.
+
+The completed inferred LightGBM refit is [published](https://huggingface.co/datasets/CoralLeiCN/rgc-collections/tree/88b08aeada37e228fcd80334b5abddd768da6968/model/lightgbm_without_brand/model-run-9f56df660a6d46e7cc720002)
+at immutable dataset revision `88b08aeada37e228fcd80334b5abddd768da6968`. Its
+[publication receipt](analysis/lightgbm-without-brand-inferred-model-publication.json)
+records 16 verified model and metadata files. The source inferred Gold snapshot
+retains its original immutable publication reference; model publication does
+not rewrite source inputs or establish calibrated market predictions.

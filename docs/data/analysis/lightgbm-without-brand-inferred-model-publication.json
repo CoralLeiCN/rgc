@@ -1,0 +1,107 @@
+{
+  "calibrated": false,
+  "commit_url": "https://huggingface.co/datasets/CoralLeiCN/rgc-collections/commit/88b08aeada37e228fcd80334b5abddd768da6968",
+  "directory_url": "https://huggingface.co/datasets/CoralLeiCN/rgc-collections/tree/88b08aeada37e228fcd80334b5abddd768da6968/model/lightgbm_without_brand/model-run-9f56df660a6d46e7cc720002",
+  "downloaded_model_load_verified": true,
+  "existing_remote_files_preserved": 186,
+  "files": {
+    "model/lightgbm_without_brand/model-run-9f56df660a6d46e7cc720002/README.md": {
+      "byte_length": 5162,
+      "sha256": "3bdd19f2864cea559cf5ecffbd62a31999bb554c180ed0ec8bb52afed189d3a1"
+    },
+    "model/lightgbm_without_brand/model-run-9f56df660a6d46e7cc720002/booster.txt": {
+      "byte_length": 59426,
+      "sha256": "40f0f6178170848d46701ca3fdb787a0a15f55d433e75eefe07bb285a01a0034"
+    },
+    "model/lightgbm_without_brand/model-run-9f56df660a6d46e7cc720002/evaluation.json": {
+      "byte_length": 1208,
+      "sha256": "6481eb0013bbf028d9de3f15a1e8cf21549d5c7d8fec4d3df6fb8a06e06b5186"
+    },
+    "model/lightgbm_without_brand/model-run-9f56df660a6d46e7cc720002/experiment.json": {
+      "byte_length": 5669,
+      "sha256": "a52b961b4130a078072555a3f618c9110fc2794accca83596400fabe093a46fc"
+    },
+    "model/lightgbm_without_brand/model-run-9f56df660a6d46e7cc720002/inputs/current-price-design.json": {
+      "byte_length": 23254,
+      "sha256": "c7b7f55d0424f8bdbef2fbc76e7b75475753eaad8021f7e1acd266de284ac8de"
+    },
+    "model/lightgbm_without_brand/model-run-9f56df660a6d46e7cc720002/inputs/current-price-reference.json": {
+      "byte_length": 1310,
+      "sha256": "116ccb4b806aab0223740553a831f3847bf86c2b454aad1ccf009da71a661669"
+    },
+    "model/lightgbm_without_brand/model-run-9f56df660a6d46e7cc720002/inputs/gold-training-policy.json": {
+      "byte_length": 325,
+      "sha256": "2347a63c2499063456e362959970b089612cf86279ff4f0374eb5b7a7d225ce8"
+    },
+    "model/lightgbm_without_brand/model-run-9f56df660a6d46e7cc720002/manifest.json": {
+      "byte_length": 3795,
+      "sha256": "f5717485f4c4e378daef3dcaab09d4695563cf5e3ce4f1c97cd254fc476b2752"
+    },
+    "model/lightgbm_without_brand/model-run-9f56df660a6d46e7cc720002/model.json": {
+      "byte_length": 67146,
+      "sha256": "2e86271e1cf415b6281d523d24156baebb18b231ffb2e086c39a891566458050"
+    },
+    "model/lightgbm_without_brand/model-run-9f56df660a6d46e7cc720002/predictions/fitting.jsonl": {
+      "byte_length": 28095,
+      "sha256": "36849eab1951770fcebcdb10af18a2b8b5591d44a5ac962ff3109e0d6871000f"
+    },
+    "model/lightgbm_without_brand/model-run-9f56df660a6d46e7cc720002/predictions/testing.jsonl": {
+      "byte_length": 10450,
+      "sha256": "b6e1b94d5ce333c6aabe256a5717a627c85e0a7a943f31badaa109b1cb65d9d7"
+    },
+    "model/lightgbm_without_brand/model-run-9f56df660a6d46e7cc720002/preprocessing.json": {
+      "byte_length": 2253,
+      "sha256": "c0b1aa4f3269d14bc65592318cbd58a47228139217b729cd31b71ecc9a72a749"
+    },
+    "model/lightgbm_without_brand/model-run-9f56df660a6d46e7cc720002/report.json": {
+      "byte_length": 4425,
+      "sha256": "ae3ebea27e49f7fcbe26e75982d0d74b927841083c221c486da203d1431d8e57"
+    },
+    "model/lightgbm_without_brand/model-run-9f56df660a6d46e7cc720002/reproduce.json": {
+      "byte_length": 370,
+      "sha256": "a10c0c19e04ede20bbf08ff63da2dccafb11d0fcc28b184e84df6f096ed09ef3"
+    },
+    "model/lightgbm_without_brand/model-run-9f56df660a6d46e7cc720002/source-run-manifest.json": {
+      "byte_length": 6838,
+      "sha256": "c6a22668b7f81902c3054a6e8d2b97cc3b7f991b817af2c996e052789418b80f"
+    },
+    "model/lightgbm_without_brand/model-run-9f56df660a6d46e7cc720002/tuning.json": {
+      "byte_length": 94062,
+      "sha256": "433ba66e7146f0379459e91254f031644f9a17ca511bd5f85a728b53c8f030d3"
+    }
+  },
+  "fixture": false,
+  "held_out_predictions_reproduced": 15,
+  "model_id": "lightgbm_without_brand",
+  "parent_revision": "812a03a5faaced471a2a20f4c389865ed5675826",
+  "prefix": "model/lightgbm_without_brand/model-run-9f56df660a6d46e7cc720002",
+  "publication_date": "2026-10-03",
+  "published_example_verified": true,
+  "real_data_fitted": true,
+  "release_ready": false,
+  "remote_bytes_verified": true,
+  "repo_id": "CoralLeiCN/rgc-collections",
+  "revision": "88b08aeada37e228fcd80334b5abddd768da6968",
+  "run_id": "model-run-9f56df660a6d46e7cc720002",
+  "source_run_manifest_sha256": "c6a22668b7f81902c3054a6e8d2b97cc3b7f991b817af2c996e052789418b80f",
+  "verified_bytes": 313788,
+  "verified_file_count": 16,
+  "verified_files": [
+    "model/lightgbm_without_brand/model-run-9f56df660a6d46e7cc720002/README.md",
+    "model/lightgbm_without_brand/model-run-9f56df660a6d46e7cc720002/booster.txt",
+    "model/lightgbm_without_brand/model-run-9f56df660a6d46e7cc720002/evaluation.json",
+    "model/lightgbm_without_brand/model-run-9f56df660a6d46e7cc720002/experiment.json",
+    "model/lightgbm_without_brand/model-run-9f56df660a6d46e7cc720002/inputs/current-price-design.json",
+    "model/lightgbm_without_brand/model-run-9f56df660a6d46e7cc720002/inputs/current-price-reference.json",
+    "model/lightgbm_without_brand/model-run-9f56df660a6d46e7cc720002/inputs/gold-training-policy.json",
+    "model/lightgbm_without_brand/model-run-9f56df660a6d46e7cc720002/manifest.json",
+    "model/lightgbm_without_brand/model-run-9f56df660a6d46e7cc720002/model.json",
+    "model/lightgbm_without_brand/model-run-9f56df660a6d46e7cc720002/predictions/fitting.jsonl",
+    "model/lightgbm_without_brand/model-run-9f56df660a6d46e7cc720002/predictions/testing.jsonl",
+    "model/lightgbm_without_brand/model-run-9f56df660a6d46e7cc720002/preprocessing.json",
+    "model/lightgbm_without_brand/model-run-9f56df660a6d46e7cc720002/report.json",
+    "model/lightgbm_without_brand/model-run-9f56df660a6d46e7cc720002/reproduce.json",
+    "model/lightgbm_without_brand/model-run-9f56df660a6d46e7cc720002/source-run-manifest.json",
+    "model/lightgbm_without_brand/model-run-9f56df660a6d46e7cc720002/tuning.json"
+  ]
+}

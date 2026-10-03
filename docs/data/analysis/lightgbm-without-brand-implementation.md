@@ -247,3 +247,36 @@ native LightGBM 4.6.0 for every field across 324 supported input combinations.
 It labels estimates as synthetic, retains `regular-consumer-price-1`, and shows
 signed price allocations and excluded traits. No real training, current-price
 migration or market-release claim follows from this UI integration.
+
+## Current inferred Gold refit
+
+The initial inferred refit implemented the user's all-row instruction through
+`chocolate-gold-training-all-rows-1`. Historical audits above retain their exact
+source snapshot status. The published refit records original eligibility flags
+and reasons as provenance. Main integration follows the population policy below.
+
+An inferred bundle supplied to the normal without-brand command without a
+historical working contract routes to the current displayed-price refit. The
+[refit record](lightgbm-without-brand-inferred-refit.md) owns its actual fit,
+reproduction command, restricted observed domain, 80/20 family split, missing
+feature policy and small-sample limitations. It has a distinct immutable run
+format and verified loader. It does not establish common-experiment comparator
+results or replace the published web fixture.
+
+The inferred refit was subsequently [published](https://huggingface.co/datasets/CoralLeiCN/rgc-collections/tree/88b08aeada37e228fcd80334b5abddd768da6968/model/lightgbm_without_brand/model-run-9f56df660a6d46e7cc720002)
+at immutable commit `88b08aeada37e228fcd80334b5abddd768da6968` after the user's explicit
+request. The [receipt](lightgbm-without-brand-inferred-model-publication.json)
+records 16 verified model/metadata files and preserved existing dataset objects.
+Downloaded predictions match all 15 saved holdout results. The actual fit
+remains experimental, uncalibrated and not release ready.
+
+## Main integration and population policy
+
+The published inferred refit retains its original policy and immutable artifact
+identity. Integration with main updates the inferred adapter to
+`chocolate-gold-training-all-rows-2`: runtime rows omit selection fields and
+carry historical source decisions only as provenance. Conventional trainers
+use main`s canonical `verified_gold` population loader. The inferred version
+1 wrapper verifies its original child with `verified_gold_storage`. The
+published model remains readable by its verified loader; future fits record
+the updated implementation hashes and a new run identity.

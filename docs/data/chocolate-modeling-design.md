@@ -7,7 +7,7 @@ blockers remain explicit for missing quantities, targets, identity or features.
 The [Gold contract](chocolate-gold.md#output-contract) owns storage, migration and
 historical loader behavior.
 
-Updated: 3 October 2026. Status: consolidated design; real-data models are not yet fitted.
+Updated: 3 October 2026. Status: consolidated design; an experimental inferred Gold model without brand is fitted; market validation remains pending.
 
 The independent [without-brand trainer](analysis/lightgbm-without-brand-implementation.md)
 implements a separate historical regular-price experiment with published
@@ -23,8 +23,8 @@ retailer diagnostic to distinguish retailer pricing from assortment differences.
 
 This design specifies the modeling direction in [the specification](../spec.md),
 sections 3–7. The [data review](analysis/chocolate-data-review-2026-10-03.json)
-records the inspected 1,844 source records and 2,445 captures. Eligibility and
-identity resolution will determine the actual analytical sample.
+records the inspected 1,844 source records and 2,445 captures. Numerical usability and
+identity resolution determine the actual analytical sample.
 The [LightGBM, SHAP, and AI explanation design](analysis/lightgbm-shap-explanation-design.md)
 defines training, attribution units, and the narrative contract in detail.
 
@@ -583,3 +583,14 @@ and 630 current-price targets, but missing exact variant IDs still block fitting
 The six-model common feature policy, coordinated portable/dataset migration,
 comparison and release decisions remain pending; this implementation does not
 establish those outcomes.
+
+## Inferred Gold LightGBM exploration
+
+The [inferred refit](analysis/lightgbm-without-brand-inferred-refit.md) fits
+an experimental current displayed-price model without brand. Gold supplies
+all candidates; the declared cohort and available numerical inputs determine
+the 55-row fitting and testing population. The published run uses an 80/20
+family holdout and fitting-only three-fold selection. It has no calibration
+partition, prediction intervals, champion selection or established market
+validation. Its [publication receipt](analysis/lightgbm-without-brand-inferred-model-publication.json)
+pins the immutable model payload and source snapshot.

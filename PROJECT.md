@@ -136,3 +136,18 @@ For the full processing workflow, use a collected raw archive and the pinned
 contracts described in the [README](README), [silver guide](docs/data/chocolate-silver.md)
 and [dataset contract guide](docs/data/dataset-contracts.md). Raw datasets and contract
 caches are supplied separately from this checkout.
+
+## Inferred Gold refit limitations
+
+Gold training now treats every candidate as eligible under the user's explicit
+instruction of 3 October 2026. Original review/eligibility decisions remain
+provenance. The published `lightgbm_without_brand` inferred refit uses
+`current-consumer-price-1`: collected displayed prices are the regular-price
+proxy, with promotions, membership effects and tax taken as displayed. It
+uses 55 Waitrose bar observations across 15 established families; missing
+price, pack mass and family grouping restrict numerical use despite admission.
+The fitted feature set excludes brand. Recipe, single-pack status and cocoa
+percentage basis remain unestablished; missing feature values retain native
+missing routes. The final holdout has three families and supplies no credible
+market-release claim, Ocado score or calibrated prediction interval.
+See the [refit record](docs/data/analysis/lightgbm-without-brand-inferred-refit.md).

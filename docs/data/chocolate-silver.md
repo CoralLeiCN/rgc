@@ -452,3 +452,17 @@ Shared preparation `chocolate-current-price-target-1` consumes the published
 current-price overlay at `d743cb8dbca37f5241cccd444a16165523304f6c`.
 It requires existing candidate edible weight matching the price observation;
 the matched run derives 630 targets without changing Silver or Gold.
+
+## Gold training eligibility policy
+
+Gold training now admits all candidate rows under the user's instruction,
+using `chocolate-gold-training-all-rows-2`.
+`scripts/chocolate_gold_training.py` verifies the original conventional or
+inferred Gold, retains original decisions as source provenance and supplies
+all candidates to trainer input views. Silver processing and historical
+snapshot reports continue to record their actual decisions. The separate
+inferred product view packages 103 typed cells, full records and accepted
+inference decisions beside a conventional `training/` Gold child.
+The [experimental refit](analysis/lightgbm-without-brand-inferred-refit.md)
+uses available cells and current displayed prices while reporting numerical
+usability and family grouping separately from eligibility.

@@ -201,13 +201,24 @@ def build_run(gold_root, output, contract_path, *, experiment_path=None, fixture
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--gold-root", type=Path, required=True)
-    parser.add_argument("--working-contract", type=Path, required=True)
+    parser.add_argument("--working-contract", type=Path)
     parser.add_argument("--prepare-working-contract", action="store_true")
     parser.add_argument("--experiment", type=Path)
     parser.add_argument("--output", type=Path, default=ROOT / "data/models/chocolate/uk" / MODEL_ID)
     parser.add_argument("--fixture", action="store_true", help="Label synthetic input and fitted artifacts as fixtures")
     args = parser.parse_args(argv)
     try:
+        storage = read_json((args.gold_root / "manifest.json").read_bytes())
+        if storage.get("manifest_format_version") == "chocolate-gold-inferred-manifest-1" and args.working_contract is None:
+            if args.prepare_working_contract or args.experiment or args.fixture:
+                raise ModelContractError("inferred Gold refit uses its recorded current-price exploration policy")
+            from refit_chocolate_lightgbm_inferred import build_run as refit
+            report, destination = refit(args.gold_root, args.output / "inferred")
+            print(json.dumps({"output": str(destination), "status": report["status"], "counts": report["counts"],
+                              "evaluation": report["evaluation"], "release_ready": False}, indent=2))
+            return 0
+        if args.working_contract is None:
+            raise ModelContractError("--working-contract is required for the historical working experiment")
         if args.prepare_working_contract:
             _, _, inputs = verified_gold(args.gold_root)
             if args.working_contract.exists():

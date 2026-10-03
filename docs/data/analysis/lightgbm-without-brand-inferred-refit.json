@@ -1,0 +1,101 @@
+{
+  "booster_sha256": "40f0f6178170848d46701ca3fdb787a0a15f55d433e75eefe07bb285a01a0034",
+  "calibrated": false,
+  "counts": {
+    "gold_eligible_rows": 2134,
+    "selected_families": 15,
+    "selected_rows": 55,
+    "source_eligible_rows": 0,
+    "source_products": 3743,
+    "training_candidates": 2134
+  },
+  "dataset_publication_revision": "812a03a5faaced471a2a20f4c389865ed5675826",
+  "date": "2026-10-03",
+  "evaluation": {
+    "TreeSHAP_max_error_log": 1.1102230246251565e-15,
+    "all_test_rows": {
+      "MAE_GBP_per_100g": 0.5426558809255827,
+      "MAE_GBP_per_pack": 0.47316845254081774,
+      "families": 3,
+      "rows": 15,
+      "signed_bias_GBP_per_100g": 0.10608366015420556,
+      "signed_bias_GBP_per_pack": 0.15623569499908987,
+      "weighted_median_absolute_percentage_error": 14.687197532028563
+    },
+    "champion_selection": "pending_comparators",
+    "intervals": "unavailable_no_calibration_partition",
+    "listing_weighted": {
+      "MAE_GBP_per_100g": 0.45076903240462113,
+      "MAE_GBP_per_pack": 0.4256665764141715,
+      "families": 3,
+      "rows": 15,
+      "signed_bias_GBP_per_100g": -0.24512352324183315,
+      "signed_bias_GBP_per_pack": -0.22237019394042304,
+      "weighted_median_absolute_percentage_error": 13.031591683447585
+    },
+    "supported_test_rows": {
+      "MAE_GBP_per_100g": 0.6444296897414458,
+      "MAE_GBP_per_pack": 0.638556873018847,
+      "families": 3,
+      "rows": 14,
+      "signed_bias_GBP_per_100g": 0.3837978560724941,
+      "signed_bias_GBP_per_pack": 0.37792503934989535,
+      "weighted_median_absolute_percentage_error": 16.522253366664064
+    },
+    "test_families": 3,
+    "test_rows": 15,
+    "unsupported_test_rows": 1
+  },
+  "gold_inferred_dataset_version": "gold-inferred-5b539b9c4adbb011a40d7792",
+  "gold_inferred_manifest_sha256": "18b1d00b301b1ad7ce7190076614e9c76f84cbb99f3c43a5aa8273f9f4123bfe",
+  "gold_training_policy": "chocolate-gold-training-all-rows-1",
+  "limitations": [
+    "Current displayed prices are used as the study's regular-price proxy; independently verified regular prices are not required.",
+    "Displayed prices may include promotions, membership conditions or temporary offers; these effects are not separated from product or retailer associations.",
+    "Tax inclusion is taken as displayed and is not independently verified or harmonized.",
+    "Prices describe recorded source captures, not live quotes or a common observation date.",
+    "GBP per 100 g targets require an actual positive edible pack weight; missing quantities remain missing.",
+    "All Gold rows are eligible for training; historical source decisions remain recorded as provenance. Curated attributes remain incomplete.",
+    "Only established families with usable targets enter this experiment; selection bias is unresolved.",
+    "Single-pack and recipe evidence are unestablished; cocoa percentage is omitted without a comparable basis.",
+    "The small final family holdout cannot establish market accuracy; prediction intervals are unavailable.",
+    "No held-out brand, future-price validation or comparator/champion decision is established."
+  ],
+  "local_run_path": "/Users/coral/.codex/worktrees/378b/rgc/data/models/chocolate/uk/lightgbm_without_brand/inferred/model-run-9f56df660a6d46e7cc720002",
+  "model_reload_predictions_match": true,
+  "model_sha256": "2e86271e1cf415b6281d523d24156baebb18b231ffb2e086c39a891566458050",
+  "partitions": {
+    "fitting": {
+      "families": 12,
+      "rows": 40
+    },
+    "testing": {
+      "families": 3,
+      "rows": 15
+    }
+  },
+  "publication_receipt": "docs/data/analysis/lightgbm-without-brand-inferred-model-publication.json",
+  "publication_revision": "88b08aeada37e228fcd80334b5abddd768da6968",
+  "publication_url": "https://huggingface.co/datasets/CoralLeiCN/rgc-collections/tree/88b08aeada37e228fcd80334b5abddd768da6968/model/lightgbm_without_brand/model-run-9f56df660a6d46e7cc720002",
+  "published": true,
+  "published_files_verified": 16,
+  "published_source_manifest_matches_local": true,
+  "real_data_fitted": true,
+  "release_ready": false,
+  "remote_main_revision_verified": "812a03a5faaced471a2a20f4c389865ed5675826",
+  "run_id": "model-run-9f56df660a6d46e7cc720002",
+  "selected_features": [
+    "quantity.total_edible_weight_g",
+    "identity.retailer",
+    "composition.chocolate_type"
+  ],
+  "selection_exclusion_counts": {
+    "family_relationship_unresolved": 1732,
+    "outside_bar_group": 1334,
+    "outside_waitrose_ocado": 1137,
+    "positive_edible_pack_weight_missing": 1503
+  },
+  "status": "experimental_real_data_fitted",
+  "target_contract_sha256": "c7b7f55d0424f8bdbef2fbc76e7b75475753eaad8021f7e1acd266de284ac8de",
+  "tree_count": 84
+}

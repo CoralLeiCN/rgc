@@ -121,3 +121,25 @@ managed artifact hashes. Historical regular-price mode remains available.
 Fixture validation passed; the latest declared-protocol real attempt has no
 complete model inputs and no fitted or published real model. A limited exploratory
 sample is distinct from that protocol and would require its own recorded scope.
+
+## Current inferred LightGBM refit
+
+The [inferred refit record](data/analysis/lightgbm-without-brand-inferred-refit.md)
+records an actual published `lightgbm_without_brand` fit using current displayed
+prices and the published inferred Gold layer. Its manifest format is
+`chocolate-lightgbm-inferred-run-1`, with verified loading through
+`scripts/refit_chocolate_lightgbm_inferred.py`. Gold admission always includes
+every candidate, retaining source decisions as provenance. Immutable artifacts
+include the complete inferred inputs, target pin, selected rows, family
+partitions, fold weights, tuning, booster, preprocessing and explanations.
+This format has a separate loader from the historical fixture format and is
+not consumed by the web serving adapter. The current serving reference still
+selects its disclosed synthetic fixture. The new fit is [published at immutable revision `88b08aeada37e228fcd80334b5abddd768da6968`](https://huggingface.co/datasets/CoralLeiCN/rgc-collections/tree/88b08aeada37e228fcd80334b5abddd768da6968/model/lightgbm_without_brand/model-run-9f56df660a6d46e7cc720002).
+Its [receipt](data/analysis/lightgbm-without-brand-inferred-model-publication.json)
+records 16 downloaded files verified byte for byte, totaling 313,788 bytes.
+The publication manifest contains the model artifacts and metadata; the
+original full training inventory is retained as `source-run-manifest.json`.
+The existing source dataset supplies training inputs separately. All 186 prior
+dataset files were preserved. The downloaded booster reproduces all 15 test
+predictions exactly and the native inference example passes. Market validation,
+intervals and champion selection remain outstanding.

@@ -1573,3 +1573,50 @@ has no fitting rows.
 The [current-price diagnostic policy](data/chocolate-matched-retailer.md#current-price-study-policy)
 owns the explicit target, quantity selection, source preservation and verified
 shared-contract binding; exact matching is still required.
+
+## Gold training admission and inferred LightGBM refit
+
+The user instruction of 3 October 2026 establishes
+`chocolate-gold-training-all-rows-2` at the training boundary.
+`scripts/chocolate_gold_training.py` verifies immutable source Gold before
+exposing every candidate without `model_eligible` or `exclusion_reasons`.
+The adapter accepts conventional Gold and the inferred wrapper. It preserves
+prior flags and exclusion reasons as source provenance and retains original
+price bytes beside the trainer price view. Training reports distinguish saved
+source counts from admitted counts. Source snapshot verification continues to
+check the exact historical file hashes, row digests and reports.
+
+OLS, hedonic without brand and both historical LightGBM trainers consume the
+canonical `verified_gold` population loader. The inferred refit uses this
+wrapper adapter to retain its historical child provenance. Silver compatibility inputs retain their selected contract.
+All-row Gold eligibility supplies no missing numbers, identity relationships or
+model cohort fields. Historical fixed-price experiments retain their targets
+and can record numerical or context readiness failures.
+
+`--model-id lightgbm_without_brand --gold-root <inferred-bundle>` without a
+historical working contract routes to the inferred exploration adapter. It
+consumes authoritative product cells and source prices under the pinned
+`current-consumer-price-1` contract. Its bar/Waitrose/Ocado research domain uses
+established family IDs and actual positive pack mass and GBP displayed prices.
+Unknown and conflict attributes remain null and use native missing routes.
+Brand is excluded from all fitted matrices; no known-brand rank gate restricts
+this independent exploratory estimator. Recipe and single-pack status remain
+unestablished; cocoa percentage is omitted because its comparable basis is
+absent.
+
+The local experimental policy uses 80% fitting and 20% testing families,
+ordered by SHA-256 of seed 1729, LF and family ID. Three inner family folds
+select core versus enriched features and bounded tree settings using unit MAE,
+with fold-specific category maps and recomputed family weights. The median
+selected fold iteration count is frozen before final fitting. No calibration
+partition or prediction intervals are claimed. All holdout rows contribute to
+the primary metric; support-restricted metrics are additional diagnostics.
+Artifacts bind source manifests, pinned target bytes, implementation hashes,
+selected rows, tuning, preprocessing, booster and native TreeSHAP results. The
+[refit record](data/analysis/lightgbm-without-brand-inferred-refit.md) owns the
+actual fit and its small-sample limitations. It remains an experimental research run
+with no champion or serving-reference replacement. The completed model was
+subsequently published at immutable dataset revision `88b08aeada37e228fcd80334b5abddd768da6968`.
+The [receipt](data/analysis/lightgbm-without-brand-inferred-model-publication.json)
+records all 16 remotely verified model/metadata files and exact preservation
+of the previous dataset inventory.

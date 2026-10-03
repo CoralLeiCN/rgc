@@ -412,3 +412,14 @@ evidenced regular prices, non-promotional status and confirmed tax inclusion
 are no longer prerequisites for this study. Preserve source metadata and record
 those limitations. Positive edible weight and assigned-model identity/statistical
 requirements still apply.
+
+## Gold training eligibility and inferred refit
+
+On 3 October 2026 the user requested a refit of `lightgbm_without_brand` using
+the inferred Gold layer and then directed that every `gold_*` layer always be
+training eligible. Gold training admits all candidate rows regardless of saved
+Silver eligibility flags. Original eligibility and exclusion reasons remain
+provenance. Missing numerical targets, pack mass and relationship fields still
+limit which observations a declared model can use. The current study uses
+`current-consumer-price-1`; market validation and champion selection require
+separate evidence.
