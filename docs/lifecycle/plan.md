@@ -40,10 +40,10 @@ processing plugins and their verification suites are outside this cleanup.
 
 Cleanup validation passes: TypeScript, production build, all seven API snapshot
 traces, pinned Plotly integrity and documentation links. The simplified offline
-snapshot builder reproduces all 26 JSON files byte-for-byte. A cleaned preview
-is deploying; hosted checks are pending. The last protected preview is
-[available here](https://rgc-hqvkpvxpj-ptyyyy-s-projects.vercel.app); it predates
-this cleanup. Live browser/WebGL and actual model extraction remain unverified.
+snapshot builder reproduces all 26 JSON files byte-for-byte. The cleaned
+[protected preview](https://rgc-mgr5btzho-ptyyyy-s-projects.vercel.app) is READY;
+27 hosted route/asset checks and eight Next.js assets passed. Retired routes and
+parameters are unavailable. Live browser/WebGL and actual model extraction remain unverified.
 Codex startup is blocked by this workspace before a model request; no Funnel
 has been published. Provider setup remains in the app README.
 
@@ -134,7 +134,7 @@ documentation or rewrite eligibility/targets.
 | Deploy the retailer workspace with typed cohorts, family matrix, comparison and layered terrain with gap/brand analysis. | `apps/web/app/`, `apps/web/components/`, `apps/web/lib/client/` | Implemented; cleanup build, types and integrity verification are recorded above. Live browser/WebGL review remains. |
 | Serve bounded schema, product, terrain, evidence, comparison and analysis data, plus trait extraction adapters. | `apps/web/app/api/`, `apps/web/lib/server/`, `apps/web/lib/contracts.ts` | Implemented with typed queries and a 4 MB response cap; live extraction awaits provider configuration. |
 | Validate pinned snapshot contracts and derive private JSON plus an integrity manifest. | `scripts/build_web_snapshot.py`, `apps/web/snapshot/` | Implemented for the app's immutable revision; all 3,743 listings validate and evidence references are retained. |
-| Package the Vercel application with pinned dependencies and snapshot/asset verification. | `apps/web/package.json`, lockfile, Next/Vercel configuration and verification scripts | Node 24 London functions use Vercel Authentication; cleanup verifies all seven API snapshot traces, with hosted cleanup verification pending. |
+| Package the Vercel application with pinned dependencies and snapshot/asset verification. | `apps/web/package.json`, lockfile, Next/Vercel configuration and verification scripts | Node 24 London functions use Vercel Authentication; cleanup verifies all seven API snapshot traces; hosted checks passed on the protected preview recorded below. |
 | Explain retail frontier using the hackathon submission and judging structure. | `PROJECT.md`, intention, lifecycle intent and `README` | Description, capability status, collection demo and submission fields added and reviewed; documentation checks and the offline demo passed. Team names, video, brand votes and public access verification remain pending. |
 | Demonstrate the built retail frontier workflow. | `PROJECT.md`, intention, lifecycle intent and `README` | Project description focuses on implemented collection, processing, evidence review and model preparation, with a brief description of the chocolate data, a runnable collection demo and explicit modelling limits. Event information, judging criteria and submission fields were removed from the project description. |
 | Diagram the data processing workflow. | `docs/data/chocolate-silver.md`, `PROJECT.md` and `README` | Added a Mermaid diagram for source collection, raw preservation, silver processing, review, eligible model inputs and portable model preparation, with purpose, output and status descriptions for bronze/raw, Silver and immutable Parquet Gold inside the diagram and its companion table. Export and the experimental trainer are implemented; real fitting, validated pricing and explanations remain pending. Documentation tests, Ruff and documentation/whitespace checks passed; diagram stages were reviewed against the silver and portable guides. |
@@ -182,6 +182,25 @@ retain unknown sellers outside the initial model and group related designs acros
 sellers in validation. Missing evidence cannot justify new taxonomy values.
 
 ## Proof
+
+### Web application verification
+
+The current web preview, deployment `dpl_2JRVCEdm45vGfxtkPJYiSHDoMy5T`, passed
+its Vercel build and all seven API snapshot traces (largest traced dependency
+set 28.5 MiB). Hosted verification checked all active APIs, three vendor assets
+against their hashes, the homepage and eight Next.js assets. The retired
+`/api/points` and study URL return 404; `scoreMode=demo` returns 400. Unsupported
+methods return 405, and the private snapshot remains inaccessible over HTTP.
+
+Observed analysis retains 892 priced listings, with 811 in the core range;
+the terrain retains 289 complete core-range and 338 full-range products. Exact
+prices, raw numeric heights, trait-recipe scores and category shares reconcile
+against the pinned snapshot. Parent-family dimension requests return 400.
+The extraction endpoint returns 400 for invalid input and 503 for missing
+configuration; no live provider was called. Default Vercel Authentication remains
+enabled, unauthenticated API access redirects to sign-in, and temporary verification
+credentials were revoked with their local files deleted. Previous previews and
+production were not changed. Browser rendering and live extraction remain unverified.
 
 ### Pipeline and model preparation verification
 

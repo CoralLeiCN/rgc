@@ -3,9 +3,10 @@
 Design recorded before implementation on 2026-10-03 in response to the request to
 use Vercel for both frontend and backend. Application root: `apps/web`.
 
-The [preview](https://rgc-hqvkpvxpj-ptyyyy-s-projects.vercel.app) is deployed with
-Vercel sign-in protection. The cloud build, homepage, collection APIs and assets
-pass hosted HTTP checks; see the [lifecycle proof](lifecycle/plan.md#proof).
+The [preview](https://rgc-mgr5btzho-ptyyyy-s-projects.vercel.app) is deployed with
+Vercel sign-in protection. The cleaned application passed 27 hosted route/asset
+checks and eight Next.js asset checks; all seven API traces include the snapshot.
+See the [lifecycle proof](lifecycle/plan.md#proof).
 
 ## Deployment and data flow
 

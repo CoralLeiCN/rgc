@@ -164,10 +164,14 @@ No raw archives or model training run on page requests.
 
 ## Current preview
 
-The [terrain preview](https://rgc-hqvkpvxpj-ptyyyy-s-projects.vercel.app) is READY
-with Vercel sign-in protection. The cloud build and hosted route/asset checks
-passed. This is a preview; production and earlier previews remain unchanged.
-Extraction correctly reports missing provider configuration.
+The [current preview](https://rgc-mgr5btzho-ptyyyy-s-projects.vercel.app) is READY
+with Vercel sign-in protection. The cloud build verified all seven API traces;
+27 hosted route/asset checks and eight Next.js assets passed. Retired points and
+study URLs return 404, and the removed `scoreMode=demo` parameter returns 400.
+The terrain retains 289 core-range or 338 full-range products. Extraction
+correctly reports missing provider configuration without calling a provider.
+Temporary verification credentials were revoked and deleted. Production and
+earlier previews remain unchanged.
 
 ## Validation limits
 
