@@ -31,7 +31,8 @@ then checks snapshot inclusion in all eight API function traces and the pinned
 pricing model in the prediction trace. It does not
 fetch the collection snapshot or run Python. A clean build downloads the two
 immutable model artifacts; cached builds verify them offline. No database or external credentials are needed
-to explore the collection; image/text extraction needs one provider below.
+to explore the collection. Local development uses signed-in Codex for image/text
+extraction unless an explicit provider, bridge URL or OpenAI API key is configured.
 
 ## Terrain and product configuration
 
@@ -86,6 +87,32 @@ includes every usable price. Gap finder highlights interior empty price bands;
 brand analysis ranks known brands with at least three observations by median
 unit price. Neither establishes demand, sales, margin or a like-for-like premium.
 The dashboard uses `/api/analysis` for observed-price statistics.
+
+## Direct local extraction with ChatGPT sign-in
+
+The local Next.js server can invoke Codex directly. Install the Codex CLI and
+run `codex login` to complete its ChatGPT OAuth sign-in, then confirm
+`codex login status`. From `apps/web`, run `npm run dev` and use **Extract traits**
+in the product configurator. Local development defaults to `codex-local` when
+no provider, bridge URL or OpenAI API key is configured.
+
+To explicitly select this mode, including for a local production server, set
+this server-only value in the ignored `apps/web/.env.local` and restart Next.js:
+
+```dotenv
+TRAIT_EXTRACTOR_PROVIDER=codex-local
+```
+
+`CODEX_EXECUTABLE` optionally names the installed binary. The child requires
+ChatGPT sign-in and removes API key environment variables. It reuses the CLI's
+existing authentication store; OAuth tokens stay on the laptop. Inference uses
+Codex subscription access and requires network connectivity. See
+[Codex authentication](https://learn.chatgpt.com/docs/auth).
+
+Direct local mode admits one extraction at a time with a 90-second deadline and
+uses the same private temporary files, disabled tools and schema validation as
+the bridge below. Review candidates and apply selected traits to the draft.
+Vercel rejects `codex-local`; configure the HTTPS bridge for hosted access.
 
 ## Extraction provider A: OpenAI API
 
@@ -153,11 +180,12 @@ Configure these server-only Vercel variables, then redeploy:
 No OpenAI API key is required for this provider. Vercel revalidates the returned
 traits. Do not remove the preview's access protection to set this up.
 
-The bridge is implemented, but live extraction
-could not be verified here: Codex's local app-server initialization is blocked by
-this workspace (`Operation not permitted`). No Tailscale tunnel has been published.
-Tailscale was not found in the checked CLI/app locations. Provider configuration
-and a live text/image extraction still need completion on the laptop.
+Direct local text and two-photo extraction are verified with the installed CLI's
+ChatGPT sign-in, including review/Apply and preservation of the draft price.
+Earlier sandboxed attempts failed during app-server initialization; run the local
+server with the host permissions needed by the installed CLI. No Tailscale tunnel
+has been published. Hosted bridge configuration and network access remain pending.
+The [lifecycle plan](../../docs/lifecycle/plan.md#proof) records current live proof.
 
 ## Vercel setup
 
@@ -205,11 +233,11 @@ production build and data/asset integrity checks validate the current app.
 See the lifecycle plan for hosted verification.
 
 Local browser checks verified example selection, custom uploads, resizing,
-removal, the two-photo limit, preservation of draft edits and the missing-provider
-error. Terrain/WebGL review and live model extraction remain pending. Codex's
-in-process app-server has not been verified here. The synthetic fixture is
-connected locally; a real market pricing benchmark is not validated. The hosted
-preview above predates this feature.
+removal and the two-photo limit. Live text and two-photo requests succeeded
+through local Codex with ChatGPT sign-in. Review/Apply populated the draft and
+retained its proposed price. Hosted bridge setup and Terrain/WebGL review remain
+pending. The synthetic pricing fixture is connected locally; a real market
+pricing benchmark remains unvalidated. The hosted preview predates these features.
 
 ## Synthetic price prediction
 

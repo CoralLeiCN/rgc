@@ -30,13 +30,13 @@ export const spawnCodex: CodexExecutor = execution => new Promise((resolve, reje
   const abort = () => { kill("SIGTERM"); killTimer = setTimeout(() => kill("SIGKILL"), 750); killTimer.unref(); };
   execution.signal.addEventListener("abort", abort, { once: true });
   child.stdin.on("error", () => {});
-  child.once("error", () => { execution.signal.removeEventListener("abort", abort); if (killTimer) clearTimeout(killTimer); reject(new ApiError(502, "CODEX_UNAVAILABLE", "The local Codex executable could not be started.")); });
+  child.once("error", () => { execution.signal.removeEventListener("abort", abort); if (killTimer) clearTimeout(killTimer); reject(new ApiError(502, "CODEX_UNAVAILABLE", "Install the Codex CLI or set CODEX_EXECUTABLE, then run codex login on the server laptop.")); });
   child.once("close", code => {
     execution.signal.removeEventListener("abort", abort);
     if (execution.signal.aborted) kill("SIGKILL");
     if (killTimer) clearTimeout(killTimer);
     if (execution.signal.aborted) reject(new ApiError(504, "EXTRACTION_TIMEOUT", "Local extraction was cancelled or timed out."));
-    else if (code !== 0) reject(new ApiError(502, "CODEX_FAILED", `Local Codex could not complete extraction (exit ${code ?? "unknown"}).`));
+    else if (code !== 0) reject(new ApiError(502, "CODEX_FAILED", `Local Codex could not complete extraction (exit ${code ?? "unknown"}). Check codex login status and subscription availability on the server laptop.`));
     else resolve();
   });
   child.stdin.end(execution.input);
@@ -53,7 +53,7 @@ export async function runLocalCodex(input: ExtractionRequest, fields: readonly F
     await writeFile(outputFile, "", { mode: 0o600 });
     const args = ["exec", "--sandbox", "read-only", "--ephemeral", "--ignore-user-config", "--ignore-rules", "--skip-git-repo-check", "--cd", directory,
       "--output-schema", schemaFile, "--output-last-message", outputFile, "--color", "never",
-      "-c", 'approval_policy="never"', "-c", 'web_search="disabled"', "-c", "project_doc_max_bytes=0", "-c", "mcp_servers={}",
+      "-c", 'approval_policy="never"', "-c", 'forced_login_method="chatgpt"', "-c", 'web_search="disabled"', "-c", "project_doc_max_bytes=0", "-c", "mcp_servers={}",
       "--enable", "skip_host_skill_discovery", ...DISABLED_FEATURES.flatMap(feature => ["--disable", feature])];
     for (const [index, image] of validated.images.entries()) {
       const extension = { "image/png": "png", "image/jpeg": "jpg", "image/webp": "webp" }[image.mimeType];

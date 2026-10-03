@@ -288,13 +288,15 @@ Retain label qualifiers: component cocoa minimums and “fairly traded” wordin
 must not imply an exact whole-product cocoa percentage or a named certification.
 Demo photos and local drafts stay outside the training corpus.
 
-The extraction route supports a configured OpenAI API provider or an
-authenticated local Codex bridge, including the requested laptop connection
-through Tailscale. The extraction model has a separate purpose from the cancelled
-pricing model integration. Missing provider configuration produces an explicit
-error instead of invented traits. The live local Codex path remains unverified because sandbox startup is
-blocked; local bridge and network availability must be established before
-claiming that route works end to end.
+Enable local image/text trait extraction through the installed Codex CLI using
+its ChatGPT OAuth sign-in. The local Next.js server should invoke it directly,
+with candidates still requiring explicit review and Apply. Hosted extraction
+supports a configured OpenAI API provider or authenticated Codex bridge,
+including the requested laptop connection through Tailscale. The extraction
+model has a separate purpose from the synthetic pricing fixture and its field
+SHAP explanation.
+Missing provider configuration produces an explicit error. Record successful
+live extraction separately from hosted bridge and network availability.
 
 ### Presentation, assets and remaining work
 

@@ -16,7 +16,9 @@ price-position analysis, with private bundled snapshot/evidence assets. Parent
 families organize navigation; only leaf fields supply colour and only one numeric
 leaf supplies raw Z. Draft scores are trait-derived and read-only; a proposed-price
 slider moves the draft without changing observed analysis. Image/text extraction
-returns reviewable candidates through OpenAI or a token-protected local Codex bridge.
+returns reviewable candidates through OpenAI, a token-protected Codex bridge,
+or direct local Codex with ChatGPT sign-in. Local development defaults to direct
+Codex when no provider credentials are configured; Vercel requires a hosted adapter.
 The server returns bounded pages, terrain coordinates, aggregate analysis; the browser does not load the full collection
 index. Schema validation, typed filter bounds and original review semantics
 apply at the interface. The delivery stack is decided; hosted verification and

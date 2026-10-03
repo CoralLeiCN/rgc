@@ -67,16 +67,18 @@ price. The example has no prefilled traits or automatic score. These app assets
 remain outside collection/training snapshots. Label instructions preserve the
 component scope of the cocoa minimum and do not infer named Fairtrade
 certification from “fairly traded.” This workflow is implemented and passed
-local build, contract and browser checks recorded below. Provider configuration
-and live extraction remain unverified. This revision has not been deployed;
+local build, contract and browser checks recorded below. Direct local Codex
+with ChatGPT sign-in is now configured; live proof is recorded below. This
+revision has not been deployed;
 the earlier protected preview retains its previous application version.
 
 The current hackathon app is `apps/web`, with a Vercel frontend/backend, private
 snapshot, leaf-colour terrain, typed filters, product configurator, gap finder and
 brand analysis. Price is adjustable by slider; a read-only trait recipe supplies
 the demo score. Image/text extraction supports server-side OpenAI or a local
-Codex bridge; live provider configuration remains pending. After the earlier
-cleanup, the user authorized the published LightGBM synthetic fixture for product
+Codex bridge or direct local Codex with ChatGPT OAuth sign-in. The direct mode
+is selected in this checkout; hosted provider configuration remains pending.
+After the earlier cleanup, the user authorized the published LightGBM synthetic fixture for product
 price prediction and SHAP contributions. The current implementation is described
 in the [fixture serving guide](../data/analysis/web-fixture-pricing.md).
 
@@ -93,9 +95,11 @@ traces, pinned Plotly integrity and documentation links. The simplified offline
 snapshot builder reproduces all 26 JSON files byte-for-byte. The cleaned
 [protected preview](https://rgc-mgr5btzho-ptyyyy-s-projects.vercel.app) is READY;
 27 hosted route/asset checks and eight Next.js assets passed. Retired routes and
-parameters are unavailable. Terrain/WebGL and actual model extraction remain unverified.
-Codex startup is blocked by this workspace before a model request; no Funnel
-has been published. Provider setup remains in the app README.
+parameters are unavailable. Terrain/WebGL review remains pending. Earlier model
+extraction was blocked by
+workspace sandbox startup; the direct local mode and its current verification
+are recorded below. No Funnel has been published. Provider setup remains in the
+app README.
 
 The app's immutable snapshot pins Hugging Face revision
 `d4ebef3df5ac17145e8dbd2f8a7ae2b10c0afe70`. Its 3,743 listings, 103 traits and
@@ -235,6 +239,44 @@ sellers in validation. Missing evidence cannot justify new taxonomy values.
 
 ### Web application verification
 
+#### Local Codex trait extraction
+
+The 2026-10-03 local extraction update adds `codex-local` to the Next.js API.
+It is the development default when no provider, bridge URL or OpenAI API key is
+configured, and is explicitly selected in this checkout's ignored `.env.local`.
+It uses the installed Codex CLI's existing ChatGPT OAuth sign-in, forces that
+login method, removes API key environment variables and shares the bridge's
+bounded input, disabled tools, schema output and temporary-file cleanup. Direct
+local requests admit one job at a time and abort after 90 seconds. Vercel rejects
+this mode and continues to require a hosted provider.
+
+Live verification used Node 24.19.0 and the installed CLI, already signed in with
+ChatGPT. The server bound to `127.0.0.1:3001`, with the browser at
+`http://localhost:3001`. A synthetic text request returned HTTP 200 and 11
+validated traits in 21.3 seconds. The browser resized both original Well&Truly
+photos and submitted them together: HTTP 200 in 78 seconds, 34 candidates and
+five limitation warnings. It omitted the component cocoa minimum and named
+Fairtrade certification. Applying all 34 selected candidates set the draft's
+name and edible mass (30 g), retained the manually entered GBP 2.25 price and
+showed “34 reviewed traits applied. Pack price unchanged.” The extracted
+candidates remain a user review workflow rather than verified product facts.
+
+An overlapping request returned HTTP 429. Temporary checks verified forced
+ChatGPT sign-in, removal of API key/bridge-token environment variables,
+temporary-file cleanup and rejection of `codex-local` under Vercel. With Node 24,
+TypeScript and the production build passed, including all five asset hashes and
+all seven API snapshot traces. `uv sync --locked`, all four offline contract
+caches, 26 documentation pytest checks, Ruff, documentation coverage and
+whitespace checks passed. The managed shell sandbox cannot initialize the CLI's
+app-server; the verified local server ran with host permissions. No hosted
+bridge or tunnel was configured and this revision was not deployed.
+
+Integration with local `main` at `bcd38cd` retains its synthetic pricing fixture
+and resolves the documentation to describe both features. All 476 pytest cases,
+Ruff, TypeScript, the Node 24 production build, five public asset hashes, pinned
+model hashes, all eight API traces, four offline contract caches, documentation
+coverage against `main` and whitespace checks passed for the combined tree.
+
 #### Synthetic product prediction and SHAP
 
 The user authorized the published `lightgbm_without_brand` fixture for a labelled
@@ -270,7 +312,7 @@ Validation on 3 October 2026:
 
 Local web checks used Node 26.10.0; deployment configuration still selects Node
 24. This feature has not been deployed to the existing protected preview.
-Live extraction configuration and broad WebGL rendering retain their separate
+Hosted extraction configuration and broad WebGL rendering retain their separate
 verification limits. Fixture parity establishes implementation fidelity, not
 market prediction accuracy or a validated real-product interval.
 
@@ -299,8 +341,8 @@ JPEGs, removal of one photo, appending the other and rejection of a three-photo
 selection while preserving the existing pair. Selecting the example preserved
 a manually entered draft name and GBP 2.25 proposed price. **Extract traits**
 submitted the selected pair and displayed the expected 503 provider-configuration
-error. Live extraction and its returned candidates remain unverified. No
-deployment was performed for this revision; the hosted preview proof below
+error. At that time, live extraction and its candidates remained unverified. No
+deployment was performed for that revision; the hosted preview proof below
 describes the earlier application. Terrain/WebGL interaction requires its own
 browser review.
 

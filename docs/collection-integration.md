@@ -100,7 +100,11 @@ Silver export, training corpus and local raw text-evidence export. Users can
 select these photos or upload up to two of their own PNG/JPEG/WebP images. The
 browser prepares temporary copies within the extraction request limits. Selecting
 the example loads the photos, and **Extract traits** requests candidates from the
-configured provider. It provides no prefilled traits. Review/apply preserves
+configured provider. Local Next.js development defaults to direct Codex with
+ChatGPT OAuth sign-in when no explicit provider, bridge URL or API key is set;
+`TRAIT_EXTRACTOR_PROVIDER=codex-local` selects it explicitly. Hosted access uses
+a configured OpenAI provider or HTTPS Codex bridge. The example provides no
+prefilled traits. Review/apply preserves
 the proposed price and keeps the draft outside observed statistics.
 
 ## Product prediction demo

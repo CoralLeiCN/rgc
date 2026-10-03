@@ -1,6 +1,7 @@
 import "server-only";
 import type { ExtractionRequest, ExtractionResponse } from "../extraction-contract";
 import type { FieldDefinition } from "../contracts";
+import { LOCAL_EXTRACTION_TIMEOUT_MS, runLocalCodex } from "../local-codex";
 import { loadSnapshot } from "./data";
 import { ApiError } from "./errors";
 import { extractionInstructions, extractionSchema, readExtractionInput, validateExtractionInput, validateExtractionOutput } from "./extraction-core";
@@ -9,6 +10,10 @@ type Settings = { provider?: string; apiKey?: string; model?: string; bridgeUrl?
 type Dependencies = { fetch?: typeof fetch; fields?: FieldDefinition[]; settings?: Settings };
 const response = (body: unknown, status = 200) => Response.json(body, { status, headers: { "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff" } });
 let inFlight = 0;
+
+function extractionProvider(settings: Settings): string {
+  return settings.provider || (settings.bridgeUrl ? "codex" : settings.apiKey ? "openai" : process.env.NODE_ENV === "development" && !process.env.VERCEL ? "codex-local" : "openai");
+}
 
 async function providerJson(fetcher: typeof fetch, url: string, init: RequestInit): Promise<unknown> {
   const upstream = await fetcher(url, { ...init, redirect: "error" });
@@ -27,7 +32,12 @@ async function providerJson(fetcher: typeof fetch, url: string, init: RequestIni
 
 export async function extractWithProvider(input: ExtractionRequest, fields: FieldDefinition[], settings: Settings, fetcher = fetch): Promise<ExtractionResponse> {
   const validatedInput = validateExtractionInput(input);
-  const provider = settings.provider || (settings.bridgeUrl ? "codex" : "openai");
+  const provider = extractionProvider(settings);
+  if (provider === "codex-local") {
+    if (process.env.VERCEL) throw new ApiError(503, "EXTRACTOR_NOT_CONFIGURED", "Use the HTTPS Codex bridge for hosted extraction.");
+    const result = await runLocalCodex(validatedInput, fields, AbortSignal.timeout(LOCAL_EXTRACTION_TIMEOUT_MS));
+    return { provider: "codex", model: "Local Codex (ChatGPT sign-in)", ...result };
+  }
   const signal = AbortSignal.timeout(provider === "codex" ? 100_000 : 45_000);
   if (provider === "codex") {
     let url: URL;
@@ -38,7 +48,7 @@ export async function extractWithProvider(input: ExtractionRequest, fields: Fiel
     return { provider: "codex", model: "Codex on your laptop", ...validated };
   }
   if (provider !== "openai") throw new ApiError(503, "EXTRACTOR_NOT_CONFIGURED", "Choose an extraction provider in the server configuration.");
-  if (!settings.apiKey) throw new ApiError(503, "EXTRACTOR_NOT_CONFIGURED", "Trait extraction is not connected yet. Configure OpenAI or the local Codex bridge in Vercel.");
+  if (!settings.apiKey) throw new ApiError(503, "EXTRACTOR_NOT_CONFIGURED", "Configure codex-local on your laptop, or OpenAI or the HTTPS Codex bridge on the hosted server.");
   const model = settings.model || "gpt-4.1-mini";
   const content: Record<string, unknown>[] = [{ type: "input_text", text: validatedInput.description || "Extract supported traits visible across these product images." }];
   for (const image of validatedInput.images) content.push({ type: "input_image", image_url: `data:${image.mimeType};base64,${image.data}`, detail: "high" });
@@ -60,10 +70,11 @@ export async function handleExtractTraits(request: Request, dependencies: Depend
     const origin = request.headers.get("origin");
     if (origin && origin !== new URL(request.url).origin) throw new ApiError(403, "INVALID_ORIGIN", "Use the extractor from this workspace.");
     const input = await readExtractionInput(request);
-    if (inFlight >= 2) throw new ApiError(429, "EXTRACTOR_BUSY", "Two extractions are already running. Try again shortly.");
+    const settings = dependencies.settings || { provider: process.env.TRAIT_EXTRACTOR_PROVIDER, apiKey: process.env.OPENAI_API_KEY, model: process.env.OPENAI_EXTRACTION_MODEL, bridgeUrl: process.env.CODEX_EXTRACTOR_URL, bridgeToken: process.env.CODEX_EXTRACTOR_TOKEN };
+    const local = extractionProvider(settings) === "codex-local";
+    if (inFlight >= (local ? 1 : 2)) throw new ApiError(429, "EXTRACTOR_BUSY", local ? "A local extraction is already running. Try again shortly." : "Two extractions are already running. Try again shortly.");
     inFlight++; acquired = true;
     const fields = dependencies.fields || (await loadSnapshot()).fields;
-    const settings = dependencies.settings || { provider: process.env.TRAIT_EXTRACTOR_PROVIDER, apiKey: process.env.OPENAI_API_KEY, model: process.env.OPENAI_EXTRACTION_MODEL, bridgeUrl: process.env.CODEX_EXTRACTOR_URL, bridgeToken: process.env.CODEX_EXTRACTOR_TOKEN };
     return response(await extractWithProvider(input, fields, settings, dependencies.fetch));
   } catch (error) {
     const timedOut = error instanceof Error && ["TimeoutError", "AbortError"].includes(error.name);

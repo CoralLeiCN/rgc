@@ -1219,15 +1219,20 @@ URLs. Reset/source import clear the extraction session. Drafts and candidates
 have no application persistence, and errors never trigger fabricated fallback
 extraction.
 
-The Vercel route supports a server-configured OpenAI API provider or an
-authenticated HTTPS bridge to a local Codex CLI session. Provider credentials
-remain server-side. The bridge is a separate laptop process intended for the
-requested Tailscale connection, validates the same contract and limits work to
-one local extraction at a time. Missing configuration returns 503 with a setup
-message. The live Codex bridge path remains unverified because sandbox startup
-is blocked; provider/network configuration and end-to-end extraction must be
-verified separately. This extraction service is not the teammate's pricing
-model, which remains unconnected.
+The extraction route supports server-configured OpenAI, an authenticated HTTPS
+Codex bridge, or `codex-local` on a Next.js server running on the laptop. Local
+development selects `codex-local` when no explicit provider, bridge URL or OpenAI
+API key is configured. Direct local mode reuses the installed CLI's ChatGPT OAuth
+sign-in, forces the ChatGPT authentication method, admits one extraction at a
+time and aborts after 90 seconds. It shares the bridge's disposable files,
+disabled tools and schema validation. Vercel rejects direct local mode; hosted
+Codex access uses the HTTPS bridge. Provider credentials remain server-side.
+The bridge is a separate laptop process intended for the requested Tailscale
+connection and limits work to one extraction at a time. Missing configuration
+returns 503 with a setup message. Live validation status is recorded in the
+[lifecycle plan](lifecycle/plan.md#proof). The extraction service is separate
+from the locally connected synthetic pricing fixture and the teammate's
+research model.
 
 #### Observed-price analysis and future model boundary
 

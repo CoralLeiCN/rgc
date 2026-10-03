@@ -241,6 +241,17 @@ strict structured output and `store:false`. It uses a 45-second timeout. See
 [image inputs](https://developers.openai.com/api/docs/guides/images-vision) and
 [Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs).
 
+For a Next.js server running on the laptop, `TRAIT_EXTRACTOR_PROVIDER=codex-local`
+invokes the same CLI runner directly using existing ChatGPT OAuth sign-in. Local
+development defaults to this provider when no explicit provider, bridge URL or
+OpenAI API key is configured. An explicit selection also works with local
+`next start`. Vercel rejects this mode before launching a child process. The
+local API admits one extraction at a time and applies a 90-second deadline,
+private temporary files, disabled tools and output validation. No bridge token
+or tunnel is needed for the local application. The child forces ChatGPT sign-in;
+API key environment variables are removed. Authentication failures direct the
+user to check CLI sign-in and subscription availability on the server laptop.
+
 Set `TRAIT_EXTRACTOR_PROVIDER=codex`, `CODEX_EXTRACTOR_URL` (HTTPS `/extract`) and
 `CODEX_EXTRACTOR_TOKEN` to use a laptop instead. The Vercel adapter has a
 100-second timeout, a 120-second function budget and validates the bridge result
@@ -282,10 +293,14 @@ for missing provider configuration. This photo-input revision has not been
 deployed; the hosted preview above retains the earlier version. Terrain/WebGL
 interaction still requires browser review.
 
-A synthetic live Codex extraction previously failed before contacting a model because its
-in-process app-server could not initialize (`Operation not permitted`). Live laptop extraction and an authenticated tunnel remain to
-be verified. No API key has been provisioned by this change. These limits are separate from the locally connected synthetic price demo.
-The new prediction endpoint and form still need a hosted deployment.
+Earlier sandboxed Codex attempts failed during app-server initialization
+(`Operation not permitted`). Direct local text and two-photo extraction now succeed using
+the installed CLI and ChatGPT sign-in when the local server runs with host
+permissions. Browser review/Apply retained the draft price. Current proof is
+recorded in the lifecycle plan. An authenticated
+hosted tunnel remains to be verified. No API key has been provisioned. The
+locally connected synthetic price demo has its own verification; its endpoint
+and form require a hosted deployment.
 
 ## Synthetic pricing function
 

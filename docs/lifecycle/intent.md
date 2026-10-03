@@ -67,8 +67,9 @@ a disclosed trait-derived demo score and one numeric leaf trait in raw units.
 Families navigate individual leaf color choices; numeric color bands retain
 full-snapshot calibration. Product drafts use a read-only calculated score and
 a proposed-price slider. Image/text extraction returns candidates for explicit
-review and Apply. OpenAI or the local Codex bridge needs configured provider
-access; the live Codex path remains unverified. Source evidence, missing values
+review and Apply. Local Next.js extraction uses the installed Codex CLI with
+ChatGPT OAuth sign-in; hosted access requires OpenAI or the HTTPS Codex bridge.
+Source evidence, missing values
 and conflicting claims remain inspectable.
 
 The user authorized connecting the published LightGBM without brand synthetic
