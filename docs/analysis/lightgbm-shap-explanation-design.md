@@ -91,9 +91,10 @@ Signed SHAP values allocate the deviation of this fitted prediction from its
 reference. `exp(shap_j)` is a multiplicative attribution factor. For example,
 a hypothetical contribution of 0.20 log units corresponds to a factor of about
 1.22 in the decomposition; it does not establish a 22% effect of adding the
-feature. Contributions cannot be added as percentages or GBP amounts. Compute
-currency differences from two complete supported predictions. Do not interpret
-log-price SHAP as attribution of arithmetic mean price.
+feature. Raw log contributions cannot be added as percentages or GBP amounts.
+Use the explicit allocation in section 3.1 for final-price percentages. Compute
+scenario currency differences from two complete supported predictions. Do not
+interpret log-price SHAP as attribution of arithmetic mean price.
 
 Correlated brand, retailer, recipe, and claim variables can share information;
 their allocation depends on the fitted trees and explanation convention.
@@ -131,6 +132,34 @@ prediction interval. Use that same model's calibrated interval for prediction
 uncertainty. Any later bootstrap analysis of attribution stability requires
 refitted models and explicitly comparable explanation references.
 
+### 3.1 Trait-family percentages of final predicted price
+
+Use [specification section 5.2.1](../spec.md#521-trait-and-trait-family-percentages-of-predicted-price)
+to convert the validated signed log decomposition into individual trait
+percentages and one signed percentage per trait family of the final predicted
+price. Add the model reference percentage so the unrounded total is 100%.
+This proportional allocation through the exponential transformation is a display
+convention, not SHAP computed on price-scale output or a scenario price effect.
+
+Persist stable trait/family IDs, labels and the mapping version. Follow the
+[schema families](../chocolate-schema.md#what-the-schema-tracks): composition,
+dietary claims, certification claims, origin and quantity contain their modeled
+traits; modeled brand belongs to identity and scope, and modeled retailer to
+selling context. Every admitted feature has one trait and one family; a trait's
+missing indicator and other derived inputs use the same assignment. Sum signed
+values before grouping. Mark excluded traits/families `not_modeled`; retain a
+computed zero for a modeled family. These are attribute groups, distinct from
+product identity families used for splits and weights.
+
+The family display needs only its label and percentage. Retain the base, signed
+trait values, conversion method and full precision in the explanation packet.
+Verify log reconstruction and percentage reconciliation independently, initially
+with absolute tolerance `1e-6` percentage points for the total. Round displayed
+percentages to one decimal place and state that rounded totals may differ.
+Negative families and a reference above 100% remain valid. Check cancellation,
+zero total log deviation, quantity conversion, nonfinite values and unsupported
+explanations before enabling the output; never fabricate missing percentages.
+
 ## 4. AI interpretation contract
 
 Construct a validated packet before invoking the language model:
@@ -140,7 +169,7 @@ Construct a validated packet before invoking the language model:
 | Identity and context | Model/data/schema versions, model variant, retailer, cohort, price window and regular-price basis |
 | Inputs and evidence | Reviewed supplied values, explicit unknowns, feature groups, source reference IDs, and conflicts |
 | Prediction | Geometric GBP/100 g benchmark, GBP/pack conversion, interval endpoints, calibration scope/status, and support flags |
-| Attribution | Explainer/version, tree count, base value, signed values/groups, deterministic rankings/factors, and reconstruction status |
+| Attribution | Explainer/version, tree count, base value, signed trait values/groups, trait/family mapping version, allocation method, individual trait and family percentages of predicted price, reference percentage, deterministic rankings/factors, and log/percentage reconstruction status |
 | Other comparisons | Optional fully computed scenarios or separately labeled `matched_retailer`/hedonic contrasts, each with model ID, units, reference, and uncertainty type |
 | Limitations | Correlation/overlap flags, independent-family support, missing evidence, and experimental or unavailable status |
 
@@ -189,6 +218,11 @@ Before enabling generated explanations, verify:
   status through prediction and AI output.
 - Grouped global importance sums signed contributions before taking magnitude;
   local remainder totals, log units, and pack conversion remain correct.
+- Trait-family percentages use the final predicted price denominator and the
+  versioned exhaustive trait mapping; reference plus signed families reconciles
+  to 100% before rounding, including negative, cancelling and zero-deviation
+  cases. Unit-price and pack-price shares agree. Excluded features and unavailable
+  explanations retain their status rather than fabricated numbers.
 - Retailer scenarios use complete predictions; coefficient, `matched_retailer`, SHAP, and
   scenario quantities retain distinct references and model IDs.
 - Representative AI evaluations include correlated brand/claims, missing cocoa

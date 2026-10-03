@@ -30,6 +30,7 @@ Canonical requirements: [specification](../spec.md),
 | Prepare generic model inputs grouped by family and encoders learned from training rows. | Portable model helpers, `prepare-model` CLI | Reviewed preparation and exclusion/failure gates verified. |
 | Reject typed contract drift and retain valid category values outside selected model domains. | Profile loader, both standardization pipelines, regression tests | Verified. Runtime uses an explicit validator template. |
 | Specify supermarket pricing, retailer comparisons and LightGBM/SHAP/AI explanations. | `docs/chocolate-modeling-design.md`, `docs/analysis/lightgbm-shap-explanation-design.md` | Proposed research design; active preparation contracts await migration and model fitting remains pending. |
+| Explain predicted price through individual traits and one percentage per trait family. | `docs/spec.md` section 5.2.1, intention, schema/modeling and SHAP guides | Specified signed percentages of final predicted price with a separate reference share, exhaustive versioned grouping and reconciliation checks. Proposed output; contract migration, implementation and validation remain pending. |
 | Move analytical contract bodies to the dataset with immutable references and verified ignored caches. | Three `dataset-contract.json` manifests, resolver/fetch/publication helpers, `docs/dataset-contracts.md` | Published and verified against original bytes; offline caches and both processing pipelines verified. |
 | Consolidate repeated documentation and apply plain wording while preserving contracts and evidence. | Repository instructions, canonical/lifecycle guides, root and package READMEs, package skills/references | Completed; original cleanup and integration with the contract migration verified below. |
 | Configure collection sections and generate processing profiles for new categories. | Collection `collection_sections`, processing `profile_builder.py`, `init-profile`, definition reference and generic engine/archive tests | Implemented: Unicode section reports, five-contract authoring, non-food quantities/currencies/tax bases and normalized study paths. |
@@ -65,6 +66,7 @@ readiness; `complete_snapshot` establishes accepted input consistency.
 
 | Verification | Recorded result and evidence |
 | --- | --- |
+| Trait contribution and family percentage specification | On 2026-10-03, `uv sync --locked`, `uv run pytest scripts/tests/test_documentation.py` (26 cases), `uv run ruff check .`, `python3 -B scripts/check_documentation.py` and `git diff --check` passed. Direct arithmetic checks verified reference-plus-trait reconciliation for positive, negative, cancelling, zero and near-zero log contributions, and identical unit/pack shares. Semantic review kept trait families distinct from product identity families and the allocation distinct from price effects and global importance. This validates the documentation and formula only; model contracts, runtime explanations and fitted-data results remain pending. |
 | retail frontier project description | `python3 -B scripts/check_documentation.py`, whitespace and local link checks passed. The description contains 169 words and preserves judging weights and required submission fields. Independent source review verified capability boundaries; the embedded collection demo preserved five original records and sample metadata across repeated imports with network blocked. It established capture preservation and valid reports, with completeness still `not_verified`; silver processing and model fitting were outside this demo. |
 | EAT_HACK Retail Futures brief | `python3 -B scripts/check_documentation.py` and whitespace checks passed. Reviewed the summary against the supplied participant brief and independently checked the requested scope: Track 2 challenge, submission requirements and judging criteria. |
 | Initial chocolate silver | 140 script tests and 13 collection tests passed (153 total), covering combined processing, preservation, integrity/identity drift, review gates, historical evidence, model preparation, path safeguards and documentation drift. The real build completed with `complete_snapshot`, no archive/extraction errors and all rows valid. Original captures matched immutable history; all 22 output hashes, implementation hashes and exact bytes of four contracts were verified. A repeat reproduced dataset version, manifest and all hashes. Documentation guard and `git diff --check` passed. |
@@ -123,7 +125,9 @@ behavior. Native client installation needs separate verification.
    and family identities, study scope, comparison groups, quantity and price basis.
 2. Evaluate classification on reviewed samples and resolve coverage/release
    thresholds. Fit and validate a pricing model after these gates pass, then
-   deliver supported insights and testing for proposed products.
+   deliver supported insights and testing for proposed products. Implement the
+   specified trait contributions and family percentages with a versioned mapping,
+   reference share, numerical reconciliation and unavailable-explanation checks.
 3. Verify native installation and execution across agent harnesses.
 4. Develop incremental caches, automatic harness dispatch/scheduling and selective
    migrations as future work. Current maintenance uses grouped evidence, triage,

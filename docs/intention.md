@@ -115,6 +115,13 @@ validation and limitations before treating extracted data as ready for training.
 Interpret associations with listing prices within the sampled market context;
 do not claim causal effects from regression coefficients.
 
+Explain each supported predicted price through individual trait contributions
+and one signed percentage per trait family of the final predicted price. Include
+a separate model reference percentage so the allocation reconciles to the price.
+Trait families group related attributes; product families continue to define
+identity and validation groups. This explanation output requires implementation
+and validation before use.
+
 Maintain canonical documents and implementation status with behavior changes,
 using the repository's rules and runnable check in
 [documentation-policy.md](documentation-policy.md).

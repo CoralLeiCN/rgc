@@ -39,6 +39,15 @@ execution remains unimplemented.
 
 ## What the schema tracks
 
+The proposed pricing explanation groups modeled traits by the attribute families
+below, with seller observation inputs in a selling-context family. Each predicted
+price will report individual trait contributions and one signed percentage per
+trait family, plus a model reference percentage, under
+[specification section 5.2.1](spec.md#521-trait-and-trait-family-percentages-of-predicted-price).
+Trait groups differ from product identity families. This output awaits a versioned
+model mapping, implementation and validation; existing contracts and helpers do
+not produce it.
+
 The initial profile contains 103 attributes, organized as follows. Every
 product tracks each field once, even when its evidence state is unknown.
 

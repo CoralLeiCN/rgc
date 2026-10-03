@@ -341,6 +341,16 @@ absolute contributions, grouping related fields before calculating magnitude.
 See [TreeExplainer](https://shap.readthedocs.io/en/latest/generated/shap.TreeExplainer.html)
 and the [implementation contract](analysis/lightgbm-shap-explanation-design.md).
 
+Report individual trait contributions and one signed percentage per trait family
+of each final predicted price using [the specification's allocation](spec.md#521-trait-and-trait-family-percentages-of-predicted-price).
+Map traits to the schema's attribute families, with modeled brand in identity
+and scope and retailer in a selling-context family. Derived encodings and missing
+indicators stay with their underlying trait. These groups differ from product
+families used for splits. Include the model reference percentage in the total;
+families alone need not sum to 100%. This deterministic allocation is a proposed
+display convention, distinct from raw log SHAP, coefficient contrasts and global
+importance. Persist its mapping and method with the explanation bundle.
+
 The AI receives a validated explanation packet containing prediction, units,
 context, interval status, supplied features and evidence, SHAP values, and
 support limits. It writes a short plain-language account of what moved this
@@ -473,6 +483,9 @@ pack-price benchmarks, interval and its scope, feature/brand contrasts with
 references and uncertainty, and support flags. For a LightGBM prediction, also
 return the SHAP method/reference, signed contributions and groups, numerical
 reconstruction status, and validated AI explanation or template fallback.
+For models with a validated additive explanation, include individual trait
+percentages, one percentage per trait family and the model reference percentage
+of the final predicted price, or an explicit unavailable status.
 Hedonic comparisons remain separately labeled. When a proposed pack price is
 given, return `proposed - predicted` and
 `100 * (proposed / predicted - 1)` on the same selling basis.

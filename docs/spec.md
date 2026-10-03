@@ -814,7 +814,8 @@ model metadata.
 Each result must identify its reference, sample support, uncertainty, and
 conditioning variables. Contributions on the log scale are additive in log space;
 percentage effects are multiplicative. Do not present percentages or currency
-contrasts as additive shares of the final selling price.
+contrasts as additive shares of the final selling price. Use the explicit
+allocation below for percentages of the final predicted price.
 
 For a supported product profile, also express a feature contrast as the
 difference between two predicted prices with the feature changed and all other
@@ -839,6 +840,68 @@ traceable claims and validate references, numbers, directions and meaning; use a
 fixed template if validation fails. Retain limitations from correlated
 retailer/brand/claims and missing evidence. SHAP cannot establish shopper
 segments, quality, demand or optimal price.
+
+#### 5.2.1 Trait and trait-family percentages of predicted price
+
+For each supported product prediction, report individual trait contributions
+and one signed percentage per trait family of the final predicted price.
+A trait family groups related product attributes, such as composition, dietary
+claims, certification claims or quantity. It is distinct from the product
+`family_id` used for identity, validation splits and training weights.
+
+Use a versioned, exhaustive mapping from fitted inputs to traits and from traits
+to families. Combine a trait's categorical encodings, transformations and
+missing indicators before reporting its contribution. Include modeled brand
+and selling context in named families so every fitted term is accounted for.
+Fields excluded from the fitted model have status `not_modeled`, rather than
+an estimated zero contribution. A modeled family with a computed zero retains
+its zero percentage. Preserve signed cancellation within a family.
+
+Start from a validated additive log-price explanation: `L = b + sum_j phi_j`,
+where `L` is the frozen model's log prediction, `b` is its explanation reference
+and `phi_j` is a trait's signed log contribution. LightGBM uses its TreeSHAP
+reference and values. An additive hedonic model uses an explicit supported
+reference profile, with term contributions equal to the fitted term differences
+from that profile. Split a hedonic interaction term equally among its distinct
+participating traits, recording that allocation convention before grouping.
+
+Define a proportional allocation along the exponential price transformation:
+
+```text
+P = exp(L)
+P_reference = exp(b)
+d = L - b
+k = -expm1(-d) / d       if d != 0; otherwise k = 1
+trait_contribution_percent_j = 100 * k * phi_j
+family_contribution_percent_g = sum_j_in_family_g trait_contribution_percent_j
+reference_contribution_percent = 100 * exp(-d)
+reference_contribution_percent + sum_g family_contribution_percent_g = 100
+```
+
+Here `expm1(t)` means `exp(t) - 1`, evaluated stably near zero. This convention
+allocates the price difference `P - P_reference` in proportion to signed log
+contributions and retains their cancellation when `d = 0`. The denominator is
+the final predicted price `P`. These are allocated shares of a model prediction;
+they are not price-scale SHAP values, causal effects, ingredient costs, observed
+price shares or the percentile pricing score. Keep coefficient contrasts and
+`100 * (exp(phi_j) - 1)` distinct from this allocation.
+
+Present each trait family as its label and percentage, alongside a separately
+labeled model reference percentage. A positive family percentage adds to the
+reference price and a negative one subtracts from it. The reference can exceed
+100% when the final prediction is below the reference; do not clip, take absolute
+values or renormalize families alone to 100%. Unit-price and pack-price shares
+are identical when both prediction and reference use the same product's quantity
+conversion; the conversion does not add a second quantity contribution.
+
+Retain unrounded values, model/explainer identity, reference profile or base,
+trait/family mapping version and allocation method in the explanation packet.
+Check both log reconstruction and the reference-plus-family total before display;
+use a numerical tolerance and disclose display rounding. Failed, nonfinite or
+unsupported explanations return unavailable contributions. Global mean absolute
+importance is a separate measure and must not populate local price percentages.
+This is a proposed output requirement; implementation and validation remain
+pending under the subsequent model contract release.
 
 ### 5.3 Validation and model release
 
@@ -907,6 +970,9 @@ coefficients or silent mapping to references are invalid.
   100 g and the implied pack price.
 - A prediction interval on the same price basis.
 - Feature contrasts in the selected context relative to stated references.
+- Individual trait contributions, one signed percentage of the final predicted
+  price per modeled trait family, and a separate model reference percentage,
+  using section 5.2.1's allocation and availability checks.
 - When supplied, difference between proposed and predicted prices: `proposed - predicted`, and
   `100 * (proposed / predicted - 1)`.
 - Data/model version, comparable group, and evidence/validation context.
