@@ -303,7 +303,7 @@ configuration, extraction workflow and declared trait-derived demo score remain.
 The teammate's pricing research and upstream experimental training remain
 separate from this application. The user cancelled pricing-model integration;
 no hosted prediction adapter, model endpoint or fitted score is connected. The
-full public raw text-evidence archive remains available for separate modeling
+full local raw text-evidence archive remains available for separate modeling
 work, with image bytes deliberately omitted from the export. Application
 requests use their pinned snapshot and do not automatically adopt a new Gold
 release or model artifact.
@@ -335,6 +335,22 @@ displayed consumer price target; eligibility does not fill missing facts or esta
 successful fit.
 
 Implement and validate `lightgbm_with_brand` independently in this session, preserving the fixed regular consumer target and immutable Gold. Persist real-data readiness failures and distinguish synthetic acceptance fits from real trained models. Model artifact upload is authorized under `model/lightgbm_with_brand/<run-id>/` for completed actual real-data fits; analytical contract publication retains its separate release review requirement.
+
+On 2026-10-03, the user requested removal of the original published chocolate
+Silver snapshot `silver-6e246156b7292dd4bb49ebf0` from the current Hugging Face
+dataset tree and waived backward compatibility for that snapshot. Retain the
+pandas snapshot `silver-2f97cfe8b8c50ecfa79ebf46` selected by `latest.json`.
+This instruction overrides earlier retention requirements for that specific
+published snapshot. Record the deletion and verify the retained inventory.
+
+
+On 2026-10-03, the user requested keeping raw source files locally instead of
+publishing them to Hugging Face, then clarified removal of raw files only. Keep
+the complete local collection, archive bundle, raw product index and export
+manifest. Remove the public raw bundle, root raw index and export manifest,
+retain published Silver source-listings, and prevent raw exporter uploads.
+Derived Silver, Gold, analysis, model artifacts and analytical contracts remain
+published. This storage choice supersedes the earlier raw publication policy.
 
 ## Independent chocolate estimator session
 

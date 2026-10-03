@@ -192,38 +192,36 @@ development dependencies.
 The [validation workflow](.github/workflows/validation.yml) runs checks on pull
 requests and pushes. The lifecycle plan records verification and limitations.
 
-Publish raw text evidence across categories under the policy in
+Keep raw collection evidence and its verified text exports as local files under
 [specification section 3.1.1](docs/spec.md#311-public-dataset-publication-policy).
 Exports preserve original product records, text/HTML/JSON, histories, catalogues,
 discovery/run evidence and coverage in losslessly compressed category/market
 bundles with a product JSONL index and manifests. Images and HTTP transfer caches
-stay local, with recorded references disclosed as omitted. Build and inspect the
-export without network access:
+remain in the full raw archive, with omission metadata in the text export.
+Build and inspect the local export without network access:
 
 ```sh
 python3 -B scripts/publish_collections.py
 ```
 
-Upload to a public Hugging Face dataset using cached login or `HF_TOKEN`;
-`uv` installs the script's pinned client dependency:
+The exporter discovers all studies under `data/collections/` and writes ignored
+files under `data/huggingface-export/`. Use `--collections-root <directory>` and
+`--output <directory>` for a shared local archive and a separate output root.
+The JSON report records `export_bytes`. The former `--upload`, `--repo-id` and
+`upload_export` interfaces reject raw publication before any side effect.
 
-```sh
-uv run --script scripts/publish_collections.py --upload --repo-id CoralLeiCN/rgc-collections
-```
-
-For changed schemas, the calling harness completes the
-[release review](docs/decisions/agent-led-schema-maintenance.md#review-before-a-hugging-face-commit)
-before committing to Hugging Face. The exporter does not enforce this gate.
-
-The dataset also contains separately published silver snapshots and analytical
-contracts. `scripts/publish_contracts.py` publishes contracts with immutable
-reference manifests while preserving raw exports and silver files. Published
-silver requires separate evidence of review and model readiness. See the
-[dataset contract guide](docs/data/dataset-contracts.md).
-
-The exporter discovers all studies under `data/collections/`. Generated files in
-`data/huggingface-export/` are ignored by Git. Publication is a single run;
-recurring uploads require separate configuration.
+Hugging Face retains separately published Silver, Gold, analysis, model artifacts
+and analytical contracts. Silver source-listings remain published by the user's
+explicit choice. `scripts/publish_contracts.py` publishes contracts with immutable
+reference manifests and preserves other current dataset files. Published Silver
+requires separate evidence of review and model readiness. The public default
+loader selects the existing Gold training table following raw index removal;
+its `train` split name is a loader convention. The
+[local storage receipt](docs/data/analysis/chocolate-local-raw-storage-2026-10-03.json)
+records verified local source preservation and the remote removal. Follow the
+[dataset contract guide](docs/data/dataset-contracts.md) and the
+[schema release review](docs/decisions/agent-led-schema-maintenance.md#review-before-a-hugging-face-commit)
+for analytical publication.
 
 Original dataset reference: https://github.com/coveooss/SIGIR-ecom-data-challenge
 

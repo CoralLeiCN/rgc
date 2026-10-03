@@ -241,27 +241,36 @@ cannot establish original historical page/image captures.
 
 ### 3.1.1 Public dataset publication policy
 
-Raw collection uploads use the versioned `rgc-text-evidence-1` export policy.
-This policy applies to every category/market under `data/collections/`, including
-future studies; chocolate and the UK are examples, not export filters. Public
-publication is a filtered derivative of the local raw archive. Local image and
-source preservation requirements in section 3.1 continue to apply.
+Raw collection evidence stays in local files under `data/collections/`.
+The user requested local storage on 2026-10-03 and explicitly limited remote
+removal to raw files. The `rgc-text-evidence-1` policy defines a verified local
+text export for every category/market, including future studies. Local image
+and source preservation requirements in section 3.1 continue to apply.
 
-The Hugging Face dataset also hosts separately published silver snapshots and
-analytical contracts. [Dataset contract storage](data/dataset-contracts.md) defines
-their immutable references, caches and publication behavior. Contract publication
-preserves existing raw export and silver files. It neither rebuilds silver nor
-establishes reviewed observations or model readiness.
+Hugging Face hosts derived Silver and Gold snapshots, analysis, model artifacts
+and analytical contracts. Silver source-listings retain embedded original
+captures by the user's explicit choice. [Dataset contract storage](data/dataset-contracts.md)
+defines immutable references, caches and publication behavior. Contract
+publication preserves other current dataset files; it does not rebuild Silver
+or establish reviewed observations or model readiness.
 
 Silver snapshots use immutable `silver/chocolate/uk/<dataset-version>/` paths;
 `silver/chocolate/uk/latest.json` selects one with its manifest checksum and
 readiness state. Coverage/value-frequency and verification reports use
 `analysis/chocolate/uk/<dataset-version>/` and record immutable input provenance.
 Each snapshot keeps its exact contracts; a historical snapshot does not adopt
-new contract releases. Publication verifies content hashes and preserves prior
-raw exports and snapshots.
+new contract releases. The separately authorized original Silver retirement is
+recorded below. Raw archive bundles, the root raw `products.jsonl` index and
+root `export-manifest.json` were removed from the current public tree at
+`06680d7248ccc4487726b9a97e59aa8f586fb54e`. The
+[local storage receipt](data/analysis/chocolate-local-raw-storage-2026-10-03.json)
+records exact paths, preserved local file hashes and verification of retained
+content. The verified dataset card defaults to the existing Gold
+`training-data.parquet` table, replacing the removed raw index. Its `train` split
+remains a loader convention; model readiness and evidence review require their
+own checks.
 
-| Material | Publication rule |
+| Material | Local text export rule |
 | --- | --- |
 | `products/*/product.json` | Include complete original records: source facts, prices, ingredients/nutrition where available, unknown fields and fields specific to a source, identities, and provenance. |
 | `products/*/sources/` and `products/*/history/` | Include original text, HTML, JSON, and losslessly compressed text evidence and immutable capture histories. |
@@ -270,7 +279,7 @@ raw exports and snapshots.
 | Image URLs, captions, source roles, hashes, retrieval details, and recorded paths | Retain these metadata in original records; explicitly declare image files omitted. |
 | `products/*/images/`, other image files, and image bodies disguised as responses | Exclude all image payloads, including failed response bodies inside image folders. |
 | `transfers/` | Exclude the entire HTTP transfer cache, including cache metadata files; preserve retrieval details already present in product/source records and inventory omitted cache paths. |
-| Hidden/runtime files, symlinks, credentials, executable code, unsupported binary/encoding formats, and other locations | Exclude from the evidence allowlist and record the omission reason. Never publish other files under `data/`, such as unrelated workbooks. |
+| Hidden/runtime files, symlinks, credentials, executable code, unsupported binary/encoding formats, and other locations | Exclude from the evidence allowlist and record the omission reason. Keep unrelated files under `data/`, such as workbooks, outside the export. |
 
 The exporter validates supported evidence as UTF-8 text (or UTF-8 text compressed with gzip), rejecting binary content even when its extension looks textual.
 It preserves accepted original bytes, wording, language, reported values, and
@@ -279,7 +288,7 @@ ingredients, normalize prices, deduplicate product identities, or rewrite local
 raw records. Unsupported encodings stay local and are disclosed in the manifest;
 they must not be silently represented as included evidence.
 
-Publication consists of a root dataset card, a `products.jsonl` index, a root
+The local export consists of a README, a `products.jsonl` index, a root
 export manifest, and losslessly compressed
 `evidence/<category>/<market>.tar.gz` bundles. Each index row represents a source
 product/variant record, not a verified distinct physical product. Category,
@@ -297,19 +306,18 @@ evidence. Extract bundles under one collections root to resolve included
 paths relative to the archive. Consumers must consult the manifest for deliberately
 absent image/cache paths; historical discovery paths on a local host
 record provenance and cannot supply portable download links. Original reports that count local images must not
-be presented as counts of uploaded images. The dataset card describes these
+be presented as counts of exported images. The local README describes these
 limitations and does not invent a license for source material from third parties.
 
-`scripts/publish_collections.py` implements this policy. It automatically
-discovers category/market studies with product folders, builds a deterministic
-export under ignored `data/huggingface-export/`, and uploads only its explicitly
-managed files to a public Hugging Face **dataset** repository. Repeated exports
-of unchanged collections produce identical bytes. Uploads use a cached Hugging Face token or one provided
-through the environment; tokens must never be stored in source
-files, manifests, or dataset cards. Validate local bundle contents, preservation,
-omissions, and checksums before publication, then verify the remote managed files
-and public visibility. Upload cadence is independent of this export policy;
-publication follows the authorized task and no scheduled job is configured.
+`scripts/publish_collections.py` implements the local export policy. It
+automatically discovers category/market studies with product folders and builds
+a deterministic export under ignored `data/huggingface-export/`. Repeated exports
+of unchanged collections produce identical bytes. It verifies bundle contents,
+preservation, omissions and checksums and reports `export_bytes` as the total
+managed output length. The former `--upload`, `--repo-id` and `upload_export`
+interfaces reject raw publication before any side effect. The script has no
+Hugging Face client dependency.
+
 When a schema changes, the calling agent must finish the local versioned changes,
 rebuild, validation and impact comparison, then present the detailed
 [release review summary](decisions/agent-led-schema-maintenance.md#review-before-a-hugging-face-commit)
@@ -317,9 +325,7 @@ and wait for user review and authorization of that exact Hugging Face commit.
 The summary covers contract/field changes, evidence and rationale, effects on
 mappings/units/scopes/prices/predictors, before/after coverage and eligibility,
 checks and limitations, and the target repository/revision and managed files/
-hashes. Local schema decisions need no user sign-off. The calling harness owns
-this review step; the current exporter does not implement a review UI or enforce
-an approval gate.
+hashes. Local schema decisions need no user sign-off. The calling harness owns this review step for analytical dataset releases.
 
 ### 3.1.2 Raw and combined silver responsibilities
 
@@ -1303,9 +1309,9 @@ category and plugin conformance scenarios apply across supported studies.
 | Furniture or another non-food category is collected. | Track general or explicitly selected source sections, preserve arbitrary specifications and evidence, and do not require ingredients or nutrition. |
 | A new category needs processing contracts. | Generate and validate all five local working contracts from its explicit versioned definition without copying a bundled profile; preserve existing folders and publish authoritative contracts separately with immutable dataset references. |
 | A category uses non-GBP per-item prices or a different minor-unit scale. | Use its declared currency, observed item count, normalization base and minor-unit factor; apply one reviewed tax basis and retain missing-context exclusions. |
-| Any category's raw archive is published as a public dataset. | Apply `rgc-text-evidence-1`: include original product records, text evidence, history, catalogues, collection reports, and coverage; omit image bytes, transfer caches, and runtime files while retaining metadata and explicit omission manifests. |
-| A binary image is stored with a filename that suggests text. | Exclude its bytes from public publication and record the reason; keep the original local evidence unchanged. |
-| A public record references an omitted image or cache file. | Preserve the historical reference and provide its omission entry; do not claim the file is downloadable or that local archive verification verifies the public subset. |
+| Any category's raw archive needs a portable local text export. | Apply `rgc-text-evidence-1` locally: include original product records, text evidence, history, catalogues, collection reports, and coverage; omit image bytes, transfer caches, and runtime files while retaining metadata and explicit omission manifests. Reject raw upload requests. |
+| A binary image is stored with a filename that suggests text. | Exclude its bytes from the local text export and record the reason; keep the original local evidence unchanged. |
+| A local text export references an omitted image or cache file. | Preserve the historical reference and provide its omission entry; resolve complete source evidence in the full local archive. |
 | The same study request and evidence fixture are supplied through two supported harness adapters. | Both return valid collection envelopes and preserved raw bundles with compatible provenance meanings, original image/page handling, and explicit missingness; arbitrary fields specific to a source remain supported. |
 | A harness cannot retrieve packaging images requested by the study. | Preserve packaging attributes supported by available text, mark unsupported attributes unknown, and declare the missing image capability/evidence and coverage limitation. |
 | The same source product/variant is imported through multiple raw listing records. | Deduplicate the exact source_key + source URL hostname + source_product_id + source_variant_id match within that source; retain evidence and record the decision. |
@@ -1404,6 +1410,18 @@ run loading. Synthetic validation is published separately from real fitting.
 Current-price migration, full comparisons and released product scenario
 interfaces remain pending. [Model maintenance](model-maintenance.md)
 owns artifact storage in Hugging Face and immutable receipts in Git.
+
+## Original published Silver retirement
+
+The user requested removal of `silver-6e246156b7292dd4bb49ebf0` from the current
+Hugging Face dataset tree on 2026-10-03 and waived backward compatibility for
+that snapshot. The current tree retains `silver-2f97cfe8b8c50ecfa79ebf46`, selected
+by `silver/chocolate/uk/latest.json`. The verified deletion is published at
+`2f96b70adab9ea0aec6e833d94f9ebd3e338a115`; the
+[retirement receipt](data/analysis/chocolate-original-silver-retirement-2026-10-03.json)
+records all 24 removed files and verification of retained content. This specific
+retirement overrides prior snapshot retention for that directory; existing
+historical release records keep their original revision references.
 
 ## 11. Independent family-weighted hedonic trainer
 

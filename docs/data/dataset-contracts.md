@@ -4,9 +4,10 @@ The authoritative analytical contracts live in the
 [CoralLeiCN/rgc-collections Hugging Face dataset](https://huggingface.co/datasets/CoralLeiCN/rgc-collections).
 Human documentation and small version references remain in Git. Runtime caches
 and generated snapshot copies do not replace the authoritative dataset files.
-The dataset also contains the raw text-evidence export and published silver
-snapshots. A published silver snapshot is not necessarily reviewed or
-model-ready; this storage migration does not rebuild local silver.
+The current dataset contains published Silver and Gold snapshots, analysis and
+model artifacts. Raw collection evidence and its text export are kept locally.
+Silver source-listings remain published by the user's explicit choice. A
+published Silver snapshot is not necessarily reviewed or model-ready.
 
 | Contract set | Dataset path | Git reference |
 | --- | --- | --- |
@@ -62,7 +63,7 @@ instead of changing an old result.
 `scripts/publish_contracts.py` accepts a prepared source tree containing the
 three `contracts/<contract-set>/` directories above. It publishes only their
 14 JSON files, `contracts/manifest.json` and the analytical-contract section of
-the dataset card. It preserves existing raw export and silver files. Publication
+the dataset card. It preserves other current dataset files. Publication
 uses Python 3.10 or later and the script's pinned `huggingface_hub` dependency:
 
 ```sh
@@ -133,5 +134,51 @@ manifest and each managed file checksum. All 25 uploaded files were downloaded,
 compared byte for byte and loaded with the verified Gold interface. The
 [Gold guide](chocolate-gold.md#published-all-eligible-training-snapshot) describes
 its exact path and current-price trainer handoff.
+
+## Original published Silver retirement
+
+The user requested removal of `silver/chocolate/uk/silver-6e246156b7292dd4bb49ebf0/`
+from the current dataset tree on 2026-10-03, waiving backward compatibility for
+that snapshot. The verified publication at
+`2f96b70adab9ea0aec6e833d94f9ebd3e338a115` removed its 24 files and six obsolete
+LFS rules, and updated the dataset card. The
+[retirement receipt](analysis/chocolate-original-silver-retirement-2026-10-03.json)
+records exact removed paths, content identifiers and publication checks. All
+141 other retained files match the parent inventory and content identifiers;
+updated metadata was downloaded and checked with SHA-256. Current-tree bytes
+fell from 3,547,659,430 to 2,132,176,764. The retained pandas snapshot remains
+selected by the existing latest pointer.
+The removal changes current-tree downloads; historical Hub commits and local
+worktree copies remain, so reclamation of historical storage is not established.
+
+
+## Local raw evidence storage
+
+On 2026-10-03, the user requested keeping raw source files locally and clarified
+that only raw files should be removed from Hugging Face. The verified local
+collection is at `/Users/coral/repos/rgc/data/collections/`; its text export is
+at `/Users/coral/repos/rgc/data/huggingface-export/`. These host paths are local
+storage locations, not portable dataset download links. The archive export's
+inventory and all 22,372 included files passed checksum verification before
+remote deletion was prepared.
+
+The verified publication at `06680d7248ccc4487726b9a97e59aa8f586fb54e` removed
+`evidence/chocolate/uk.tar.gz`, root `products.jsonl` and root
+`export-manifest.json`, totaling 671,923,490 bytes. Local file hashes matched the
+remote content identifiers before deletion and remained unchanged afterward.
+All 138 other retained files match the parent content identifiers; updated
+metadata was downloaded and checked with SHA-256. The unchanged latest pointer
+and all four Silver source-listings files remain published. Current-tree bytes
+fell from 2,132,176,764 to 1,460,252,307. The
+[local storage receipt](analysis/chocolate-local-raw-storage-2026-10-03.json)
+records the local paths, hashes, exact remote paths and verification.
+
+The dataset card now selects the existing Gold `training-data.parquet` as its
+default `train` source, replacing the removed root raw index. The verified table
+has 2,134 rows and matches the immutable Gold reference checksum. This split
+name is a loader convention; all-eligible rows reflect the user selection
+instruction and do not establish reviewed evidence or model readiness. The raw
+exporter rejects upload interfaces before any side effect. Historical Hub
+commits and old local export READMEs retain their original publication records.
 
 The independent [hedonic implementation](analysis/hedonic-without-brand-implementation.md) materializes an explicit unpublished working experiment policy in an ignored directory. Its new analytical handoff is not supplied by the published producer contracts. Original and portable pins remain unchanged; a future supported producer migration must synchronize all affected contracts and pass the established release review before a Hugging Face contract commit.

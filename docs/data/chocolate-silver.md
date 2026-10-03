@@ -19,6 +19,17 @@ Generated silver snapshots retain exact contract copies and their dataset
 provenance. Follow [dataset contracts](dataset-contracts.md) for cache resolution
 and verification.
 
+## Source storage
+
+Raw evidence and its verified text export remain local. On 2026-10-03, the user
+requested removing only raw files from Hugging Face and explicitly retained
+Silver source-listings. Source captures therefore remain resolvable inside the
+published Silver snapshot, while original artifact/history paths resolve against
+the local collections root. The verified raw removal at
+`06680d7248ccc4487726b9a97e59aa8f586fb54e` retained all four source-listings files
+and the unchanged latest pointer; follow
+[dataset storage](dataset-contracts.md#local-raw-evidence-storage).
+
 ## Data flow
 
 The agent gathers product information and source evidence, then the collection
@@ -243,6 +254,17 @@ current family mapping and `chocolate-pricing-design-3` release, and do not
 represent a rebuild with those newer rules. All 23 snapshot files and two reports
 passed remote content checks; original raw exports and earlier snapshots were
 preserved. Rebuilds using current contracts produce their own derived versions.
+
+On 2026-10-03, the user requested retirement of the original published
+`silver-6e246156b7292dd4bb49ebf0` snapshot from the current Hugging Face tree,
+waiving its backward compatibility. The verified deletion at dataset revision
+`2f96b70adab9ea0aec6e833d94f9ebd3e338a115` removed 24 files
+(1,415,482,135 bytes) and six obsolete LFS rules for those exact paths. The
+current pandas snapshot remains selected by `latest.json`. All 141 retained
+files outside the two updated metadata files match their prior content
+identifiers. The [retirement receipt](analysis/chocolate-original-silver-retirement-2026-10-03.json)
+records the removal and checks; historical publication receipts describe the
+tree at their recorded immutable revisions.
 
 ## Review, training and interpretation boundaries
 

@@ -1,0 +1,74 @@
+{
+  "publication_date": "2026-10-03",
+  "repo_id": "CoralLeiCN/rgc-collections",
+  "authorization": "The user requested keeping source files locally, then explicitly selected removal of raw files only; Silver source-listings remain published.",
+  "parent_revision": "2f96b70adab9ea0aec6e833d94f9ebd3e338a115",
+  "revision": "06680d7248ccc4487726b9a97e59aa8f586fb54e",
+  "commit_url": "https://huggingface.co/datasets/CoralLeiCN/rgc-collections/commit/06680d7248ccc4487726b9a97e59aa8f586fb54e",
+  "removed_files": {
+    "evidence/chocolate/uk.tar.gz": {
+      "size_bytes": 513744886,
+      "git_oid": "3c30d837231f5f7104c40e108f76515048e9d061",
+      "sha256": "b95dfe3e0963bd59ffb82f07febd2c004827351d4e9c11c264de115362f4cbaa"
+    },
+    "products.jsonl": {
+      "size_bytes": 158177838,
+      "git_oid": "bfcaae92c917ce3e8192526dff86c3eb82003071",
+      "sha256": "e319925df678e97ea487c709794ea256b0cdd6eb85cf608459efe5b1b27754c2"
+    },
+    "export-manifest.json": {
+      "size_bytes": 766,
+      "git_oid": "74c56efb712f58f9375de0507b40424103a6b21b",
+      "sha256": null
+    }
+  },
+  "removed_file_count": 3,
+  "removed_logical_bytes": 671923490,
+  "preserved_local_files": {
+    "evidence/chocolate/uk.tar.gz": {
+      "local_path": "/Users/coral/repos/rgc/data/huggingface-export/evidence/chocolate/uk.tar.gz",
+      "size_bytes": 513744886,
+      "sha256": "b95dfe3e0963bd59ffb82f07febd2c004827351d4e9c11c264de115362f4cbaa"
+    },
+    "products.jsonl": {
+      "local_path": "/Users/coral/repos/rgc/data/huggingface-export/products.jsonl",
+      "size_bytes": 158177838,
+      "sha256": "e319925df678e97ea487c709794ea256b0cdd6eb85cf608459efe5b1b27754c2"
+    },
+    "export-manifest.json": {
+      "local_path": "/Users/coral/repos/rgc/data/huggingface-export/export-manifest.json",
+      "size_bytes": 766,
+      "sha256": "f85def5f40c831a79fdfb9e4e300105785a4fa29d3e2a009128b1ffe25380f04"
+    }
+  },
+  "local_collection_root": "/Users/coral/repos/rgc/data/collections",
+  "bundle_verified_files": 22372,
+  "bundle_verified_bytes": 3608764602,
+  "product_index_rows": 3743,
+  "default_loader_path": "gold/chocolate/uk/gold-8b897101474becaef946922b/training-data.parquet",
+  "updated_metadata_sha256": {
+    "README.md": "aedc3c8cb99ce64e936a6d1d545870c0ad447656b698858b3c8706ac699dfa8d",
+    ".gitattributes": "d3f0e92ea58375c89913e5cf7c7df4124e17381a27d2a4dfcd4f59efbce8c022"
+  },
+  "removed_lfs_rules": [
+    "products.jsonl filter=lfs diff=lfs merge=lfs -text"
+  ],
+  "current_tree_bytes_before": 2132176764,
+  "current_tree_bytes_after": 1460252307,
+  "current_tree_files_after": 140,
+  "verification": {
+    "local_export_inventory_and_all_bundle_members_verified": true,
+    "local_raw_file_hashes_match_removed_remote_files": true,
+    "local_raw_hashes_verified_after_publication": true,
+    "removed_paths_absent": true,
+    "unchanged_files_verified": 138,
+    "retained_file_inventory_and_content_identifiers_match": true,
+    "silver_source_listings_retained": true,
+    "silver_latest_pointer_unchanged": true,
+    "updated_metadata_downloaded_and_sha256_verified": true
+  },
+  "limitations": [
+    "Historical Hub commits retain the original raw files; current-tree deletion does not establish reclamation of historical storage.",
+    "Preserved local paths refer to this host. Published Silver source-listings still contain embedded original captures."
+  ]
+}

@@ -302,6 +302,20 @@ contract is independently pinned at revision
 `d743cb8dbca37f5241cccd444a16165523304f6c`. A published eligible dataset does not
 establish a successful fit or model release readiness.
 
+
+## Public dataset default loader
+
+Following the user's request to keep raw files locally, the verified dataset
+card at `06680d7248ccc4487726b9a97e59aa8f586fb54e` replaces the root raw index with
+`gold/chocolate/uk/gold-8b897101474becaef946922b/training-data.parquet` for its
+default `train` split. The metadata was downloaded and verified; the table's
+SHA-256 and 2,134-row Parquet metadata match the existing Gold reference. This
+selects the all-eligible Gold table; eligibility records the user's bulk
+selection and does not establish complete model targets or individual evidence
+review. Immutable Gold files and the existing Gold publication pin are retained.
+Follow [local raw storage](dataset-contracts.md#local-raw-evidence-storage) for
+source locations and remote deletion provenance.
+
 ## Independent hedonic training handoff
 
 The assigned estimator is runnable with `--model-id hedonic_without_brand --gold-root <immutable-snapshot> --working-contract <local-policy> --group bar`. Prepare the policy with `--prepare-working-contract <local-policy>`. Its default run root is `data/models/chocolate/uk/hedonic_without_brand/`; the [implementation record](analysis/hedonic-without-brand-implementation.md) defines commands, frozen experiments, fitting/calibration/test partitions and verified model artifacts. Gold verification retains managed hashes, logical row digests and original price/contract provenance. This loader does not promote excluded candidates. The historical regular-price Gold inspected in this session has zero eligible rows and lacks three required handoff declarations, so the actual attempt writes an immutable readiness report and returns status 2. Fixture fitting and calibration validate numerical behavior; no real fit or released interval exists.

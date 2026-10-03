@@ -1,4 +1,4 @@
-"""Check publication boundaries, source preservation, and category portability."""
+"""Check local export boundaries, source preservation, and category portability."""
 
 import gzip
 import importlib.util
@@ -139,3 +139,34 @@ class PublicationTests:
         (self.output / manifest["studies"][0]["bundle"]).write_bytes(b"corrupt")
         with pytest.raises(ValueError):
             publisher.verify_export(self.output, manifest)
+
+    @pytest.mark.parametrize("options", [
+        ["--upload"],
+        ["--upload", "--repo-id", "example/collections"],
+        ["--repo-id", "example/collections"],
+    ])
+    def test_rejects_retired_upload_options_before_export(self, options, monkeypatch, capsys):
+        def unexpected_export(*args, **kwargs):
+            pytest.fail("Upload options must be rejected before writing a local export.")
+
+        monkeypatch.setattr(publisher, "build_export", unexpected_export)
+        with pytest.raises(SystemExit) as error:
+            publisher.main(options + ["--output", str(self.output)])
+        assert error.value.code == 2
+        assert "Raw collection evidence must remain local" in capsys.readouterr().err
+        assert not self.output.exists()
+
+    def test_former_upload_api_rejects_without_local_io(self):
+        with pytest.raises(ValueError, match="Raw collection evidence must remain local"):
+            publisher.upload_export(self.output, "example/collections", {})
+        assert not self.output.exists()
+
+    def test_local_export_cli_reports_export_bytes(self, capsys):
+        self.study()
+        publisher.main(["--collections-root", str(self.root), "--output", str(self.output)])
+        report = json.loads(capsys.readouterr().out)
+        assert report["export_bytes"] == sum(
+            (self.output / name).stat().st_size for name in report["managed_files"]
+        )
+        publisher.verify_export(self.output, report)
+        assert "Raw evidence exports remain local" in (self.output / "README.md").read_text()

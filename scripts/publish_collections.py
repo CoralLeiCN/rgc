@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.10"
-# dependencies = ["huggingface_hub==2.1.1"]
+# dependencies = []
 # ///
-"""Export category-independent text evidence and optionally publish it publicly."""
+"""Export category-independent text evidence for verified local storage."""
 
 import argparse
 import gzip
@@ -179,9 +179,9 @@ def build_export(collections_root, output):
         (staging / "export-manifest.json").write_bytes(json_bytes(manifest))
         lines = ["---", "pretty_name: RGC product collection evidence", "tags:", "- product-research", "- pricing", "- provenance", "configs:", "- config_name: default", "  data_files:", "  - split: train", "    path: products.jsonl", "---", "", "# RGC product collection evidence", "", f"Export policy: `{POLICY_VERSION}`. Image files and HTTP transfer caches are omitted.", "", "## Contents", "", f"`products.jsonl` indexes {len(rows):,} source product/variant records across {len(studies)} category/market studies.", "The split name `train` is a loader convention, not a reviewed modeling split.", "Source-specific identity and latest information are JSON strings to preserve arbitrary fields without forcing one category schema.", "Unknown fields remain unknown. Legacy records can have no latest information in this index; their complete records remain in the evidence bundles.", "", "Each `evidence/<category>/<market>.tar.gz` bundle contains original product JSON, histories, text/HTML/JSON source evidence, catalogues, discovery evidence, run inputs/reports, and available coverage/integrity reports.", "Files inside the bundles retain their exact original bytes and languages. No price normalization, identity deduplication, or ingredient inference is applied.", "", "## References and deliberate omissions", "", "Extract bundles to a common directory; original archive-relative paths resolve from that collections root.", "Each bundle's `export-manifest.json` inventories included files with SHA-256 checksums and omitted paths with reasons.", "Image URLs, captions, original checksums, retrieval metadata, and original paths remain in the raw records; referenced image/cache files are deliberately absent.", "Original host-local discovery paths are historical provenance, not downloadable links. Source HTML may link to external images; image payloads are not bundled.", "Raw reports describe the original collection, including local images; their integrity results are not a verification of this filtered export.", "", "## Coverage and reuse", "", "A row represents a source listing/variant, not necessarily a distinct physical product. Ingredient, nutrition, and source coverage can be incomplete.", "Read each study's original README, coverage report, source failures, and capture limitations before analysis.", "Source text and product metadata remain attributed to their publishers. This export does not grant a new license over third-party evidence.", "", "## Studies", "", "| Category | Market | Included evidence bytes | Bundle bytes |", "| --- | --- | ---: | ---: |"]
         lines.extend(f"| {s['category']} | {s['market']} | {s['included_bytes']:,} | {s['bundle_bytes']:,} |" for s in summaries)
+        lines.extend(["", "## Storage", "", "Raw evidence exports remain local. Uploading them to Hugging Face is disabled."])
         (staging / "README.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
-        # Replace only files produced by this export. Upload uses this exact list,
-        # never every file that happens to exist in the output directory.
+        # Replace only files produced by this export, preserving unrelated output files.
         for name in managed_files:
             destination = output / name
             if destination.is_symlink() or any(p.is_symlink() for p in destination.parents if p != output and output in p.parents):
@@ -192,7 +192,7 @@ def build_export(collections_root, output):
 
 
 def verify_export(output, manifest):
-    """Verify all published evidence bytes against the bundle inventories."""
+    """Verify all local export evidence bytes against the bundle inventories."""
     output = Path(output)
     for study in manifest["studies"]:
         bundle = output / study["bundle"]
@@ -225,47 +225,23 @@ def verify_export(output, manifest):
 
 
 def upload_export(output, repo_id, manifest):
-    from huggingface_hub import HfApi
-    api = HfApi()
-    api.whoami()  # Validate cached/environment authentication before any write.
-    api.create_repo(repo_id=repo_id, repo_type="dataset", private=False, exist_ok=True)
-    if api.repo_info(repo_id=repo_id, repo_type="dataset").private:
-        raise ValueError("Destination is private; choose a public dataset repository.")
-    result = api.upload_folder(repo_id=repo_id, repo_type="dataset", folder_path=output,
-                               allow_patterns=manifest["managed_files"],
-                               commit_message=f"Publish useful collection evidence ({POLICY_VERSION})")
-    info = api.repo_info(repo_id=repo_id, repo_type="dataset", files_metadata=True)
-    remote = {f.rfilename: f for f in info.siblings}
-    for name in manifest["managed_files"]:
-        if name not in remote or remote[name].size != (Path(output) / name).stat().st_size:
-            raise ValueError(f"Remote file missing or size mismatch: {name}")
-        data = (Path(output) / name).read_bytes()
-        if remote[name].lfs:
-            matches = remote[name].lfs.sha256 == hashlib.sha256(data).hexdigest()
-        else:
-            git_object = b"blob " + str(len(data)).encode() + b"\0" + data
-            matches = remote[name].blob_id == hashlib.sha1(git_object).hexdigest()
-        if not matches:
-            raise ValueError(f"Remote checksum mismatch: {name}")
-    return {"url": f"https://huggingface.co/datasets/{repo_id}", "commit_url": result.commit_url,
-            "remote_files_verified": len(manifest["managed_files"])}
+    """Reject the former upload API before any local or remote side effect."""
+    raise ValueError("Raw collection evidence must remain local; uploading it is disabled.")
 
 
-def main():
+def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--collections-root", type=Path, default=PROJECT_ROOT / "data/collections")
     parser.add_argument("--output", type=Path, default=PROJECT_ROOT / "data/huggingface-export")
-    parser.add_argument("--repo-id", help="Hugging Face namespace/dataset-name")
-    parser.add_argument("--upload", action="store_true", help="Create/update a public dataset after building the export")
-    args = parser.parse_args()
-    if args.upload and not args.repo_id:
-        parser.error("--upload requires --repo-id")
+    parser.add_argument("--repo-id", help="Retired upload option; raw evidence must remain local.")
+    parser.add_argument("--upload", action="store_true", help="Retired option; raw evidence uploads are disabled.")
+    args = parser.parse_args(argv)
+    if args.upload or args.repo_id is not None:
+        parser.error("Raw collection evidence must remain local; uploading it is disabled.")
     manifest = build_export(args.collections_root, args.output)
     verify_export(args.output, manifest)
     report = {"output": str(args.output), **manifest,
-              "upload_bytes": sum((args.output / name).stat().st_size for name in manifest["managed_files"])}
-    if args.upload:
-        report["publication"] = upload_export(args.output, args.repo_id, manifest)
+              "export_bytes": sum((args.output / name).stat().st_size for name in manifest["managed_files"])}
     print(json.dumps(report, indent=2))
 
 

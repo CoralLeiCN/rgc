@@ -173,7 +173,7 @@ documentation or rewrite eligibility/targets.
 | Define typed chocolate fields, vocabularies, units, evidence states and record shape. | Dataset `contracts/chocolate/`, pinned by `schemas/chocolate/dataset-contract.json` | Initial schema implemented; extraction review pending. |
 | Define mappings and model training/interpretation contracts. | Pinned dataset contracts and `scripts/chocolate_model.py` | Contracts and preparation helpers implemented. |
 | Combine raw verification, exact seller deduplication, standardization, price normalization and review/eligibility. | `scripts/build_chocolate_silver.py`, `scripts/chocolate_silver.py`, shared components, `scripts/tests/test_silver.py` | Silver implemented and verified; standalone cleanup/component CLIs serve compatibility and diagnostics. |
-| Preserve broad original records, source/images and immutable captures; export public text evidence. | `plugins/category-research/`, `scripts/publish_collections.py` | Collection and export implemented. |
+| Preserve broad original records, source/images and immutable captures; export verified local text evidence. | `plugins/category-research/`, `scripts/publish_collections.py` | Collection and local export implemented; raw upload interfaces reject publication under the user's storage instruction. |
 | Document responsibilities, schema, training, commands and compatibility helpers. | Canonical guides, `README`, lifecycle views | Contracts and documentation checks verified. |
 | Maintain documents with implementation changes and apply the agent writing and testing rules. | `AGENTS.md`, `docs/documentation-policy.md`, `scripts/check_documentation.py`, `.github/workflows/validation.yml`, tests | Ownership, drift checks, writing rules and test selection rules recorded. |
 | Review existing tests for useful coverage and repeated execution. | `scripts/tests/`, both plugin test suites, `docs/documentation-policy.md` | Reviewed 256 cases; consolidated seven duplicate cases and removed five redundant cases. Retained distinct preservation, integrity, identity, review, model and isolated package execution checks. |
@@ -541,6 +541,55 @@ one squash commit. The source and target file trees must match and both
 worktrees must be clean after landing. Real-data model fitting remains subject
 to each training chat's preparation and identification gates.
 
+### Original published Silver retirement
+
+On 2026-10-03, the user requested removal of the original published Silver
+snapshot and waived its backward compatibility. Published a guarded deletion
+at dataset revision `2f96b70adab9ea0aec6e833d94f9ebd3e338a115`, removing
+24 files (1,415,482,135 bytes) under
+`silver/chocolate/uk/silver-6e246156b7292dd4bb49ebf0/`, its six LFS rules, and
+correcting the dataset card. Verified the expected inventory, unchanged content
+identifiers for all 141 retained files outside updated metadata, SHA-256 of both
+metadata downloads, and the unchanged latest pointer selecting the pandas
+snapshot. Current-tree bytes fell from 3,547,659,430 to 2,132,176,764. The
+[retirement receipt](../data/analysis/chocolate-original-silver-retirement-2026-10-03.json)
+records exact paths and checks. Historical publication records retain the
+inventory at their original revisions. Historical Hub commits and local
+worktree copies remain; historical storage reclamation is not established.
+
+`uv sync --locked`, offline verification of all four pinned contract caches,
+Ruff, documentation guard, 26 documentation pytest cases and whitespace checks
+passed. No processing code or analytical contract changed.
+
+
+### Keep raw source evidence local
+
+On 2026-10-03, the user requested local raw evidence and clarified removal of
+raw files only. Verified the existing primary local text export: 22,372 bundle
+members, 3,608,764,602 included bytes, 3,743 index rows, exact archive hash and
+all bundle inventory hashes. The complete collection remains under
+`/Users/coral/repos/rgc/data/collections/` and the verified export under
+`/Users/coral/repos/rgc/data/huggingface-export/`. Prepared removal of the remote
+raw archive, root product index and export manifest; Silver source-listings are
+retained. Published the deletion at `06680d7248ccc4487726b9a97e59aa8f586fb54e`.
+The [local storage receipt](../data/analysis/chocolate-local-raw-storage-2026-10-03.json)
+records removal of three files (671,923,490 bytes), matching local hashes before
+and after publication, unchanged content identifiers for all 138 other retained
+files, verified SHA-256 of both updated metadata downloads, and the unchanged
+Silver latest pointer. All four Silver source-listings files remain published.
+Current-tree bytes fell from 2,132,176,764 to 1,460,252,307. The dataset card now
+defaults to the existing Gold training table; its published checksum and Parquet
+metadata verify 2,134 rows. The raw exporter rejects its old CLI and callable
+upload interfaces before local export or remote actions, and reports
+`export_bytes` with no Hub dependency.
+
+The locked development environment and all four pinned contract caches were
+verified. Ruff, documentation guard, 34 publication/documentation pytest cases,
+Gold loader table checks and whitespace checks passed. These tests cover retired
+upload rejection before export, the disabled callable API, complete local export
+verification, deterministic preservation and documentation coverage. Historical
+Hub commits retain old raw files; historical storage reclamation is not claimed.
+
 ## Independent hedonic_without_brand session
 
 Implemented the assigned family-weighted log-linear estimator in `scripts/chocolate_hedonic.py`, exposed through the existing trainer under an explicit unpublished working policy. Fitting-only grouped selection, common brand-identification probing, optional cocoa preprocessing, retailer interactions, family bootstrap, split conformal calibration, support/domain outputs and immutable run verification are covered by native pytest fixtures. The [implementation record](../data/analysis/hedonic-without-brand-implementation.md) owns exact policies and reproducible commands. Real raw-to-Silver-to-Gold rebuilding preserved 3,743 listings and 4,347 captures; Gold `gold-4939405fcf8724686f9ee32c` retains 2,134 candidates and zero eligible rows. Missing reviewed regular-price/tax/quantity/identity evidence and recipe/cohort/pack-count handoff declarations block real fitting. Comparator gates, champion selection, aligned producer/portable contract migration and release review remain pending. Trained artifact upload is authorized, but no real fitted artifact is available for publication.
@@ -579,3 +628,20 @@ were verified. The complete integrated suite passed 461 tests; four additional
 CLI routing regressions cover both model IDs and both argument spellings. The
 focused hedonic suite now contains 27 passing cases. Ruff, documentation and
 whitespace checks passed before the requested local squash into main.
+
+
+### Local raw storage integration with main
+
+The user requested committing all storage changes and merging them into local
+`main`. The task branch `codex/local-raw-storage` includes both verified Hugging
+Face receipts and the local-only exporter. Integration with refreshed main
+`f72604a` preserved its web application, pinned display snapshot and independent
+hedonic estimator. Five documentation conflicts were resolved by retaining
+both sessions' requirements and correcting the new application intention's
+raw-storage statement to refer to the local archive. The lifecycle intent now
+records the same source locations and retained published Silver scope.
+
+`uv sync --locked --offline`, all four offline contract caches, Ruff, the
+documentation guard and the complete 470-case pytest suite passed after
+integration. Whitespace checks passed. The requested landing uses one squash
+commit; source/target tree equality and clean-worktree checks follow the commit.

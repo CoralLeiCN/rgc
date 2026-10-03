@@ -36,6 +36,13 @@ category profiles, mapping maintenance and immutable training snapshots.
 Experimental training from verified Gold is distinct from reviewed eligible
 observations and a validated fitted model.
 
+Keep the full raw collection and its verified text export locally. Hugging Face
+retains derived snapshots, including Silver source-listings, analytical contracts,
+analysis and model artifacts. The original published Silver snapshot and the raw
+archive/index were removed from its current tree at the user's request; the
+[storage guide](../data/dataset-contracts.md#local-raw-evidence-storage) records
+local locations and verified publication receipts.
+
 One independent assignment implements and attempts real training for
 `lightgbm_without_brand`. Actual fitted model artifact
 upload is authorized, while fixture fits remain labeled and analytical contract

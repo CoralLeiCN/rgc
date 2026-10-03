@@ -1,0 +1,159 @@
+{
+  "publication_date": "2026-10-03",
+  "repo_id": "CoralLeiCN/rgc-collections",
+  "authorization": "The user requested removal of the original published Silver snapshot and waived backward compatibility for that snapshot.",
+  "parent_revision": "419150708bbbca16a738ff36a3c0b9373e8cda8e",
+  "revision": "2f96b70adab9ea0aec6e833d94f9ebd3e338a115",
+  "commit_url": "https://huggingface.co/datasets/CoralLeiCN/rgc-collections/commit/2f96b70adab9ea0aec6e833d94f9ebd3e338a115",
+  "removed_snapshot_prefix": "silver/chocolate/uk/silver-6e246156b7292dd4bb49ebf0",
+  "retained_snapshot_prefix": "silver/chocolate/uk/silver-2f97cfe8b8c50ecfa79ebf46",
+  "removed_files": {
+    "silver/chocolate/uk/silver-6e246156b7292dd4bb49ebf0/README.md": {
+      "size_bytes": 3653,
+      "git_oid": "ff00ec43ab461d5dbeeb339e073339c2722b0829",
+      "sha256": null
+    },
+    "silver/chocolate/uk/silver-6e246156b7292dd4bb49ebf0/assertions.jsonl": {
+      "size_bytes": 30346134,
+      "git_oid": "518939243cda49804bb0d38b02c5d9ae6365939b",
+      "sha256": "760d16c7a07aa867a6c10c6c44afc1823995d54713f414564c41c7b6fbe2e2e1"
+    },
+    "silver/chocolate/uk/silver-6e246156b7292dd4bb49ebf0/brand/prices.jsonl": {
+      "size_bytes": 1782132,
+      "git_oid": "61976e6498893ccedf5944cf0f5f7bd15d6755ee",
+      "sha256": null
+    },
+    "silver/chocolate/uk/silver-6e246156b7292dd4bb49ebf0/brand/products.jsonl": {
+      "size_bytes": 17102815,
+      "git_oid": "2bbb869ecbd8547579085de5310f133f5ec9f4b4",
+      "sha256": "57e8ba54fec44ce7478c6ff70b3721aa4d4e95fa77d3709faf809c3e6ba7a13f"
+    },
+    "silver/chocolate/uk/silver-6e246156b7292dd4bb49ebf0/brand/source-listings.jsonl": {
+      "size_bytes": 96584646,
+      "git_oid": "11b25c31f85756f98f96944c6ae8163f7fbecd92",
+      "sha256": "1d315e713c56e649d7f654358f6223fc36c051ae9dc6af45bd386270a815e25b"
+    },
+    "silver/chocolate/uk/silver-6e246156b7292dd4bb49ebf0/listing-aliases.jsonl": {
+      "size_bytes": 1326275,
+      "git_oid": "8dcd333ea83c088c296641a2c85cc6d964ce889b",
+      "sha256": null
+    },
+    "silver/chocolate/uk/silver-6e246156b7292dd4bb49ebf0/manifest.json": {
+      "size_bytes": 1919825,
+      "git_oid": "7a2254a7af065e89594cd34343497a2be83b045f",
+      "sha256": null
+    },
+    "silver/chocolate/uk/silver-6e246156b7292dd4bb49ebf0/model-design.json": {
+      "size_bytes": 20374,
+      "git_oid": "a7894228b60840c022d32eda4402c2a1a67cdcdc",
+      "sha256": null
+    },
+    "silver/chocolate/uk/silver-6e246156b7292dd4bb49ebf0/model-inputs.jsonl": {
+      "size_bytes": 0,
+      "git_oid": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": null
+    },
+    "silver/chocolate/uk/silver-6e246156b7292dd4bb49ebf0/prices.jsonl": {
+      "size_bytes": 9414982,
+      "git_oid": "f76e2cd825228eff53e3952ba51b9aa66093d0c4",
+      "sha256": null
+    },
+    "silver/chocolate/uk/silver-6e246156b7292dd4bb49ebf0/product.schema.json": {
+      "size_bytes": 327232,
+      "git_oid": "ff3789b55039852a3d9d0f77d5d582f917e4b829",
+      "sha256": null
+    },
+    "silver/chocolate/uk/silver-6e246156b7292dd4bb49ebf0/products.jsonl": {
+      "size_bytes": 92179640,
+      "git_oid": "f7f0dd358b35b934981928fb7a8886ffa3b2125f",
+      "sha256": "b79f3e93f1163a3ec26a56a133b237a667272c8d9acecc1184d752868d631666"
+    },
+    "silver/chocolate/uk/silver-6e246156b7292dd4bb49ebf0/profile.json": {
+      "size_bytes": 64643,
+      "git_oid": "bf96e40693a3fa7b2462c1c036a8c5a80bcafdac",
+      "sha256": null
+    },
+    "silver/chocolate/uk/silver-6e246156b7292dd4bb49ebf0/quality-report.json": {
+      "size_bytes": 5310,
+      "git_oid": "b34a8ca5ead33a1628ec70acc62e5371b51dda3a",
+      "sha256": null
+    },
+    "silver/chocolate/uk/silver-6e246156b7292dd4bb49ebf0/retail/prices.jsonl": {
+      "size_bytes": 7632850,
+      "git_oid": "f8ca1c4b2a7eee60f8938771f07dbbc6c6d598fc",
+      "sha256": null
+    },
+    "silver/chocolate/uk/silver-6e246156b7292dd4bb49ebf0/retail/products.jsonl": {
+      "size_bytes": 29965473,
+      "git_oid": "e4f79f62387f499685c1b2825aa577b90c8f1873",
+      "sha256": "e24de800e353fc6a912219d5b482b986e8aeca76f741627d7ae7de0a70d07c88"
+    },
+    "silver/chocolate/uk/silver-6e246156b7292dd4bb49ebf0/retail/source-listings.jsonl": {
+      "size_bytes": 117998759,
+      "git_oid": "36e7f930c0548e33c472aa504c2ef027a51b9a1e",
+      "sha256": "4cb5720280ab15b2528e575bf3a70919be9e9c4674aef0c1e7e41e45d6b405f3"
+    },
+    "silver/chocolate/uk/silver-6e246156b7292dd4bb49ebf0/review-queue.jsonl": {
+      "size_bytes": 90083896,
+      "git_oid": "b76260fb03c3f6c797a436a15a294aac6f22d7d2",
+      "sha256": "0caab9af65e2f98a35348ca47d039753e8c69b6759da6f939a3244bc5b7a817f"
+    },
+    "silver/chocolate/uk/silver-6e246156b7292dd4bb49ebf0/source-listings.jsonl": {
+      "size_bytes": 541629596,
+      "git_oid": "e86b7b42370f387e6a9176203a5003ae6f355ac2",
+      "sha256": "dd550b46bea8f361ea30eb1fc5abfd9c9037eb8109cd954f96af0f6bdd21144c"
+    },
+    "silver/chocolate/uk/silver-6e246156b7292dd4bb49ebf0/source-mappings.json": {
+      "size_bytes": 17040,
+      "git_oid": "6994a5c85a596603e48278253c66d2914f71f4a6",
+      "sha256": null
+    },
+    "silver/chocolate/uk/silver-6e246156b7292dd4bb49ebf0/training-candidates.jsonl": {
+      "size_bytes": 4919317,
+      "git_oid": "4ed0fafa9ac67892019745ad3aadf4f085a913c1",
+      "sha256": null
+    },
+    "silver/chocolate/uk/silver-6e246156b7292dd4bb49ebf0/unknown/prices.jsonl": {
+      "size_bytes": 0,
+      "git_oid": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": null
+    },
+    "silver/chocolate/uk/silver-6e246156b7292dd4bb49ebf0/unknown/products.jsonl": {
+      "size_bytes": 45111352,
+      "git_oid": "9f50d8417edc38bc522bf671a17a93d809fad4f1",
+      "sha256": "1f1e64488956e1950d167c1ad4781e9391729668c61a56bd868232dcde91a4d8"
+    },
+    "silver/chocolate/uk/silver-6e246156b7292dd4bb49ebf0/unknown/source-listings.jsonl": {
+      "size_bytes": 327046191,
+      "git_oid": "b173de06012702a55001eb2d9e5f8431e26170cd",
+      "sha256": "7bdf3f95f7760558d39de27c93d525497e74108d53121978d64cfb3f89fa5866"
+    }
+  },
+  "removed_file_count": 24,
+  "removed_logical_bytes": 1415482135,
+  "current_tree_bytes_before": 3547659430,
+  "current_tree_bytes_after": 2132176764,
+  "current_tree_files_after": 143,
+  "updated_metadata_sha256": {
+    "README.md": "cedc14d26e183f6a7fababf4970cc32486b55770aebf0cc168f4587bf8f4057e",
+    ".gitattributes": "47eb2c830ef0a6a5604e345f9817874bd48610c5b0ab7db3ed963c056262347c"
+  },
+  "removed_lfs_rules": [
+    "silver/chocolate/uk/silver-6e246156b7292dd4bb49ebf0/assertions.jsonl filter=lfs diff=lfs merge=lfs -text",
+    "silver/chocolate/uk/silver-6e246156b7292dd4bb49ebf0/brand/source-listings.jsonl filter=lfs diff=lfs merge=lfs -text",
+    "silver/chocolate/uk/silver-6e246156b7292dd4bb49ebf0/retail/source-listings.jsonl filter=lfs diff=lfs merge=lfs -text",
+    "silver/chocolate/uk/silver-6e246156b7292dd4bb49ebf0/review-queue.jsonl filter=lfs diff=lfs merge=lfs -text",
+    "silver/chocolate/uk/silver-6e246156b7292dd4bb49ebf0/source-listings.jsonl filter=lfs diff=lfs merge=lfs -text",
+    "silver/chocolate/uk/silver-6e246156b7292dd4bb49ebf0/unknown/source-listings.jsonl filter=lfs diff=lfs merge=lfs -text"
+  ],
+  "verification": {
+    "removed_paths_absent": true,
+    "retained_file_inventory_and_content_identifiers_match": true,
+    "unchanged_files_verified": 141,
+    "updated_metadata_downloaded_and_sha256_verified": true,
+    "latest_pointer_unchanged": true
+  },
+  "limitations": [
+    "Deletion changes the current dataset tree. Historical Hugging Face commits and worktree-local copies remain; total historical storage reclamation is not established."
+  ]
+}
