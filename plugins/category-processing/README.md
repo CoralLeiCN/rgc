@@ -1,5 +1,27 @@
 # Category Processing Agent Plugin
 
+## Standard Silver implementation, 4 October 2026
+
+The default build now implements the revised Bronze-to-Silver contract. It uses
+four field contracts, a durable SQLite source index, stable source and component
+IDs, contextual facts with `.source` and `.method`, explicit states, persistent
+human corrections and schema profiling on every build. It accepts an existing
+103-field chocolate catalog through a deterministic migration and retains exact
+input/effective contract hashes. Model policy and training preparation execute
+in Gold. Historical formats remain available with `--legacy`.
+
+See [standard Silver reference](skills/category-processing/references/standard-silver.md) for exact structures, commands,
+report calculations, correction recovery and limitations. Published four-file
+references are `profiles/<category>/silver-dataset-contract.json`, pinned at
+`337fb7f3984ac648e67edd2cb47802f056193efc`. Historical five-file references retain
+`dataset-contract.json`; coffee's separate Gold design uses
+`profiles/coffee/gold-dataset-contract.json`. Pilot snapshots remain local.
+
+## Historical compatibility interface
+
+The descriptions below retain the published v1 contract and its helpers. Select
+`process --legacy` for those outputs; default `process` uses v2.
+
 Bronze indexes for new listings use
 `<category>/<market>/products/<source_key>/<product_id>/product.json`, grouping
 records from each website/storefront. Processing also reads legacy flat indexes
@@ -33,7 +55,7 @@ uses a commit revision and per-file SHA-256/size checks, without repository sibl
 modules or another plugin installation. Category-specific fields, units,
 comparable groups and price bases belong to a supplied profile. It does not fit
 a regression. Copy the whole package when moving it; run its CLI directly when
-native plugin installation is unavailable. The package version is `0.3.4`.
+native plugin installation is unavailable. The package version is `0.4.0`.
 
 Use the dedicated schema skill for initial creation of a new category schema.
 It researches preserved raw data and creates the field catalog with meanings,

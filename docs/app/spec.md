@@ -337,6 +337,47 @@ returns 503 with a setup message. Live validation status is recorded in the
 from the locally connected synthetic pricing fixture and the teammate's
 research model.
 
+#### Persistent review of standardized data
+
+Status: implemented as the portable local review interface, launched with
+`python3 plugins/category-processing/cli.py review --silver-root <snapshot>
+--state-db <persistent-db> --archive-root <collections>`. The loopback server
+shows effective fields, evidence, history and durable save results. SQLite saves
+use revision checks; a full Silver rebuild reapplies applicable decisions and
+flags changed evidence or meaning. See the
+[interface reference](../../plugins/category-processing/skills/category-processing/references/standard-silver.md).
+The pricing application continues to consume pinned data and edit local drafts;
+its extraction Apply action remains a draft edit.
+
+For a selected standardized field, the review interface must:
+
+1. Show the effective value, its `parsed`, `inferred` or human `reviewed` method,
+   missing/error state and the relevant listing, component or observation.
+2. Resolve `<standardized_column>.source` to the original Bronze value and its
+   source context. Keep the automated candidate available alongside a correction.
+3. Let a user confirm the value or revise it, including a missing or
+   decision that the field does not apply, with a reason and supporting evidence.
+4. Persist the decision with a stable correction ID, reviewer, time and revision.
+   Display a saved result only after durable storage succeeds; preserve the
+   user's edit with a visible error if saving fails.
+5. Show decision history, the active correction and its application to a rebuild.
+   Let the user revise a previous decision through a new recorded revision.
+
+For matching facts, precedence is `reviewed > parsed > inferred`; usable parsed
+and inferred values require no preliminary human confirmation. The
+[data correction contract](../data/spec.md#persistent-corrections-and-replay)
+defines stable selectors and application on every rerun, including full
+reprocessing. A changed source context can require another review while retaining
+the saved decision. Report the correction's save and application status separately
+from the selected published snapshot; pinned consumers refresh explicitly.
+
+Acceptance includes a saved correction surviving reload and a complete data
+rebuild, a component correction surviving array reordering, a failed save
+remaining visible, and an explicit revision retaining the earlier decision.
+Users must be able to follow a downstream error back to its Silver field and
+original evidence. The local backend, review UI and replay engine implement this
+workflow. A hosted multi-user correction service is outside this local interface.
+
 #### Observed-price analysis and future model boundary
 
 The read-only analysis endpoint applies cohort filters to all matching listings,

@@ -205,3 +205,36 @@ The separate current-price overlay pins published commit
 immutable reference. Matched training consumes its target definition through
 shared preparation and retains its own estimator. Existing Gold snapshots keep
 their copied storage contracts; applying this target does not rebuild Gold.
+
+## Silver v2 field resolution
+
+Default Silver requests profile, source mappings, validator and recipe from the
+immutable reference. It can resolve and build offline when only those four
+payloads are cached; it does not download a model design. Every cached payload
+that is present is still verified. The original manifest is preserved rather
+than replacing its file list with an edited pin. A native four-file Silver
+reference may omit model-design metadata. Legacy profile loading still requires
+its five files. Gold resolves its separate selected study design.
+
+Local migration copies four effective versioned contracts into every generated
+snapshot and records the hashes of the source contracts. `export-silver-contracts`
+prepares a reviewable release directory. These local bodies are ignored working
+artifacts; new dataset pins are installed only after an approved, verified
+immutable publication. Historical dataset references continue to reproduce v1.
+
+The approved standard Silver release is published at
+`337fb7f3984ac648e67edd2cb47802f056193efc`; all ten remote files were verified
+byte-for-byte. Four new references identify its separate contract sets:
+
+- `plugins/category-processing/profiles/chocolate/silver-dataset-contract.json`
+- `plugins/category-processing/profiles/coffee/silver-dataset-contract.json`
+- `plugins/category-processing/profiles/coffee/gold-dataset-contract.json`
+- `schemas/chocolate/standard-gold/dataset-contract.json`
+
+Default Silver and canonical standard Gold use these pins. Default
+`fetch_contracts.py` includes chocolate's standard Silver/Gold and historical
+canonical contracts; `--all` verifies or fetches all eight current/historical
+references. The documentation checker validates the four new references and
+their cross-layer versions without requiring a cache, and verifies every cached
+payload present. The [release record](analysis/standard-silver-v2-release.md)
+retains the approved inventory and remote revision.

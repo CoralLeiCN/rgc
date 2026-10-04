@@ -622,6 +622,7 @@ class ChocolateSilverTests:
     def test_cli_builds_silver_directly_and_reports_partial_exit_status(self):
         self.collect([self.product()])
         arguments = [
+            "--legacy",
             "--archive-root",
             str(self.archive),
             "--output",

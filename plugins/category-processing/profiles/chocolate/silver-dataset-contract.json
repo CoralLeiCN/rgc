@@ -1,0 +1,34 @@
+{
+  "attribute_count": 103,
+  "category": "chocolate",
+  "contract_set": "category-processing/chocolate/silver-2",
+  "files": {
+    "pipeline.json": {
+      "path": "contracts/category-processing/chocolate/silver-2/pipeline.json",
+      "sha256": "37bca2da45d20ef8409ee8fe4cfce252c7f2d529591c5c80103d35122088ae77",
+      "size_bytes": 3916
+    },
+    "product.schema.json": {
+      "path": "contracts/category-processing/chocolate/silver-2/product.schema.json",
+      "sha256": "3bd87aa6b14955253b96a1db4a37c6edc29f4491feb2b9e97e77da0b0fbd0f57",
+      "size_bytes": 120612
+    },
+    "profile.json": {
+      "path": "contracts/category-processing/chocolate/silver-2/profile.json",
+      "sha256": "8309432c5a5280547f9f897b235c731280af8d57dfa0825a124bf01876cea9b8",
+      "size_bytes": 61850
+    },
+    "source-mappings.json": {
+      "path": "contracts/category-processing/chocolate/silver-2/source-mappings.json",
+      "sha256": "40ad336a6158c7828de958bea3c753268d8cdf7d6ead906b3e8afa0859045068",
+      "size_bytes": 17116
+    }
+  },
+  "format_version": "rgc-dataset-contract-reference-1",
+  "mapping_version": "chocolate-source-mappings-1.silver-2",
+  "market": "uk",
+  "pipeline_version": "chocolate-processing-pipeline-2.silver-2",
+  "repo_id": "CoralLeiCN/rgc-collections",
+  "revision": "337fb7f3984ac648e67edd2cb47802f056193efc",
+  "schema_version": "chocolate-processing-schema-1.silver-2"
+}

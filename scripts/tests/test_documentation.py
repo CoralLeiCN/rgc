@@ -27,7 +27,7 @@ class DocumentationMaintenanceTests:
     @pytest.fixture(autouse=True)
     def setup(self, tmp_path):
         self.root = tmp_path
-        for name in guard.REQUIRED + REFERENCES:
+        for name in guard.REQUIRED + REFERENCES + tuple(entry[0] for entry in guard.STANDARD_REFERENCES):
             self.copy_file(name)
         # Preserve local documentation/link destinations without copying caches/corpus.
         for name in guard.REQUIRED:
@@ -176,6 +176,19 @@ class DocumentationMaintenanceTests:
     def test_missing_dataset_reference_is_reported(self):
         (self.root / REFERENCES[0]).unlink()
         self.assert_error("Unreadable dataset contract reference")
+
+    def test_standard_gold_and_silver_metadata_must_agree_without_cache(self):
+        name = "schemas/chocolate/standard-gold/dataset-contract.json"
+        self.reference(name, lambda manifest: manifest.update(attribute_count=1))
+        self.assert_error("Standard Gold and Silver references disagree")
+
+    def test_standard_partial_cache_is_checked_for_corruption(self):
+        name = "plugins/category-processing/profiles/coffee/silver-dataset-contract.json"
+        manifest = guard.load_manifest(self.root / name)
+        directory = guard.cache_directory(manifest, self.root / "plugins/category-processing/.contract-cache")
+        directory.mkdir(parents=True)
+        (directory / "profile.json").write_bytes(b"{}\n")
+        self.assert_error("checksum/length mismatch")
 
     def test_mutable_dataset_revision_is_rejected(self):
         self.reference(REFERENCES[0], lambda doc: doc.update(revision="main"))

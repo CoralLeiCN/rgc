@@ -1,5 +1,10 @@
 # Profile contract
 
+The [standard Silver v2 reference](standard-silver.md) owns default `process`,
+four-contract authoring, durable human corrections and generated reports. This
+reference preserves the historical v1 interface and applicable research guidance;
+use `process --legacy` for v1 outputs. Gold owns model policy in the v2 workflow.
+
 Use the [category-schema skill](../../category-schema/SKILL.md) to create a new
 analytical schema. Existing-schema changes follow
 [mapping maintenance](mapping-maintenance.md). This reference owns runtime loading and consumption

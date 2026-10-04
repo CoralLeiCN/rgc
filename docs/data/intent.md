@@ -21,6 +21,16 @@ analytical questions, independently of the existing implementation. The user
 clarified that modeling is one downstream use; planning model selection,
 training or evaluation is outside this data preparation reassessment.
 
+The user clarified the layer boundary: **Silver is the structured, standardized
+layer; Gold further enriches Silver for a downstream use case.** Bronze preserves
+the original evidence. Silver applies the category schema, consistent types,
+units and vocabularies, with source identities, provenance and explicit
+uncertainty. Its definition does not depend on a model or another downstream
+consumer. Gold owns additional interpretations, derived features, aggregations
+and selection rules required by a particular analysis, application or model,
+including comparison groups, price targets, model eligibility and model-input
+preparation.
+
 The intended result is a reusable analytical dataset with understandable fields,
 consistent units and categories, explicit uncertainty and a route from each
 interpreted value to its evidence. Mixed text, numbers, dates and categories are
@@ -28,10 +38,11 @@ expected. Retain useful text and structure its supported facts alongside it.
 Converting a string to a number establishes its type; its meaning also depends
 on the quantity, component, offer or observation it describes.
 
-This section records the current intention and proposed approach. The earlier
+This section records the current intention and approach. The earlier
 delivery scope below and the [overall intention](../intention.md) provide
-context. The revised approach and its deliverables remain proposed; a reviewed
-pilot is needed to validate them.
+context. Standard Silver v2 implements this approach locally. The
+[plan](../lifecycle/plan.md#standard-silver-v2-implementation-4-october-2026)
+records the source pilot, validation and remaining release work.
 
 ### Meanings and relationships to preserve
 
@@ -42,7 +53,8 @@ from an exact value, ingredient origin from manufacturing country, and an
 allergen cross-contact warning from ingredient presence.
 
 Retain these logical distinctions when assessing the schema and analytical
-views; physical table layout remains a design decision to validate:
+views; concrete structures are decided in the implementation plan or while
+inspecting the actual Bronze data, then validated against that evidence:
 
 | Concept | Meaning |
 | --- | --- |
@@ -53,11 +65,26 @@ views; physical table layout remains a design decision to validate:
 | Evidence | Original source text, images and capture references supporting a fact or interpretation. |
 
 Keep listings from different sellers distinct and retain capture history.
+Reuse the same ID whenever the same raw source listing/variant is parsed again.
+Maintain a durable source-to-ID index, which can use SQL, so processing changes,
+new duplicate aliases or moved archive paths preserve established identities.
+Different source records retain separate IDs; captures and repeated subjects
+keep their own context under the stable source identity.
 Product relationships should support joins and distinct counts without merging
 seller observations. Preserve multiple ingredients, origins and claims, with
 their component or product scope, instead of forcing them into one ambiguous
 value. Retain competing source statements and record the basis for any preferred
 interpretation. Source wording remains verbatim, including its language.
+
+Use the standardized column name for its result, including the canonical
+unit where applicable, such as `net_weight_g`. Name its source reference by
+appending `.source` to that complete name: `net_weight_g.source`. The reference
+locates the raw value in a specific Bronze capture, where its original type and
+wording are preserved. This distinguishes the standardized value, source
+reference and original raw value. Define canonical units, conversion formulas
+and parsing rules in the versioned schema
+documentation. Keep the applicable schema version at dataset level; conversion
+instructions do not belong in individual Silver data fields.
 
 ### Proposed preparation workflow
 
@@ -67,28 +94,43 @@ interpretation. Source wording remains verbatim, including its language.
    ambiguity. Language models may assist with interpretations supported by
    evidence; their output must allow unresolved values.
 3. Standardize established facts with repeatable number parsing, unit conversion
-   and documented vocabulary mappings. Record derivation rules and versions.
+   and documented vocabulary mappings. Document the rules in the schema and
+   record the applicable version for the dataset.
 4. Validate field meanings and relationships, including pack arithmetic, matching
    price and variant, measurement bases, identity and conflicting source values.
 5. Review consequential ambiguities, recover evidence where possible and audit
    a diverse sample that includes apparently successful extraction.
-6. Produce typed analytical tables and convenient views, accompanied by their
+6. Produce typed, standardized Silver tables, accompanied by their
    data dictionary, stable identifiers, provenance and quality report.
 
 Distinguish information absent from the source, extraction failure, conflicting
-evidence and information that does not apply. Record whether a value is directly
-stated, interpreted or calculated separately from those missingness states.
-Unstated claims remain unknown. Preserve partially useful records: a missing
+evidence and information that does not apply. Reserve plain `null` for missing
+information; represent parsing errors and other unresolved states explicitly.
+Keep these states separate from how a result was obtained: processing by rules
+is `parsed`, LLM/model processing is `inferred`, and human confirmation or
+correction is `reviewed`. All three are usable, with priority
+`reviewed > parsed > inferred` for the same fact and context. Conversion rules
+remain in documentation. Preserve partially useful records: a missing
 weight can prevent a price calculation per unit while still allowing ingredient
-analysis. Report supported use and coverage for each analytical view.
+analysis. Report field coverage and quality in Silver. Define further enrichment
+and views for a particular analytical use in Gold.
 
 ### Intended deliverable and evidence of usefulness
 
-The first proposed deliverable is a small reviewed chocolate dataset, its data
-dictionary and an extraction quality report. Select examples across sellers,
+The first proposed deliverable is a small standardized chocolate dataset, its
+data dictionary and a quality report distinguishing parsed, inferred and human
+reviewed results. Human review can improve accepted data over time; it is not a
+requirement for using every parsed or inferred result. Select examples across sellers,
 product forms, pack structures and ambiguous source presentations. Use the pilot
 to establish field correctness, consistency, completeness, traceability and
 unresolved issues by field and source, then refine the approach before scaling.
+
+Generate schema popularity reports measuring field coverage, distinct values and
+frequencies for categorical fields, and numeric ranges in their declared units
+and context. Include fields with no available values, separate missing/error
+states from values, and show the counting population and denominators. These
+reports describe the collected data and help identify gaps and inconsistencies;
+the plan owns the exact calculations and report design.
 
 Evaluate usefulness through ordinary analytical questions: count distinct
 products and seller listings; compare pack sizes; summarize ingredients and
@@ -98,6 +140,29 @@ questions without repeatedly interpreting free text or guessing units, row
 meaning or the meaning of missing values. Quality reports must disclose coverage
 and the evidence behind unresolved results. Typed exports alone do not establish
 that these meanings or answers are correct.
+
+### Persistent user review and improvement
+
+Provide an interface for users to inspect standardized values, their raw sources
+and their method, then confirm or revise a result. A downstream error report
+should lead back to the relevant Silver field and evidence. Save human decisions
+durably and apply them on future reruns, including full reprocessing of the same
+Bronze data. Regenerating Silver must preserve an applicable correction.
+
+Tie corrections to stable listing/component/observation identities, the field and
+its evidence context. Keep earlier decisions and their reasons available when a
+user revises a correction. Changed source facts or field meanings require an
+applicability check; retain the saved decision and surface cases needing another
+review. Repeated components in JSON need stable IDs so array reordering cannot
+move a correction to a different subject.
+
+Use saved corrections as evidence for improving extraction models, parsing rules
+and regression tests. Track and validate those improvements through their own
+versions. Data quality improves through continued use and feedback. The
+[app intention](../app/intent.md#persistent-review-of-standardized-data) owns the
+review interface; the data specification owns correction storage and replay.
+The local `review` interface and durable correction replay implement this workflow.
+The hosted application retains its separate draft workflow.
 
 ## Earlier delivery scope and operational context
 
@@ -161,18 +226,19 @@ records this exercise and comparison.
 
 Define Bronze as the raw-data layer containing original records, source artifacts
 and immutable capture history. Collection produces Bronze; schema creation reads
-Bronze; processing turns Bronze into reviewed Silver; Gold serves the training
-handoff. Use Bronze → Silver → Gold consistently in workflow descriptions.
+Bronze; processing turns Bronze into structured, standardized Silver; Gold
+enriches Silver for a downstream use case. Training is one such use.
+Use Bronze → Silver → Gold consistently in workflow descriptions.
 Existing raw archive paths and format identifiers remain Bronze storage contracts.
 
 Category-processing starts when preserved raw data and a generated schema are
 available for the same study. If the schema is missing, generate it with the
 schema skill first. Processing owns mapping/extraction configuration, schema
-serialization, evidence review and reviewed Silver. Model design and model-input
-preparation belong to the subsequent Silver-to-Gold layer. Existing Silver
-eligibility decisions remain source evidence for that handoff. Later steps can
-continue within the same task when requested. Schema creation needs no processing
-runtime, fixed file count or invented pricing model. The current runtime still
+serialization, evidence review and standardized Silver. Enrichment for downstream
+uses, including model design and model-input preparation, belongs to Gold.
+Existing Silver eligibility decisions remain recorded legacy outputs. Later steps
+can continue within the same task when requested. Schema creation needs no
+processing runtime, fixed file count or invented pricing model. The current runtime still
 requires five aligned files for a runnable profile and emits legacy training
 views; removing that coupling needs a runtime migration. Keep the schema
 instructions usable independently. Existing-schema refresh, review and extension
@@ -182,7 +248,9 @@ remain in processing maintenance.
 
 Keep the original Bronze archive and one combined Silver dataset. Silver performs
 deduplication within each seller followed by schema, unit and vocabulary
-standardization, price normalization, evidence review and eligibility decisions.
+standardization, supported price normalization and source evidence review.
+The existing builds also emit model eligibility decisions as legacy behavior;
+those outputs do not define the intended Silver layer.
 The [Silver guide](../data/chocolate-silver.md) defines these responsibilities in
 one build. Use pandas for the combined chocolate Silver table operations,
 schema coverage and exact value frequency analysis, preserving evidence and
@@ -282,7 +350,9 @@ this exception applies to the named snapshot.
 
 ### Immutable Gold data interface
 
-Prepare immutable Parquet Gold from Silver as the training interface. Include
+The current chocolate training use case prepares immutable Parquet Gold from
+Silver. Gold's broader responsibility is enrichment for the selected downstream
+use case. The following records the existing training interface. Include
 every candidate and remove `model_eligible` and related exclusion fields from
 Gold analytical rows. Retain original parent snapshots, analytical values,
 missingness and source evidence. Every `gold_*` layer admits all candidate rows
@@ -309,9 +379,9 @@ Gold inferred collection and its user experience. Dataset adoption does not
 establish model readiness or automatically update a pinned consumer.
 
 Maintain canonical documents and implementation status when behavior changes,
-following the [documentation policy](../documentation-policy.md). The revised
-data preparation approach remains proposed until its pilot and validation provide
-evidence for changing this operational context.
+following the [documentation policy](../documentation-policy.md). The plan records
+the standard Silver implementation and its pilot evidence separately from these
+historical operational results.
 
 ## UK cat litter collection
 

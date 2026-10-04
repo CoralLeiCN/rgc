@@ -1,5 +1,10 @@
 # Mapping maintenance
 
+The [standard Silver v2 reference](standard-silver.md) owns default `process`,
+four-contract authoring, durable human corrections and generated reports. This
+reference preserves the historical v1 interface and applicable research guidance;
+use `process --legacy` for v1 outputs. Gold owns model policy in the v2 workflow.
+
 Normalize under the existing frozen profile first. `process` writes the ledger
 and evidence batches. Regenerate an isolated packet when useful:
 

@@ -354,6 +354,7 @@ class CategoryProcessingEngineTests:
                                  "--output", str(destination)], cwd=self.base, env=environment,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=False)
         assert (result.returncode) == (0), (result.stderr)
+        destination = Path(json.loads(result.stdout)["output"])
         assert (len(self.rows("products", output=destination))) == (1)
         assert (self.rows("products", output=destination)[0]["category"]) == ("coffee")
         assert not ((copied.parent / "category-research").exists())
@@ -361,14 +362,15 @@ class CategoryProcessingEngineTests:
 
     def test_detached_plugin_resolves_pinned_coffee_from_explicit_offline_cache(self):
         from category_processing.dataset_contracts import cache_directory, load_manifest
+        from category_processing.silver_contracts import resolve_silver_profile
         self.collect([self.product()])
         copied = self.base / "detached-processing-plugin"
         shutil.copytree(PLUGIN_ROOT, copied, ignore=shutil.ignore_patterns("__pycache__", "tests", ".contract-cache"))
         cache = self.base / "portable-contract-cache"
-        reference = load_manifest(copied / "profiles/coffee/dataset-contract.json")
+        reference = load_manifest(copied / "profiles/coffee/silver-dataset-contract.json")
         destination = cache_directory(reference, cache)
         destination.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copytree(self.profile, destination)
+        shutil.copytree(resolve_silver_profile(category="coffee", offline=True), destination)
         output = self.base / "offline-silver"
         environment = dict(os.environ)
         environment.pop("PYTHONPATH", None)
@@ -378,6 +380,7 @@ class CategoryProcessingEngineTests:
                                 cwd=self.base, env=environment, stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE, text=True, check=False)
         assert (result.returncode) == (0), (result.stderr)
+        output = Path(json.loads(result.stdout)["output"])
         assert (self.rows("products", output=output)[0]["category"]) == ("coffee")
         assert not ((copied / ".contract-cache").exists())
         manifest = json.loads((output / "manifest.json").read_text())

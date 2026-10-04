@@ -1,5 +1,42 @@
 # Silver to Gold and model-input preparation
 
+## Standard Silver input
+
+`prepare-gold` consumes a verified Silver v2 snapshot and a separate study design:
+
+```text
+python3 <plugin-root>/cli.py prepare-gold --silver-root <silver> --model-design <design.json> --relationships <relationships.json> --output <gold-preparation>
+```
+
+The design names the Silver schema version, selected predictors and explicit
+current or regular consumer-price target, currency, quantity attribute and base
+quantity. `silver_contexts` selects scope/qualifier/basis per field. Unspecified
+fields require product scope and an unconditional qualifier. Multiple compatible
+contexts remain unresolved until a selection is declared. `comparison_rule:
+chocolate_name_group-1` enables the chocolate name rule downstream in Gold.
+`accepted_silver_methods` selects usable methods and defaults to parsed, inferred
+and reviewed. This study rule affects Gold inputs and leaves Silver facts intact.
+Source time and availability are required by default. Regular-price studies keep
+their confirmed tax basis; current-price studies add no regular-price, promotion
+or confirmed-tax gate. No currency conversion or missing-value imputation occurs.
+
+`category-gold-relationships-1` contains an `assignments` array. Each assignment
+supplies `subject_id`, stable `family_id`/`variant_id`, `name_guard`, `source`,
+`reviewed_by` and `reason`. References must match the subject's Silver evidence.
+Missing relationships become eligibility reasons without merging seller rows.
+
+The immutable preparation stores candidates, selected model inputs, price targets,
+a separate eligibility audit, design, relationships, exact Silver copies and a
+manifest. It fits no model. The repository chocolate builder consumes this
+preparation and writes immutable Parquet candidate and selected-input tables;
+the portable package itself uses the standard library and writes JSONL.
+
+See [standard Silver](standard-silver.md) for the upstream contract. The remainder
+of this reference describes the historical `prepare-model` helper and its fixed
+regular-price study. Those requirements apply to v1 snapshots only.
+
+## Historical helper
+
 This procedure is downstream of category-processing. Its input is a verified,
 reviewed Silver snapshot. It owns the study's model design and preparation of
 training inputs for the Gold/modeling handoff. Do not invoke it to satisfy the

@@ -1,10 +1,47 @@
 # UK chocolate Bronze and Silver workflow
 
+## Standard Silver implementation, 4 October 2026
+
+The default build now implements the revised Bronze-to-Silver contract. It uses
+four field contracts, a durable SQLite source index, stable source and component
+IDs, contextual facts with `.source` and `.method`, explicit states, persistent
+human corrections and schema profiling on every build. It accepts an existing
+103-field chocolate catalog through a deterministic migration and retains exact
+input/effective contract hashes. Model policy and training preparation execute
+in Gold. Historical formats remain available with `--legacy`.
+
+See [standard Silver reference](../../plugins/category-processing/skills/category-processing/references/standard-silver.md) for exact structures, commands,
+report calculations, correction recovery and limitations. Default Silver resolves
+the four published field contracts through the portable chocolate
+`silver-dataset-contract.json`, pinned at
+`337fb7f3984ac648e67edd2cb47802f056193efc`. Historical references retain their
+original bytes. Pilot snapshots remain local.
+The [release summary](analysis/standard-silver-v2-release.md) records the pilot,
+remaining evidence gaps, validation and exact prepared contract hashes.
+
+## Historical format and prior status
+
+The remaining historical descriptions document published v1 contracts and their
+compatibility commands. Use `--legacy` for those Silver commands. The current
+v2 interface and status are defined above.
+
 Bronze is the raw data layer, preserving original collected records and evidence.
-The chocolate workflow preserves Bronze evidence, builds one combined silver
-dataset, and exports immutable Parquet Gold training snapshots. Silver combines
-deduplication within each seller, schema standardization, price normalization,
-evidence review and model eligibility in one build.
+Silver is the structured, standardized layer. It combines deduplication within
+each seller, schema and unit standardization, supported price normalization and
+source evidence review. Gold further enriches Silver for a downstream use case.
+
+The existing chocolate implementation also emits model eligibility and training
+views during its combined Silver build, then exports immutable Parquet Gold for
+the training use case. Those legacy outputs remain documented below; removing
+their model dependency requires a runtime migration.
+
+The revised requirements also preserve IDs through a durable source-to-ID index
+and generate reports of schema popularity, categorical values and numeric ranges with
+every build. See [source identity](spec.md#persistent-source-identity) and
+[profiling requirements](spec.md#silver-profiling-reports). The
+[plan](../lifecycle/plan.md#bronze-to-silver-specification-alignment-4-october-2026)
+owns the proposed SQL index, calculations and structures to validate against
+Bronze. These additions remain pending implementation.
 
 The [schema guide](chocolate-schema.md) owns the chocolate contract with 103 attributes,
 standardization rules, review format and pricing model handoff. The
@@ -36,18 +73,21 @@ and the unchanged latest pointer; follow
 
 The agent gathers product information and source evidence, then the collection
 plugin imports those prepared records. Processing reads the preserved raw
-archive, builds one combined silver snapshot and exports its training views to
-immutable Gold snapshots.
+archive and builds one combined Silver snapshot of structured, standardized
+facts. A downstream workflow enriches Silver into Gold for its selected use case.
 
 ### Stage descriptions
 
 | Stage | Purpose | Data and outputs | Current status |
 | --- | --- | --- | --- |
 | **Bronze (raw)** | Preserve what each source reported so later interpretations can be checked. | Original product records, prices and claims; source text and available images; seller identity and immutable capture history. | Implemented as the preserved raw archive. Bronze is the canonical name of this layer. |
-| **Silver** | Turn preserved evidence into consistent records while retaining uncertainty and provenance. | Listings deduplicated within each seller, typed features, standardized units, normalized prices, source references, quality reports, review queues and eligibility decisions. | Implemented with pandas. Missing and conflicting values remain visible; current chocolate records still need review before training. |
-| **Gold** | Package verified training views in immutable snapshots for model use. | One Parquet training population, copied contracts and price/identity evidence, manifests, hashes and preservation reports. | Export and an experimental OLS trainer are implemented. Gold retains Silver decisions as provenance and exposes all 2,134 candidates without eligibility fields; actual quantities and model identification gates still apply, and no real-data model has fitted. Validated price benchmarks and explanations remain planned. |
+| **Silver** | Structure and standardize preserved evidence while retaining uncertainty and provenance. | Listings deduplicated within each seller, typed attributes, standardized units and vocabularies, supported normalized prices, source references, quality reports and review queues. | The existing pandas build implements these operations and also emits legacy model eligibility and training views. A build's quality report records its coverage and review limits. |
+| **Gold** | Further enrich Silver for a downstream analysis, application or model. | Features, aggregates, interpretations and selection rules defined by the use case, with source provenance. | The chocolate training implementation exports one immutable Parquet population and supports separate inferred exports. Its contracts and validation status are documented in the Gold and model guides; a generic enrichment interface is not implemented. |
 
 ### Processing steps
+
+This diagram shows the intended layer responsibilities. The existing CLI's
+additional training outputs are listed in the output contract below.
 
 ```mermaid
 flowchart TD
@@ -56,37 +96,29 @@ flowchart TD
     Collection --> Raw
 
     subgraph Bronze["Bronze stage: preserved raw data"]
-        Raw["Implemented: preserve original source evidence<br/>Product records, prices, claims, text and available images<br/>Keep seller identity and immutable capture history"]
+        Raw["Preserve original source evidence<br/>Product records, prices, claims, text and available images<br/>Keep seller identity and immutable capture history"]
     end
 
     Raw --> SilverPurpose
 
     subgraph Silver["Silver stage: combined processing build"]
-        SilverPurpose["Implemented: turn raw evidence into consistent records<br/>Use pandas for table operations and preserve source references<br/>Keep missing values, conflicts and review status visible"] --> Verify
-        Verify["Verify capture integrity and seller listing identity"] --> Deduplicate["Deduplicate exact listings within each seller"]
+        SilverPurpose["Structure and standardize source facts<br/>Preserve source references, missing values and conflicts"] --> Verify
+        Verify["Verify capture integrity and reuse persistent source IDs"] --> Deduplicate["Deduplicate exact listings within each seller"]
         Deduplicate --> Standardize["Standardize features, units and vocabulary"]
         Standardize --> Prices["Create price observations and normalize supported prices"]
-        Prices --> Gates["Apply reviews, family mappings and eligibility rules"]
+        Prices --> Review["Review source interpretations and identity relationships"]
+        Review --> Dataset["Structured listings, attributes, observations and source references"]
+        Review --> Reports["Quality and schema coverage<br/>Categorical values and numeric ranges<br/>Unresolved evidence"]
     end
 
-    Contracts["Pinned schema, mappings and model rules"] --> Standardize
-    Contracts --> Gates
-    Reviews["Evidence review and family decisions"] --> Gates
-    Gates --> Dataset["Structured listings, features, prices and source references"]
-    Gates --> Reports["Quality report and review queue"]
+    Contracts["Pinned category schema and mappings"] --> Standardize
+    Reviews["Evidence review and identity decisions"] --> Review
     Reports -.-> Reviews
-    Dataset --> Candidates["Training candidates with exclusion reasons"]
-    Dataset --> Eligible["Reviewed eligible model inputs<br/>Current chocolate data: none"]
-    Candidates --> GoldPurpose
-    Eligible --> GoldPurpose
+    Dataset --> GoldPurpose
 
-    subgraph Gold["Gold stage: immutable training snapshots"]
-        GoldPurpose["Implemented: preserve verified training views in Parquet<br/>Include every candidate in one table<br/>Retain analytical values, contracts and evidence provenance"] --> Snapshot["Immutable Gold snapshot with manifests and integrity reports"]
+    subgraph Gold["Gold stage: downstream enrichment"]
+        GoldPurpose["Enrich Silver for the selected use case<br/>Comparison groups, target policy, features and eligibility<br/>Model-input preparation where required"] --> Snapshot["Use case output with provenance and quality checks"]
     end
-
-    Snapshot --> Trainer["Implemented experimental OLS trainer<br/>Family holdout, frozen encoder and bootstrap diagnostics"]
-    Trainer --> Readiness["Current chocolate: readiness report<br/>Missing inputs and no real fitted model"]
-    Trainer -.-> Future["Planned validated pricing benchmarks<br/>LightGBM, SHAP and AI explanations"]
 ```
 
 Listings from different sellers remain distinct, and derived values retain
@@ -95,13 +127,14 @@ conflicting, unmapped and excluded evidence. Applying updated reviews or
 contracts requires a new build while preserving the raw archive and earlier
 snapshots.
 
-Gold exports every candidate to one typed training table without eligibility
-or exclusion fields. Source reviews remain provenance. Trainers consider every
-Gold row and report actual missing or invalid inputs as readiness blockers.
+The current chocolate Gold training export includes every candidate in one typed
+table without eligibility or exclusion fields. Source reviews remain provenance.
+Trainers consider every Gold row and report actual missing or invalid inputs as
+readiness blockers.
 The [Gold guide](chocolate-gold.md) owns export and training commands. The
 [portable processing guide](category-processing.md) covers its separate model
-preparation interface with family splits and frozen encoders. The dashed arrow
-to future pricing outputs marks the remaining validation and explanation work.
+preparation interface with family splits and frozen encoders. These are specific
+downstream interfaces; Silver's intended responsibility remains standardization.
 
 ## Layer responsibilities
 
@@ -119,7 +152,7 @@ identity when Silver is rebuilt.
 | Meaning and units | Retain original wording, values, units, claims and price representations, including unfamiliar information. | Apply versioned types, vocabularies, units, scopes and qualifiers; retain unknowns, conflicts, evidence and unmapped information. |
 | Price context | Preserve reported prices, offers, availability and timestamps. | Separate observations, consolidate identical repeated evidence, normalize supported prices per edible mass and retain historical context. |
 | Review | Preserve the evidence used to make future decisions. | Apply identity/scope/attribute/price decisions supported by evidence and report unresolved information. |
-| Training boundary | Collected records require review before model use. | Emit pricing candidates separately from reviewed eligible inputs, with explicit exclusion reasons and readiness limits. |
+| Downstream boundary | Preserve evidence for later interpretation. | Supply structured, standardized facts with quality metadata; Gold owns further enrichment for a use case. The current builder also emits legacy pricing candidates and eligible inputs. |
 | Reproducibility | Keep indexed captures and immutable histories available for integrity checks. | Verify input snapshots and record content versions, contracts, implementation/review provenance and output hashes. |
 
 Raw collection is independent of a complete analytical taxonomy. Silver
@@ -190,10 +223,13 @@ null when the other identifiers are sufficient; missing source, hostname or
 product identity prevents a merge. Merge only on those identifiers, regardless
 of product names, brands, GTINs, weights or recipes.
 
-The canonical listing ID is the first member raw listing folder ID in sorted
+In the existing runtime, the canonical listing ID is the first member raw listing folder ID in sorted
 order. `source_listing_ids` retains every member; `listing-aliases.jsonl` records
 each raw listing's canonical ID. Captured `raw_record.product_id` values are
-preserved with their original IDs.
+preserved with their original IDs. The revised source-index requirement preserves
+a separate persistent identity when this canonical alias changes; the portable
+engine already supplies a stable `seller_uid`. The planned migration records
+legacy aliases and preserves immutable snapshots.
 
 A raw listing folder must retain the same exact identity of the seller listing and
 `source_key` across its captures. A change is an invalid archive record: exclude
@@ -213,6 +249,15 @@ product brand. Listings with an unknown role and their captures remain in silver
 unknown partition; the initial model gate excludes them.
 
 ## Output contract and evidence resolution
+
+The revised Silver design uses standardized columns such as `net_weight_g` and
+source references named `net_weight_g.source`. Append `.source` to the complete
+standardized column name. The reference resolves the raw value in a Bronze capture;
+conversion rules live in versioned schema documentation. Follow the
+[naming specification](spec.md#silver-field-naming-and-source-references) for the
+resolution requirements and the [design plan](../lifecycle/plan.md#structures-from-inspected-data)
+for candidate structures to validate on the actual data. Its contract/runtime migration remains pending.
+The following table describes the existing executable output contract.
 
 Read JSONL files as one JSON object per line.
 
@@ -280,6 +325,15 @@ tree at their recorded immutable revisions.
 
 ## Review, training and interpretation boundaries
 
+The intended review workflow accepts parsed and inferred results, prioritizes
+human reviewed values and preserves user corrections across reprocessing.
+Repeated subjects have stable IDs; missing values and parsing errors remain
+distinct. The [revised data specification](spec.md#persistent-corrections-and-replay)
+owns the correction store and replay requirements, and the
+[app specification](../app/spec.md#persistent-review-of-standardized-data) owns
+the requested review interface. This workflow remains pending implementation.
+The following describes the current review-file interface and historical gates.
+
 Use `--reviews <reviews.json>` with the
 [`chocolate-schema-reviews-1` format](chocolate-schema.md#reviews-supported-by-evidence).
 The schema guide defines map keys, decision fields, reviewer/reason/evidence
@@ -321,8 +375,10 @@ experimental family weights/splits, fitting-only tuning, retailer calibration
 and native TreeSHAP, with fixture checks. It requires an explicit working
 configuration and reports absent shared fields; its historical regular-price
 attempt had zero eligible rows. The refreshed current-price Gold requires
-explicit migration in this trainer. Silver remains responsible for evidence, target and family decisions,
-and its canonical 11-predictor contract has not been migrated to that policy.
+explicit migration in this trainer. The legacy Silver build records evidence,
+target and family decisions under its canonical 11-predictor contract. The
+revised boundary assigns target and predictor decisions to Gold; that runtime
+migration remains pending.
 
 ## Maintain mappings
 
@@ -391,7 +447,7 @@ by the [documentation policy](../documentation-policy.md). Run
 
 ## Gold and reviewed family identities
 
-Raw → combined Silver → immutable Parquet [Gold](chocolate-gold.md) is the chocolate training pipeline. Silver owns evidence-backed transformations and eligibility. Gold projects every candidate into one population without selection fields. A user-directed bulk review creates a new snapshot with administrative manifest provenance; it does not establish individual evidence review or fill missing targets.
+Raw → combined Silver → immutable Parquet [Gold](chocolate-gold.md) is the chocolate training pipeline. Silver owns evidence-supported standardization and shared relationships. Its existing build also records legacy eligibility decisions; the revised workflow assigns downstream eligibility to Gold. The current Gold exporter projects every candidate into one population without selection fields. A user-directed bulk review creates a new snapshot with administrative manifest provenance; it does not establish individual evidence review or fill missing targets.
 
 An optional inferred export packages curated decisions and provenance beside a
 historical-format Gold snapshot. It reads an explicit Silver snapshot and review
@@ -420,7 +476,7 @@ See [Gold population](chocolate-gold.md#make-every-gold-candidate-model-eligible
 
 ## Independent LightGBM experiment
 
-The [LightGBM with brand trainer](chocolate-lightgbm-with-brand.md) consumes immutable Gold derived from Silver and records a separate frozen working experiment. Silver continues to own evidence, seller identity, quantities, regular-price eligibility and physical/family decisions. The session rebuild produced `silver-f651a7faea94ed5a7f003e64` with 2,134 candidates and zero eligible observations; the trainer preserves this readiness failure. New shared population/feature fields require an aligned contract migration and evidence-backed Silver rebuild.
+The [LightGBM with brand trainer](chocolate-lightgbm-with-brand.md) consumes immutable Gold derived from Silver and records a separate frozen working experiment. Its source Silver build records evidence, seller identity, quantities, historical regular-price eligibility and physical/family decisions. The session rebuild produced `silver-f651a7faea94ed5a7f003e64` with 2,134 candidates and zero eligible observations; the trainer preserves this readiness failure. New shared population/feature fields require an aligned contract migration and evidence-backed Silver rebuild.
 
 The user eligibility snapshot derived from source Silver
 `silver-485af2f8e7fae127cd73578b` is published as immutable Gold
@@ -442,7 +498,7 @@ mode remains available; no real baseline fit or upload is claimed.
 
 ## Handoff to the independent hedonic estimator
 
-Silver continues to own evidence reviews, identities and eligibility for `hedonic_without_brand`. The [local trainer](analysis/hedonic-without-brand-implementation.md) requires explicit supermarket single-pack cohort, recipe class and pack count in its analytical handoff, in addition to eligible regular price and product identity. Existing published Silver exports do not supply that handoff. The historical regular-price rebuild in this session retained 3,743 listings, 4,347 captures, 2,134 candidates and zero eligible rows. Historical snapshots retain those source exclusions as provenance; the current Gold loader considers every candidate and validates actual study inputs; training and bulk Gold review cannot supply missing facts.
+The legacy Silver build records evidence reviews, identities and eligibility used by the original `hedonic_without_brand` handoff. The [local trainer](analysis/hedonic-without-brand-implementation.md) requires explicit supermarket single-pack cohort, recipe class and pack count in its analytical handoff, in addition to eligible regular price and product identity. Existing published Silver exports do not supply that handoff. The historical regular-price rebuild in this session retained 3,743 listings, 4,347 captures, 2,134 candidates and zero eligible rows. Historical snapshots retain those source exclusions as provenance; the current Gold loader considers every candidate and validates actual study inputs; training and bulk Gold review cannot supply missing facts.
 
 
 ## Gold inferred web collection
@@ -456,14 +512,14 @@ web adapter validates them with the export's copied contracts and preserves
 per-field review states. The immutable nested training files retain 2,134 candidates, zero
 source-eligible inputs and the historical `regular-consumer-price-1` basis. The
 current Gold loader exposes all 2,134 candidates without selection fields; the
-current-price study applies its own target policy. Silver continues to own source
-processing, interpretation, review and eligibility. The app reference pins the
+current-price study applies its own target policy. The source Silver snapshot
+preserves processing, interpretations, reviews and legacy eligibility decisions. The app reference pins the
 manifest and revision; [collection integration](../collection-integration.md)
 defines preparation and offline rebuild commands.
 
 ## Matched retailer handoff
 
-Silver owns evidence reviews and its source eligibility decisions. Gold exposes
+Silver supplies evidence reviews and preserves legacy eligibility decisions. Gold exposes
 every candidate as a training population without selection fields. The
 [matched retailer diagnostic](chocolate-matched-retailer.md) applies actual
 exact-variant and comparable price-context requirements within 48 hours. It

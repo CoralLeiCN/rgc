@@ -11,8 +11,10 @@ and its three core features. Each feature directory pairs its intent and spec:
 
 The data preparation reassessment of 4 October 2026 belongs to the data feature.
 It starts from source evidence and analytical questions, independently of the
-existing implementation. A reviewed pilot, data dictionary and quality report
-are proposed to validate field meanings, uncertainty, provenance and ordinary
+existing implementation. Silver is the structured, standardized layer; Gold
+further enriches Silver for a downstream use case. A reviewed pilot, data
+dictionary and quality report are proposed to validate field meanings,
+uncertainty, provenance and ordinary
 analytical use. Model planning is outside that data reassessment; model goals
 remain in the model intention. The proposed data approach requires validation.
 

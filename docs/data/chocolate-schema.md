@@ -1,10 +1,43 @@
 # Chocolate schema, reviews and pricing handoff in silver
 
+## Standard Silver implementation, 4 October 2026
+
+The default build now implements the revised Bronze-to-Silver contract. It uses
+four field contracts, a durable SQLite source index, stable source and component
+IDs, contextual facts with `.source` and `.method`, explicit states, persistent
+human corrections and schema profiling on every build. It accepts an existing
+103-field chocolate catalog through a deterministic migration and retains exact
+input/effective contract hashes. Model policy and training preparation execute
+in Gold. Historical formats remain available with `--legacy`.
+
+See [standard Silver reference](../../plugins/category-processing/skills/category-processing/references/standard-silver.md) for exact structures, commands,
+report calculations, correction recovery and limitations. The shared field
+contracts and separate Gold design are published at
+`337fb7f3984ac648e67edd2cb47802f056193efc`. The default Silver reference is
+`plugins/category-processing/profiles/chocolate/silver-dataset-contract.json`;
+Gold uses `schemas/chocolate/standard-gold/dataset-contract.json`. Historical
+references retain their original bytes. The
+[release record](analysis/standard-silver-v2-release.md) lists versions and hashes.
+
+## Historical format and prior status
+
+The remaining historical descriptions document published v1 contracts and their
+compatibility commands. Use `--legacy` for those Silver commands. The current
+v2 interface and status are defined above.
+
 Bronze product indexes may be grouped by source under
 `<category>/<market>/products/<source_key>/<product_id>/product.json`.
 Legacy flat indexes remain readable. Source grouping changes discovery paths;
 field meanings and the category's analytical schema stay shared across sources.
 
+The revised Silver requirements use a persistent source-to-ID index and generate
+schema popularity, distinct categorical values and numeric ranges under the
+[data specification](spec.md#silver-profiling-reports). The
+[plan](../lifecycle/plan.md#bronze-to-silver-specification-alignment-4-october-2026)
+owns the proposed SQL approach, profiling calculations and concrete structures
+to select from inspected Bronze data. Comparison groups, target policies,
+eligibility and model-input preparation belong to Gold. The contracts described
+below retain their existing model coupling until the planned migration.
 
 The [fresh Bronze reconstruction and comparison](schema-proposals/chocolate-bronze-reconstruction-2026-10-04.md)
 records a separate 75-field research proposal created from raw evidence and then
@@ -154,8 +187,31 @@ their original results. The verified corpus rebuild contains 24 blonde and 18 mi
 
 ## How standardization works
 
-Each attribute has `value`, `status`, `unit`, `qualifier`, `scope`, `evidence`,
-`method`, and `review_status`. Evidence contains a `capture_id` and JSON
+The revised Silver naming requirement uses the standardized column itself for
+the result, such as `net_weight_g`, and appends `.source` for its Bronze
+reference, such as `net_weight_g.source`. The reference locates the original raw
+value. Canonical units and conversion rules belong in the
+versioned schema documentation; the dataset records its schema version. No
+conversion formula or explanation is required in each data field. See the
+[naming specification](spec.md#silver-field-naming-and-source-references).
+This requirement awaits a versioned contract and runtime migration.
+
+The revised contract also reserves `null` for missing information and requires
+explicit states for parse/inference errors, unresolved values, conflicts and
+fields that do not apply. `<column>.method` distinguishes `parsed`, `inferred` and human
+`reviewed` results with priority `reviewed > parsed > inferred` in the same
+context. Repeated subjects use objects with stable IDs. The
+[revised state/method specification](spec.md#missing-values-errors-and-result-methods)
+and [correction contract](spec.md#persistent-corrections-and-replay) define these
+requirements, including persistent user decisions across reruns. They remain
+pending implementation; historical agent review labels retain their original
+meaning and do not establish human review under the new convention.
+The [design plan](../lifecycle/plan.md#structures-from-inspected-data) retains
+tagged objects as a candidate encoding and owns the concrete structures to
+validate against source evidence.
+
+In the existing published contract, each attribute has `value`, `status`, `unit`,
+`qualifier`, `scope`, `evidence`, `method`, and `review_status`. Evidence contains a `capture_id` and JSON
 `pointer` into the retained capture. Follow the
 [silver evidence resolver](chocolate-silver.md#output-contract-and-evidence-resolution)
 for original capture objects, raw artifact/history paths and verification limits.
@@ -633,8 +689,8 @@ web adapter validates them with the export's copied contracts and preserves
 per-field review states. The immutable nested training files retain 2,134 candidates, zero
 source-eligible inputs and the historical `regular-consumer-price-1` basis. The
 current Gold loader exposes all 2,134 candidates without selection fields; the
-current-price study applies its own target policy. Silver continues to own source
-processing, interpretation, review and eligibility. The app reference pins the
+current-price study applies its own target policy. The source Silver snapshot
+preserves processing, interpretations, reviews and legacy eligibility decisions. The app reference pins the
 manifest and revision; [collection integration](../collection-integration.md)
 defines preparation and offline rebuild commands.
 

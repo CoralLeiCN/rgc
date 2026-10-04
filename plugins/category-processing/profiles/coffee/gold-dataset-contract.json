@@ -1,0 +1,19 @@
+{
+  "attribute_count": 12,
+  "category": "coffee",
+  "contract_set": "category-processing/coffee/gold-silver-2",
+  "files": {
+    "model-design.json": {
+      "path": "contracts/category-processing/coffee/gold-silver-2/model-design.json",
+      "sha256": "fd00c245e1cd488779fa94822ec20e5701b1cde7a629cb9573e2c0f877657eed",
+      "size_bytes": 3996
+    }
+  },
+  "format_version": "rgc-dataset-contract-reference-1",
+  "mapping_version": "coffee-source-mappings-1.silver-2",
+  "market": "uk",
+  "model_design_version": "coffee-pricing-design-2.silver-2",
+  "repo_id": "CoralLeiCN/rgc-collections",
+  "revision": "337fb7f3984ac648e67edd2cb47802f056193efc",
+  "schema_version": "coffee-schema-1.silver-2"
+}

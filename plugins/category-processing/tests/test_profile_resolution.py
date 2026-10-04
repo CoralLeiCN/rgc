@@ -54,7 +54,7 @@ class ProfileResolutionTests:
                 patch("category_processing.dataset_contracts.resolve_contracts") as download:
             assert (resolve_profile(self.profile, cache_root=self.cache)) == (self.profile)
         load.assert_called_once_with(reference)
-        verify.assert_called_once_with(manifest, self.profile)
+        verify.assert_called_once_with(manifest, self.profile, required_files=set(manifest["files"]))
         download.assert_not_called()
 
     def test_corrupt_or_partial_materialized_profile_never_falls_back_to_download(self):
@@ -92,7 +92,7 @@ class ProfileResolutionTests:
         documents.append((mismatch, "category and contract set disagree"))
         partial = self.manifest()
         del partial["files"]["pipeline.json"]
-        documents.append((partial, "requires all five contracts"))
+        documents.append((partial, "missing required contracts"))
         for manifest, error in documents:
             self.reference(manifest)
             with patch("category_processing.dataset_contracts.resolve_contracts") as download:

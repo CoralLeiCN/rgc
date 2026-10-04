@@ -15,6 +15,9 @@ from pathlib import Path
 from tempfile import NamedTemporaryFile
 
 import pandas as pd
+from dataset_contracts import (
+    PLUGIN_ROOT,  # noqa: F401 -- Initializes the portable import path.
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 STATES = ["known", "unknown", "conflict", "not_applicable"]
@@ -170,14 +173,34 @@ def analyze_schema(products, profile, design):
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--silver-root", required=True, type=Path)
-    parser.add_argument("--dataset-revision", required=True, help="Immutable 40-character HF commit")
+    parser.add_argument("--dataset-revision", help="Immutable 40-character HF commit; required for historical Silver reports")
     parser.add_argument("--analysis-date", default=date.today().isoformat())
     parser.add_argument("--portable-profile", type=Path)
     parser.add_argument("--portable-manifest", type=Path,
                         default=ROOT / "plugins/category-processing/profiles/chocolate/dataset-contract.json")
     parser.add_argument("--output", required=True, type=Path)
     args = parser.parse_args(argv)
-    if not re.fullmatch(r"[0-9a-f]{40}", args.dataset_revision):
+    manifest_path = args.silver_root / "manifest.json"
+    if ((args.silver_root / "latest.json").exists() and not manifest_path.exists()
+            or manifest_path.exists() and json.loads(manifest_path.read_bytes()).get("manifest_format_version") == "category-silver-manifest-2"):
+        from category_processing.archive import json_bytes, read_json
+        from category_processing.silver_profile import build_profile
+        from category_processing.silver_snapshot import read_rows, verified_snapshot
+        root, manifest = verified_snapshot(args.silver_root)
+        if args.output.resolve().is_relative_to(args.silver_root.resolve()):
+            parser.error("The output must be outside the Silver input directory")
+        stored = read_json(root / "schema-profile.json")
+        report = build_profile(read_rows(root / "facts.jsonl"), read_rows(root / "subjects.jsonl"),
+                               read_json(root / "profile.json"), stored["provenance"], "pandas")
+        args.output.parent.mkdir(parents=True, exist_ok=True)
+        with NamedTemporaryFile(dir=args.output.parent, delete=False) as stream:
+            temporary = Path(stream.name)
+            stream.write(json_bytes(report))
+        temporary.replace(args.output)
+        print(json.dumps({"output": str(args.output), "silver_dataset_version": manifest["dataset_version"],
+                          "subject_counts": report["subject_counts"]}))
+        return 0
+    if not args.dataset_revision or not re.fullmatch(r"[0-9a-f]{40}", args.dataset_revision):
         parser.error("--dataset-revision must be an immutable 40-character commit")
     date.fromisoformat(args.analysis_date)
     inputs = [args.silver_root / name for name in ("products.jsonl", "profile.json", "model-design.json", "manifest.json")]

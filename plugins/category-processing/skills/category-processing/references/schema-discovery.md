@@ -1,5 +1,10 @@
 # Schema discovery and extension proposals
 
+The [standard Silver v2 reference](standard-silver.md) owns default `process`,
+four-contract authoring, durable human corrections and generated reports. This
+reference preserves the historical v1 interface and applicable research guidance;
+use `process --legacy` for v1 outputs. Gold owns model policy in the v2 workflow.
+
 Processing preserves raw captures and records source fields outside configured
 extraction coverage in `discovered-fields.jsonl`. The companion generated
 `schema-extension-review.md` groups those candidates into evidence-backed

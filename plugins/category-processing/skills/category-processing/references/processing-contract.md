@@ -1,5 +1,10 @@
 # Processing contract
 
+The [standard Silver v2 reference](standard-silver.md) owns default `process`,
+four-contract authoring, durable human corrections and generated reports. This
+reference preserves the historical v1 interface and applicable research guidance;
+use `process --legacy` for v1 outputs. Gold owns model policy in the v2 workflow.
+
 Use the entire plugin directory with Python 3.9+. The core uses the standard
 library and local archives. Packaged contracts resolve pinned Hugging Face
 references, downloading missing bytes and verifying SHA-256 hashes and byte

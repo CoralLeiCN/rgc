@@ -28,6 +28,12 @@ REQUIRED = (
 )
 
 PROCESSING_PROFILES = ("chocolate", "coffee")
+STANDARD_REFERENCES = (
+    ("plugins/category-processing/profiles/chocolate/silver-dataset-contract.json", "category-processing/chocolate/silver-2", "chocolate", "silver"),
+    ("plugins/category-processing/profiles/coffee/silver-dataset-contract.json", "category-processing/coffee/silver-2", "coffee", "silver"),
+    ("plugins/category-processing/profiles/coffee/gold-dataset-contract.json", "category-processing/coffee/gold-silver-2", "coffee", "gold"),
+    ("schemas/chocolate/standard-gold/dataset-contract.json", "chocolate-current-price/silver-2", "chocolate", "gold"),
+)
 
 
 def required_updates(changed):
@@ -167,6 +173,55 @@ def check_dataset_reference(root, name, contract_set, category, cache_root, guid
                 errors.append("Cached processing recipe references an undefined attribute: " + category + "/" + str(attribute))
 
 
+def check_standard_reference(root, entry, errors):
+    """Verify separate Silver/Gold pins offline, including every cached payload."""
+    from category_processing.silver_contracts import (
+        FILES,
+        FORMAT,
+        load_silver_contracts,
+    )
+
+    name, contract_set, category, layer = entry
+    guide_name = "docs/data/category-processing.md" if name.startswith("plugins/") else "docs/data/chocolate-gold.md"
+    cache_root = root / ("plugins/category-processing/.contract-cache" if name.startswith("plugins/") else "data/contract-cache")
+    try:
+        manifest = load_manifest(root / name)
+        if (manifest["repo_id"] != "CoralLeiCN/rgc-collections" or manifest["contract_set"] != contract_set
+                or manifest["category"] != category or manifest["market"] != "uk"
+                or set(manifest["files"]) != (set(FILES) if layer == "silver" else {"model-design.json"})):
+            raise ValueError("Standard contract metadata or file set mismatch.")
+        keys = ("schema_version", "mapping_version", "pipeline_version" if layer == "silver" else "model_design_version")
+        guide = (root / guide_name).read_text(encoding="utf-8")
+        for key in keys:
+            if not manifest.get(key) or manifest[key] not in guide:
+                raise ValueError("Standard contract guide does not document " + key + ": " + guide_name)
+        if layer == "gold":
+            silver = load_manifest(root / "plugins/category-processing/profiles" / category / "silver-dataset-contract.json")
+            if any(manifest[key] != silver[key] for key in ("schema_version", "mapping_version", "attribute_count")):
+                raise ValueError("Standard Gold and Silver references disagree.")
+        directory = cache_directory(manifest, cache_root)
+        if not directory.exists() and not directory.is_symlink():
+            return
+        verify_contract_directory(manifest, directory, require_all=False)
+        if not all((directory / filename).is_file() for filename in manifest["files"]):
+            return
+        if layer == "gold":
+            design = json.loads((directory / "model-design.json").read_bytes())
+            if any(design.get(key) != manifest[key] for key in ("schema_version", "model_design_version")):
+                raise ValueError("Cached Gold design version differs from its reference.")
+        else:
+            documents, _ = load_silver_contracts(directory)
+            profile = documents["profile.json"]
+            if (profile.get("record_format_version") != FORMAT or profile["schema_version"] != manifest["schema_version"]
+                    or profile["attribute_count"] != manifest["attribute_count"]
+                    or profile["category"] != category or profile["market"] != manifest["market"]
+                    or documents["source-mappings.json"]["mapping_version"] != manifest["mapping_version"]
+                    or documents["pipeline.json"]["pipeline_version"] != manifest["pipeline_version"]):
+                raise ValueError("Cached Silver contracts differ from their reference.")
+    except (OSError, ValueError, KeyError, TypeError) as error:
+        errors.append("Invalid standard dataset reference " + name + ": " + str(error))
+
+
 def check(root=ROOT, changed=None):
     root = Path(root)
     errors = []
@@ -202,6 +257,8 @@ def check(root=ROOT, changed=None):
             "category-processing/" + category, category,
             root / "plugins/category-processing/.contract-cache", "docs/data/category-processing.md", errors,
         )
+    for entry in STANDARD_REFERENCES:
+        check_standard_reference(root, entry, errors)
     if changed is not None:
         for name in sorted(required_updates(set(changed)) - set(changed)):
             errors.append("Affected implementation needs an accompanying documentation update: " + name)

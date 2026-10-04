@@ -23,14 +23,29 @@ def main(argv=None):
                         help="Reusable chocolate-family-mappings-1 identity decisions; defaults to the repository registry.")
     parser.add_argument("--schema-root", type=Path, help="Custom directory containing all four chocolate contract files.")
     parser.add_argument("--offline", action="store_true", help="Require the verified local contract cache; do not fetch contracts.")
+    parser.add_argument("--legacy", action="store_true", help="Reproduce historical chocolate Silver with its fixed study contract.")
+    parser.add_argument("--profile", type=Path, help="Four Silver field contracts; the packaged chocolate profile is the default.")
+    parser.add_argument("--state-db", type=Path)
+    parser.add_argument("--inferences", type=Path)
     args = parser.parse_args(argv)
     try:
-        report = build_silver_dataset(args.archive_root, args.output, reviews=args.reviews,
-                                     schema_root=args.schema_root, offline=args.offline,
-                                     family_mappings=args.family_mappings, table_backend="pandas")
+        if args.legacy:
+            report = build_silver_dataset(args.archive_root, args.output, reviews=args.reviews,
+                                         schema_root=args.schema_root, offline=args.offline,
+                                         family_mappings=args.family_mappings, table_backend="pandas")
+        else:
+            if args.reviews or args.family_mappings or args.schema_root:
+                raise ValueError("Historical review/model contracts require --legacy. Use --profile for Silver fields, --inferences for agent results, and durable review for human decisions.")
+            from category_processing.silver_contracts import resolve_silver_profile
+            from category_processing.standard_silver import build_standard_silver
+            profile = resolve_silver_profile(args.profile, category=None if args.profile else "chocolate", offline=args.offline)
+            report = build_standard_silver(args.archive_root, args.output, profile, state_db=args.state_db,
+                                           inferences=args.inferences, backend="pandas")
         print(json.dumps({"dataset_version": report["dataset_version"], "status": report["status"],
                           "counts": report["counts"], "release_ready": report["release_ready"],
-                          "report_path": str(args.output.resolve() / "quality-report.json")}))
+                          "output": report.get("output", str(args.output.resolve())),
+                          "state_db": report.get("state_db"),
+                          "report_path": str(Path(report.get("output", args.output)).resolve() / "quality-report.json")}))
         return 0 if report["status"] == "complete_snapshot" else 1
     except (ValueError, OSError, RuntimeError) as error:
         print("Silver build could not complete: " + str(error), file=sys.stderr)

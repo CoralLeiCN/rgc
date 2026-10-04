@@ -1,5 +1,10 @@
 # Processing profile validation and release
 
+The [standard Silver v2 reference](standard-silver.md) owns default `process`,
+four-contract authoring, durable human corrections and generated reports. This
+reference preserves the historical v1 interface and applicable research guidance;
+use `process --legacy` for v1 outputs. Gold owns model policy in the v2 workflow.
+
 ## Supported contracts
 
 The portable category-processing runtime requires Python 3.9 or later and five

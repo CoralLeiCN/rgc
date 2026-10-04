@@ -174,3 +174,21 @@ deployment and communication require authorization within their own task scope.
 Changes to Gold build/review/load interfaces require `docs/data/spec.md`, `docs/data/chocolate-schema.md`, `docs/data/chocolate-silver.md`, `docs/data/chocolate-gold.md`, `README` and `docs/lifecycle/plan.md`. Experimental regression/training changes require the model specification, schema/Silver guides and lifecycle status; family mapping changes require the data specification and those guides. Trainer handoff also updates Gold. Canonical contract bodies stay dataset-owned; prepare local versioned releases and update immutable references after approved verified publication. Current chocolate training uses the explicit `current-consumer-price-1` displayed-price proxy and records its assumptions in `PROJECT.md` limitations and run artifacts. Historical regular-price studies and the standalone portable profiles retain their selected fixed policy; preserve their immutable contracts. New Gold target preparation does not rewrite source evidence.
 
 Locked development dependencies include NumPy 2.2.6 and PyArrow 21.0.0 so pytest exercises numerical and Parquet behavior instead of skipping it. Preserve administrative Gold review provenance separately from evidence-backed Silver eligibility. The schema-release review policy in [agent-led maintenance](decisions/agent-led-schema-maintenance.md) remains authoritative before any Hugging Face commit.
+
+## Standard Silver contract maintenance
+
+The default v2 Silver engine owns four field contracts: profile, mappings,
+validator and recipe. Gold owns a separately versioned model design and study
+relationships. Review changes against both interfaces where affected. Historical
+five-contract manifests stay immutable. During local migration, generated
+snapshots retain source hashes, effective contract copies and implementation
+hashes. Keep future publication candidates in ignored working storage until
+release review. Synchronize new immutable references only after authorized
+publication. The standalone standard Silver reference, local review interface,
+Gold guide and lifecycle plan must track this runtime. Agent instructions assign
+source standardization and corrections to Silver, and study policy to Gold.
+
+Published standard contracts use separate Silver and Gold reference manifests.
+The documentation checker validates their versions and cross-layer schema metadata
+offline, verifies each cached file present, and checks complete cached Silver
+catalogs against their validators and recipes. Historical manifests remain checked.

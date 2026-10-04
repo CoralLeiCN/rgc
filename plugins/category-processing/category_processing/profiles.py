@@ -17,7 +17,8 @@ PLUGIN_ROOT = Path(__file__).resolve().parents[1]
 PROFILE_REFERENCE = "dataset-contract.json"
 
 
-def resolve_profile(profile_root=None, *, category=None, cache_root=None, offline=False):
+def resolve_profile(profile_root=None, *, category=None, cache_root=None, offline=False, required_files=None,
+                    reference_name=PROFILE_REFERENCE):
     """Materialize a pinned packaged profile or retain an explicit custom directory.
 
     A dataset reference resolves to verified pinned bytes. Materialized profile
@@ -36,7 +37,9 @@ def resolve_profile(profile_root=None, *, category=None, cache_root=None, offlin
         root = requested_root.resolve()
         if requested_root.is_symlink() and (root / PROFILE_REFERENCE).is_file():
             raise ValueError("Pinned category profile directory cannot be a symlink.")
-    reference = root / PROFILE_REFERENCE
+    reference = root / reference_name
+    if not reference.is_file() and reference_name != PROFILE_REFERENCE:
+        reference = root / PROFILE_REFERENCE
     if reference.is_file():
         from .dataset_contracts import (
             load_manifest,
@@ -44,17 +47,19 @@ def resolve_profile(profile_root=None, *, category=None, cache_root=None, offlin
             verify_contract_directory,
         )
         manifest = load_manifest(reference)
-        if set(manifest["files"]) != set(CONTRACT_FILES):
-            raise ValueError("A category processing profile reference requires all five contracts.")
-        if manifest["contract_set"] != "category-processing/" + manifest["category"]:
+        required = set(CONTRACT_FILES) if required_files is None else set(required_files)
+        if not required <= set(manifest["files"]):
+            raise ValueError("A category processing profile reference is missing required contracts.")
+        expected_set = "category-processing/" + manifest["category"]
+        if manifest["contract_set"] not in (expected_set, expected_set + "/silver-2"):
             raise ValueError("Category processing reference category and contract set disagree.")
         if category is not None and manifest["category"] != category:
             raise ValueError("Packaged category differs from its dataset reference: " + category)
         if any((root / name).exists() for name in CONTRACT_FILES):
-            verify_contract_directory(manifest, root)
+            verify_contract_directory(manifest, root, required_files=required)
             return root
         cache = PLUGIN_ROOT / ".contract-cache" if cache_root is None else Path(cache_root).expanduser().absolute()
-        return resolve_contracts(reference, cache, offline=offline)
+        return resolve_contracts(reference, cache, offline=offline, required_files=required)
     return root
 
 

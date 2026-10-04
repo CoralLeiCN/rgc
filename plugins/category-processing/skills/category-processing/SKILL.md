@@ -64,15 +64,19 @@ observation rules in `pipeline.json`. Serialize its field definitions into
 Research candidates require implementation and evidence checks. Preserve the
 schema's meanings and report unsupported runtime constraints.
 
-Read [profile-definition.md](references/profile-definition.md) for the current
-assembly format and [schema-validation.md](references/schema-validation.md) for
-executable checks. The existing generator and loader still require a legacy
-`model-design.json`, and Silver builds still write legacy training views. Reuse
-an already authorized versioned profile when available. Do not invent a target
-or predictors to satisfy this dependency or call `prepare-model` in this stage.
-If that dependency prevents a new schema from being executed, report the runtime
-limitation and the completed schema/configuration work; the workflow instructions
-do not implement a model-independent loader.
+Read [standard-silver.md](references/standard-silver.md) for the default runtime,
+field authoring, source IDs, reports and durable human review. Use
+`init-silver-profile` to assemble four field contracts without a model design.
+`process` generates immutable Silver v2 snapshots and returns their output path;
+`latest.json` selects the latest snapshot. Keep its SQLite source/correction
+index outside generated outputs. Generated schema reports and data dictionaries
+are part of every build. Agent assertions use `--inferences`; only explicit human
+decisions use the persistent review interface and `reviewed` method.
+
+The [legacy definition](references/profile-definition.md) and
+[legacy schema validation](references/schema-validation.md) describe `init-profile`
+and `process --legacy` for historical five-contract outputs. Do not invent a
+target or predictors to finish Bronze-to-Silver work.
 
 ## Process and maintain the profile
 
@@ -89,7 +93,8 @@ selections of several chocolate types as `mixed`. Follow
 [profile-contract.md](references/profile-contract.md) for wording and scope
 limits; extracted names remain evidence for an unreviewed interpretation.
 
-Inspect the report, processing ledger, mapping-review batches and summary.
+Inspect the schema profile, data dictionary, assertions and review queue. The
+legacy engine additionally produces a processing ledger and mapping-review batches.
 For fields beyond configured extraction, inspect `discovered-fields.jsonl` and
 `schema-extension-review.md`; read
 [schema-discovery.md](references/schema-discovery.md). Resolve their source
@@ -109,7 +114,7 @@ scope. The standing maintenance policy permits the calling agent to decide
 accept, reject or defer, record the evidence and rationale, and apply supported
 local schema, mapping or parser changes without user review, confirmation or
 approval. Prepare the evidence-backed diff, tests and impact comparison. Assess
-all five contracts, coordinate their versions, run focused checks and compare
+the four Silver contracts and any affected downstream Gold design, coordinate their versions, run focused checks and compare
 impacts before accepting a change. Keep the mapping frozen during a run and
 reprocess affected captures under the accepted version. Do not dispatch other
 chats or configure scheduling.

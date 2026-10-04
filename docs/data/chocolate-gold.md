@@ -1,7 +1,55 @@
 # UK chocolate gold training data
 
-Gold is the canonical Parquet training interface downstream of the combined
-[Silver dataset](chocolate-silver.md). Every Gold row belongs to the training
+## Standard Silver handoff
+
+The default builder detects standard Silver v2 and performs study preparation
+in Gold. It loads the separately pinned current-price design, records a versioned
+adaptation to the selected Silver field contract, selects explicit semantic
+contexts, forms comparison groups and targets, and records eligibility reasons.
+The default design pin is `schemas/chocolate/standard-gold/dataset-contract.json`
+at `337fb7f3984ac648e67edd2cb47802f056193efc`. It selects
+`chocolate-pricing-current-price-design-1.silver-2` for
+`chocolate-processing-schema-1.silver-2` and
+`chocolate-source-mappings-1.silver-2`.
+Parsed, inferred and reviewed available facts are usable. A model choice never
+changes Silver's shared facts or profiling denominator.
+
+`--model-design` selects a supplied study contract; `--relationships` supplies
+`category-gold-relationships-1` decisions with stable source subjects, family and
+physical-product IDs, source evidence and name guards. The default current study
+uses displayed GBP prices as its regular-price proxy and adds no separate regular,
+promotion or confirmed-tax gate. Missing physical/family identity and predictors
+remain explicit blockers. Existing historical family registries need an explicit
+source-subject/evidence mapping into this new relationship contract.
+
+The `chocolate-gold-standard-2` snapshot stores `training-data.parquet`,
+`model-inputs.parquet` and the complete preparation under `preparation/`, including
+an eligibility audit, design, relationships and exact Silver inputs. The loader
+verifies hashes and replays study preparation before exposing training inputs.
+The OLS entry point accepts its selected population. The portable package's
+`prepare-gold` creates the corresponding immutable JSONL preparation independently
+of this repository. See the
+[Gold procedure](../../plugins/category-processing/skills/category-processing/references/silver-to-gold.md).
+
+The 48-listing local migration pilot produces 48 candidates and zero eligible
+model inputs under the selected study; it has no supplied physical/family
+relationships and retains other missing predictors. It establishes the handoff,
+with no fitted model or released dataset. The
+[release summary](analysis/standard-silver-v2-release.md) records its evidence,
+OLS readiness report, price assumptions and prepared contract hashes.
+
+## Historical Gold interfaces
+
+The remaining sections describe existing published snapshots, their population
+semantics and migration helpers. Those meanings remain attached to those versions.
+
+Gold further enriches structured, standardized Silver for a downstream use case.
+This guide describes the existing chocolate training use case and its immutable
+Parquet interface. Other uses define their own enrichment and output contracts;
+this guide does not establish a generic enrichment implementation.
+
+Chocolate Gold is the canonical Parquet training interface downstream of the
+combined [Silver dataset](chocolate-silver.md). Every Gold row belongs to the training
 population. Gold has no `model_eligible` or `exclusion_reasons` columns and no
 separate eligible subset. Models validate the actual targets, quantities,
 identities and predictors needed by their selected study.
@@ -17,11 +65,17 @@ meaning.
 
 The layer sequence is Bronze (raw) → Silver → Gold. Category-processing checks
 that preserved Bronze data and a generated schema are
-available, then finishes at reviewed Silver. If the initial schema is absent,
+available, then finishes at standardized Silver with evidence, quality and
+profiling reports. Parsed and inferred values are usable, and applicable human
+corrections take precedence. If the initial schema is absent,
 category-schema creates it from the raw evidence before processing. Model-input
-preparation belongs to the subsequent Silver-to-Gold/modeling handoff. Silver
-retains evidence interpretation, reviews and existing eligibility decisions;
-Gold and model consumers use that provenance under their selected study.
+preparation belongs to the subsequent Silver-to-Gold/modeling handoff. Gold owns
+comparison groups, cohort/eligibility decisions, target and price policies,
+derived features, aggregates and model design where required. Silver retains
+source facts, shared relationships, evidence reviews and profiling statistics.
+The existing Silver runtime also records legacy eligibility decisions; removing
+that dependency requires the planned contract/runtime migration. Gold and model
+consumers use the preserved provenance under their selected study.
 
 The portable package's downstream
 [procedure](../../plugins/category-processing/skills/category-processing/references/silver-to-gold.md)
@@ -330,8 +384,8 @@ web adapter validates them with the export's copied contracts and preserves
 per-field review states. The immutable nested training files retain 2,134 candidates, zero
 source-eligible inputs and the historical `regular-consumer-price-1` basis. The
 current Gold loader exposes all 2,134 candidates without selection fields; the
-current-price study applies its own target policy. Silver continues to own source
-processing, interpretation, review and eligibility. The app reference pins the
+current-price study applies its own target policy. The source Silver snapshot
+preserves processing, interpretations, reviews and legacy eligibility decisions. The app reference pins the
 manifest and revision; [collection integration](../collection-integration.md)
 defines preparation and offline rebuild commands.
 

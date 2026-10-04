@@ -23,17 +23,33 @@ study assumptions before fitting or releasing results. The app consumes pinned
 data and model artifacts, presents their status and keeps user proposals distinct
 from collected observations.
 
-The chocolate architecture remains Bronze (raw) → combined Silver → immutable Parquet
-Gold. Silver owns source processing, review and eligibility decisions. Current
-Gold admits every candidate while preserving source provenance; actual model
-inputs and the selected target still determine numerical usability. These
+The requested review interface connects downstream error reports to Silver
+fields and their Bronze evidence. The app owns user review and revision; data
+owns durable corrections and replay on subsequent processing runs. Corrections
+also supply evidence for improving rules, models and regression tests. This
+interface is implemented locally through the portable review server and SQLite
+store described in the
+[app](app/spec.md#persistent-review-of-standardized-data) and
+[data](data/spec.md#persistent-corrections-and-replay) specifications.
+
+The intended layers are Bronze for preserved source evidence, Silver for
+structured and standardized data, and Gold for further enrichment serving a
+downstream use case. Silver preserves source IDs across reprocessing and reports
+schema coverage, categorical values and numeric ranges. Gold owns comparison
+groups, target/price policy, eligibility and model-input preparation. Concrete
+Silver structures and the SQLite source index are recorded with Bronze evidence
+in the [plan](lifecycle/plan.md#standard-silver-v2-implementation-4-october-2026).
+The current chocolate implementation uses Bronze (raw) →
+combined Silver → immutable Parquet Gold for its training use case. Its Silver
+builder owns source processing and persistent corrections. Standard Gold records
+every candidate and a separately selected input population under its study
+contract; historical Gold population behavior remains available. These
 interfaces are specified in [data](data/spec.md#10-gold-and-the-finalized-training-basis)
 and [model](model/spec.md#gold-training-admission-and-inferred-lightgbm-refit).
 
 The [data preparation reassessment](data/intent.md#current-focus-meaningful-data-for-analysis)
-is proposed work. Its exclusion of model planning applies to that reassessment;
-it does not replace the model specification or establish a new implemented data
-contract. The application's historical synthetic price fixture retains its own
+is implemented in standard Silver v2 with a local pilot. Model planning remains
+owned by the model specification. The application's historical synthetic price fixture retains its own
 scope and target, as defined in the [app specification](app/spec.md#synthetic-product-price-demo).
 
 ## Status and maintenance

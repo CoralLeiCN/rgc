@@ -1,0 +1,34 @@
+{
+  "attribute_count": 12,
+  "category": "coffee",
+  "contract_set": "category-processing/coffee/silver-2",
+  "files": {
+    "pipeline.json": {
+      "path": "contracts/category-processing/coffee/silver-2/pipeline.json",
+      "sha256": "294b98f44536a6e45db00d950dd96584aeb3859609d52b1b93f03397b7cff48e",
+      "size_bytes": 1750
+    },
+    "product.schema.json": {
+      "path": "contracts/category-processing/coffee/silver-2/product.schema.json",
+      "sha256": "d16355f2dbc056f545db4f25a524ca7610d11075faa2e444216dc5c494e982ac",
+      "size_bytes": 13406
+    },
+    "profile.json": {
+      "path": "contracts/category-processing/coffee/silver-2/profile.json",
+      "sha256": "809d4d64be81c8b9c2bef080da7f73e36604e3c9741fde0824b3707f363b1fbd",
+      "size_bytes": 5876
+    },
+    "source-mappings.json": {
+      "path": "contracts/category-processing/coffee/silver-2/source-mappings.json",
+      "sha256": "8aadfa54dfeef99e8048c37e8bbbbf072f069d8ba6e705bf481932696d7f5901",
+      "size_bytes": 1386
+    }
+  },
+  "format_version": "rgc-dataset-contract-reference-1",
+  "mapping_version": "coffee-source-mappings-1.silver-2",
+  "market": "uk",
+  "pipeline_version": "coffee-processing-pipeline-2.silver-2",
+  "repo_id": "CoralLeiCN/rgc-collections",
+  "revision": "337fb7f3984ac648e67edd2cb47802f056193efc",
+  "schema_version": "coffee-schema-1.silver-2"
+}

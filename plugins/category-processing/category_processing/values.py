@@ -106,7 +106,9 @@ def standardize_value(name, value, profile, mappings, unit=None):
         if not isinstance(value, list) or any(not isinstance(item, str) or not item.strip() for item in value):
             raise ValueError(name + " requires a list of nonempty strings.")
         aliases = {alias_key(key): val for key, val in mappings.get("aliases", {}).get(name, {}).items()}
-        normalized = sorted(set(country(item, mappings) if rule == "country_labels" else aliases.get(alias_key(item), re.sub(r"\s+", " ", item).strip()) for item in value))
+        normalized = [country(item, mappings) if rule == "country_labels" else aliases.get(alias_key(item), re.sub(r"\s+", " ", item).strip()) for item in value]
+        if definition.get("list_semantics", "set") != "ordered":
+            normalized = sorted(set(normalized))
         allowed = definition.get("allowed_values")
         if allowed and any(item not in allowed for item in normalized):
             raise ValueError("Unmapped list vocabulary for " + name)

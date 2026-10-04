@@ -17,8 +17,10 @@ feature. Its exclusion of model planning applies to that reassessment. App and
 model goals are documented in their respective feature intentions.
 
 Data supplies evidence and analytical facts for the app, models and other
-analyses. Models consume declared data inputs and return results with their
-assumptions, support and limitations. The app presents observed evidence,
+analyses. Bronze preserves original evidence, Silver structures and standardizes
+it, and Gold further enriches Silver for a downstream use case. Models consume
+declared data inputs and return results with their assumptions, support and
+limitations. The app presents observed evidence,
 user proposals and analytical results with their status visible. Data quality,
 model validity and application readiness each require their own verification.
 
