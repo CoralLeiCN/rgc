@@ -226,13 +226,21 @@ contracts. A physical product can have multiple sources and prices across
 retailers and dates; sections 3.1.2–3.3 define listing identity, relationships and
 price context.
 
-### 3.1 Raw archive for each product
+### 3.1 Bronze: the raw data layer
+
+Bronze is the canonical raw-data layer: original collected records, source text,
+images and other artifacts, source identities, timestamps and immutable capture
+history. Collection writes Bronze; schema research reads its evidence; category
+processing applies a generated schema to Bronze and produces reviewed Silver.
+The layer sequence is **Bronze → Silver → Gold**. Existing raw archive paths and
+format identifiers refer to Bronze, including `data/collections/` and
+`category-research-raw-1`; layer naming requires no data migration.
 
 The archive uses a current product index, immutable source/image artifacts, and
 timestamped history. The implemented plugin layout is:
 
 ```text
-collections/<category>/<market>/products/<product_id>/
+collections/<category>/<market>/products/<source_key>/<product_id>/
     product.json
     sources/
         <capture_id>/<artifact_number>.<source_format>
@@ -241,6 +249,60 @@ collections/<category>/<market>/products/<product_id>/
     history/
         <capture_id>.json
 ```
+
+The collector groups known websites/storefronts by a stable source key, using 1–200
+lowercase ASCII letters, digits, hyphens or underscores and beginning with a
+letter or digit. It uses this key verbatim as the website directory. Missing,
+null or empty keys retain their original JSON under `_unknown`. Product IDs
+remain unique across the study. New listings use the grouped layout; imports
+append existing legacy `products/<product_id>/` indexes in place. Readers,
+verification and evidence export accept both layouts. Processing and archive
+verification validate source-directory identity and report duplicate indexes;
+processing excludes ambiguous listings.
+The UK chocolate corpus was physically reorganized on 4 October 2026 at the
+user's request. Complete product folders, including histories, source files and
+images, now sit under their website directory. The move updates archive-managed
+paths directly in product indexes, history metadata and run reports. Original
+raw records and source/image bytes retain their content; index/history JSON
+hashes change where their storage paths change. The active archive uses the new
+locations directly, with no symlinks, redirects or lookup table for old paths.
+Earlier exports or research inputs that recorded the old paths/hashes describe
+the pre-move snapshot and require a fresh inventory to work with this archive.
+Source grouping supports inspection and source mappings under the category's
+shared analytical schema.
+
+#### Why Bronze is grouped by website
+
+Raw JSON structure follows the website and collection method. In the reviewed
+chocolate records, Chococo combines Shopify variant objects with ingredient text,
+Waitrose retains catalogue fields such as `source_weight_text` alongside product
+page evidence, and ASDA retains labelled `source_sections`. A concept such as
+weight or cocoa percentage therefore appears at different paths and in different
+representations across websites.
+
+Grouping product folders by their website/storefront supports three activities:
+
+- **Schema research:** inspect representative records from every source, compare
+  the concepts they contain, and propose common field meanings. Source groups
+  help keep a large retailer's repeated structure from dominating the sample.
+- **Extraction and review:** develop and test mappings against records with
+  related structures, then inspect missing values and parsing failures for the
+  affected source. Stored evidence remains available to distinguish a missing
+  source statement from an extraction failure.
+- **Maintenance:** when a website changes its pages or feed, locate the relevant
+  records, compare captures and assess which mappings need revision. The same
+  directory convention supports additional websites and product categories.
+
+Use the website/storefront's `source_key` for this grouping. Product brands and
+seller identities remain recorded separately. Research must sample different
+product types, variants, collection methods and capture dates within each source
+before reusing a mapping: a website can expose several structures over time.
+The category analytical schema defines shared meanings; source mappings connect
+each representation to those meanings. Directory grouping provides an inspection
+boundary, while schema design, extraction and semantic validation remain explicit
+steps in their respective workflows.
+
+#### Product records and source evidence
 
 For the chocolate example, category and market directory identifiers may be
 `chocolate` and `uk`. Equivalent bundles may be delivered by another harness;
@@ -311,12 +373,12 @@ own checks.
 
 | Material | Local text export rule |
 | --- | --- |
-| `products/*/product.json` | Include complete original records: source facts, prices, ingredients/nutrition where available, unknown fields and fields specific to a source, identities, and provenance. |
-| `products/*/sources/` and `products/*/history/` | Include original text, HTML, JSON, and losslessly compressed text evidence and immutable capture histories. |
+| `products/<source>/<product>/product.json` and legacy flat indexes | Include complete original records: source facts, prices, ingredients/nutrition where available, unknown fields and fields specific to a source, identities, and provenance. |
+| Product `sources/` and `history/` directories in either layout | Include original text, HTML, JSON, and losslessly compressed text evidence and immutable capture histories. |
 | `catalogs/`, `discovery/`, and `runs/` | Include text/structured discovery evidence, original catalogues, collection inputs, failure evidence, and run reports for reproducibility. Exclude executable collection scripts and runtime files. |
 | Study `README.md`, `coverage.json`, and `archive-verification.json` | Include available descriptions, coverage/missingness, and original integrity reports. Label original archive checks as historical results, not validation of the filtered export. |
 | Image URLs, captions, source roles, hashes, retrieval details, and recorded paths | Retain these metadata in original records; explicitly declare image files omitted. |
-| `products/*/images/`, other image files, and image bodies disguised as responses | Exclude all image payloads, including failed response bodies inside image folders. |
+| Product `images/` directories in either layout, other image files, and image bodies disguised as responses | Exclude all image payloads, including failed response bodies inside image folders. |
 | `transfers/` | Exclude the entire HTTP transfer cache, including cache metadata files; preserve retrieval details already present in product/source records and inventory omitted cache paths. |
 | Hidden/runtime files, symlinks, credentials, executable code, unsupported binary/encoding formats, and other locations | Exclude from the evidence allowlist and record the omission reason. Keep unrelated files under `data/`, such as workbooks, outside the export. |
 
@@ -366,18 +428,18 @@ mappings/units/scopes/prices/predictors, before/after coverage and eligibility,
 checks and limitations, and the target repository/revision and managed files/
 hashes. Local schema decisions need no user sign-off. The calling harness owns this review step for analytical dataset releases.
 
-### 3.1.2 Raw and combined silver responsibilities
+### 3.1.2 Bronze and combined Silver responsibilities
 
-Raw preservation and combined Silver own the processing responsibilities below.
+Bronze preservation and combined Silver own the processing responsibilities below.
 The [stage descriptions and data flow](data/chocolate-silver.md#stage-descriptions)
-use **bronze** as a presentation name for raw and show the implemented
-immutable Parquet **Gold** training interface downstream of Silver. Section 10
+show Bronze as the raw-data layer and the implemented immutable Parquet Gold
+training interface downstream of Silver. Section 10
 and the [Gold guide](data/chocolate-gold.md) define its contracts and readiness
 boundary; current chocolate has no eligible inputs or fitted model.
 
 | Layer | Responsibility |
 | --- | --- |
-| Raw, `data/collections/chocolate/uk` | Preserve product indexes, arbitrary fields, source/image artifacts and immutable history under section 3.1. |
+| Bronze (raw), `data/collections/chocolate/uk` | Preserve product indexes, arbitrary fields, source/image artifacts and immutable history under section 3.1. |
 | Silver, `data/silver/chocolate/uk` | Verify raw index/history consistency; deduplicate exact seller listings; apply schema/unit/vocabulary standardization; normalize supported prices; apply reviews supported by evidence and model eligibility; report provenance, missingness, exclusions and readiness. |
 
 `uv run --script scripts/build_chocolate_silver.py --archive-root data/collections`
@@ -438,6 +500,57 @@ After broad collection, review fields, units, claims, product forms, identity an
 missingness across the corpus. Derive a complete schema for that category scope
 and its comparisons; version and extend profiles/mappings as new information
 arrives. Preserve original fields and unclassified claims under section 3.1.
+
+The dedicated [category-schema skill](../plugins/category-processing/skills/category-schema/SKILL.md)
+owns raw research, field meanings, uncertainty and semantic checks for initial
+creation of a new analytical schema. It delivers the field catalog, source
+references, rationale, coverage and unresolved decisions. It can propose or
+finalize the initial schema according to the task; no processing runtime, model
+specification or fixed file count is required.
+
+The [2026-10-04 Bronze reconstruction](data/schema-proposals/chocolate-bronze-reconstruction-2026-10-04.md)
+records an executed initial-creation exercise: 3,743 latest captures from 24 sources
+inventoried, 97 distinct listing summaries/targeted examples inspected, a fresh
+75-field proposal frozen before reading the existing profile, and all 103 old
+attributes compared. The proposal has documented omissions and lacks executable
+contracts or extraction validation. Existing contract versions remain in force.
+
+Category-processing begins after two inputs are available for the same category
+and market: readable preserved raw records and a generated initial schema catalog.
+If raw data exists and the schema is missing, invoke category-schema and complete
+that handoff first. If raw data is unavailable, route to collection. An empty
+raw directory or a schema-design plan does not satisfy the entry conditions.
+
+Processing configures mappings/extraction and serializes the generated catalog
+into `profile.json` and `product.schema.json`. It owns executable validation,
+evidence review, mapping/parser maintenance and the reviewed Silver output.
+Model design, predictor selection, training-input preparation, family splits,
+encoders and design matrices belong to the subsequent Silver-to-Gold stage.
+The [downstream procedure](../plugins/category-processing/skills/category-processing/references/silver-to-gold.md)
+owns those steps. Silver retains existing evidence review and eligibility decisions.
+
+The portable generator and loader still require all five aligned files, including
+`model-design.json`, and its Silver runtime writes legacy training views.
+`prepare-model` remains a compatibility command for downstream use and does not
+export Parquet Gold. These are implementation limitations, not additional skill
+entry conditions. Reuse existing authorized profiles when available; do not
+invent a model target or predictors to begin processing. A new schema without the
+legacy design needs a future runtime migration before that engine can apply it.
+No analytical payload or runtime format changed in this workflow revision.
+
+The schema skill and its raw-research reference are the canonical initial-creation
+procedure. Processing and discovery guides route new-schema work to it.
+Refreshing, reviewing and extending an existing schema use processing maintenance.
+The repository skill owns maintained instructions; installed copies are
+synchronized distributions. Published executable contracts remain dataset-owned.
+
+Inventory the supplied raw corpus, distinguish mechanical counts from sampled
+semantic review, and investigate structured fields and source prose. Proposed
+fields include meanings, types, units, scopes, qualifiers, evidence, coverage,
+rationale and unresolved alternatives. Candidate source paths and aliases inform
+later implementation; their discovery does not establish tested extraction.
+A task requesting the full workflow can continue into processing and model
+steps using its existing authorization.
 
 Keep derived product variants, classified features and price observations as
 distinct records in the later analytical dataset:
@@ -629,7 +742,7 @@ vocabularies. Contract drift fails before publication. Valid category observatio
 outside the selected model domain remain in silver and are excluded only from
 model candidates.
 
-Processing package `0.3.2` includes the `init-profile` command with explicit
+Processing package `0.3.3` includes the `init-profile` command with explicit
 `--input <definition.json>` and `--output <new-profile-folder>` arguments for
 `category-processing-definition-1`. The
 definition explicitly declares category/market, all four semantic versions,
@@ -666,7 +779,7 @@ derived prices, with original values preserved.
 The generic engine consumes configured structured fields; arbitrary source
 free-text extraction and validated models for every category are not implemented.
 
-Processing package `0.3.2` includes structural discovery beyond configured extraction
+Processing package `0.3.3` includes structural discovery beyond configured extraction
 coverage. It scans meaningful unhandled subtrees under `/raw_record`, preserving
 full typed values, stable source-field IDs, seller/capture context and exact JSON
 pointers in `discovered-fields.jsonl` (`category-unmapped-fields-1`). Semantic
@@ -1468,7 +1581,7 @@ Resolve these decisions before the corresponding implementation or release commi
 
 ## 10. Gold and the finalized training basis
 
-The canonical chocolate architecture is raw → combined Silver → immutable Parquet Gold. Silver retains seller rows, evidence, reviews and source eligibility. Gold exports every candidate to one `training-data.parquet` population using `chocolate-gold-population-1` and `chocolate-gold-arrow-3`. Its analytical rows omit `model_eligible` and `exclusion_reasons`; it has no stored eligible subset. Typed empty tables, Zstandard compression, exact contracts/price/identity evidence, source manifests, logical digests and managed hashes support independent verification. Original source training views and complete migration parents are retained as provenance. Existing snapshots cannot be overwritten. The [Gold guide](data/chocolate-gold.md) defines build, migration, review provenance and trainer handoff.
+The canonical chocolate architecture is Bronze (raw) → combined Silver → immutable Parquet Gold. Silver retains seller rows, evidence, reviews and source eligibility. Gold exports every candidate to one `training-data.parquet` population using `chocolate-gold-population-1` and `chocolate-gold-arrow-3`. Its analytical rows omit `model_eligible` and `exclusion_reasons`; it has no stored eligible subset. Typed empty tables, Zstandard compression, exact contracts/price/identity evidence, source manifests, logical digests and managed hashes support independent verification. Original source training views and complete migration parents are retained as provenance. Existing snapshots cannot be overwritten. The [Gold guide](data/chocolate-gold.md) defines build, migration, review provenance and trainer handoff.
 
 The optional inferred export is a separate immutable bundle derived from an
 explicit Silver snapshot and curated decision/provenance files. Typed profile

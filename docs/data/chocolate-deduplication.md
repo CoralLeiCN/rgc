@@ -24,7 +24,10 @@ python3 -B scripts/deduplicate_chocolate_data.py \
 ```
 
 `--archive-root` is the collections root containing
-`chocolate/uk/products/<product_id>/product.json`. The output must be separate
+`chocolate/uk/products/<source_key>/<product_id>/product.json`. Legacy
+`products/<product_id>/product.json` indexes are also supported. Source directory
+names must match the captures; duplicate product IDs across directories are
+reported as archive errors. The output must be separate
 from this root. Use explicit paths when the archive or output lives elsewhere.
 Keep the supplied collections root available to resolve preserved history and
 artifact references.

@@ -241,6 +241,8 @@ class ArchiveVerifier:
             else:
                 if record.get("product_id") != folder.name:
                     self.error("capture_product_identity_mismatch", capture_context)
+                if folder.parent != self.products_root and (record.get("source_key") or "_unknown") != folder.parent.name:
+                    self.error("capture_source_directory_mismatch", capture_context)
                 if "information" not in capture or record.get("information") != capture["information"]:
                     self.error("capture_information_mismatch", capture_context)
                 for expected in self.expected.get(folder.name, []):
@@ -276,10 +278,21 @@ class ArchiveVerifier:
         if not self.products_root.is_dir():
             self.error("products_directory_missing", {}, path=str(self.products_root))
         else:
-            for folder in sorted(self.products_root.iterdir()):
-                if folder.is_dir():
-                    self.counts["product_folders_observed"] += 1
-                    self.verify_product(folder)
+            folders = []
+            for parent in sorted(self.products_root.iterdir()):
+                if not parent.is_dir():
+                    continue
+                if any((parent / name).exists() for name in ("product.json", ".import.lock", "history")):
+                    folders.append(parent)
+                else:
+                    folders.extend(child for child in sorted(parent.iterdir()) if child.is_dir())
+            seen = set()
+            for folder in folders:
+                self.counts["product_folders_observed"] += 1
+                if folder.name in seen:
+                    self.error("duplicate_product_directory", {"product_id": folder.name})
+                seen.add(folder.name)
+                self.verify_product(folder)
         for product_id, expectations in self.expected.items():
             for expected in expectations:
                 if not expected["matched"]:

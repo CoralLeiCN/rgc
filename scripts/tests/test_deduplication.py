@@ -17,7 +17,7 @@ class ChocolateDeduplicationTests:
         (self.archive / "chocolate/uk/products").mkdir(parents=True)
         empty = self.build()
         self.collect([self.product()])
-        folder = self.archive / "chocolate/uk/products/example"
+        folder = self.archive / "chocolate/uk/products/example-shop/example"
         (folder / ".import.lock").write_text(
             "fixture import in progress\n", encoding="utf-8"
         )

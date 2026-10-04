@@ -1,0 +1,4 @@
+interface:
+  display_name: "Category Schema"
+  short_description: "Research raw data and propose a new category schema"
+  default_prompt: "Use $category-schema to research our preserved raw data and propose a new schema with field meanings, source evidence, coverage gaps and rationale."

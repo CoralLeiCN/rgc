@@ -25,12 +25,12 @@ apply at the interface. The delivery stack is decided; hosted verification and
 implementation status are recorded in the plan.
 
 ```text
-bronze/raw -> silver (deduplication + standardization + reviews/gates)
+Bronze (raw) -> Silver (deduplication + standardization + reviews/gates)
            -> immutable Parquet Gold -> experimental trainer -> later validated model
 ```
 
-The [stage descriptions](../data/chocolate-silver.md#stage-descriptions) label raw
-as bronze and describe Silver processing and immutable Parquet Gold export.
+The [stage descriptions](../data/chocolate-silver.md#stage-descriptions) define
+Bronze as the raw-data layer and describe Silver processing and immutable Parquet Gold export.
 Gold preserves candidate and eligible views; zero eligible chocolate inputs
 produce a readiness report from the implemented experimental trainer. Validated
 price testing and explanations remain planned.

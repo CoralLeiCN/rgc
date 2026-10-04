@@ -39,8 +39,9 @@ def implementation_hashes():
 
 
 def inventory(root):
+    products = root / "chocolate/uk/products"
     return {path.relative_to(root).as_posix(): (path.parent / ".import.lock").exists()
-            for path in sorted((root / "chocolate/uk/products").glob("*/product.json"))}
+            for path in sorted([*products.glob("*/product.json"), *products.glob("*/*/product.json")])}
 
 
 def confirm_source(root, initial_inventory, inputs):

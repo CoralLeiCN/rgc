@@ -4,7 +4,7 @@ import hashlib
 import json
 import math
 import re
-from collections import defaultdict
+from collections import Counter, defaultdict
 from datetime import datetime
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
@@ -143,7 +143,7 @@ def load_raw_archive(archive_root, category, market):
             products = exact_products
     if not products.is_dir():
         raise ValueError("Expected " + raw_study_slug(category) + "/" + raw_study_slug(market) + "/products under --archive-root.")
-    inventory = sorted(products.glob("*/product.json"))
+    inventory = sorted([*products.glob("*/product.json"), *products.glob("*/*/product.json")])
     result = {"root": root, "product_root": products, "inventory": inventory,
               "initial_locks": {str(path.relative_to(root)): (path.parent / ".import.lock").exists() for path in inventory},
               "listings": {}, "captures": {}, "latest": {}, "snapshots": {},
@@ -160,6 +160,7 @@ def load_raw_archive(archive_root, category, market):
             raise ValueError("Non-finite JSON value: " + value)
         return json.loads(data, parse_constant=reject)
 
+    listing_counts = Counter(path.parent.name for path in inventory)
     for path in inventory:
         listing = path.parent.name
         if (path.parent / ".import.lock").exists():
@@ -167,6 +168,9 @@ def load_raw_archive(archive_root, category, market):
             continue
         try:
             document = read(path)
+            if listing_counts[listing] > 1:
+                result["errors"].append({"listing_id": listing, "code": "duplicate_product_directory"})
+                continue
             if not isinstance(document, dict):
                 raise ValueError("Product index must be an object.")
             if document.get("archive_format_version") != ARCHIVE_VERSION:
@@ -187,6 +191,8 @@ def load_raw_archive(archive_root, category, market):
                     raise ValueError("Capture ID is missing or repeated.")
                 if capture["raw_record"].get("product_id") != listing:
                     raise ValueError("Capture identity does not match source listing.")
+                if path.parent.parent != products and (capture["raw_record"].get("source_key") or "_unknown") != path.parent.parent.name:
+                    raise ValueError("Capture source does not match its website directory.")
                 history = capture.get("history_path")
                 if not isinstance(history, str) or Path(history).is_absolute():
                     raise ValueError("Capture lacks a relative immutable-history reference.")
@@ -210,7 +216,8 @@ def load_raw_archive(archive_root, category, market):
 
 
 def confirm_raw_snapshot(archive):
-    if sorted(archive["product_root"].glob("*/product.json")) != archive["inventory"]:
+    products = archive["product_root"]
+    if sorted([*products.glob("*/product.json"), *products.glob("*/*/product.json")]) != archive["inventory"]:
         raise RuntimeError("Raw archive listing inventory changed during the build.")
     locks = {str(path.relative_to(archive["root"])): (path.parent / ".import.lock").exists() for path in archive["inventory"]}
     if locks != archive["initial_locks"]:

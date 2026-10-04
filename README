@@ -1,5 +1,14 @@
 # Product features and pricing
 
+New Bronze listings are stored in
+`data/collections/<category>/<market>/products/<source_key>/<product_id>/`.
+Each website/storefront has a parent directory. Collection, verification,
+processing and local evidence export support this layout; existing flat archives
+remain readable and retain their stored history paths. The existing UK chocolate
+corpus has also been physically grouped by website, with archive paths updated
+directly and source evidence preserved. See the
+[collection import contract](plugins/category-research/skills/category-research/references/import-contract.md).
+
 The latest [retailer median refit](docs/data/analysis/retailer-median-training.md#refit-with-the-published-current-price-target)
 uses the published current-price contract and all 2,134 eligible Gold rows.
 Displayed prices and matching edible weights produce 630 GBP/100 g targets.
@@ -146,9 +155,9 @@ can be offline; the [dataset contract guide](docs/data/dataset-contracts.md) def
 cache and publication behavior.
 
 The standalone processing package includes its runtime, five contract references,
-stable seller UIDs, ledger, evidence batches, harness skill and model preparation.
+stable seller UIDs, ledger, evidence batches, schema and processing skills, and model preparation.
 Chocolate tracks 103 attributes; coffee demonstrates reuse with structured inputs.
-These are optional examples. Processing `0.3.2` also generates five aligned
+These are optional examples. Processing `0.3.3` also generates five aligned
 working contracts from an explicit category definition, including non-food
 fields, units, quantity, currency and tax basis:
 
@@ -156,10 +165,28 @@ fields, units, quantity, currency and tax basis:
 python3 -B plugins/category-processing/cli.py init-profile --input <category-definition.json> --output <new-profile-folder>
 ```
 
-Read the [definition contract](plugins/category-processing/skills/category-processing/references/profile-definition.md).
-Generation validates configuration; extraction and model readiness need separate
-evidence. Working contracts are local drafts; published contracts belong in the
-dataset with immutable references retained in Git.
+Bronze is the preserved raw-data layer: original collected records, source
+artifacts and immutable capture history. Collection writes Bronze, processing
+produces reviewed Silver, and Gold provides the training handoff.
+
+The [fresh chocolate schema study](docs/data/schema-proposals/chocolate-bronze-reconstruction-2026-10-04.md)
+reconstructs a 75-field proposal from Bronze and compares all 103 existing
+attributes, with original evidence and explicit draft limitations.
+
+Category processing starts with two inputs: available Bronze data and a
+generated schema for the requested category/market. Use the dedicated
+[category-schema skill](plugins/category-processing/skills/category-schema/SKILL.md)
+to research raw captures and generate the missing initial catalog with evidence,
+rationale and coverage gaps. Processing configures mappings/extraction, applies
+the schema and finishes at reviewed Silver. Existing-schema refresh and extension
+stay in processing maintenance. The subsequent
+[Silver-to-Gold stage](plugins/category-processing/skills/category-processing/references/silver-to-gold.md)
+owns model design and training-input preparation.
+
+The current portable runtime still requires five files and writes legacy training
+views; a new schema without the legacy model contract needs a runtime migration.
+Do not invent model choices to begin processing. Published contracts remain in
+the dataset with immutable references retained in Git.
 
 Copy the entire package to use it independently of repository siblings or a
 collection plugin installation. Run its workflow from the repository root:
@@ -167,16 +194,15 @@ collection plugin installation. Run its workflow from the repository root:
 ```sh
 python3 -B plugins/category-processing/cli.py process --archive-root data/collections --profile plugins/category-processing/profiles/chocolate --output data/silver/category-processing/chocolate/uk
 python3 -B plugins/category-processing/cli.py summarize --silver-root data/silver/category-processing/chocolate/uk --output data/review-packets/chocolate/uk
-python3 -B plugins/category-processing/cli.py prepare-model --silver-root data/silver/category-processing/chocolate/uk --output data/model-preparation/chocolate/uk
 ```
 
 The [portable guide](docs/data/category-processing.md) and package references cover
 versions, review examples, outputs and mapping changes. Processing rebuilds fully;
 the ledger reports input/rule changes. The harness maintains mappings within the
 current task using evidence, versioned diffs, tests and impact review. Incremental processing caches,
-external dispatch and scheduling are future work. `prepare-model` requires
-reviewed eligible rows and at least two families, and writes frozen inputs and an
-encoder. Current chocolate inputs are ineligible; regression fitting and model
+external dispatch and scheduling are future work. The downstream compatibility
+`prepare-model` helper requires reviewed eligible rows and at least two families,
+and writes frozen inputs and an encoder; it does not create Parquet Gold. Current chocolate inputs are ineligible; regression fitting and model
 validation remain future work. The original chocolate CLI keeps its established versions.
 
 Structural discovery records unconfigured raw fields in `discovered-fields.jsonl`

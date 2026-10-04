@@ -5,6 +5,8 @@ import json
 import re
 from pathlib import Path
 
+import pytest
+
 PLUGIN_ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -53,9 +55,10 @@ class CategoryProcessingPackageTests:
         manifest = json.loads((PLUGIN_ROOT / "plugin.json").read_text())
         validate_schema(manifest, schema)
 
-    def test_discoverable_skill_frontmatter_and_local_references_resolve(self):
+    @pytest.mark.parametrize("skill", sorted((PLUGIN_ROOT / "skills").glob("*/SKILL.md")),
+                             ids=lambda skill: skill.parent.name)
+    def test_discoverable_skill_frontmatter_and_local_references_resolve(self, skill):
         # Primary constraints: https://agentskills.io/specification
-        skill = PLUGIN_ROOT / "skills/category-processing/SKILL.md"
         source = skill.read_text()
         assert (source.startswith("---\n"))
         frontmatter = source.split("---", 2)[1]
@@ -64,6 +67,9 @@ class CategoryProcessingPackageTests:
         assert re.search((r"^[a-z0-9]+(?:-[a-z0-9]+)*$"), (fields["name"]))
         assert (1 <= len(fields["name"]) <= 64)
         assert (1 <= len(fields["description"]) <= 1024)
-        for target in re.findall(r"\]\(([^)]+)\)", source):
-            if "://" not in target and not target.startswith("#"):
-                assert ((skill.parent / target.split("#")[0]).exists()), (target)
+        for document in (skill, *sorted((skill.parent / "references").glob("*.md"))):
+            for target in re.findall(r"\]\(([^)]+)\)", document.read_text()):
+                if "://" not in target and not target.startswith("#"):
+                    destination = (document.parent / target.split("#")[0]).resolve()
+                    assert destination.is_relative_to(PLUGIN_ROOT), target
+                    assert destination.exists(), target

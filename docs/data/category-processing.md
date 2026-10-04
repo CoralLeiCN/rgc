@@ -1,15 +1,30 @@
 # Portable category processing
 
+Bronze indexes for new listings use
+`<category>/<market>/products/<source_key>/<product_id>/product.json`, grouping
+records from each website/storefront. Processing also reads legacy flat indexes
+and mixed archives, verifies source-directory identity and reports duplicate
+product IDs across directories. Stored history references and seller UIDs retain
+their meanings. The category schema is shared; source mappings handle differences
+between website structures.
+
+The [Bronze grouping rationale](../spec.md#why-bronze-is-grouped-by-website)
+explains how this supports sampling, parser reuse and investigation of missing
+values. Validate mappings across the different product types, collection methods
+and capture dates present within each source.
+
 The [category-processing plugin](../../plugins/category-processing/README.md) packages
 processing after collection: verified raw archives, exact seller deduplication,
 standardization using category profiles, normalized price observations,
-review/eligibility, processing fingerprints, grouped mapping gaps and preparation
-of model inputs. Its discoverable
-[skill](../../plugins/category-processing/skills/category-processing/SKILL.md) guides
-the calling harness through evidence review and proposed mapping improvements.
+review/eligibility, processing fingerprints and grouped mapping gaps. Model-input
+preparation belongs to the downstream Silver-to-Gold workflow. Its dedicated
+[schema skill](../../plugins/category-processing/skills/category-schema/SKILL.md)
+guides initial raw research, field design and semantic checks. Its
+[processing skill](../../plugins/category-processing/skills/category-processing/SKILL.md)
+guides processing, evidence review and mapping/parser improvements.
 
 The package targets [Agent Plugins 1.0.0](https://agent-plugins.org/specification)
-with a root `plugin.json` (`category-processing`, version `0.3.2`) and an
+with a root `plugin.json` (`category-processing`, version `0.3.4`) and an
 [Agent Skills](https://agentskills.io/specification) component. Its standard-library
 Python 3.9+ runtime, profile manifests and references are self-contained. Copying the
 package does not require repository sibling modules, another plugin installation,
@@ -34,26 +49,64 @@ contracts already permit both values; the adapter implementation fingerprint
 identifies the correction in subsequent builds. Corpus coverage after this
 correction remains unmeasured.
 
-Raw preserves original product indexes from sources, immutable captures and
+Bronze is the raw data layer. It preserves original product indexes from sources,
+immutable captures and
 source/image artifacts. Silver verifies them, deduplicates only exact identities
 within the same source, applies versioned types/units/vocabularies, normalizes
 observations, records reviews/exclusions and exposes eligible model inputs. Keep
-raw plus one combined silver layer. Collection/discovery and retrieval of original
+Bronze plus one combined Silver layer. Collection/discovery and retrieval of original
 images are collection responsibilities.
 
 ```mermaid
 flowchart LR
-    R[Preserved raw captures] --> P[Process with frozen profile]
+    R[Bronze: preserved raw captures] --> P[Process with frozen profile]
     C[Versioned category profile] --> P
     P --> S[One silver snapshot with distinct seller rows]
     S --> B[Ledger and evidenced mapping batches]
     B -->|Read in current task| H[Calling harness: triage, diff, tests, impact]
     H -->|Accepted version| C
-    S -->|Eligible reviewed rows| M[Family split and frozen encoder]
+    S --> G[Downstream Silver to Gold]
+    G --> M[Model inputs and frozen encoder]
     M --> F[Later fitting and validation]
 ```
 
-For a new category, generate a profile from an explicit study definition:
+For a new category, use the schema skill to research preserved raw sources and
+create the initial catalog: field meanings, types, units, vocabularies, scopes,
+qualifiers, evidence and unresolved decisions. Keep its research record outside
+raw captures and immutable snapshots. Report mechanical census and sampled
+semantic inspection with their actual coverage. The catalog can be proposed or
+finalized within the requested task, without a runtime or model specification.
+
+The [chocolate reconstruction exercise](schema-proposals/chocolate-bronze-reconstruction-2026-10-04.md)
+applies category-schema to the retained Bronze corpus and compares the resulting
+75-field proposal with the existing 103-attribute schema. It demonstrates raw
+research and a reviewable design; it does not establish runnable profile or
+extraction coverage.
+
+Processing checks two inputs before applying extraction: readable Bronze raw
+data and a generated schema catalog for the same category/market. If the schema
+is absent, use category-schema and complete the catalog first. Missing raw data
+routes to collection. These checks are calling-agent instructions; the runtime
+still receives an archive and an executable profile through its CLI.
+
+| Stage | Responsibility and output |
+| --- | --- |
+| Initial schema creation (`category-schema`) | Research raw data and generate a field catalog with evidence and semantic checks. |
+| Bronze to Silver (`category-processing`) | Apply that catalog; configure mappings/extraction, validate executable field contracts and produce reviewed Silver with quality artifacts. |
+| Silver to Gold | Define the study model and prepare training inputs, family splits, encoders and matrices from reviewed Silver. |
+
+Candidate aliases and source paths require implementation and evidence checks.
+Tracking a field does not select it as a predictor. Category-processing finishes
+with the Silver handoff and does not invoke `prepare-model` as part of that stage.
+
+The existing generator and loader still require all five contracts, including a
+legacy model design, and Silver builds still produce legacy training views.
+Existing authorized profiles can supply that dependency. For a new schema with
+no model design, report the required runtime migration; do not invent model
+choices to satisfy the loader. This instruction revision adds no model-independent
+processing mode. Report unsupported targets/adapters as runtime gaps.
+
+When generation is in scope, generate a profile from the explicit study definition:
 
 ```sh
 python3 -B plugins/category-processing/cli.py init-profile \
@@ -75,6 +128,14 @@ dataset revision and update the affected Git manifests and semantic versions
 together. Profile generation establishes configuration; source extraction,
 evidence review and model validation remain separate work.
 
+The processing skill owns the definition and executable validation references.
+The schema skill includes its raw-research reference and works independently of
+the processing runtime. It is the canonical procedure for initial category
+analytical schema creation. Profile-loading, discovery and mapping guides route
+new-schema work to it. Existing-schema refresh, review and extension remain in
+processing maintenance. The repository skill is the maintained source; personal
+installed copies are synchronized distributions.
+
 Process with `--profile <profile-folder>`. The existing chocolate example is:
 
 ```sh
@@ -85,18 +146,11 @@ python3 -B plugins/category-processing/cli.py process \
 python3 -B plugins/category-processing/cli.py summarize \
   --silver-root data/silver/category-processing/chocolate/uk \
   --output data/review-packets/chocolate/uk
-python3 -B plugins/category-processing/cli.py prepare-model \
-  --silver-root data/silver/category-processing/chocolate/uk \
-  --output data/model-preparation/chocolate/uk \
-  --validation-fraction 0.2
 ```
 
 `process` accepts optional `--reviews <file>`; recipes normally use
 `category-processing-reviews-1`, with chocolate accepting its legacy review
 format too. `summarize` verifies silver snapshot hashes and regenerates batches/Markdown.
-`prepare-model` requires complete, eligible reviewed inputs and at
-least two families; the current unreviewed real chocolate data cannot pass this
-gate. Model preparation checks eligibility separately from processing success.
 Exit codes are 0 success, 1 partial processing and 2 fatal failure.
 
 Choose exactly one of `--category` and `--profile`. `--category chocolate` and
@@ -294,16 +348,16 @@ concrete investigation directions pending agent assessment; adopting their field
 requires the documented contract changes and tests. Prose concept investigation and an
 automatic proposal/decision registry remain future improvements.
 
-## Pricing model preparation and verification
+## Downstream handoff and verification
 
-The [model handoff](../../plugins/category-processing/skills/category-processing/references/model-handoff.md)
-defines `prepare-model` outputs, saved versions/units/support/split and conditional
-contrast arithmetic. Families stay together across seller rows. Training alone
-defines vocabularies, references, numeric domains and removal of constant terms;
-validation uses the frozen encoder and rejects unsupported levels/ranges.
-Generic target keys are `regular_unit_price` and `log_regular_unit_price`; both
-starters use regular GBP/100 g. No coefficients or uncertainty are fitted;
-regression/release flags remain false.
+The [Silver-to-Gold procedure](../../plugins/category-processing/skills/category-processing/references/silver-to-gold.md)
+owns model design and input preparation after reviewed Silver. The legacy
+`prepare-model` helper preserves versions/units/support/splits and writes JSONL
+training/validation inputs, a frozen encoder and design matrix. It does not export
+Parquet Gold or fit coefficients. Canonical chocolate Gold uses its
+[separate builder](chocolate-gold.md); portable Gold export for arbitrary categories
+is not implemented by this helper. Model preparation is outside the
+category-processing skill's raw-to-Silver completion criteria.
 
 Verify package behavior and documentation from the repository root:
 

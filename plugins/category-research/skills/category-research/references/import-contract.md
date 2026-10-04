@@ -1,8 +1,17 @@
-# Raw collection import contract
+# Bronze raw collection import contract
+
+This importer produces Bronze, the layer of preserved raw records and evidence.
+Its existing archive paths and `category-research-raw-1` format identify that layer.
 
 The envelope below is sufficient to begin collection. `information` and any
 additional product fields accept free JSON independently of a feature taxonomy.
 `contract_version` is a required nonempty label preserved from the sender.
+Supply a stable `source_key` for each known website/storefront. Use 1–200
+lowercase ASCII letters, digits, hyphens or underscores, starting with a letter
+or digit. The source key names a directory verbatim; retain the website URL
+separately. Missing, null or empty keys use the reserved `_unknown` directory
+without modifying the raw record. Product IDs remain unique across the
+category/market archive.
 
 ```json
 {
@@ -102,13 +111,49 @@ metadata, original_bytes = get_raw(public_source_url, timeout=20, max_bytes=2097
 ```
 
 The archive is rooted at
-`<output>/<category-slug>/<market-slug>/products/<product_id>/`. Each capture has
+`<output>/<category-slug>/<market-slug>/products/<source_key>/<product_id>/`. Each website
+has its own parent directory. Each capture has
 immutable source/image files and a history JSON. `product.json` updates atomically
 and retains the full raw record, information, notes, and evidence for all
-captures. Duplicate product IDs in one import append separate captures safely.
+captures. Repeated product IDs from the same source append separate captures
+safely; reusing an ID for another source is an error. The importer continues
+appending an existing legacy `products/<product_id>/` index in place. New
+listings use the source directory. This preserves all earlier history and
+artifact references. Readers must accept both directory layouts and reject
+ambiguous duplicate product indexes. A directory groups source structure; the
+analytical schema remains shared across the category.
+
+For an explicitly requested physical reorganization, move complete product
+folders and update archive-owned `history_path`, `archive_relative_path` and
+`product_json` values directly, including their occurrences in run reports.
+Keep original `raw_record`, source information and artifact/image bytes intact.
+Verify capture/index agreement and artifact hashes before and after the move.
+Storage-path edits change index/history JSON hashes; generate a fresh input
+inventory for subsequent research or processing. The active grouped archive can
+use its actual paths without symlinks, redirects or a runtime relocation map.
+
 Transfers are cached by URL per run; original bytes are copied into each product
 folder. Shared catalogs, original import JSON values, and full run reports are
 retained alongside the product folders.
+
+## Why group product folders by website
+
+Products from one website often share catalogue objects, page templates and field
+names. Keeping their JSON together makes it easier to sample related structures,
+test mappings on more than one product, investigate extraction gaps and locate
+affected records when a website changes. Comparing samples from every website
+also helps schema creation find common concepts without allowing one large
+source to dominate the research.
+
+The source key identifies the website/storefront; record product brand separately.
+Within each source, sample different product types, variants, collection methods
+and capture dates before treating a mapping as reusable. Websites can expose
+multiple formats. Preserve those original representations in Bronze and map them
+to the category's shared analytical schema during processing. Folder organization
+supports these research and review tasks; extraction and validation still require
+their own evidence and checks.
+
+## Category scope and section observations
 
 The category label is unrestricted by a bundled category list; records retain
 arbitrary fields for food, electronics, apparel, furniture and other product

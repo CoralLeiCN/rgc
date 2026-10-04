@@ -6,6 +6,15 @@ compatibility: Requires Python 3.9 or later; network access only when source or 
 
 # Category Research
 
+Collection produces Bronze, the preserved raw-data layer. It retains original
+records, source artifacts, identities, timestamps and immutable capture history.
+Store new product folders under `products/<source_key>/<product_id>/`, using one
+stable source key per website/storefront. Known source keys use lowercase letters, numbers, hyphens or underscores and
+start with a letter or number. Missing/null/empty keys are preserved under
+`_unknown`; retain the original source value.
+Schema creation researches Bronze; later category processing applies that schema
+to produce Silver. Existing raw archive formats and paths identify Bronze storage.
+
 Start with the requested category, market, source coverage, and product boundary.
 Collect many products and retain information from each source before proposing a
 complete analytical schema. Discovery uses the calling agent's available source

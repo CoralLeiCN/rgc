@@ -41,7 +41,7 @@ installs no automatic profile editor, dispatcher or scheduler.
 | Triage | Treatment |
 | --- | --- |
 | Alias | Establish equivalent meaning within scope/unit/qualifier; add a canonical mapping verified against evidence. |
-| New concept/attribute | Define type, vocabulary, unit and scope; update catalog/validator and any deliberate predictor selection. |
+| New concept/attribute in an existing schema | Define meaning, type, vocabulary, unit, scope and qualifiers from original evidence; update coordinated contracts and compare processing impacts within this maintenance workflow. |
 | Parser defect | Fix extraction rather than adding labels for malformed output; retain a source fixture. |
 | Missing data | Record the coverage gap or obtain evidence within scope; leave unsupported fields unknown. |
 | Conflict | Preserve and review conflicting evidence; frequency does not choose truth. |
@@ -56,8 +56,8 @@ Assess all five contracts and coordinate the affected versions before acceptance
 Keep profiles fixed during a run; accepted changes apply on a subsequent rebuild.
 For a pinned profile, copy its five verified payloads into a separately versioned
 local working directory without `dataset-contract.json`; never edit verified
-cache bytes. New categories can use [profile-definition.md](profile-definition.md)
-to generate working contracts. The Hugging Face dataset owns published analytical
+cache bytes. Initial schema creation for a new category uses the
+[category-schema skill](../../category-schema/SKILL.md). The Hugging Face dataset owns published analytical
 payloads. Git stores only the immutable dataset revision and per-file hashes;
 update the affected reference after a reviewed release is published.
 

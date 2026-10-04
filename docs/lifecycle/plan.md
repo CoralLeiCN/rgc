@@ -1,5 +1,29 @@
 # Project implementation plan
 
+## Schema workflow and Bronze source directories: main integration
+
+The user requested committing this task and merging it into local `main`.
+The task branch is `codex/bronze-schema-workflow`; its initial implementation
+commit is `b625f2e7`. Main was refreshed from its configured upstream at
+`89d76b38ee206278db1ad1d0606564c625ee1199`. Integration preserves main's blonde
+and mixed chocolate extraction, inferred Gold publication records, model refit
+and web changes. Two documentation conflicts were resolved by retaining those
+extraction details alongside the dedicated initial-schema skill, Bronze-to-Silver
+entry conditions and downstream model-preparation boundary.
+
+The landing includes the initial-schema proposal/report, source-grouped collection
+and readers, tests, rationale and the verified local raw migration record. Raw
+data and ignored research execution files remain local. No analytical contract
+or dataset publication is part of this Git operation.
+
+Validation: locked Python dependencies and all four offline contract caches
+verified. Ruff, the documentation guard and whitespace checks passed. The full
+pytest suite passed 631 cases in 38.40 seconds, with seven web runtime cases
+skipped because their fixtures were unavailable. The web files match refreshed
+main exactly. These results validate the source tree for the single squash
+commit on main.
+
+
 ## Main refresh to the inferred-Gold model release
 
 Merged local main `137ed9e4d497f903041182fdbb435a2baceeaec0` into
@@ -62,6 +86,171 @@ Canonical requirements: [specification](../spec.md),
 [documentation policy](../documentation-policy.md).
 
 ## Current work and files
+
+### Bronze directories grouped by source
+
+The user requested one website parent directory for parsed Bronze product JSON.
+Collection 0.3.0 writes new listings beneath
+`products/<source_key>/<product_id>/`, using safe stable source keys. Missing,
+null or empty keys retain their original records under `_unknown`.
+Repeat captures append to the same product, including existing flat locations;
+source changes and ambiguous duplicate indexes fail instead of combining sellers.
+Chocolate and portable readers, snapshot checks, archive verification and local
+evidence export support the grouped and legacy layouts. Processing 0.3.4 retains
+stable seller UID semantics. Source grouping supports source-specific mappings
+and a shared category analytical schema. Collection skill/import instructions
+and affected processing guides document this boundary.
+
+At the user's request, the [specification rationale](../spec.md#why-bronze-is-grouped-by-website)
+now explains why website structures provide a useful boundary for source
+sampling, parser development, missing-value review and maintenance. Intention,
+the processing guide and the standalone collection import contract carry the
+same reasoning. They require sampling variations within a website and retaining
+shared category field meanings. This follow-up documents the design; it adds no
+runtime behavior or migration. Documentation and whitespace checks passed.
+
+The user subsequently requested moving the existing JSON and explicitly declined
+redirects or backward-compatibility links. The physical relocation moves all
+3,743 complete product folders into 24 website parents, with 4,347 captures.
+Archive-managed paths are rewritten directly in indexes, histories and run
+reports; raw source records, descriptions and artifact/image bytes retain their
+content. No runtime alias, symlink or old-path lookup is created. Original
+index/history hashes change with the storage metadata. Frozen research inventories
+and earlier exports retain their pre-move meaning and need a fresh inventory for
+use against the reorganized archive. No data or analytical contracts are published.
+
+The local execution evidence is in
+`data/investigation/2026-10-04-bronze-source-move/`. Baseline verification passed
+all 4,347 histories and 19,462 referenced artifact files. The staged move checks
+26,904 files and prepares 8,104 metadata updates, with recoverable originals kept
+outside the active archive during execution. Three focused tests passed for
+physical relocation, unchanged original evidence, concurrent-change rejection
+and rollback after a simulated write failure. The move completed with 3,743
+indexes under exactly 24 source directories, zero flat indexes, zero remaining
+import locks and zero symlinks. Post-move verification passed all 4,347 histories
+and 19,462 referenced files (10,759,101,910 bytes), with zero integrity failures.
+All 18,798 moved source/image artifact files retained their original hashes.
+A separate comparison confirmed every original raw record and information object
+across all 4,347 captures remained equal. The active archive verification report
+was replaced with the new successful result. Documentation checks, 27
+documentation tests, repository Ruff and whitespace checks passed.
+Validation: the locked environment was synchronized offline and all four pinned
+contract caches verified with `python3 -B scripts/fetch_contracts.py --all --offline`.
+The affected collection/processing/archive/export/Silver suite passed 229 tests.
+`uv run pytest` passed 579 tests with seven existing web-runtime skips. A final
+focused 21-test run also passed after ensuring duplicate indexes remain hashed
+in the input snapshot. `uv run ruff check .`,
+`python3 -B scripts/check_documentation.py` and `git diff --check` passed.
+
+
+### Fresh chocolate schema from Bronze
+
+The user requested running category-schema from scratch and comparing the result
+with the old schema. The [report](../data/schema-proposals/chocolate-bronze-reconstruction-2026-10-04.md)
+records 3,743 index/latest-capture bodies from 24 sources, 4,347 retained captures,
+96 selected listing summaries, 24 source-format summaries, 10 targeted detailed
+records (97 unique listings), and 13 reviewed semantic cases. It inventories raw
+structure/prose candidates without importing the existing schema or extractors.
+The 75-field catalog was semantically refined and frozen before the old profile
+was opened; earlier conversation means this is not a cognitive blind evaluation.
+
+The old profile at `d549ad91d63fb452af605df4a939c4e1f0a59bfa` was hash verified.
+Its 103 fields have 44 counterparts/restructured concepts, 39 consolidations
+requiring derived views, eight envelope/configuration moves, four evidence-only
+moves and eight explicit catalog gaps. The report includes the full catalog and
+crosswalk. The new count includes nine offers and three reviews, so counts are
+not completeness measures. Post-design review of three additional originals
+confirmed two genuine ruby-chocolate descriptions and a personalized-name
+counterexample. Ruby is omitted by the frozen fresh vocabulary and must be
+retained in a subsequent reviewed design.
+
+Local working artifacts live in
+`data/investigation/2026-10-04-schema-from-bronze/`; the frozen catalog SHA-256 is
+`f915e32ba90319c8c3dd9d4c74ecaa8e8ec4320e18aa50d3e8958e2811f410be`.
+All input index bytes were rehashed unchanged, 148 schema/case references resolve
+to original capture/pointer values, and all 103 crosswalk entries resolve.
+The old cocoa schema already supports the Chococo 47% minimum declaration;
+its prior missing value remains an extraction/review gap. No working contract,
+Silver/Gold data or publication was changed. Original artifact bodies, image
+pixels/OCR and earlier capture bodies were not semantically investigated.
+Final validation passed: 27 documentation pytest cases, repository Ruff and
+explicit Ruff checks for all five ignored research scripts, documentation guard
+and whitespace checks. The final provenance verifier rechecked all 3,743 input
+hashes, the 148 draft/case references, three post-design source references, the
+frozen schema hash and the complete 103-field crosswalk. No runtime semantic
+suite was rerun because this task changed research artifacts and documentation.
+
+### Bronze layer naming
+
+The user defined the preserved raw-data layer as Bronze. The canonical
+specification, intention, collection and processing guides, stage diagram,
+project overview and schema skill now use Bronze → Silver → Gold. Collection
+writes Bronze, schema creation researches it, and category-processing begins
+with Bronze data and a generated schema before producing reviewed Silver.
+Bronze is a formal layer name, replacing the earlier presentation-only wording.
+Storage paths, raw format identifiers, original evidence and immutable snapshots
+retain their existing contracts; this terminology change requires no migration.
+Validation passed: three processing package tests, three collection packaging
+tests, Ruff, documentation and whitespace checks. The schema and processing
+skills passed quick validation. Collection packaging verifies its existing
+`compatibility` frontmatter; the generic quick validator rejects that preexisting
+supported field, so its result is not a collection validation pass. The installed
+schema skill matches all maintained files by SHA-256 and its links resolve.
+
+### Dedicated category schema skill
+
+The user requested a dedicated skill for researching raw category data and
+creating the initial schema. Processing package `0.3.3` includes
+[category-schema](../../plugins/category-processing/skills/category-schema/SKILL.md)
+with field meanings, types, units, scopes, qualifiers, original evidence,
+coverage, rationale and semantic checks. It can propose or finalize the initial
+catalog without a fixed file count, processing runtime or model target.
+Initial draft refinement stays in creation; existing-schema refresh, review and
+extension stay in processing maintenance.
+
+The latest responsibility split moves the definition/example and executable
+validation/release references into category-processing. Schema creation hands off
+a catalog and evidence. Processing configures `source-mappings.json` and
+`pipeline.json`, serializes the catalog into `profile.json` and derives the typed
+`product.schema.json`. The model-handoff step owns `model-design.json` decisions.
+Processing assembles the complete profile after those decisions are available.
+The generator and loader still require all five contracts together. No runtime
+logic, analytical contract, automated research engine or proposal registry changed.
+Public guides and routing now describe this ownership, and the existing nonfood
+fixture follows the definition example at its processing location.
+
+The latest stage correction makes the processing skill check readable preserved
+raw data and a generated schema before applying processing. Missing schemas route
+to category-schema; missing raw data routes to collection. The skill now finishes
+at reviewed Silver. Model design and preparation of training inputs, family
+splits, encoders and matrices move to the downstream Silver-to-Gold reference;
+the old model-handoff path forwards there for compatibility. Public workflow
+commands no longer include `prepare-model` as a processing step.
+
+Runtime migration remains pending: the portable loader/generator still requires
+`model-design.json`, and Silver builds still emit legacy training views. The
+existing downstream helper writes JSONL/encoder outputs and does not export
+Parquet Gold. These limitations are explicit in skill and guides. No runtime,
+analytical contract, source evidence or historical snapshot changed here.
+Stage-scope checks passed: ten focused package/profile tests, both skill
+validators, Ruff, offline verification of all four pinned contract caches, the
+documentation guard and whitespace checks. The installed schema skill matches
+all three maintained files by SHA-256 and its local references resolve.
+
+The repository skill is the canonical maintained initial-creation source;
+`/Users/coral/.codex/skills/category-schema` is its synchronized distribution.
+The standalone skill includes only its raw-research reference and UI metadata.
+Contract assembly needs the separately available processing runtime.
+
+Earlier validation: locked offline environment, all four pinned contract caches
+verified, 568 pytest cases passed and seven web integration cases skipped. Scope
+and purpose refinements passed ten focused package/profile tests, skill validation,
+Ruff, documentation and whitespace checks. The responsibility split also passed
+ten focused package/profile tests, Ruff, skill validation, the documentation
+guard and whitespace checks. All four pinned caches verified offline. The
+installed skill now has three files, all matching the maintained source by
+SHA-256; its references resolve locally and its frontmatter validates.
+Execution across other harnesses remains unverified.
 
 The retailer median branch integrated local main
 `cd9e7df8eb7f50aee33d3fce5ca9f0509aff8deb`, retaining both experiment interfaces

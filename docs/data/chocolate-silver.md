@@ -1,6 +1,7 @@
-# UK chocolate raw and silver workflow
+# UK chocolate Bronze and Silver workflow
 
-The chocolate workflow preserves raw evidence, builds one combined silver
+Bronze is the raw data layer, preserving original collected records and evidence.
+The chocolate workflow preserves Bronze evidence, builds one combined silver
 dataset, and exports immutable Parquet Gold training snapshots. Silver combines
 deduplication within each seller, schema standardization, price normalization,
 evidence review and model eligibility in one build.
@@ -41,7 +42,7 @@ immutable Gold snapshots.
 
 | Stage | Purpose | Data and outputs | Current status |
 | --- | --- | --- | --- |
-| **Bronze / raw** | Preserve what each source reported so later interpretations can be checked. | Original product records, prices and claims; source text and available images; seller identity and immutable capture history. | Implemented in the raw archive. Bronze is the presentation name for this existing layer. |
+| **Bronze (raw)** | Preserve what each source reported so later interpretations can be checked. | Original product records, prices and claims; source text and available images; seller identity and immutable capture history. | Implemented as the preserved raw archive. Bronze is the canonical name of this layer. |
 | **Silver** | Turn preserved evidence into consistent records while retaining uncertainty and provenance. | Listings deduplicated within each seller, typed features, standardized units, normalized prices, source references, quality reports, review queues and eligibility decisions. | Implemented with pandas. Missing and conflicting values remain visible; current chocolate records still need review before training. |
 | **Gold** | Package verified training views in immutable snapshots for model use. | One Parquet training population, copied contracts and price/identity evidence, manifests, hashes and preservation reports. | Export and an experimental OLS trainer are implemented. Gold retains Silver decisions as provenance and exposes all 2,134 candidates without eligibility fields; actual quantities and model identification gates still apply, and no real-data model has fitted. Validated price benchmarks and explanations remain planned. |
 
@@ -53,7 +54,7 @@ flowchart TD
     Agent --> Collection["Collection plugin imports and preserves captures"]
     Collection --> Raw
 
-    subgraph Bronze["Bronze / raw stage"]
+    subgraph Bronze["Bronze stage: preserved raw data"]
         Raw["Implemented: preserve original source evidence<br/>Product records, prices, claims, text and available images<br/>Keep seller identity and immutable capture history"]
     end
 
@@ -136,7 +137,10 @@ uv run --script scripts/build_chocolate_silver.py \
 ```
 
 `--archive-root` is the collections root containing
-`chocolate/uk/products/<product_id>/product.json`. The output must not overlap
+`chocolate/uk/products/<source_key>/<product_id>/product.json`. Legacy
+`products/<product_id>/product.json` indexes are also supported. Source directory
+names must match the captures; duplicate product IDs across directories are
+reported as archive errors. The output must not overlap
 this root. Keep the raw collections root available to resolve original
 artifact/history references. Use explicit paths for an archive elsewhere.
 

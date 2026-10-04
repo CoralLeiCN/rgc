@@ -27,7 +27,7 @@ currency and tax basis. Chocolate and coffee remain examples. Structural
 discovery preserves unfamiliar raw fields for agent investigation and durable
 proposals linked to evidence.
 
-The chocolate architecture is raw → combined Silver → immutable Parquet Gold.
+The chocolate architecture is Bronze (raw) → combined Silver → immutable Parquet Gold.
 Silver owns deduplication within each seller, standardization, price
 normalization, review and eligibility. Gold initially preserves those decisions
 as the training interface. The standalone

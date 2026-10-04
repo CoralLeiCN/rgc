@@ -1,9 +1,19 @@
 # Category Processing Agent Plugin
 
+Bronze indexes for new listings use
+`<category>/<market>/products/<source_key>/<product_id>/product.json`, grouping
+records from each website/storefront. Processing also reads legacy flat indexes
+and mixed archives, verifies source-directory identity and reports duplicate
+product IDs across directories. Stored history references and seller UIDs retain
+their meanings. The category schema is shared; source mappings handle differences
+between website structures.
+
+
 This package targets the
 [Agent Plugins 1.0.0 specification](https://agent-plugins.org/specification).
-Its discoverable component is
-[skills/category-processing/SKILL.md](skills/category-processing/SKILL.md), in the
+Its discoverable components are
+[category-schema](skills/category-schema/SKILL.md) for schema design and
+[category-processing](skills/category-processing/SKILL.md) for processing, in the
 [Agent Skills format](https://agentskills.io/specification). The manifest uses
 the official versioned schema. Client installation/discovery depend on the
 client's format support.
@@ -23,7 +33,30 @@ uses a commit revision and per-file SHA-256/size checks, without repository sibl
 modules or another plugin installation. Category-specific fields, units,
 comparable groups and price bases belong to a supplied profile. It does not fit
 a regression. Copy the whole package when moving it; run its CLI directly when
-native plugin installation is unavailable. The package version is `0.3.2`.
+native plugin installation is unavailable. The package version is `0.3.4`.
+
+Use the dedicated schema skill for initial creation of a new category schema.
+It researches preserved raw data and creates the field catalog with meanings,
+types, units, scopes, qualifiers, evidence, coverage and unresolved decisions.
+Its standalone instructions need no processing runtime or model target.
+
+Bronze is the preserved raw-data layer produced by collection. The workflow is
+Bronze → Silver → Gold, with the generated schema applied during Bronze-to-Silver
+processing. Existing raw format identifiers and storage paths refer to Bronze.
+
+Category-processing starts after readable raw data and a generated schema are
+available for the requested category/market. If the schema is missing, use
+category-schema first; missing raw data routes to collection. Processing configures
+mappings/extraction, applies the schema, reviews evidence and finishes at Silver.
+Model design and model-input preparation belong to the downstream
+[Silver-to-Gold stage](skills/category-processing/references/silver-to-gold.md).
+
+Processing owns `init-profile` and its definition/validation references. The
+existing runtime still requires five contracts including a legacy model design,
+and writes training views during Silver builds. Do not invent modeling choices
+or run `prepare-model` to complete the processing skill. Model-independent
+runtime assembly/execution requires a future migration.
+Existing-schema refresh, review and extension belong to processing maintenance.
 
 Within an authorized study, the agent reviews, decides and applies supported
 local schema, mapping and parser improvements without requiring user review,
@@ -44,7 +77,6 @@ python3 <plugin-root>/cli.py init-profile --input <category-definition.json> --o
 python3 <plugin-root>/cli.py process --archive-root <collections-root> --profile <profile-folder> --output <silver-root>
 python3 <plugin-root>/cli.py process --archive-root <collections-root> --category chocolate --contracts-cache <cache-root> --output <silver-root> [--offline]
 python3 <plugin-root>/cli.py summarize --silver-root <silver-root> --output <summary-output>
-python3 <plugin-root>/cli.py prepare-model --silver-root <silver-root> --output <model-preparation-root> --validation-fraction 0.2
 ```
 
 Choose exactly one of `--category` and `--profile`. `--category chocolate` and
@@ -67,7 +99,7 @@ Read the skill's references for the
 [category definition](skills/category-processing/references/profile-definition.md),
 [profile configuration](skills/category-processing/references/profile-contract.md),
 [mapping maintenance](skills/category-processing/references/mapping-maintenance.md), and
-[model handoff](skills/category-processing/references/model-handoff.md).
+[downstream Silver-to-Gold handoff](skills/category-processing/references/silver-to-gold.md).
 Chocolate has a broad profile with 103 attributes and conservative source parsing.
 Its adapter recognizes explicit blonde chocolate names and coordinated mixed
 selections, such as "Milk Chocolate and Dark Chocolate Selection". Extracted

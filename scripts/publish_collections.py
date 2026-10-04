@@ -56,7 +56,9 @@ def exclusion_reason(path, relative):
         return "outside_evidence_allowlist"
     elif parts[0] == "products" and not (
             len(parts) == 3 and parts[2] == "product.json"
-            or len(parts) >= 4 and parts[2] in {"sources", "history"}):
+            or len(parts) >= 4 and parts[2] in {"sources", "history"}
+            or len(parts) == 4 and parts[3] == "product.json"
+            or len(parts) >= 5 and parts[3] in {"sources", "history"}):
         return "outside_evidence_allowlist"
     compressed = path.suffix.lower() == ".gz"
     if compressed and path.with_suffix("").suffix.lower() not in TEXT_SUFFIXES:

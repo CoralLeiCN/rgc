@@ -15,6 +15,7 @@ import chocolate_silver as silver_module
 import dataset_contracts as contract_module
 import pytest
 from build_chocolate_silver import main as silver_main
+from category_research import ArchiveError
 from chocolate_archive_fixture import ChocolateArchiveFixture
 from chocolate_cleanup.core import pointer_value
 from chocolate_silver import build_silver_dataset
@@ -491,7 +492,7 @@ class ChocolateSilverTests:
     def assert_changed_source_identity_is_preserved_and_excluded(self, first, latest):
         self.collect([first])
         self.collect([latest])
-        raw_index = self.archive / "chocolate/uk/products/example/product.json"
+        raw_index = self.archive / "chocolate/uk/products/chocolate-shop/example/product.json"
         captures = json.loads(raw_index.read_text())["captures"]
         assert len(captures) == 2
         for capture in captures:
@@ -526,7 +527,13 @@ class ChocolateSilverTests:
         latest = self.product(
             source="waitrose", price="3.00", observed_at="2026-10-03T07:00:00Z"
         )
-        self.assert_changed_source_identity_is_preserved_and_excluded(first, latest)
+        self.collect([first])
+        before = self.snapshot(self.archive)
+        with pytest.raises(ArchiveError, match="another source directory"):
+            self.collect([latest])
+        assert self.snapshot(self.archive) == before
+        self.build()
+        assert len(self.rows("products")) == 1
 
     def test_one_raw_folder_cannot_mix_different_source_variant_identifiers(self):
         first = self.product(price="4.00", observed_at="2026-10-02T07:00:00Z")
@@ -546,7 +553,7 @@ class ChocolateSilverTests:
     def test_raw_index_mutation_between_internal_steps_prevents_publication(self):
         self.collect([self.product()])
         original_standardizer = silver_module.build_standardized_dataset
-        raw_index = self.archive / "chocolate/uk/products/example/product.json"
+        raw_index = self.archive / "chocolate/uk/products/chocolate-shop/example/product.json"
 
         def standardize_then_mutate(*args, **kwargs):
             report = original_standardizer(*args, **kwargs)
@@ -597,7 +604,7 @@ class ChocolateSilverTests:
 
     def test_legacy_temporary_hardlink_cannot_overwrite_raw_source(self):
         self.collect([self.product()])
-        raw_index = self.archive / "chocolate/uk/products/example/product.json"
+        raw_index = self.archive / "chocolate/uk/products/chocolate-shop/example/product.json"
         self.output.mkdir()
         legacy = self.output / ".products.jsonl.tmp"
         os.link(raw_index, legacy)

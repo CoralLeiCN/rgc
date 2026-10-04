@@ -30,7 +30,7 @@ explanations remain planned.
 | Record | One product offered by one seller; the same product at different shops retains separate listings and prices. |
 | Collected fields | Prices, pack sizes, ingredients, nutrition, descriptions, packaging and promotional claims, where available. |
 | Source evidence | Source links, capture dates, original text and available images. |
-| Bronze / raw archive | Original records, source evidence and capture history. |
+| Bronze layer (raw archive) | Original records, source evidence and capture history. |
 | Silver dataset | Standardized features, comparable price units and review flags; missing or conflicting information stays visible. |
 | Gold snapshots | One immutable Parquet training population with verified contracts and evidence provenance; eligibility columns are removed. |
 | Current status | All Gold candidates are model eligible under the user instruction; actual missing inputs still limit training, and UK market coverage is unverified. |
@@ -39,7 +39,7 @@ explanations remain planned.
 ## How it works
 
 The [data flow diagram](docs/data/chocolate-silver.md#data-flow) shows the path
-the bronze/raw, silver and Gold stages, with descriptions of their
+through the Bronze (raw), Silver and Gold layers, with descriptions of their
 purpose, outputs and current status.
 
 | Part of the product | Current status |

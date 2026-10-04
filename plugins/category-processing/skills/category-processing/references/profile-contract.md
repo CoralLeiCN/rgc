@@ -1,8 +1,10 @@
 # Profile contract
 
-Choose a supplied profile for the requested category/market, generate a new
-profile from an explicit [category definition](profile-definition.md) using
-`init-profile`, or resolve a packaged category with
+Use the [category-schema skill](../../category-schema/SKILL.md) to create a new
+analytical schema. Existing-schema changes follow
+[mapping maintenance](mapping-maintenance.md). This reference owns runtime loading and consumption
+of existing profiles. Choose a supplied profile for the requested category/market
+or resolve a packaged category with
 `category_processing.profiles.resolve_profile(category="coffee")`. Packaged
 references live in `profiles/<category>/dataset-contract.json`; their five JSON
 payloads live under `contracts/category-processing/<category>/` in the
@@ -13,18 +15,13 @@ on use. It rejects mutable revision references and corrupt cache content.
 `--contracts-cache` selects the cache, and `--offline` requires verified cached
 bytes without downloading.
 
-An example may inform a design, but new categories do not require copying its
-attributes or price basis. `init-profile` produces all five aligned local
-contracts from the supplied definition without a dataset download.
-
-To extend a starter, copy its five verified payload files into a separately
-versioned custom profile directory, omitting `dataset-contract.json`. Keep the
-verified cache unchanged. A custom directory without a dataset reference retains
-local-only loading. Use these local working copies for evidence assessment and
-validation. Published analytical contracts are authoritative in the Hugging Face
-dataset; after the required release review and publication, update the small
-reference to the new immutable revision and per-file hashes. Do not put category
-JSON payloads back into Git. The five JSON files own separate decisions:
+Processing owns working-copy contract assembly and generation from an explicit
+[definition](profile-definition.md), using the initial schema catalog and the
+subsequent extraction and model decisions. A custom directory without `dataset-contract.json` supports local
+loading. Verified caches and immutable snapshots retain their exact contracts.
+Published analytical payloads are authoritative in the Hugging Face dataset;
+Git retains immutable revision/hash references. The five files own these runtime
+decisions:
 
 | File | Owns |
 | --- | --- |

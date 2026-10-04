@@ -6,7 +6,11 @@ from copy import deepcopy
 from pathlib import Path
 
 import pytest
-from category_processing.archive import load_raw_archive, seller_uid
+from category_processing.archive import (
+    confirm_raw_snapshot,
+    load_raw_archive,
+    seller_uid,
+)
 from category_processing.pipeline import build_silver_dataset
 from category_processing.profile_builder import init_profile
 from fixture_archive import import_document
@@ -101,6 +105,34 @@ class GenericArchivePathTests:
         archive = load_raw_archive(self.archive, CATEGORY, MARKET)
         assert (set(archive["listings"])) == ({"fixture-chair"})
         assert (archive["errors"]) == ([])
+
+    def test_source_directories_and_legacy_paths_share_one_inventory(self):
+        index = self.normalized_fixture()
+        destination = index.parent.parent / "fixture-shop" / index.parent.name / index.name
+        destination.parent.mkdir(parents=True)
+        index.rename(destination)
+        original = destination.read_bytes()
+        archive = load_raw_archive(self.archive, CATEGORY, MARKET)
+        assert set(archive["listings"]) == {"fixture-chair"}
+        assert archive["errors"] == []
+        assert archive["inputs"][0]["path"].startswith("home-furniture/us-markets/products/")
+        confirm_raw_snapshot(archive)
+        index.write_bytes(original)
+        with pytest.raises(RuntimeError, match="inventory changed"):
+            confirm_raw_snapshot(archive)
+        duplicates = load_raw_archive(self.archive, CATEGORY, MARKET)
+        assert duplicates["listings"] == {}
+        assert len(duplicates["inputs"]) == 2
+        assert {error["code"] for error in duplicates["errors"]} == {"duplicate_product_directory"}
+
+    def test_source_directory_must_match_original_capture(self):
+        index = self.normalized_fixture()
+        destination = index.parent.parent / "another-shop" / index.parent.name / index.name
+        destination.parent.mkdir(parents=True)
+        index.rename(destination)
+        archive = load_raw_archive(self.archive, CATEGORY, MARKET)
+        assert archive["listings"] == {}
+        assert "website directory" in archive["errors"][0]["reason"]
 
     def test_normalized_directory_is_preferred_when_both_producers_exist(self):
         self.normalized_fixture()

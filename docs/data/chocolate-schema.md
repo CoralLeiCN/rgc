@@ -1,5 +1,17 @@
 # Chocolate schema, reviews and pricing handoff in silver
 
+Bronze product indexes may be grouped by source under
+`<category>/<market>/products/<source_key>/<product_id>/product.json`.
+Legacy flat indexes remain readable. Source grouping changes discovery paths;
+field meanings and the category's analytical schema stay shared across sources.
+
+
+The [fresh Bronze reconstruction and comparison](schema-proposals/chocolate-bronze-reconstruction-2026-10-04.md)
+records a separate 75-field research proposal created from raw evidence and then
+compared with this 103-attribute schema. It includes the complete old-to-new
+crosswalk, sampled source evidence and design gaps. The live schema described
+here retains its published contract and versions.
+
 The [authorized Gold eligibility override](chocolate-gold.md) changes Gold's
 training flags in a new immutable snapshot with retained parent/provenance.
 The baseline trainer accepts those flags and records actual missing inputs.

@@ -25,7 +25,19 @@ for input fields, local source/catalog preservation, API usage, transfer options
 and archive/report semantics. Products can be supplemented by subsequent imports:
 raw artifacts and capture history remain immutable while `product.json` retains
 every capture in its current index. Network transfer failures and source-field
-observations remain visible. Version 0.2.0 defaults to description, prices and
+observations remain visible. Version 0.3.0 places new product folders under
+`<category>/<market>/products/<source_key>/<product_id>/`. Each website/storefront
+has one stable source key expressed as a safe lowercase directory identifier.
+Missing/null/empty keys retain their evidence under `_unknown`. Existing flat
+product folders continue receiving captures in place, preserving their evidence references. Product IDs stay unique across
+sources. Directory grouping helps research source structures and configure
+source mappings while retaining one analytical schema for the category.
+The [grouping rationale](skills/category-research/references/import-contract.md#why-group-product-folders-by-website)
+explains source sampling, extraction review and maintenance when websites change.
+The import contract also describes evidence-preserving physical reorganization
+when requested: update archive metadata paths directly and verify the moved
+histories and artifacts before using the new inventory.
+The collector defaults to description, prices and
 availability observations. Optional `collection_sections` selects any other
 field-key markers, or `{}` disables those heuristics. No ingredient, nutrition or
 packaging section is assumed for an unspecified category. New captures and
@@ -38,7 +50,8 @@ claims of complete category coverage.
 Markers support Unicode source keys through NFKC normalization and case-folding
 for matching only; original keys, configured markers and evidence remain unchanged.
 
-Collection preserves raw archives for later processing. The separate
+Collection produces Bronze, the raw-data layer of original records, source
+artifacts and immutable capture history, for later schema research and processing. The separate
 category-processing package provides its own CLI and skill and consumes the
 [archive format](skills/category-research/references/import-contract.md)
 to build silver data with distinct seller rows, apply category profiles, summarize

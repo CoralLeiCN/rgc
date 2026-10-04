@@ -167,14 +167,57 @@ class ArchiveTests:
     def test_duplicate_product_ids_append_without_losing_parallel_history(self):
         supplied = document()
         second = deepcopy(supplied["products"][0])
-        second["source_key"] = "another-source"
         second["information"]["price"] = "GBP 2.50"
         supplied["products"].append(second)
         report = import_document(supplied, self.output, workers=4)
         current = json.loads((self.output / report["products"][0]["product_json"]).read_text())
         assert (report["unique_product_ids"]) == (1)
         assert (len(current["captures"])) == (2)
-        assert (len(list((self.output / "tea/uk/products/fixture-1/history").glob("*.json")))) == (2)
+        assert (len(list((self.output / "tea/uk/products/fixture-shop/fixture-1/history").glob("*.json")))) == (2)
+
+    def test_sources_have_separate_parents_with_complete_evidence(self):
+        first = document()["products"][0]
+        second = deepcopy(first)
+        second.update(product_id="other-1", source_key="other-shop")
+        report = import_document(document([first, second]), self.output)
+        for raw, outcome in zip([first, second], report["products"]):
+            folder = Path("tea/uk/products") / raw["source_key"] / raw["product_id"]
+            assert outcome["product_json"] == (folder / "product.json").as_posix()
+            capture = json.loads((self.output / outcome["history_path"]).read_text())
+            assert capture["raw_record"] == raw
+            artifact = capture["source_artifacts"][0]
+            assert Path(artifact["archive_relative_path"]).is_relative_to(folder)
+            assert (self.output / artifact["archive_relative_path"]).read_text() == raw["source_artifacts"][0]["content"]
+
+    def test_product_id_cannot_be_reused_by_another_source(self):
+        supplied = document()
+        other = deepcopy(supplied["products"][0])
+        other["source_key"] = "other-shop"
+        with pytest.raises(ArchiveError, match="different sources"):
+            import_document(document([supplied["products"][0], other]), self.output)
+        assert not self.output.exists()
+        report = import_document(supplied, self.output)
+        index = self.output / report["products"][0]["product_json"]
+        before = index.read_bytes()
+        with pytest.raises(ArchiveError, match="another source directory"):
+            import_document(document([other]), self.output)
+        assert index.read_bytes() == before
+
+    @pytest.mark.parametrize("source", ["../escape", "a/b", ".", "A Shop"])
+    def test_invalid_source_directory_is_rejected_before_writing(self, source):
+        supplied = document()
+        supplied["products"][0]["source_key"] = source
+        with pytest.raises(ArchiveError, match="source_key"):
+            import_document(supplied, self.output)
+        assert not self.output.exists()
+
+    @pytest.mark.parametrize("source", [None, ""])
+    def test_unknown_source_is_preserved_without_inventing_identity(self, source):
+        supplied = document()
+        supplied["products"][0]["source_key"] = source
+        report = import_document(supplied, self.output)
+        assert report["products"][0]["product_json"] == "tea/uk/products/_unknown/fixture-1/product.json"
+        assert self.read_capture(report)["raw_record"] == supplied["products"][0]
 
     def test_exact_compressed_bytes_errors_and_derived_text_remain_distinct(self):
         source = self.root / "blocked.html.gz"

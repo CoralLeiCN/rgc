@@ -7,6 +7,14 @@ lengths. A populated verified cache or full custom profile supports offline
 execution. The package runs independently of repository sibling modules and
 client installation. `<plugin-root>` contains `plugin.json` and `cli.py`.
 
+The skill checks readable preserved raw data and a generated schema for the same
+category/market before applying processing. A missing schema routes to
+category-schema; missing raw data routes to collection. Processing finishes at
+reviewed Silver. The [Silver-to-Gold procedure](silver-to-gold.md) owns model-input
+preparation. The existing runtime still requires a legacy model contract and
+writes training views listed below; this workflow revision does not remove those
+compatibility outputs or implement model-independent processing.
+
 ```text
 python3 <plugin-root>/cli.py process --archive-root <collections-root> --profile <profile-folder> --output <silver-root> [--reviews <reviews.json>]
 python3 <plugin-root>/cli.py process --archive-root <collections-root> --category chocolate --contracts-cache <cache-root> --output <silver-root> [--offline]
@@ -31,7 +39,15 @@ The CLI requires exactly one of `--category` and `--profile`. Its default cache
 is `<plugin-root>/.contract-cache`; supply a writable cache when the installation
 permits no writes. Offline mode fails when pinned bytes are unavailable or corrupt.
 
-The archive root contains `<category-slug>/<market-slug>/products/<product_id>/product.json`.
+The archive root contains
+`<category-slug>/<market-slug>/products/<source_key>/<product_id>/product.json`.
+Legacy `products/<product_id>/product.json` indexes are also accepted, including
+mixed archives. Source-directory names must equal the raw capture source key; `_unknown`
+represents missing, null or empty keys without assigning a seller identity.
+Product IDs remain unique across the study; ambiguous duplicate directories are
+reported as errors. Read the stored history/artifact references rather than
+reconstructing paths. Grouping by website supports source mappings under a
+shared category schema; it does not change seller UIDs.
 Slugs case-fold category/market values, replace runs outside ASCII letters/digits
 with hyphens and trim edge hyphens, matching collection directory names. Exact
 safe-name paths are accepted as a fallback for other compatible producers.

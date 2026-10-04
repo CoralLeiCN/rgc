@@ -12,6 +12,23 @@ The portable processing profiles retain their selected contracts. Source evidenc
 contracts, missing values and immutable historical snapshots retain their original
 meaning.
 
+## Processing handoff
+
+The layer sequence is Bronze (raw) → Silver → Gold. Category-processing checks
+that preserved Bronze data and a generated schema are
+available, then finishes at reviewed Silver. If the initial schema is absent,
+category-schema creates it from the raw evidence before processing. Model-input
+preparation belongs to the subsequent Silver-to-Gold/modeling handoff. Silver
+retains evidence interpretation, reviews and existing eligibility decisions;
+Gold and model consumers use that provenance under their selected study.
+
+The portable package's downstream
+[procedure](../../plugins/category-processing/skills/category-processing/references/silver-to-gold.md)
+includes its legacy JSONL/encoder helper. That helper does not create canonical
+chocolate Parquet Gold. Its existing model-contract dependency and training views
+remain compatibility behavior; this instruction change does not alter immutable
+Silver or Gold snapshots or their price bases.
+
 ## Build an immutable gold snapshot
 
 Run from the repository root:

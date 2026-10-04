@@ -66,9 +66,20 @@ and collect:
 - All identifiable points emphasized on packaging and in promotional material.
 
 Preserve each product's original information and product images. Each product
-may have its own folder, with a JSON file covering as much relevant product
-information as possible. Collect many products first, then derive a complete
-schema from the collected information.
+has its own folder under a parent for its website/storefront, with a JSON file
+covering as much relevant product information as possible. Group Bronze by source
+so schema research can inspect similar raw structures together and processing can
+apply mappings for each source. Websites often reuse page templates or catalogue
+formats, making the source a useful boundary for sampling, parser development,
+missing-value investigation and maintenance when the website changes. Sample
+different representations within each source and compare concepts across sources
+to create the category's shared analytical schema. Collect many products first,
+then derive a complete schema from the collected information. The
+[Bronze grouping rationale](spec.md#why-bronze-is-grouped-by-website) explains the
+design and its limits. The user also requested physically moving the existing
+product folders into this structure and updating archive paths directly, with
+no redirects, symlinks or backward-compatibility lookup. Preserve original source
+content while changing the archive's storage metadata.
 
 Collection of product information must be available as
 an agent plugin that can connect to multiple agent harnesses and be integrated
@@ -131,6 +142,33 @@ Define collection sections, fields, source mappings, comparable groups, units,
 currency and price basis for each study. Generate five aligned local working
 contracts from an explicit definition, then publish the authoritative contracts
 and pin their verified immutable dataset revision after release review.
+Give initial schema creation a dedicated reusable
+[category-schema skill](../plugins/category-processing/skills/category-schema/SKILL.md)
+covering raw research, field meanings and semantic validation of the initial
+catalog. Its output includes original evidence, rationale, coverage and unresolved
+decisions. It can propose or finalize the catalog within the requested task.
+Run initial schema creation as a fresh research exercise on the existing chocolate
+Bronze data, assuming no usable analytical schema, then compare the frozen result
+with the current schema. Record inspected evidence, coverage, semantic gaps and
+all field relationships; distinguish the proposal from an adopted executable
+contract. The [reconstruction report](data/schema-proposals/chocolate-bronze-reconstruction-2026-10-04.md)
+records this exercise and comparison.
+Define Bronze as the raw-data layer containing original records, source artifacts
+and immutable capture history. Collection produces Bronze; schema creation reads
+Bronze; processing turns Bronze into reviewed Silver; Gold serves the training
+handoff. Use Bronze → Silver → Gold consistently in workflow descriptions.
+Existing raw archive paths and format identifiers remain Bronze storage contracts.
+Category-processing starts when preserved raw data and a generated schema are
+available for the same study. If the schema is missing, generate it with the
+schema skill first. Processing owns mapping/extraction configuration, schema
+serialization, evidence review and reviewed Silver. Model design and model-input
+preparation belong to the subsequent Silver-to-Gold layer. Existing Silver
+eligibility decisions remain source evidence for that handoff. Later steps can
+continue within the same task when requested. Schema creation needs no processing runtime, fixed file count or
+invented pricing model. The current runtime still requires five aligned files
+for a runnable profile and emits legacy training views; removing that coupling
+needs a runtime migration. Keep the schema instructions usable independently.
+Existing-schema refresh, review and extension remain in processing maintenance.
 Chocolate and coffee references are optional examples; products beyond food and
 mass quantities must exercise the common core. The
 [portable processing guide](data/category-processing.md) owns commands and boundaries.

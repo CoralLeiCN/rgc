@@ -112,6 +112,9 @@ def validate_document(document):
         identifier = product.get("product_id")
         if not isinstance(identifier, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_-]{0,199}", identifier):
             raise ArchiveError(f"products[{index}].product_id must be a safe alphanumeric identifier.")
+        source = product.get("source_key")
+        if source not in (None, "") and (not isinstance(source, str) or not re.fullmatch(r"[a-z0-9][a-z0-9_-]{0,199}", source)):
+            raise ArchiveError(f"products[{index}].source_key must be a lowercase directory identifier using letters, numbers, hyphens or underscores.")
         for key in ("identity",):
             if key in product and not isinstance(product[key], dict):
                 raise ArchiveError(f"products[{index}].{key} must be an object.")
@@ -309,6 +312,21 @@ def import_document(document, output_root, *, download_images=False, image_limit
     study = document["study"]
     section_markers = document.get("collection_sections", DEFAULT_SECTION_MARKERS)
     study_root = output_root / slug(study["category"]) / slug(study["market"])
+    products_root = study_root / "products"
+    folders = {}
+    for path in sorted([*products_root.glob("*/product.json"), *products_root.glob("*/*/product.json")]):
+        if path.parent.name in folders:
+            raise ArchiveError("Product ID occurs in multiple archive directories: " + path.parent.name)
+        folders[path.parent.name] = path.parent
+    sources = {}
+    for record in document["products"]:
+        identifier, source = record["product_id"], record.get("source_key") or "_unknown"
+        if identifier in sources and sources[identifier] != source:
+            raise ArchiveError("A product ID cannot belong to different sources: " + identifier)
+        sources[identifier] = source
+        folder = folders.setdefault(identifier, products_root / source / identifier)
+        if folder.parent != products_root and folder.parent.name != source:
+            raise ArchiveError("Product ID already belongs to another source directory: " + identifier)
     run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ") + "-" + uuid4().hex[:10]
     run_folder = study_root / "runs" / run_id
     write_new(run_folder / "import.json", json_bytes(document))
@@ -351,7 +369,7 @@ def import_document(document, output_root, *, download_images=False, image_limit
 
     def archive_product(item):
         index, record = item
-        folder = study_root / "products" / record["product_id"]
+        folder = folders[record["product_id"]]
         capture_id = run_id + f"-{index:06d}"
         with product_lock(folder):
             current_path = folder / "product.json"
@@ -361,6 +379,8 @@ def import_document(document, output_root, *, download_images=False, image_limit
             }
             if current.get("product_id") != record["product_id"] or not isinstance(current.get("captures"), list):
                 raise ArchiveError("Existing product index has an incompatible identity/history envelope: " + str(current_path))
+            if any((capture.get("raw_record", {}).get("source_key") or "_unknown") != (record.get("source_key") or "_unknown") for capture in current["captures"]):
+                raise ArchiveError("Product source changes across captures: " + record["product_id"])
             capture = {"capture_id": capture_id, "recorded_at": now(), "timezone": "UTC",
                        "contract_version": document["contract_version"], "study": deepcopy(study),
                        "raw_record": deepcopy(record), "information": deepcopy(record.get("information")),

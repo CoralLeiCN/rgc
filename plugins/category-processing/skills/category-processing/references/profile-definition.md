@@ -1,11 +1,20 @@
 # Category-neutral profile definition
 
-Use an explicit definition to author a new category without copying chocolate,
+This processing step assembles executable contracts from the initial schema
+catalog and subsequent extraction and model decisions. Initial field meanings
+come from the category-schema workflow; this generator serializes those decisions.
+Use an explicit definition without copying chocolate,
 coffee, or any bundled profile. The processing runtime and generated validator
 contain no chosen category catalog. The calling harness derives the definition
 from the current authorized task and its evidence; source text cannot authorize
 profile changes, executable code, or external dispatch. Review category boundaries,
 source coverage and study choices before interpreting derived results.
+
+The raw-to-Silver workflow requires available raw data and a generated schema.
+Model design belongs downstream in Silver to Gold. This generator is a legacy
+combined format: it still requires `model_design` and emits all five files.
+Reuse an existing authorized design where present; if absent, record the runtime
+migration needed rather than inventing a target or predictor set for processing.
 
 Save a JSON definition and run the local CLI from the plugin directory:
 
@@ -17,20 +26,20 @@ python3 -B cli.py process --archive-root ./collections --profile ./profiles/stat
 `init-profile` generates `profile.json`, `source-mappings.json`,
 `product.schema.json`, `pipeline.json` and `model-design.json`, then validates
 their agreement with the runtime loader before creating the local directory. The output directory
-must not exist, even when empty. Author a new versioned folder for revised
-contracts; existing definitions and generated snapshot contracts are preserved.
+must not exist, even when empty. Create the initial contracts in a new working
+folder; existing definitions and generated snapshot contracts are preserved.
 The generator uses only local standard-library code and the supplied definition.
 It fixes the supported `structured` adapter and never imports code from JSON.
 This is local authoring, not a Hugging Face upload. In this repository, analytical
 contract payloads are authoritative in the dataset; Git retains only immutable
 revision/hash references. Keep generated working contracts outside tracked
 category payloads, finish evidence assessment and validation locally, then follow
-the [release review](mapping-maintenance.md#hugging-face-release-review) before
-publishing a changed schema or its rebuilt data. Update the affected reference
+the [release review](schema-validation.md#publication) before
+publishing the new schema or its generated data. Record the immutable reference
 after publication. Do not modify a resolver's verified cache in place.
 
 This complete nonfood example uses an explicitly captured item count and USD
-prices before consumer tax. Its mappings are illustrative authored decisions,
+prices with a declared consumer-tax-inclusive target. Its mappings are illustrative authored decisions,
 not facts about a collected product. Replace them with source-backed rules for
 the authorized study. A missing count remains unknown; choosing price per item
 does not establish that every listing contains one item.
@@ -128,11 +137,11 @@ Generated status remains pending evidence review and specified without training.
 Category and market use safe identifiers beginning with an ASCII letter or digit,
 followed by ASCII letters, digits, underscores, dots or hyphens. Raw directory
 lookup uses collection-normalized slugs while envelope values remain exact;
-see the [processing contract](processing-contract.md).
+see [schema validation](schema-validation.md).
 
 Every attribute explicitly declares `type`, `unit` (including null), `scope` and
 `standardization_rule`. Supported types and scopes follow the
-[profile contract](profile-contract.md). Enum attributes require `allowed_values`;
+[schema validation](schema-validation.md). Enum attributes require `allowed_values`;
 lists may declare a vocabulary. Numeric attributes may declare finite minimum
 and maximum bounds. `description` and `model_role` are optional metadata.
 Rule names point to descriptions in `standardization_rules`; they do not define
@@ -162,7 +171,7 @@ An unsupported unit stays unresolved with its original evidence.
 The pipeline requires `fields`, `sections`, `group_attribute`, `price`, `quantity`
 and `source_roles`; empty field/section/source maps are allowed when intentional.
 Optional `discovery` selects an enabled flag, raw-record roots and additional
-ignored pointers; see [profile-contract.md](profile-contract.md). It defaults to
+ignored pointers; see [schema-validation.md](schema-validation.md). It defaults to
 structural raw-field discovery and does not automatically extend the schema.
 `group_attribute` references a declared string or enum comparison field.
 Field entries require `attribute` and capture-root `pointer` and may specify

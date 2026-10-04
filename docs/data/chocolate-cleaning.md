@@ -20,7 +20,10 @@ python3 -B scripts/clean_chocolate_data.py \
 ```
 
 `--archive-root` is the collections root containing
-`chocolate/uk/products/<product_id>/product.json`. Use an explicit path when the
+`chocolate/uk/products/<source_key>/<product_id>/product.json`. Legacy
+`products/<product_id>/product.json` indexes are also supported. Source directory
+names must match the captures; duplicate product IDs across directories are
+reported as archive errors. Use an explicit path when the
 archive lives elsewhere. Evidence paths in the generated records are relative
 to this root. Keep it available when reviewing the output.
 

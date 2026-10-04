@@ -47,29 +47,14 @@ of that exact release. The required release summary contents and calling-harness
 boundary are in [mapping maintenance](mapping-maintenance.md#hugging-face-release-review).
 There is no individual-field confirmation step.
 
-Use the generated worksheet to address these decisions:
-
-1. Establish a working hypothesis. Classify the candidate as an alias for a known
-   concept, a new attribute, a parser issue, conflicting evidence or a deferred
-   case. A source key alone does not justify a canonical field name.
-2. Inspect several sellers and captures, the parent object and nearby fields.
-   Preserve qualifiers and counterexamples. Determine meaning, type, vocabulary,
-   unit and semantic scope from evidence; state what remains uncertain.
-3. Explain the proposed interpretation with exact source references and competing
-   interpretations. Inspect samples where the field is absent, malformed or
-   contradictory; absence does not itself prove a negative claim.
-4. Assess all five contracts: `profile.json`, `source-mappings.json`,
-   `product.schema.json`, `pipeline.json` and `model-design.json`. Explain the
-   required coordinated changes and versions, or why a contract is unchanged.
-   Adding an attribute to tracking does not automatically select it as a model
-   predictor. Model support and eligibility require their own decision.
-5. Prepare source fixtures, focused tests and an impact comparison covering
-   extraction/mappings, conflicts, source/seller coverage, exclusions and model
-   eligibility. Keep schema and mappings frozen during each processing run.
-6. Record accept, reject or defer, rationale, the authorized decision context and
-   outstanding evidence. Within the authorized maintenance task, the calling
-   agent implements an accepted versioned diff and rebuilds; preserve stable
-   seller UIDs, raw captures and immutable earlier training/model snapshots.
+Use the generated worksheet to triage an existing concept/alias, a new concept,
+an extraction defect, missing evidence or conflict. Existing-schema review and
+extensions follow [mapping maintenance](mapping-maintenance.md): inspect original
+examples and counterexamples, record proposed meanings and decisions, assess all
+five contracts and compare processing impacts. Initial creation of a new schema
+uses the dedicated [category-schema skill](../../category-schema/SKILL.md).
+Keep the discovery records and worksheet as immutable input evidence for either
+workflow. A source key alone does not establish a canonical field meaning.
 
 ## Boundaries and next improvements
 
