@@ -42,11 +42,14 @@ accuracy and real prediction intervals remain unvalidated.
 | Document | Purpose |
 | --- | --- |
 | [Vercel architecture](docs/vercel-architecture.md), [app setup](apps/web/README.md), [snapshot integration](docs/collection-integration.md) | Current pricing workspace, provider setup, deployment and private data preparation with [build_web_snapshot.py](scripts/build_web_snapshot.py). |
-| [Intention](docs/intention.md) | Goals, delivery order and constraints. |
+| [Overall intention](docs/intention.md) | Shared goals and the app, model and data feature boundaries. |
+| App: [intent](docs/app/intent.md), [spec](docs/app/spec.md) | Application goals, workflows and interface requirements. |
+| Model: [intent](docs/model/intent.md), [spec](docs/model/spec.md) | Modeling goals, study assumptions, interpretation and validation. |
+| Data: [intent](docs/data/intent.md), [spec](docs/data/spec.md) | Collection, meaningful analytical data, quality and processing contracts. |
 | [EAT_HACK Retail Futures brief](docs/eat-hack-track-two.md) | Track 2 challenge, submission requirements and judging criteria. |
 | [retail frontier project description](PROJECT.md) | Built capabilities, implementation status and a runnable collection demo. |
 | [Data documentation](docs/data) | Data architecture, processing guides, model designs, review evidence and schema proposals. |
-| [Specification](docs/spec.md) | Contracts, pricing methodology and acceptance requirements. |
+| [Specification overview](docs/spec.md) | Navigation to feature specifications and their shared interfaces. |
 | [Chocolate silver](docs/data/chocolate-silver.md), [data flow diagram](docs/data/chocolate-silver.md#data-flow) | Raw/silver workflow, outputs, evidence resolution and reproducibility. |
 | [Chocolate schema](docs/data/chocolate-schema.md) | Typed fields, evidence reviews and model handoff. |
 | [Portable processing](docs/data/category-processing.md) | Profiles, mapping maintenance and model preparation. |
@@ -239,7 +242,7 @@ The [validation workflow](.github/workflows/validation.yml) runs checks on pull
 requests and pushes. The lifecycle plan records verification and limitations.
 
 Keep raw collection evidence and its verified text exports as local files under
-[specification section 3.1.1](docs/spec.md#311-public-dataset-publication-policy).
+[data specification section 3.1.1](docs/data/spec.md#311-public-dataset-publication-policy).
 Exports preserve original product records, text/HTML/JSON, histories, catalogues,
 discovery/run evidence and coverage in losslessly compressed category/market
 bundles with a product JSONL index and manifests. Images and HTTP transfer caches

@@ -7,7 +7,8 @@ separate eligible subset. Models validate the actual targets, quantities,
 identities and predictors needed by their selected study.
 
 The [schema guide](chocolate-schema.md) owns Silver evidence interpretation and
-reviews. The [specification](../spec.md) owns cross-layer and release requirements.
+reviews. The [data specification](spec.md) owns dataset interfaces; the
+[model specification](../model/spec.md) owns readiness and release requirements.
 The portable processing profiles retain their selected contracts. Source evidence,
 contracts, missing values and immutable historical snapshots retain their original
 meaning.

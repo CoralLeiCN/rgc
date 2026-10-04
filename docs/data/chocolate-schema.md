@@ -72,8 +72,8 @@ downloading them. See [dataset contracts](dataset-contracts.md) for cache,
 publication and verification rules.
 
 Machine contracts define the complete field list and allowed values; this guide
-explains their intent and use. The [project specification](../spec.md) owns
-requirements across layers and for release.
+explains their intent and use. The [data specification](spec.md) owns data
+requirements; the [model specification](../model/spec.md) owns readiness and release.
 
 Loading rejects drift between each profile attribute and the product validator's
 type, unit, enum/list vocabulary and numeric bounds in both nullable value
@@ -88,7 +88,7 @@ The proposed pricing explanation groups modeled traits by the attribute families
 below, with seller observation inputs in a selling-context family. Each predicted
 price will report individual trait contributions and one signed percentage per
 trait family, plus a model reference percentage, under
-[specification section 5.2.1](../spec.md#521-trait-and-trait-family-percentages-of-predicted-price).
+[specification section 5.2.1](../model/spec.md#521-trait-and-trait-family-percentages-of-predicted-price).
 Trait groups differ from product identity families. This output awaits a versioned
 model mapping, implementation and validation; existing contracts and helpers do
 not produce it.
@@ -443,7 +443,7 @@ consumer willingness to pay.
 Use the [silver build status](chocolate-silver.md#review-training-and-interpretation-boundaries)
 for current review and price/tax gaps. Silver remains a standardized candidate
 dataset until evidence review, extraction evaluation, support checks and the
-[specification's release gates](../spec.md) pass.
+[model specification's release gates](../model/spec.md) pass.
 
 ## Extending the schema and keeping documentation current
 

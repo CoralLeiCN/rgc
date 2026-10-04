@@ -89,7 +89,7 @@ The implementation is verified against LightGBM 4.6.0
 background; it does not invoke the native Python runtime on web requests.
 
 Raw contributions sum in log GBP/100 g. The displayed pounds and final-price
-percentages follow [specification section 5.2.1](../../spec.md#521-trait-and-trait-family-percentages-of-predicted-price):
+percentages follow [specification section 5.2.1](../../model/spec.md#521-trait-and-trait-family-percentages-of-predicted-price):
 with raw prediction `L`, reference `b`, and deviation `d=L-b`, use
 `k=-expm1(-d)/d` (or 1 at zero), field share `100*k*phi`, and reference share
 `100*exp(-d)`. Pounds equal the share multiplied by predicted pack price.

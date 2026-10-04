@@ -8,7 +8,8 @@ evidence review and model eligibility in one build.
 
 The [schema guide](chocolate-schema.md) owns the chocolate contract with 103 attributes,
 standardization rules, review format and pricing model handoff. The
-[project specification](../spec.md) owns requirements across layers and for release.
+[data specification](spec.md) owns data requirements; the
+[model specification](../model/spec.md) owns model readiness and release.
 
 Machine contracts are authoritative under `contracts/chocolate/` in the
 [Hugging Face dataset](https://huggingface.co/datasets/CoralLeiCN/rgc-collections).
@@ -300,7 +301,7 @@ Silver emits normalized pricing candidates and reviewed eligible inputs under
 the [schema's model handoff](chocolate-schema.md#pricing-model-handoff-and-insights).
 That guide owns the selected target and predictors, schema/model domain
 distinctions, validation and preparation helpers, and interpretation limits.
-Follow the [specification](../spec.md) for model release requirements.
+Follow the [model specification](../model/spec.md) for model release requirements.
 
 Many source attributes and the price/tax basis still require review. Local
 attribute reviews improve coverage while eligible model inputs remain empty
@@ -372,7 +373,7 @@ impact; taxonomy growth does not establish independent support for a feature.
 
 Messaging, dispatch and scheduling require separate configuration. Review
 changes before applying them. Package validation, data review and later model
-release are separate under the [specification](../spec.md).
+release are separate under the [feature specifications](../spec.md).
 
 ## Compatibility helpers and documentation maintenance
 

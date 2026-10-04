@@ -21,8 +21,9 @@ supported domain is standard chocolate bars sold by UK supermarkets. The outputs
 associations and retailer-specific market price benchmarks. Add a matched-product
 retailer diagnostic to distinguish retailer pricing from assortment differences.
 
-This design specifies the modeling direction in [the specification](../spec.md),
-sections 3–7. The [data review](analysis/chocolate-data-review-2026-10-03.json)
+This design specifies the modeling direction in [the model specification](../model/spec.md),
+with source and processing requirements in the [data specification](spec.md).
+The [data review](analysis/chocolate-data-review-2026-10-03.json)
 records the inspected 1,844 source records and 2,445 captures. Numerical usability and
 identity resolution determine the actual analytical sample.
 The [LightGBM, SHAP, and AI explanation design](analysis/lightgbm-shap-explanation-design.md)
@@ -378,7 +379,7 @@ See [TreeExplainer](https://shap.readthedocs.io/en/latest/generated/shap.TreeExp
 and the [implementation contract](analysis/lightgbm-shap-explanation-design.md).
 
 Report individual trait contributions and one signed percentage per trait family
-of each final predicted price using [the specification's allocation](../spec.md#521-trait-and-trait-family-percentages-of-predicted-price).
+of each final predicted price using [the specification's allocation](../model/spec.md#521-trait-and-trait-family-percentages-of-predicted-price).
 Map traits to the schema's attribute families, with modeled brand in identity
 and scope and retailer in a selling-context family. Derived encodings and missing
 indicators stay with their underlying trait. These groups differ from product

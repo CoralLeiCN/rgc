@@ -140,7 +140,7 @@ refitted models and explicitly comparable explanation references.
 
 ### 3.1 Trait-family percentages of final predicted price
 
-Use [specification section 5.2.1](../../spec.md#521-trait-and-trait-family-percentages-of-predicted-price)
+Use [specification section 5.2.1](../../model/spec.md#521-trait-and-trait-family-percentages-of-predicted-price)
 to convert the validated signed log decomposition into individual trait
 percentages and one signed percentage per trait family of the final predicted
 price. Add the model reference percentage so the unrounded total is 100%.

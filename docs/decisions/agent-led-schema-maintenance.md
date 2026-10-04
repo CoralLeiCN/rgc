@@ -52,4 +52,4 @@ before committing it. The calling harness owns this review step; this decision
 does not implement a popup UI, scheduled publisher or automatic upload gate.
 
 Canonical workflow: [portable processing](../data/category-processing.md),
-[specification](../spec.md) and [intention](../intention.md).
+[data specification](../data/spec.md) and [data intention](../data/intent.md).

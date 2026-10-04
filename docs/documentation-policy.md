@@ -8,9 +8,11 @@ rules.
 
 ## Canonical documents and ownership
 
-Data workflow guides, model designs, review evidence and schema proposals live
-under `docs/data/`. Update their links and documentation checker paths when
-changing this structure.
+Organize canonical feature documentation under `docs/app/`, `docs/model/` and
+`docs/data/`. Each directory owns `intent.md` and `spec.md`. Shared overview and
+governance documents link to those feature documents. Supporting data workflow
+guides, model designs, review evidence and schema proposals retain their linked
+locations. Update references and documentation checker paths when moving them.
 
 The frontend also keeps Next.js guidance in [its agent instructions](../apps/web/AGENTS.md),
 referenced by [CLAUDE.md](../apps/web/CLAUDE.md). These generated files direct
@@ -18,8 +20,14 @@ application changes to the documentation bundled with the installed Next.js vers
 
 | Document | Owns | Update condition |
 | --- | --- | --- |
-| [Intention](intention.md) | User goals, requested scope, and constraints. | User goals, requested deliverables, scope, or constraints change. |
-| [Specification](spec.md) | Contracts across layers, supported behavior, readiness, training, interpretation and release requirements. | Behavior, interface, eligibility, model basis or acceptance requirements change. |
+| [Overall intention](intention.md) | Shared project goals, context and navigation to the three core feature intentions. | Shared goals, feature boundaries or project context change. |
+| [App intention](app/intent.md) | Application users, workflows, presentation and delivery scope. | App goals, requested deliverables or constraints change. |
+| [Model intention](model/intent.md) | Modeling goals, interpretation, study assumptions and delivery constraints. | Model goals, requested scope or constraints change. |
+| [Data intention](data/intent.md) | Collection, preservation, meaningful analytical data, quality and processing scope. | Data goals, requested deliverables or constraints change. |
+| [Specification overview](spec.md) | Navigation to feature specifications and shared interfaces. | Feature boundaries or shared interface summaries change. |
+| [App specification](app/spec.md) | User workflows, application interfaces, presentation, extraction review and demo serving. | Application behavior or acceptance requirements change. |
+| [Model specification](model/spec.md) | Study inputs, targets, estimators, explanations, validation and release. | Model behavior, basis, preparation or acceptance requirements change. |
+| [Data specification](data/spec.md) | Collection, preservation, identity, processing, quality, storage and dataset interfaces. | Data behavior, schema, processing or acceptance requirements change. |
 | [Silver guide](data/chocolate-silver.md) | Raw/silver responsibilities, combined pipeline, preservation of source listings and aliases, outputs, evidence resolution, manifest and CLI. | Silver behavior, identity, output, provenance, CLI, schema/review application or eligibility changes. |
 | [Portable processing guide](data/category-processing.md) | Standalone processing package, profile versions, stable seller envelope, generic targets, ledger/batches, harness maintenance and model preparation commands. | Portable engine, package, profile, ledger/batch, review/eligibility, model handoff or public CLI changes. |
 | [Processing package README](../plugins/category-processing/README.md), [skill](../plugins/category-processing/skills/category-processing/SKILL.md) and its references | Standalone use, decisions, archive/profile contracts, evidence triage and model handoff. | Package behavior or workflow changes; preserve complete use after copying the package without repository siblings. |
@@ -31,8 +39,8 @@ application changes to the documentation bundled with the installed Next.js vers
 | [Dataset contract guide](data/dataset-contracts.md) | Dataset ownership, immutable pins, caches, offline use and publication. | Manifest format, resolver, cache behavior or publication workflow changes. |
 | [Model maintenance](model-maintenance.md) | Model artifact storage, immutable publication references, verification and retraining records. | Model publication, loading, version selection or maintenance rules change. |
 | [README](../README) | Entry points, usable commands, and implementation overview. | A public entry point, layer, usable command, or implementation status changes. |
-| [Vercel architecture](vercel-architecture.md), [application README](../apps/web/README.md), and [collection integration guide](collection-integration.md) | Frontend/backend API, deployment boundary, immutable snapshot adapter and explorer behavior. | Application interfaces, schema consumption, filtering, visualization, preparation or deployment commands change. Keep specification and lifecycle plan aligned. |
-| [Lifecycle intent](lifecycle/intent.md) and [lifecycle specification](lifecycle/spec.md) | Short navigation views of canonical intention and specification. | Their summarized scope or status would become inaccurate. Keep detail in canonical documents. |
+| [Vercel architecture](vercel-architecture.md), [application README](../apps/web/README.md), and [collection integration guide](collection-integration.md) | Frontend/backend API, deployment boundary, immutable snapshot adapter and explorer behavior. | Application interfaces, schema consumption, filtering, visualization, preparation or deployment commands change. Keep the app specification and lifecycle plan aligned. |
+| [Lifecycle intent](lifecycle/intent.md) and [lifecycle specification](lifecycle/spec.md) | Short navigation views of the overall and feature intentions and specifications. | Their summarized scope or status would become inaccurate. Keep detail in canonical documents. |
 | [Lifecycle plan](lifecycle/plan.md) | Implementation work, current status, risks, proof, and remaining work. | Every behavioral, schema, pipeline, or modeling change; update affected progress and proof in the same change. |
 
 The authoritative contracts are in the
@@ -64,19 +72,24 @@ documents when their meaning or public entry points are affected.
 
 | Changed paths | Required document updates |
 | --- | --- |
-| `scripts/build_chocolate_silver.py`, `scripts/chocolate_silver.py`, `schemas/chocolate/**`, `scripts/chocolate_standardization/**`, `scripts/standardize_chocolate_data.py`, `scripts/chocolate_model.py`, `scripts/dataset_contracts.py`, `scripts/fetch_contracts.py` | `docs/spec.md`, `docs/data/chocolate-schema.md`, `docs/data/chocolate-silver.md`, `docs/lifecycle/plan.md` |
+| `scripts/build_chocolate_silver.py`, `scripts/chocolate_silver.py`, `schemas/chocolate/**`, `scripts/chocolate_standardization/**`, `scripts/standardize_chocolate_data.py`, `scripts/chocolate_model.py`, `scripts/dataset_contracts.py`, `scripts/fetch_contracts.py` | `docs/data/spec.md`, `docs/data/chocolate-schema.md`, `docs/data/chocolate-silver.md`, `docs/lifecycle/plan.md` |
 | `scripts/dataset_contracts.py`, `scripts/fetch_contracts.py` | Also `docs/data/dataset-contracts.md` and `README`. |
-| `scripts/publish_contracts.py` | `docs/spec.md`, `docs/data/dataset-contracts.md`, `README`, `docs/lifecycle/plan.md` |
-| `scripts/chocolate_cleanup/**`, `scripts/clean_chocolate_data.py`, `scripts/deduplicate_chocolate_data.py` | `docs/spec.md`, `docs/data/chocolate-cleaning.md`, `docs/data/chocolate-deduplication.md`, `docs/data/chocolate-silver.md`, `docs/lifecycle/plan.md` |
-| `plugins/category-research/**`, excluding its tests | `docs/spec.md`, `plugins/category-research/README.md`, `docs/lifecycle/plan.md` |
-| `plugins/category-processing/**`, excluding its tests | `docs/spec.md`, `docs/data/category-processing.md`, `plugins/category-processing/README.md`, `docs/lifecycle/plan.md` |
-| `scripts/publish_collections.py`, `scripts/archive_product_sources.py`, `scripts/verify_product_archive.py` | `docs/spec.md`, `README`, `docs/lifecycle/plan.md` |
+| `scripts/chocolate_model.py` | Also `docs/model/spec.md` for target policy, family partitions and training input preparation. |
+| `scripts/train_chocolate_model.py`, `scripts/chocolate_regression.py` | `docs/model/spec.md`, `docs/data/chocolate-schema.md`, `docs/data/chocolate-silver.md`, `docs/lifecycle/plan.md`; the trainer also updates `docs/data/chocolate-gold.md`. |
+| `scripts/publish_contracts.py` | `docs/data/spec.md`, `docs/data/dataset-contracts.md`, `README`, `docs/lifecycle/plan.md` |
+| `scripts/chocolate_cleanup/**`, `scripts/clean_chocolate_data.py`, `scripts/deduplicate_chocolate_data.py` | `docs/data/spec.md`, `docs/data/chocolate-cleaning.md`, `docs/data/chocolate-deduplication.md`, `docs/data/chocolate-silver.md`, `docs/lifecycle/plan.md` |
+| `plugins/category-research/**`, excluding its tests | `docs/data/spec.md`, `plugins/category-research/README.md`, `docs/lifecycle/plan.md` |
+| `plugins/category-processing/**`, excluding its tests | `docs/data/spec.md`, `docs/data/category-processing.md`, `plugins/category-processing/README.md`, `docs/lifecycle/plan.md` |
+| `scripts/publish_collections.py`, `scripts/archive_product_sources.py`, `scripts/verify_product_archive.py` | `docs/data/spec.md`, `README`, `docs/lifecycle/plan.md` |
 | `AGENTS.md`, `scripts/check_documentation.py`, `.github/workflows/validation.yml` | `docs/documentation-policy.md`, `docs/lifecycle/plan.md` |
 
 ## Requirements for each change
 
 1. Identify the affected contracts and update their canonical documents with
-   the implementation. Update intention only when intent has changed.
+   the implementation. Update the relevant feature intention when its intent
+   changes; update the overall intention when shared goals or boundaries change.
+   The feature specification owns implemented contracts and acceptance rules;
+   update every affected feature when an interface crosses their boundaries.
 2. Keep schema/profile, source mapping, record format and model design version
    references aligned. Change the relevant version when its meaning changes;
    retain old dataset manifests as the record of older builds.
@@ -121,7 +134,8 @@ documents when their meaning or public entry points are affected.
    changing shared fixtures. Consolidate duplicate coverage and setup while
    preserving distinct observable behavior and failure cases.
 
-The guard checks required documents, local references, lifecycle placeholders,
+The guard checks required documents, including each feature's intent and spec,
+local references, lifecycle placeholders,
 contract/version alignment and documentation coverage for tracked or untracked
 changes. It checks both portable profiles' five contract references, documented
 versions and required skill/reference links. Structural checks work offline in a
@@ -157,6 +171,6 @@ deployment and communication require authorization within their own task scope.
 
 ## Gold and fixed target maintenance
 
-Changes to Gold build/review/load interfaces require `docs/spec.md`, `docs/data/chocolate-schema.md`, `docs/data/chocolate-silver.md`, `docs/data/chocolate-gold.md`, `README` and `docs/lifecycle/plan.md`. Experimental regression/training and family mapping changes require the schema/spec/Silver guides and lifecycle status; trainer handoff also updates Gold. Canonical contract bodies stay dataset-owned; prepare local versioned releases and update immutable references after approved verified publication. Current chocolate training uses the explicit `current-consumer-price-1` displayed-price proxy and records its assumptions in `PROJECT.md` limitations and run artifacts. Historical regular-price studies and the standalone portable profiles retain their selected fixed policy; preserve their immutable contracts. New Gold target preparation does not rewrite source evidence.
+Changes to Gold build/review/load interfaces require `docs/data/spec.md`, `docs/data/chocolate-schema.md`, `docs/data/chocolate-silver.md`, `docs/data/chocolate-gold.md`, `README` and `docs/lifecycle/plan.md`. Experimental regression/training changes require the model specification, schema/Silver guides and lifecycle status; family mapping changes require the data specification and those guides. Trainer handoff also updates Gold. Canonical contract bodies stay dataset-owned; prepare local versioned releases and update immutable references after approved verified publication. Current chocolate training uses the explicit `current-consumer-price-1` displayed-price proxy and records its assumptions in `PROJECT.md` limitations and run artifacts. Historical regular-price studies and the standalone portable profiles retain their selected fixed policy; preserve their immutable contracts. New Gold target preparation does not rewrite source evidence.
 
 Locked development dependencies include NumPy 2.2.6 and PyArrow 21.0.0 so pytest exercises numerical and Parquet behavior instead of skipping it. Preserve administrative Gold review provenance separately from evidence-backed Silver eligibility. The schema-release review policy in [agent-led maintenance](decisions/agent-led-schema-maintenance.md) remains authoritative before any Hugging Face commit.

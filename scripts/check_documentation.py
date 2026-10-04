@@ -13,6 +13,9 @@ from dataset_contracts import cache_directory, load_manifest, verify_contract_di
 ROOT = Path(__file__).resolve().parents[1]
 REQUIRED = (
     "AGENTS.md", "README", "docs/intention.md", "docs/spec.md",
+    "docs/app/intent.md", "docs/app/spec.md",
+    "docs/model/intent.md", "docs/model/spec.md",
+    "docs/data/intent.md", "docs/data/spec.md",
     "docs/lifecycle/intent.md", "docs/lifecycle/spec.md", "docs/lifecycle/plan.md",
     "docs/documentation-policy.md", "docs/data/chocolate-schema.md", "docs/data/chocolate-silver.md",
     "docs/data/category-processing.md", "plugins/category-processing/README.md", "docs/data/chocolate-gold.md",
@@ -31,30 +34,32 @@ def required_updates(changed):
     required = set()
     for path in changed:
         if path in ("scripts/chocolate_gold.py", "scripts/build_chocolate_gold.py", "scripts/review_chocolate_gold.py"):
-            required.update(("docs/spec.md", "docs/data/chocolate-schema.md", "docs/data/chocolate-silver.md",
+            required.update(("docs/data/spec.md", "docs/data/chocolate-schema.md", "docs/data/chocolate-silver.md",
                              "docs/data/chocolate-gold.md", "docs/lifecycle/plan.md", "README"))
         if path in ("scripts/train_chocolate_model.py", "scripts/chocolate_regression.py"):
-            required.update(("docs/spec.md", "docs/data/chocolate-schema.md", "docs/data/chocolate-silver.md", "docs/lifecycle/plan.md"))
+            required.update(("docs/model/spec.md", "docs/data/chocolate-schema.md", "docs/data/chocolate-silver.md", "docs/lifecycle/plan.md"))
         if path == "scripts/train_chocolate_model.py":
             required.add("docs/data/chocolate-gold.md")
         if path in ("scripts/chocolate_silver.py", "scripts/build_chocolate_silver.py"):
-            required.update(("docs/spec.md", "docs/data/chocolate-schema.md", "docs/data/chocolate-silver.md", "docs/lifecycle/plan.md"))
+            required.update(("docs/data/spec.md", "docs/data/chocolate-schema.md", "docs/data/chocolate-silver.md", "docs/lifecycle/plan.md"))
         if path.startswith("schemas/chocolate/") or path.startswith("scripts/chocolate_standardization/") or path in ("scripts/standardize_chocolate_data.py", "scripts/chocolate_model.py", "scripts/dataset_contracts.py", "scripts/fetch_contracts.py"):
-            required.update(("docs/spec.md", "docs/data/chocolate-schema.md", "docs/data/chocolate-silver.md", "docs/lifecycle/plan.md"))
+            required.update(("docs/data/spec.md", "docs/data/chocolate-schema.md", "docs/data/chocolate-silver.md", "docs/lifecycle/plan.md"))
+        if path == "scripts/chocolate_model.py":
+            required.add("docs/model/spec.md")
         if path in ("scripts/dataset_contracts.py", "scripts/fetch_contracts.py"):
             required.update(("docs/data/dataset-contracts.md", "README"))
         if path == "scripts/publish_contracts.py":
-            required.update(("docs/spec.md", "docs/data/dataset-contracts.md", "README", "docs/lifecycle/plan.md"))
+            required.update(("docs/data/spec.md", "docs/data/dataset-contracts.md", "README", "docs/lifecycle/plan.md"))
         if path.startswith("scripts/chocolate_cleanup/") or path in ("scripts/clean_chocolate_data.py", "scripts/deduplicate_chocolate_data.py"):
-            required.update(("docs/spec.md", "docs/data/chocolate-cleaning.md", "docs/data/chocolate-deduplication.md", "docs/data/chocolate-silver.md", "docs/lifecycle/plan.md"))
+            required.update(("docs/data/spec.md", "docs/data/chocolate-cleaning.md", "docs/data/chocolate-deduplication.md", "docs/data/chocolate-silver.md", "docs/lifecycle/plan.md"))
         if path.startswith("plugins/category-research/") and "/tests/" not in path:
-            required.update(("docs/spec.md", "plugins/category-research/README.md", "docs/lifecycle/plan.md"))
+            required.update(("docs/data/spec.md", "plugins/category-research/README.md", "docs/lifecycle/plan.md"))
         if path.startswith("plugins/category-processing/") and "/tests/" not in path:
-            required.update(("docs/spec.md", "docs/data/category-processing.md", "plugins/category-processing/README.md", "docs/lifecycle/plan.md"))
+            required.update(("docs/data/spec.md", "docs/data/category-processing.md", "plugins/category-processing/README.md", "docs/lifecycle/plan.md"))
         if path == "scripts/publish_collections.py":
-            required.update(("docs/spec.md", "README", "docs/lifecycle/plan.md"))
+            required.update(("docs/data/spec.md", "README", "docs/lifecycle/plan.md"))
         if path in ("scripts/archive_product_sources.py", "scripts/verify_product_archive.py"):
-            required.update(("docs/spec.md", "README", "docs/lifecycle/plan.md"))
+            required.update(("docs/data/spec.md", "README", "docs/lifecycle/plan.md"))
         if path in ("AGENTS.md", "scripts/check_documentation.py", ".github/workflows/validation.yml"):
             required.update(("docs/documentation-policy.md", "docs/lifecycle/plan.md"))
     return required

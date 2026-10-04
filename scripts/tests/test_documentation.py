@@ -291,7 +291,7 @@ class DocumentationMaintenanceTests:
     def test_behavior_change_requires_documents_in_the_same_change(self):
         changed = {"scripts/chocolate_standardization/values.py"}
         required = {
-            "docs/spec.md",
+            "docs/data/spec.md",
             "docs/data/chocolate-schema.md",
             "docs/data/chocolate-silver.md",
             "docs/lifecycle/plan.md",
@@ -314,13 +314,13 @@ class DocumentationMaintenanceTests:
 
     def test_component_changes_require_their_canonical_documents(self):
         silver = {
-            "docs/spec.md",
+            "docs/data/spec.md",
             "docs/data/chocolate-schema.md",
             "docs/data/chocolate-silver.md",
             "docs/lifecycle/plan.md",
         }
         cleanup = {
-            "docs/spec.md",
+            "docs/data/spec.md",
             "docs/data/chocolate-cleaning.md",
             "docs/data/chocolate-deduplication.md",
             "docs/data/chocolate-silver.md",
@@ -335,13 +335,13 @@ class DocumentationMaintenanceTests:
             ("scripts/chocolate_silver.py", silver),
             ("scripts/build_chocolate_silver.py", silver),
             ("scripts/chocolate_standardization/pipeline.py", silver),
-            ("scripts/chocolate_model.py", silver),
+            ("scripts/chocolate_model.py", silver | {"docs/model/spec.md"}),
             ("scripts/chocolate_cleanup/deduplication.py", cleanup),
             ("scripts/chocolate_cleanup/adapters.py", cleanup),
             (
                 "plugins/category-research/category_research/archive.py",
                 {
-                    "docs/spec.md",
+                    "docs/data/spec.md",
                     "plugins/category-research/README.md",
                     "docs/lifecycle/plan.md",
                 },
@@ -349,7 +349,7 @@ class DocumentationMaintenanceTests:
             (
                 "plugins/category-processing/category_processing/pipeline.py",
                 {
-                    "docs/spec.md",
+                    "docs/data/spec.md",
                     "docs/data/category-processing.md",
                     "plugins/category-processing/README.md",
                     "docs/lifecycle/plan.md",
@@ -357,7 +357,7 @@ class DocumentationMaintenanceTests:
             ),
             (
                 "scripts/publish_collections.py",
-                {"docs/spec.md", "README", "docs/lifecycle/plan.md"},
+                {"docs/data/spec.md", "README", "docs/lifecycle/plan.md"},
             ),
             (
                 "scripts/check_documentation.py",

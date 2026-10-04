@@ -8,7 +8,7 @@ product IDs across directories. Stored history references and seller UIDs retain
 their meanings. The category schema is shared; source mappings handle differences
 between website structures.
 
-The [Bronze grouping rationale](../spec.md#why-bronze-is-grouped-by-website)
+The [Bronze grouping rationale](spec.md#why-bronze-is-grouped-by-website)
 explains how this supports sampling, parser reuse and investigation of missing
 values. Validate mappings across the different product types, collection methods
 and capture dates present within each source.

@@ -1,116 +1,31 @@
 # Project intent
 
-[Canonical intention](../intention.md) owns goals, scope and constraints. The
-[specification](../spec.md) owns contracts, the [plan](plan.md) records current
-implementation and verification, and the [app README](../../apps/web/README.md)
-provides setup instructions.
+The [overall intention](../intention.md) describes retail frontier's shared goals
+and its three core features. Each feature directory pairs its intent and spec:
 
-The two-person team is entering EAT_HACK on 3 October 2026 in Track 2, Retail
-Futures, under the project name **retail frontier**. The
-[hackathon brief](../eat-hack-track-two.md) owns challenge, submission and judging
-requirements; the [project description](../../PROJECT.md) records implemented
-capabilities and a runnable collection workflow. The team confirms no substantial
-project work existed before EAT_HACK. Preserve time for the video of at most two
-minutes and the 17:30 London
-submission deadline. Submitted repository/video links must be publicly
-accessible, with a README explaining how to run the product; the three-brand
-Best Brand vote is separate from judging.
+| Feature | Intent | Spec | Scope |
+| --- | --- | --- | --- |
+| App | [App intent](../app/intent.md) | [App spec](../app/spec.md) | Evidence exploration, product comparison and configuration, extraction review and presentation of supported results. |
+| Model | [Model intent](../model/intent.md) | [Model spec](../model/spec.md) | Price relationships, interpretation, study assumptions, validation and model delivery constraints. |
+| Data | [Data intent](../data/intent.md) | [Data spec](../data/spec.md) | Source collection, preservation, meaningful structured facts, analytical use and data quality. |
 
-Retail category managers, buyers and pricing teams need comparable evidence to
-review current or proposed SKU prices. Brand product developers are a related
-audience. Build reusable collection and classification across arbitrary product
-categories, preserving original source evidence. Chocolate sold in the UK is
-the first study. Both plugins accept category configuration: collection observes
-general or selected source sections, while processing creates five aligned
-working contracts from explicit fields, units, quantities, comparison groups,
-currency and tax basis. Chocolate and coffee remain examples. Structural
-discovery preserves unfamiliar raw fields for agent investigation and durable
-proposals linked to evidence.
+The data preparation reassessment of 4 October 2026 belongs to the data feature.
+It starts from source evidence and analytical questions, independently of the
+existing implementation. A reviewed pilot, data dictionary and quality report
+are proposed to validate field meanings, uncertainty, provenance and ordinary
+analytical use. Model planning is outside that data reassessment; model goals
+remain in the model intention. The proposed data approach requires validation.
 
-The chocolate architecture is Bronze (raw) → combined Silver → immutable Parquet Gold.
-Silver owns deduplication within each seller, standardization, price
-normalization, review and eligibility. Gold initially preserves those decisions
-as the training interface. The standalone
-[processing package](../data/category-processing.md) retains stable seller identity,
-category profiles, mapping maintenance and immutable training snapshots.
-Experimental training from verified Gold is distinct from reviewed eligible
-observations and a validated fitted model.
+Chocolate sold in the UK is the initial study; the product and both plugins
+support category configuration. Shared audience, project context and repository
+constraints are recorded in the overall intention. The
+[hackathon brief](../eat-hack-track-two.md) owns event requirements, and
+[PROJECT.md](../../PROJECT.md) describes implemented capabilities and limitations.
 
-Keep the full raw collection and its verified text export locally. Hugging Face
-retains derived snapshots, including Silver source-listings, analytical contracts,
-analysis and model artifacts. The original published Silver snapshot and the raw
-archive/index were removed from its current tree at the user's request; the
-[storage guide](../data/dataset-contracts.md#local-raw-evidence-storage) records
-local locations and verified publication receipts.
-
-One independent assignment implements and attempts real training for
-`lightgbm_without_brand`. Actual fitted model artifact
-upload is authorized, while fixture fits remain labeled and analytical contract
-publication retains its separate review. [Canonical intention](../intention.md)
-records the complete six-session scope and subsequent request to store saved
-model artifacts under `model/*`. The published fixture remains explicitly
-synthetic.
-
-The current chocolate study uses `current-consumer-price-1`: collected displayed
-prices serve as the regular-price proxy, with actual edible weight and GBP per
-100 g normalization. Promotion, membership, tax and capture-date uncertainty
-remain limitations. Historical regular-price studies and other category contracts
-retain their original basis. Codex maintains supported reusable product-family
-mappings during raw-to-Silver processing, preserving source evidence, seller
-rows and stable IDs. Broad related ranges, exact pack identity and other
-eligibility reviews remain separate. See the [Gold guide](../data/chocolate-gold.md)
-and [published contract release](../data/analysis/gold-modeling-contract-release.md).
-
-The **Piece of Cake Pricing** Vercel workspace explores observed prices, trait
-families, gaps and brand price positioning. The terrain uses observed GBP/100g,
-a disclosed trait-derived demo score and one numeric leaf trait in raw units.
-Families navigate individual leaf color choices; numeric color bands retain
-full-snapshot calibration. Product drafts use a read-only calculated score and
-a proposed-price slider. Image/text extraction returns candidates for explicit
-review and Apply. Local Next.js extraction uses the installed Codex CLI with
-ChatGPT OAuth sign-in; hosted access requires OpenAI or the HTTPS Codex bridge.
-Source evidence, missing values
-and conflicting claims remain inspectable.
-
-The user authorized connecting the published LightGBM without brand synthetic
-fixture to the product configurator. The demo predicts supported single chocolate
-bar packs and shows signed field SHAP values, allocated pounds and percentages,
-family totals and the model reference. Its generated training data and historical
-regular-price basis remain explicit. Real market benchmarks and intervals require
-separate validation. Current status is recorded in the
-[fixture serving guide](../data/analysis/web-fixture-pricing.md).
-
-Maintain the current Vercel application and its operational documentation.
-Retired visual prototypes, generated static explorers, intermediate design notes
-and tests added for the hackathon have been removed. Compatibility with those
-artifacts is not part of the delivery. The active calculated demo score remains.
-
-Under the [maintenance decision](../decisions/agent-led-schema-maintenance.md),
-the agent assesses and applies supported local changes without user approval.
-After a schema change, present the completed release summary and wait for user
-review before its Hugging Face commit.
-
-Keep these constraints in view:
-
-- Preserve captures and source wording. Follow the language and writing rules in
-  [AGENTS.md](../../AGENTS.md).
-- Deduplicate within each seller; retain listings from different shops and
-  distinct data for direct brand stores and retailers.
-- Distinguish claims, derived interpretations, reviewed facts and model inputs.
-  Missing evidence stays unknown.
-- Store analytical contracts in the authoritative Hugging Face dataset. Git
-  retains human documentation and immutable revision/hash manifests; downloaded
-  contracts live in verified ignored caches.
-- Validate support, related-product splits, uncertainty and release thresholds
-  before supported price testing. Regression associations do not establish
-  causal effects, demand, profit or an optimal price.
-- Value-for-money and causal brand-premium scoring remain deferred for research.
-  Public image references do not imply that image bytes are included.
-- Maintain documents with behavior under the
-  [documentation policy](../documentation-policy.md).
-
-Resolve study boundaries, source coverage, extraction evaluation, outstanding
-reviews and numerical release thresholds before supported model release. Schema,
-Silver and Gold preparation do not establish readiness by themselves.
-
-The assigned independent `hedonic_without_brand` session must attempt real training and preserve readiness blockers. Authorized trained artifact upload requires a real fit; synthetic numerical fixtures remain explicitly labeled. See the [implementation record](../data/analysis/hedonic-without-brand-implementation.md).
+The feature specifications own contracts and supported behavior. The
+[specification overview](../spec.md) and [lifecycle specification](spec.md)
+provide navigation; the [plan](plan.md)
+records implementation, verification and remaining work. The
+[app README](../../apps/web/README.md) provides setup instructions. Follow the
+[documentation policy](../documentation-policy.md) when updating the relevant
+feature intention or implementation guides.

@@ -1,5 +1,92 @@
 # Project implementation plan
 
+## Feature documentation: main integration
+
+Committed the feature documentation as `730ac22f` on
+`codex/feature-documentation`, then integrated refreshed local `main` at
+`7e13dce8f8f33371a45ab6239ebdec059f41ac7b`. Resolved the shared-document conflicts
+by retaining the app/model/data intent and spec layout and moving main's Bronze
+source grouping, schema research and processing boundary requirements into the
+data documents. Both implementation histories remain recorded below.
+
+The combined tree preserves main's source readers, tests, dedicated schema skill
+and research report. Model preparation remains downstream of reviewed Silver;
+existing runtime dependencies and historical artifacts retain their limitations.
+The landing is one local squash commit, with no dataset publication involved.
+
+Validation: locked Python dependencies and all four pinned contract caches
+verified. Ruff, documentation, whitespace and feature-anchor checks passed.
+`uv run pytest` passed 631 tests in 57.33 seconds; seven web serving/extraction
+tests were skipped because the web runtime dependencies and pinned fixture were
+unavailable. Application and runtime implementation files match refreshed main;
+the landing changes documentation and its maintenance checks.
+
+## Feature directories with intent and spec on 4 October 2026
+
+Organized the core feature documentation under `docs/app/`, `docs/model/` and
+`docs/data/`, each containing `intent.md` and `spec.md`. Moved the earlier
+feature intentions and split the existing specification by ownership, preserving
+requirements, historical study boundaries and implementation status. The
+top-level intention and specification are shared overview and navigation pages.
+
+Updated the README, lifecycle navigation, incoming references and documentation
+ownership rules. The guard now requires all six feature documents and routes
+data and model changes to their owning specifications. Existing documentation
+tests follow the relocated requirements. The proposed data reassessment remains
+within data intent; this organization does not implement that proposal.
+
+Validation: `uv sync --locked` completed using a writable temporary uv cache.
+`uv run pytest scripts/tests/test_documentation.py` passed all 27 tests;
+`uv run ruff check .`, `python3 -B scripts/check_documentation.py` and
+`git diff --check` passed. Semantic review verified preservation of requirements,
+acceptance scenarios and historical study boundaries. Local fragment checks
+verified links to moved feature sections, and the existing coverage tests verify
+that shared model preparation requires both data and model specifications.
+
+## Separate app, model and data intentions on 4 October 2026
+
+Split the canonical intention into [app](../app/intent.md),
+[model](../model/intent.md) and [data](../data/intent.md) documents.
+The [overall intention](../intention.md) now owns shared goals and navigation.
+The reassessment of data preparation belongs to the data feature; excluding model
+planning from that reassessment does not replace the model feature's goals.
+Preserved existing feature scope and linked operational guides and evidence.
+
+Updated the lifecycle navigation, README, documentation ownership policy and
+required-document guard for all three feature intentions. This change organizes
+documented intentions; the proposed data approach still requires a reviewed
+pilot and validation.
+
+Validation: `uv sync --locked` completed using a writable temporary uv cache.
+`uv run pytest scripts/tests/test_documentation.py` passed all 27 tests;
+`uv run ruff check .`, `python3 -B scripts/check_documentation.py` and
+`git diff --check` passed. Semantic review checked scope preservation, historical
+study boundaries and the distinction between proposed data work and implemented
+capabilities.
+
+## Data preparation intention recorded on 4 October 2026
+
+Recorded the user's clarified [data intention](../data/intent.md#current-focus-meaningful-data-for-analysis):
+prepare meaningful, reusable chocolate data for ordinary analysis, with modeling
+as one downstream use and model planning outside this reassessment. The canonical
+data intention leads with analytical use, defines the meanings and relationships
+to preserve, and records a proposed evidence, interpretation, standardization,
+validation and review workflow. The [lifecycle intent](intent.md) links to that
+scope.
+
+Status: intention documented. The proposed first deliverable is a small reviewed
+dataset with a data dictionary and quality report. Field correctness, missingness,
+conflicts, traceability, coverage and the ability to answer ordinary analytical
+questions require pilot evidence before scaling. Physical table layout and any
+schema or pipeline revisions remain to be validated; this documentation change
+does not establish their implementation.
+
+Validation: `uv sync --locked` completed using a writable temporary uv cache.
+`uv run pytest scripts/tests/test_documentation.py` passed all 27 tests;
+`uv run ruff check .`, `python3 -B scripts/check_documentation.py` and
+`git diff --check` passed. Semantic review confirmed the analytical scope and
+the distinction between proposed work and implemented capabilities.
+
 ## Schema workflow and Bronze source directories: main integration
 
 The user requested committing this task and merging it into local `main`.
@@ -22,7 +109,6 @@ pytest suite passed 631 cases in 38.40 seconds, with seven web runtime cases
 skipped because their fixtures were unavailable. The web files match refreshed
 main exactly. These results validate the source tree for the single squash
 commit on main.
-
 
 ## Main refresh to the inferred-Gold model release
 
@@ -101,7 +187,7 @@ stable seller UID semantics. Source grouping supports source-specific mappings
 and a shared category analytical schema. Collection skill/import instructions
 and affected processing guides document this boundary.
 
-At the user's request, the [specification rationale](../spec.md#why-bronze-is-grouped-by-website)
+At the user's request, the [specification rationale](../data/spec.md#why-bronze-is-grouped-by-website)
 now explains why website structures provide a useful boundary for source
 sampling, parser development, missing-value review and maintenance. Intention,
 the processing guide and the standalone collection import contract carry the
@@ -608,7 +694,7 @@ documentation or rewrite eligibility/targets.
 | Prepare generic model inputs grouped by family and encoders learned from training rows. | Portable model helpers, `prepare-model` CLI | Reviewed preparation and exclusion/failure gates verified. |
 | Reject typed contract drift and retain valid category values outside selected model domains. | Profile loader, both standardization pipelines, regression tests | Verified. Runtime uses an explicit validator template. |
 | Specify supermarket pricing, retailer comparisons and LightGBM/SHAP/AI explanations. | `docs/data/chocolate-modeling-design.md`, `docs/data/analysis/lightgbm-shap-explanation-design.md` | Proposed research design; active preparation contracts await migration and model fitting remains pending. |
-| Explain predicted price through individual traits and one percentage per trait family. | `docs/spec.md` section 5.2.1, intention, schema/modeling and SHAP guides | Specified signed percentages of final predicted price with a separate reference share, exhaustive versioned grouping and reconciliation checks. Proposed output; contract migration, implementation and validation remain pending. |
+| Explain predicted price through individual traits and one percentage per trait family. | `docs/model/spec.md` section 5.2.1, intention, schema/modeling and SHAP guides | Specified signed percentages of final predicted price with a separate reference share, exhaustive versioned grouping and reconciliation checks. Proposed output; contract migration, implementation and validation remain pending. |
 | Move analytical contract bodies to the dataset with immutable references and verified ignored caches. | Three `dataset-contract.json` manifests, resolver/fetch/publication helpers, `docs/data/dataset-contracts.md` | Published and verified against original bytes; offline caches and both processing pipelines verified. |
 | Consolidate repeated documentation and apply plain wording while preserving contracts and evidence. | Repository instructions, canonical/lifecycle guides, root and package READMEs, package skills/references | Completed; original cleanup and integration with the contract migration verified below. |
 | Configure collection sections and generate processing profiles for new categories. | Collection `collection_sections`, processing `profile_builder.py`, `init-profile`, definition reference and generic engine/archive tests | Implemented: Unicode section reports, five-contract authoring, non-food quantities/currencies/tax bases and normalized study paths. |
@@ -884,7 +970,7 @@ uv run ruff check .
 python3 -B scripts/check_documentation.py
 ```
 
-The [silver guide](../data/chocolate-silver.md) and [acceptance scenarios](../spec.md#8-acceptance-scenarios-for-stages-1-and-2)
+The [silver guide](../data/chocolate-silver.md) and [acceptance scenarios](../data/spec.md#8-acceptance-scenarios-for-stages-1-and-2)
 define preservation, exact seller deduplication, aliases/captures, typed records,
 normalization, deterministic versions/outputs, unresolved eligibility and seller
 partitions. Evidence must resolve directly to raw without temporary stages.
