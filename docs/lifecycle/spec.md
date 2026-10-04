@@ -26,3 +26,7 @@ in the feature specifications and [plan](plan.md).
 The [documentation policy](../documentation-policy.md) defines ownership and
 required updates. The [overall intention](../intention.md) owns shared goals;
 [PROJECT.md](../../PROJECT.md) records capabilities and limitations.
+
+The [UK cat litter collection](../data/cat-litter-raw.md) preserves original
+Bronze captures and local evidence bundles. Its receipt records source coverage,
+retrieval gaps and integrity separately from unverified market completeness.

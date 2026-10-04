@@ -106,6 +106,12 @@ Collection `0.2.0` observes description, prices and availability by default.
 Configure `collection_sections` for other source fields; observations describe
 field presence and retain the complete original information.
 
+The [UK cat litter collection](docs/data/cat-litter-raw.md) is an additional
+Bronze/raw study using the same importer. Original product/variant records,
+prices, availability, claims and source artifacts are stored locally in
+`data/collections/cat-litter/uk`. Its coverage and integrity receipt distinguishes
+collected source evidence from exhaustive market coverage.
+
 The canonical chocolate workflow preserves raw evidence in
 `data/collections/chocolate/uk` and builds one silver dataset in
 `data/silver/chocolate/uk`. Silver combines deduplication within each seller,

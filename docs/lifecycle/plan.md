@@ -1,5 +1,62 @@
 # Project implementation plan
 
+## UK cat litter collection: main integration
+
+Committed the collection documentation and receipt as `7fa83387` on
+`codex/cat-litter-raw-uk`, then integrated refreshed local `main` at
+`218475a074459c96dca381dba5540022e70dd890`. Resolved the shared-document conflicts
+using the app/model/data structure. The cat litter scope and archive contract now
+live in the data intent and specification, with navigation from the shared and
+lifecycle documents.
+
+The collection guide records its historical flat product layout and original
+source labels. Current readers verified all 2,238 input records, capture histories
+and 2,760 referenced artifact files with zero integrity failures. The original
+collection receipt retains the snapshot and bundle hashes and adds the current
+reader verification. New imports follow the current source directory rules.
+The landing scope is documentation and the small receipt; raw evidence is local
+under the established storage policy.
+
+Validation: locked Python dependencies and all four pinned contract caches
+verified offline. Ruff, documentation coverage against main and whitespace checks
+passed. The integrated full pytest suite passed 631 cases in 39.36 seconds; one
+web extraction and six web pricing tests were skipped because their Node runtime
+dependencies or prepared pinned fixture were absent. Runtime implementation files
+match refreshed main. The landing adds one local squash commit.
+
+## UK cat litter Bronze collection
+
+Completed the requested collection on 4 October 2026 using the chocolate raw
+method and existing `category-research-raw-1` importer. The local archive contains
+2,238 listing/variant records across 72 source groups, covering pet retailers,
+supermarkets, marketplaces, independent shops and manufacturer ranges. Native
+pack variants and separate sellers remain separate. Original product objects,
+source pages, catalogue responses, image URL references, excluded discovery
+entries and retrieval failures are preserved. Three offers have unresolved
+litter contents or inconsistent identity and remain explicit raw candidates.
+
+The archive is `data/collections/cat-litter/uk/`. The
+[guide](../data/cat-litter-raw.md) and
+[receipt](../data/analysis/cat-litter-raw-2026-10-04.json) own paths, counts,
+checksums and source limits. The complete local bundle preserves 12,055 archived
+files and all original artifact paths; its inventory and every member passed
+verification. The existing filtered text export excludes `.response.gz` paths,
+with matching copies in discovery. Both exports remain local.
+
+Validation: all 2,238 input records and immutable capture histories matched,
+2,760 referenced artifact files passed checksum verification, and no product
+import failed. All 1,790 saved direct response bodies passed their original and
+compressed hashes. Discovery copies matched original bytes. The locked Python
+environment and four pinned contract caches verified; the full pytest suite
+passed 619 cases with seven unrelated web cases skipped because their Node
+dependencies or prepared web fixture were absent. Ruff, the final documentation
+guard, all 27 focused documentation tests and whitespace checks passed.
+
+Source completeness and exhaustive UK market coverage remain unverified.
+VioVet pagination, blocked retailer pages, finite Amazon/eBay searches, cached
+provider text, shipping geography and the three uncertain offers are documented
+in coverage. The work delivers the requested Bronze/raw layer.
+
 ## Feature documentation: main integration
 
 Committed the feature documentation as `730ac22f` on

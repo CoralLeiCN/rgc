@@ -312,3 +312,15 @@ Maintain canonical documents and implementation status when behavior changes,
 following the [documentation policy](../documentation-policy.md). The revised
 data preparation approach remains proposed until its pilot and validation provide
 evidence for changing this operational context.
+
+## UK cat litter collection
+
+On 4 October 2026 the user requested the broadest feasible collection of product
+information for cat litter sold in the UK, using the chocolate case as the
+collection example. Deliver the Bronze/raw layer with original evidence,
+source listings and available pack variants. Use English for authored output
+and preserve original source evidence verbatim. Source ownership is divided
+between agents so a webpage has at most one agent collecting it at a time.
+Keep the data locally under the established raw storage policy. The
+[cat litter guide](cat-litter-raw.md) records the archive, scope and gaps.
+Exhaustive market coverage is a research goal, not an established result.

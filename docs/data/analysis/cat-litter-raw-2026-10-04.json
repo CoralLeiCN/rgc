@@ -1,0 +1,335 @@
+{
+  "receipt_version": "uk-cat-litter-bronze-receipt-1",
+  "study_id": "uk-cat-litter-bronze-2026-10-04",
+  "requested_on": "2026-10-04",
+  "finished_at": "2026-10-04T02:36:35.876853+00:00",
+  "layer": "bronze/raw",
+  "category": "cat-litter",
+  "market": "uk",
+  "storage": "local ignored files; no raw upload",
+  "archive_contract": "category-research-raw-1",
+  "sender_contract": "uk-cat-litter-bronze-1",
+  "collection_sections": {},
+  "records": 2238,
+  "unique_product_ids": 2238,
+  "source_groups": 72,
+  "records_by_source": {
+    "aldi": 1,
+    "amazon": 184,
+    "animed-uk": 13,
+    "argos": 4,
+    "asda": 10,
+    "bitiba-uk": 284,
+    "bmstores": 8,
+    "breederschoicecats.co.uk": 3,
+    "bsb-products": 21,
+    "burnhills": 6,
+    "catisfaction": 1,
+    "catit.co.uk": 5,
+    "cats-and-the-city": 3,
+    "catsan.co.uk": 5,
+    "catsbest.eu": 4,
+    "clearway-pets": 12,
+    "costco": 1,
+    "dreibach": 6,
+    "ebay": 21,
+    "ever-clean.co.uk": 9,
+    "felight.co.uk": 5,
+    "fourladcats": 6,
+    "giddy-pets": 37,
+    "hercat": 40,
+    "hide-and-seek-london": 18,
+    "homebargains": 6,
+    "huskaloo": 4,
+    "iceland": 1,
+    "jollyes": 25,
+    "katkin.com": 1,
+    "kittilitt": 7,
+    "lords-and-labradors": 3,
+    "meowgreen": 2,
+    "millbry-hill": 18,
+    "morrisons": 11,
+    "ocado": 49,
+    "omlet.co.uk": 3,
+    "paw-pure": 4,
+    "pawsano": 1,
+    "pawtastic-pets": 1,
+    "pdsa-pet-store": 36,
+    "pet-drugs-online-uk": 27,
+    "pet-palz": 3,
+    "pet-supermarket-uk": 56,
+    "pet-vita": 147,
+    "petplanet-uk": 44,
+    "pets-and-friends": 26,
+    "pets-villa": 45,
+    "petsathome": 70,
+    "petscorner": 28,
+    "petshop-uk": 69,
+    "pettex.co.uk": 8,
+    "petwell": 81,
+    "pidan.london": 17,
+    "rocat-uk": 5,
+    "sainsburys": 12,
+    "sanicat.com": 28,
+    "superpet.co.uk": 56,
+    "tesco": 67,
+    "the-pet-aisle": 31,
+    "therange": 10,
+    "time-for-paws": 21,
+    "untamed.com": 1,
+    "vetshop": 24,
+    "vetuk": 24,
+    "viovet-uk": 96,
+    "waitrose": 5,
+    "whitylondon.com": 4,
+    "wilko": 19,
+    "worldsbestcatlitter.com-gb": 4,
+    "zoars-ark": 18,
+    "zooplus-uk": 313
+  },
+  "unresolved_scope_candidates": [
+    "amazon-b0fpq8gpb5",
+    "pet-vita-53553795858761",
+    "pet-vita-53552432677193"
+  ],
+  "raw_root": "/Users/coral/.codex/worktrees/6676/rgc/data/collections/cat-litter/uk",
+  "preparation_root": "/Users/coral/.codex/worktrees/6676/rgc/data/cat-litter-uk",
+  "export_root": "/Users/coral/.codex/worktrees/6676/rgc/data/exports/cat-litter-uk-2026-10-04",
+  "local_files": {
+    "raw_input": {
+      "repository_relative_path": "data/cat-litter-uk/inputs/combined.json",
+      "local_path": "/Users/coral/.codex/worktrees/6676/rgc/data/cat-litter-uk/inputs/combined.json",
+      "byte_length": 136972038,
+      "sha256": "d6c7fc118f4e3672a847fb28f23d8d57fa9610194aa6f6593a3118ce42820858"
+    },
+    "coverage": {
+      "repository_relative_path": "data/collections/cat-litter/uk/coverage.json",
+      "local_path": "/Users/coral/.codex/worktrees/6676/rgc/data/collections/cat-litter/uk/coverage.json",
+      "byte_length": 16343,
+      "sha256": "f746141c0d6d50dee5473d0af429995f14247fa99996a77ee92f0d8c10c1d95c"
+    },
+    "archive_verification": {
+      "repository_relative_path": "data/collections/cat-litter/uk/archive-verification.json",
+      "local_path": "/Users/coral/.codex/worktrees/6676/rgc/data/collections/cat-litter/uk/archive-verification.json",
+      "byte_length": 1671128,
+      "sha256": "1287b8322b42fb1e24efb3cb6e95f0aa7370a76c502eb6edaddeb70624f6d2ea"
+    },
+    "import_report": {
+      "repository_relative_path": "data/collections/cat-litter/uk/runs/20261004T022459406514Z-bbe2b68af8/report.json",
+      "local_path": "/Users/coral/.codex/worktrees/6676/rgc/data/collections/cat-litter/uk/runs/20261004T022459406514Z-bbe2b68af8/report.json",
+      "byte_length": 1231542,
+      "sha256": "2db36d0d5a54bafd58e02ffcd3f43c2fa499f2e38a7124331e1add08ee06c655"
+    },
+    "discovery_inventory": {
+      "repository_relative_path": "data/collections/cat-litter/uk/discovery/inventory.json",
+      "local_path": "/Users/coral/.codex/worktrees/6676/rgc/data/collections/cat-litter/uk/discovery/inventory.json",
+      "byte_length": 2485109,
+      "sha256": "870dcbf975e2371c69aff32db7a116c14209fd6c7a16580304ee93b17a0795d1"
+    },
+    "source_response_integrity": {
+      "repository_relative_path": "data/collections/cat-litter/uk/discovery/reports/source-response-integrity.json",
+      "local_path": "/Users/coral/.codex/worktrees/6676/rgc/data/collections/cat-litter/uk/discovery/reports/source-response-integrity.json",
+      "byte_length": 1526919,
+      "sha256": "963242e06c6206dc9a34fe2df81030a8154cc303369afa67498e206200745976"
+    },
+    "product_index": {
+      "repository_relative_path": "data/exports/cat-litter-uk-2026-10-04/products.jsonl",
+      "local_path": "/Users/coral/.codex/worktrees/6676/rgc/data/exports/cat-litter-uk-2026-10-04/products.jsonl",
+      "byte_length": 123850585,
+      "sha256": "e3b5146521f82fcb35ebc03ef44e9fca4537b9b93731307a2b5dd8ac39a839ca"
+    },
+    "text_export_manifest": {
+      "repository_relative_path": "data/exports/cat-litter-uk-2026-10-04/export-manifest.json",
+      "local_path": "/Users/coral/.codex/worktrees/6676/rgc/data/exports/cat-litter-uk-2026-10-04/export-manifest.json",
+      "byte_length": 705,
+      "sha256": "7cd09667ad0f66b1f1c9639a263f241830fbeb64045c4069ea1592405c907cfb"
+    },
+    "text_evidence_bundle": {
+      "repository_relative_path": "data/exports/cat-litter-uk-2026-10-04/evidence/cat-litter/uk.tar.gz",
+      "local_path": "/Users/coral/.codex/worktrees/6676/rgc/data/exports/cat-litter-uk-2026-10-04/evidence/cat-litter/uk.tar.gz",
+      "byte_length": 327992544,
+      "sha256": "32d84ffd4a72ce33b85cc0b1a52fa81d78fe117c5263763a0ccb43ef1269f115"
+    },
+    "complete_raw_bundle": {
+      "repository_relative_path": "data/exports/cat-litter-uk-2026-10-04/evidence/cat-litter/uk-complete-raw.tar.gz",
+      "local_path": "/Users/coral/.codex/worktrees/6676/rgc/data/exports/cat-litter-uk-2026-10-04/evidence/cat-litter/uk-complete-raw.tar.gz",
+      "byte_length": 658512739,
+      "sha256": "e1121b0dc077824c289c711b1e10d2dd39714daf99820ce4919a47c28cd3b40a"
+    },
+    "complete_raw_verification": {
+      "repository_relative_path": "data/exports/cat-litter-uk-2026-10-04/complete-raw-bundle.json",
+      "local_path": "/Users/coral/.codex/worktrees/6676/rgc/data/exports/cat-litter-uk-2026-10-04/complete-raw-bundle.json",
+      "byte_length": 562,
+      "sha256": "b2c9284e474246e8c5abd11c2d9a09c9de9d9c0c1645b377c34c191443c9cff8"
+    },
+    "start_here": {
+      "repository_relative_path": "data/exports/cat-litter-uk-2026-10-04/START-HERE.md",
+      "local_path": "/Users/coral/.codex/worktrees/6676/rgc/data/exports/cat-litter-uk-2026-10-04/START-HERE.md",
+      "byte_length": 2176,
+      "sha256": "3a55ffb01c203f59efab2e013c1c56935f7fbbcbbde103f41592cdb8aea2bde7"
+    }
+  },
+  "import": {
+    "run_id": "20261004T022459406514Z-bbe2b68af8",
+    "status": "partial",
+    "failed_products": 0,
+    "records_received": 2238,
+    "product_outcomes": {
+      "raw_record_preserved_review_pending": 1193,
+      "partial": 1045
+    },
+    "status_meaning": "Supplied original records are preserved. Partial capture status records retrieval gaps and reference-only artifacts; substantive completeness remains unverified."
+  },
+  "archive_verification": {
+    "status": "passed",
+    "integrity_failures": 0,
+    "counts": {
+      "product_folders_observed": 2238,
+      "plugin_product_folders": 2238,
+      "captures": 2238,
+      "history_references": 2238,
+      "history_records_verified": 2238,
+      "legacy_or_unsupported_product_folders": 0,
+      "product_imports_in_progress": 0,
+      "input_files": 1,
+      "input_records": 2238,
+      "input_records_matched": 2238,
+      "unique_artifact_files_hashed": 2760,
+      "unique_artifact_bytes_hashed": 328116091
+    }
+  },
+  "source_response_integrity": {
+    "status": "passed",
+    "metadata_files": 1846,
+    "source_files": 1790,
+    "saved_bytes": 199422566,
+    "original_bytes": 1285048313,
+    "failures": 0,
+    "exact_urls_with_multiple_agent_metadata": 0
+  },
+  "discovery_copy": {
+    "files": 4813,
+    "status": "passed",
+    "byte_hashes_match_originals": true
+  },
+  "complete_raw_bundle": {
+    "verified_at": "2026-10-04T02:34:15.703912+00:00",
+    "status": "passed",
+    "bundle": "/Users/coral/.codex/worktrees/6676/rgc/data/exports/cat-litter-uk-2026-10-04/evidence/cat-litter/uk-complete-raw.tar.gz",
+    "byte_length": 658512739,
+    "sha256": "e1121b0dc077824c289c711b1e10d2dd39714daf99820ce4919a47c28cd3b40a",
+    "source_files": 12055,
+    "source_bytes": 1753244077,
+    "product_records": 2238,
+    "omitted_files": 0,
+    "reference_paths": "Original archive_relative_path references are present; historical collector local_path values remain provenance."
+  },
+  "filtered_text_export": {
+    "status": "passed",
+    "product_rows": 2238,
+    "studies": [
+      {
+        "category": "cat-litter",
+        "market": "uk",
+        "bundle": "evidence/cat-litter/uk.tar.gz",
+        "included_files": 9456,
+        "included_bytes": 1428548004,
+        "omitted_files": 2599,
+        "omitted_bytes": 324696073,
+        "omissions_by_reason": {
+          "unsupported_compressed_format": 2599
+        },
+        "bundle_bytes": 327992544,
+        "bundle_sha256": "32d84ffd4a72ce33b85cc0b1a52fa81d78fe117c5263763a0ccb43ef1269f115"
+      }
+    ],
+    "limit": "The existing exporter excludes .response.gz artifact paths. Matching source copies are present in discovery; the complete raw bundle has no omissions and retains all original archive paths."
+  },
+  "repository_checks": {
+    "locked_environment": "uv sync --locked passed",
+    "pinned_contracts": "python3 -B scripts/fetch_contracts.py --all --offline passed for all four caches",
+    "full_pytest": {
+      "command": "UV_CACHE_DIR=/private/tmp/rgc-cat-litter-uv-cache uv run --offline pytest",
+      "passed": 619,
+      "skipped": 7,
+      "skip_scope": "Unrelated web tests requiring absent Node dependencies or a prepared pinned web fixture."
+    },
+    "ruff": "UV_CACHE_DIR=/private/tmp/rgc-cat-litter-uv-cache uv run --offline ruff check . passed",
+    "documentation_guard": "python3 -B scripts/check_documentation.py passed",
+    "focused_documentation_pytest": {
+      "command": "UV_CACHE_DIR=/private/tmp/rgc-cat-litter-uv-cache uv run --offline pytest scripts/tests/test_documentation.py",
+      "passed": 27
+    },
+    "whitespace": "git diff --check passed"
+  },
+  "market_coverage": "not_verified",
+  "product_information_completeness": "not_verified",
+  "limitations_and_provenance": [
+    "Counts describe seller listings, source variants or manufacturer pages. They do not count distinct physical products; different sellers remain separate.",
+    "Exhaustive UK market coverage and product information completeness are unverified.",
+    "Zooplus and Bitiba category pagination was traversed through page 7; source pack cards and product family pages remain in the evidence.",
+    "Pets at Home captured all 67 observed category results as 70 SKU rows; Pets Corner supplied 28 native pack rows; Jollyes supplied all 25 observed category products.",
+    "Ocado supplied all 49 observed catalogue cards. Some detail pages returned challenges; original catalogue facts and failed detail responses are retained.",
+    "VioVet supplied 64 of 79 reported product ranges, represented by 96 records from preserved provider text. Remaining pagination and original HTML were blocked.",
+    "Amazon coverage is finite: 184 ASIN rows, search links through page 7 and 113 retained native detail observations. Pack selectors, marketplace sellers and further listings are not exhaustively covered.",
+    "eBay coverage is finite: 10 native listings represented by 21 source pack rows. Missing native variation IDs or variant prices remain unknown.",
+    "64 chain/supermarket rows use rendered provider evidence. Its reported crawl date can precede this collection; it cannot establish live prices or stock on 4 October 2026.",
+    "Lidl and Co-op returned limited shells. Natusan direct-store retrieval was unavailable. Failed routes or empty feeds do not establish that a seller has no cat litter.",
+    "12 manufacturer/global records without sufficient UK offer evidence remain supplemental discovery. UK seller evidence supplies many of the corresponding brands separately.",
+    "Source-labelled unavailable products and promotional offers remain included. Delivery geography and actual current stock are not independently verified.",
+    "The PetVita feed was audited against all 208 source entries: 60 accessories and one reptile substrate were excluded, eight missed litter offers were recovered, and two inconsistent source offers were retained with explicit notes. Its initial collector coverage report is superseded by this audit.",
+    "Amazon ASIN B0FPQ8GPB5 is an unresolved raw candidate: its category title mentions silica litter, while the saved card describes an automatic device. Saved evidence does not establish included litter or a refill option; no source litter quantity was inferred.",
+    "Initial specialist coverage reports are historical retrieval receipts. Their apparent catalogue_complete flags describe observed feed stopping conditions; wrong routes, inaccessible catalogues and the UK market remain unverified.",
+    "Accessory selection decisions retain original rejected records and source fields in discovery. Prefilled litter trays, crystal refills and bundles containing litter substrate remain included.",
+    "Image URLs and original gallery metadata remain preserved. Image payloads and packaging OCR were not collected.",
+    "Storage hashes and immutable histories verify preservation. Manufacturer claims, descriptions, composition and usage/disposal advice remain attributed source statements.",
+    "Collection work was partitioned by source domain. One incidental external brand link was completed and shared before reuse; the response metadata audit found zero exact URLs assigned to multiple agents."
+  ],
+  "archive_layout": "supported legacy products/<product_id> flat snapshot",
+  "collection_importer_revision": "89d76b38ee206278db1ad1d0606564c625ee1199",
+  "main_integration": {
+    "source_branch": "codex/cat-litter-raw-uk",
+    "collection_commit": "7fa833878a91eec496b7475418d151f51014c51b",
+    "target_branch": "main",
+    "target_revision_before_landing": "218475a074459c96dca381dba5540022e70dd890",
+    "upstream_refresh": "origin/main fetched; local main already contains upstream",
+    "canonical_documents": [
+      "docs/data/intent.md",
+      "docs/data/spec.md"
+    ],
+    "current_reader_verification": {
+      "local_path": "/Users/coral/.codex/worktrees/6676/rgc/data/cat-litter-uk/reports/main-integration-archive-verification.json",
+      "sha256": "578844b00eee45df7b5b5274b94f19666d697c2fe0931ed7d8099149f51f645a",
+      "status": "passed",
+      "integrity_failures": 0,
+      "counts": {
+        "product_folders_observed": 2238,
+        "plugin_product_folders": 2238,
+        "captures": 2238,
+        "history_references": 2238,
+        "history_records_verified": 2238,
+        "legacy_or_unsupported_product_folders": 0,
+        "product_imports_in_progress": 0,
+        "input_files": 1,
+        "input_records": 2238,
+        "input_records_matched": 2238,
+        "unique_artifact_files_hashed": 2760,
+        "unique_artifact_bytes_hashed": 328116091
+      }
+    },
+    "validation": {
+      "locked_environment": "uv sync --locked --offline passed",
+      "four_pinned_contract_caches": "verified offline",
+      "pytest": {
+        "passed": 631,
+        "skipped": 7,
+        "seconds": 39.36,
+        "skip_scope": "One web extraction and six web pricing tests require absent Node dependencies or a prepared pinned web fixture."
+      },
+      "ruff": "passed",
+      "documentation_guard": "passed with --base main",
+      "whitespace": "passed"
+    },
+    "capture_layout_note": "The initial collection uses its original flat product paths and source labels. Current readers verified the saved snapshot. New imports follow the current source directory and source-key rules."
+  }
+}

@@ -29,3 +29,7 @@ records implementation, verification and remaining work. The
 [app README](../../apps/web/README.md) provides setup instructions. Follow the
 [documentation policy](../documentation-policy.md) when updating the relevant
 feature intention or implementation guides.
+
+The 4 October 2026 [UK cat litter request](../data/cat-litter-raw.md) extends
+collection to cat litter, with Bronze/raw evidence as the requested deliverable
+and the broadest feasible UK source coverage as the research goal.

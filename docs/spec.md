@@ -45,3 +45,7 @@ Follow the [documentation policy](documentation-policy.md) to update the owning
 feature specification and affected guides when behavior changes. Shared contract
 changes require updates to each affected feature. Author repository content
 under [AGENTS.md](../AGENTS.md), preserving original source evidence verbatim.
+
+The [UK cat litter collection](data/cat-litter-raw.md) uses the existing Bronze
+archive contract. Its [data specification](data/spec.md#31-bronze-the-raw-data-layer)
+and collection receipt record scope, storage and verification limits.

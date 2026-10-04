@@ -36,6 +36,12 @@ explanations remain planned.
 | Current status | All Gold candidates are model eligible under the user instruction; actual missing inputs still limit training, and UK market coverage is unverified. |
 | Demo sample | Five illustrative records from the study. |
 
+An additional [UK cat litter study](docs/data/cat-litter-raw.md) applies the
+collection method to pet care products and source pack variants. It delivers
+original Bronze/raw records and a verified local text export, with source
+coverage and gaps recorded separately from byte integrity. Market coverage and
+product information completeness remain unverified.
+
 ## How it works
 
 The [data flow diagram](docs/data/chocolate-silver.md#data-flow) shows the path

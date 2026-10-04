@@ -276,6 +276,19 @@ cannot establish original historical page/image captures.
 | Raw source/image artifact | Original content, source or image URL, associated product/source, publisher/retailer, capture timestamp/timezone, retrieval method, content type, relative path, hash and declared capture limitations. |
 | Collection record | Run ID, capture time, sources/artifacts added, outcomes, missing information or capabilities, and references to retained history. |
 
+The [UK cat litter study](cat-litter-raw.md) uses this same raw archive
+contract under `data/collections/cat-litter/uk/`. It retains seller listings,
+native pack variants and attributed manufacturer pages with original prices,
+availability and source claims. Source catalogue traversal and retrieval gaps
+are reported separately from storage integrity. The study uses no analytical
+profile and disables source-field heuristics with `collection_sections: {}`.
+Image references remain in the raw evidence; image bytes were not collected.
+The study's local text export follows section 3.1.1.
+
+The capture predates integration of the source directory convention and uses
+the supported flat `products/<product_id>/` layout. Its source keys and immutable
+paths retain their original values; readers and verification accept that layout.
+
 ### 3.1.1 Public dataset publication policy
 
 Raw collection evidence stays in local files under `data/collections/`.

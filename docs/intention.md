@@ -56,3 +56,6 @@ remaining work. The [lifecycle intent](lifecycle/intent.md) provides short
 navigation. Maintain these boundaries under the
 [documentation policy](documentation-policy.md), and distinguish proposed work
 from implemented or validated capabilities.
+
+The [UK cat litter collection](data/cat-litter-raw.md) extends source collection
+to pet care products with original Bronze evidence as the requested deliverable.
