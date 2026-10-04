@@ -1,5 +1,69 @@
 # Portable category processing
 
+## Standard Silver implementation, 4 October 2026
+
+The default build now implements the revised Bronze-to-Silver contract. It uses
+four field contracts, a durable SQLite source index, stable source and component
+IDs, contextual facts with `.source` and `.method`, explicit states, persistent
+human corrections and schema profiling on every build. It accepts an existing
+103-field chocolate catalog through a deterministic migration and retains exact
+input/effective contract hashes. Model policy and training preparation execute
+in Gold. Historical formats remain available with `--legacy`.
+
+See [standard Silver reference](../../plugins/category-processing/skills/category-processing/references/standard-silver.md) for exact structures, commands,
+report calculations, correction recovery and limitations. The user-approved
+contracts are published at `337fb7f3984ac648e67edd2cb47802f056193efc`.
+`profiles/<category>/silver-dataset-contract.json` pins four field contracts for
+default processing; `dataset-contract.json` retains the five historical contracts
+for `--legacy`. The separate coffee `gold-dataset-contract.json` pins its selected
+Gold design. Pilot snapshots remain local. See the
+[release record](analysis/standard-silver-v2-release.md) for exact hashes.
+
+| Category | Silver schema | Mappings | Recipe | Separate Gold design |
+| --- | --- | --- | --- | --- |
+| Chocolate | `chocolate-processing-schema-1.silver-2` | `chocolate-source-mappings-1.silver-2` | `chocolate-processing-pipeline-2.silver-2` | `chocolate-pricing-current-price-design-1.silver-2` |
+| Coffee | `coffee-schema-1.silver-2` | `coffee-source-mappings-1.silver-2` | `coffee-processing-pipeline-2.silver-2` | `coffee-pricing-design-2.silver-2` |
+
+## Historical format and prior status
+
+The remaining historical descriptions document published v1 contracts and their
+compatibility commands. Use `--legacy` for those Silver commands. The current
+v2 interface and status are defined above.
+
+The intended Bronze-to-Silver responsibility is to produce structured,
+standardized category data with evidence and quality metadata. Gold further
+enriches that shared layer for a downstream use case. The current portable
+runtime still requires a legacy model design and emits training views; the
+documented runtime dependency does not define Silver's intended responsibility.
+
+Gold owns comparison groups, target/price policies, eligibility and model-input
+preparation for its consumer. The revised Silver specification requires
+[persistent source identities](spec.md#persistent-source-identity) and
+[profiling reports](spec.md#silver-profiling-reports) covering field popularity,
+distinct categorical values and numeric ranges. The
+[plan](../lifecycle/plan.md#bronze-to-silver-specification-alignment-4-october-2026)
+describes the proposed SQL index and calculations; concrete data structures are
+decided through Bronze inspection. These requirements await runtime migration.
+
+The revised Silver design pairs each standardized column, such as `net_weight_g`,
+with `<standardized_column>.source`, such as `net_weight_g.source`, locating the
+original raw value in Bronze. Conversion rules
+belong in versioned schema documentation, with the schema version recorded for
+the dataset. The [naming specification](spec.md#silver-field-naming-and-source-references)
+owns this requirement; the portable runtime and published profiles still use
+their existing attribute envelopes pending migration.
+
+The revised Silver requirements use arrays of objects with stable subject IDs
+for repeated components and observations, plain `null` for missing information
+and explicit error/conflict states. Results carry a `.method` of `parsed`,
+`inferred` or human `reviewed`, with precedence `reviewed > parsed > inferred`
+for the same fact. A durable correction store must reapply matching human
+decisions on future reruns. Follow the
+[data specification](spec.md#persistent-corrections-and-replay) for replay and
+improvement requirements. The portable runtime's existing review format can
+record agent decisions; it has not implemented the revised methods, state
+representation or persistent user review workflow.
+
 Bronze indexes for new listings use
 `<category>/<market>/products/<source_key>/<product_id>/product.json`, grouping
 records from each website/storefront. Processing also reads legacy flat indexes
@@ -16,15 +80,16 @@ and capture dates present within each source.
 The [category-processing plugin](../../plugins/category-processing/README.md) packages
 processing after collection: verified raw archives, exact seller deduplication,
 standardization using category profiles, normalized price observations,
-review/eligibility, processing fingerprints and grouped mapping gaps. Model-input
-preparation belongs to the downstream Silver-to-Gold workflow. Its dedicated
-[schema skill](../../plugins/category-processing/skills/category-schema/SKILL.md)
+source evidence review, processing fingerprints and grouped mapping gaps. The
+existing runtime also computes model eligibility. Further enrichment, including
+model-input preparation, belongs to the downstream Silver-to-Gold workflow. Its
+dedicated [schema skill](../../plugins/category-processing/skills/category-schema/SKILL.md)
 guides initial raw research, field design and semantic checks. Its
 [processing skill](../../plugins/category-processing/skills/category-processing/SKILL.md)
 guides processing, evidence review and mapping/parser improvements.
 
 The package targets [Agent Plugins 1.0.0](https://agent-plugins.org/specification)
-with a root `plugin.json` (`category-processing`, version `0.3.4`) and an
+with a root `plugin.json` (`category-processing`, version `0.4.0`) and an
 [Agent Skills](https://agentskills.io/specification) component. Its standard-library
 Python 3.9+ runtime, profile manifests and references are self-contained. Copying the
 package does not require repository sibling modules, another plugin installation,
@@ -53,7 +118,8 @@ Bronze is the raw data layer. It preserves original product indexes from sources
 immutable captures and
 source/image artifacts. Silver verifies them, deduplicates only exact identities
 within the same source, applies versioned types/units/vocabularies, normalizes
-observations, records reviews/exclusions and exposes eligible model inputs. Keep
+observations and records source reviews and quality gaps. The existing runtime
+also exposes legacy model inputs and exclusions. Keep
 Bronze plus one combined Silver layer. Collection/discovery and retrieval of original
 images are collection responsibilities.
 
@@ -66,8 +132,7 @@ flowchart LR
     B -->|Read in current task| H[Calling harness: triage, diff, tests, impact]
     H -->|Accepted version| C
     S --> G[Downstream Silver to Gold]
-    G --> M[Model inputs and frozen encoder]
-    M --> F[Later fitting and validation]
+    G --> M[Enrichment for the selected downstream use case]
 ```
 
 For a new category, use the schema skill to research preserved raw sources and
@@ -92,8 +157,8 @@ still receives an archive and an executable profile through its CLI.
 | Stage | Responsibility and output |
 | --- | --- |
 | Initial schema creation (`category-schema`) | Research raw data and generate a field catalog with evidence and semantic checks. |
-| Bronze to Silver (`category-processing`) | Apply that catalog; configure mappings/extraction, validate executable field contracts and produce reviewed Silver with quality artifacts. |
-| Silver to Gold | Define the study model and prepare training inputs, family splits, encoders and matrices from reviewed Silver. |
+| Bronze to Silver (`category-processing`) | Apply that catalog; configure mappings/extraction, validate executable field contracts and produce structured, standardized Silver with evidence and quality artifacts. |
+| Silver to Gold | Define the downstream comparison groups, target policy, eligibility, features and aggregates. Modeling may require training inputs, family splits, encoders and matrices; other consumers define their own enrichment. |
 
 Candidate aliases and source paths require implementation and evidence checks.
 Tracking a field does not select it as a predictor. Category-processing finishes
@@ -351,7 +416,9 @@ automatic proposal/decision registry remain future improvements.
 ## Downstream handoff and verification
 
 The [Silver-to-Gold procedure](../../plugins/category-processing/skills/category-processing/references/silver-to-gold.md)
-owns model design and input preparation after reviewed Silver. The legacy
+owns model design and input preparation after standardized Silver with quality
+metadata. Parsed and inferred values remain usable under the Silver contract.
+The legacy
 `prepare-model` helper preserves versions/units/support/splits and writes JSONL
 training/validation inputs, a frozen encoder and design matrix. It does not export
 Parquet Gold or fit coefficients. Canonical chocolate Gold uses its

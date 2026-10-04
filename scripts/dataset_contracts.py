@@ -18,6 +18,12 @@ from category_processing.dataset_contracts import (  # noqa: E402
 SCHEMA_REFERENCE = ROOT / "schemas/chocolate/dataset-contract.json"
 SCHEMA_CACHE = ROOT / "data/contract-cache"
 CURRENT_PRICE_REFERENCE = ROOT / "schemas/chocolate/current-price/dataset-contract.json"
+STANDARD_GOLD_REFERENCE = ROOT / "schemas/chocolate/standard-gold/dataset-contract.json"
+
+
+def resolve_standard_gold_contract_root(*, offline=False):
+    """Resolve the separately published Gold design for standard Silver."""
+    return resolve_contracts(STANDARD_GOLD_REFERENCE, SCHEMA_CACHE, offline=offline)
 
 
 def resolve_current_price_contract_root(*, offline=False):

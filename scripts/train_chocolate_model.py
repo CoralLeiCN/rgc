@@ -88,7 +88,13 @@ def validate_training_contract(design):
     validate_target_policy(design.get("target"))
     training = design.get("training", {})
     uncertainty = training.get("coefficient_uncertainty", {})
-    if (design.get("model_design_version") not in ("chocolate-pricing-design-3", "chocolate-pricing-current-price-design-1")
+    version = design.get("model_design_version")
+    if design.get("preparation_contract_version") == "chocolate-gold-standard-2":
+        expected = design.get("source_model_design_version", "") + ".silver-2"
+        if version != expected:
+            raise ValueError("Gold study design version does not identify its source contract.")
+        version = design.get("source_model_design_version")
+    if (version not in ("chocolate-pricing-design-3", "chocolate-pricing-current-price-design-1")
             or training.get("training_contract_version") != "chocolate-ols-training-1"
             or training.get("estimator") != "ordinary_least_squares"
             or training.get("solver") != "numpy.linalg.lstsq"
@@ -186,9 +192,16 @@ def build_model_run(silver_root, output, group, *, gold_root=None, current_price
     storage_manifest_bytes = (source / "manifest.json").read_bytes()
     manifest, manifest_bytes, inputs = verify_input(source)
     design = read_json(inputs["model-design.json"])
+    standard_gold = manifest.get("preparation_layer") == "gold"
     preparation = None
     target_contract_bytes = None
-    if current_price_target:
+    if standard_gold:
+        if target_contract_root is not None:
+            raise ValueError("Change the study contract in a new Gold build before training.")
+        current_price_target = design["target"].get("price_basis_contract_version") == "current-consumer-price-1"
+        target_contract_bytes = inputs["model-design.json"]
+        preparation = read_json(inputs["gold-preparation-report.json"])
+    elif current_price_target:
         from dataset_contracts import (
             CURRENT_PRICE_REFERENCE,
             SCHEMA_CACHE,
@@ -207,7 +220,7 @@ def build_model_run(silver_root, output, group, *, gold_root=None, current_price
     if group not in allowed_groups:
         raise ValueError("Group is outside the declared chocolate study domain.")
     candidates, eligible = rows(inputs["training-candidates.jsonl"]), rows(inputs["model-inputs.jsonl"])
-    if current_price_target:
+    if current_price_target and not standard_gold:
         from chocolate_current_price import current_price_targets
         candidates, preparation = current_price_targets(candidates, rows(inputs["prices.jsonl"]))
         eligible = candidates if gold_root is not None else [row for row in candidates if row["model_eligible"] is True]
@@ -217,7 +230,12 @@ def build_model_run(silver_root, output, group, *, gold_root=None, current_price
             raise ValueError("Duplicate modeling observation IDs in silver.")
         if any(r.get("dataset_version") != manifest["dataset_version"] or r.get("schema_version") != manifest["schema_version"] for r in table):
             raise ValueError("Modeling row versions disagree with the silver snapshot.")
-    expected = {r["observation_id"]: r for r in candidates if gold_root is not None or r.get("model_eligible") is True}
+    if standard_gold:
+        audit = {row["observation_id"]: row for row in rows(inputs["eligibility.jsonl"])}
+        eligibility = {key for key, row in audit.items() if row["eligible"]}
+        expected = {r["observation_id"]: r for r in candidates if r["observation_id"] in eligibility}
+    else:
+        expected = {r["observation_id"]: r for r in candidates if gold_root is not None or r.get("model_eligible") is True}
     if expected != {r["observation_id"]: r for r in eligible}:
         raise ValueError("Model inputs differ from reviewed eligible silver candidates.")
     input_blocker = None
@@ -237,7 +255,10 @@ def build_model_run(silver_root, output, group, *, gold_root=None, current_price
     selected = sorted((r for r in eligible if r["comparable_group"] == group), key=lambda r: r["observation_id"])
     implementation = {name: checksum((ROOT / name).read_bytes()) for name in IMPLEMENTATION}
     if gold_root is not None:
-        for name in ("scripts/chocolate_gold.py", "scripts/chocolate_gold_population.py"):
+        modules = ("scripts/chocolate_gold.py", "scripts/chocolate_gold_standard.py",
+                   "plugins/category-processing/category_processing/gold_preparation.py") if standard_gold else (
+                       "scripts/chocolate_gold.py", "scripts/chocolate_gold_population.py")
+        for name in modules:
             implementation[name] = checksum((ROOT / name).read_bytes())
     if current_price_target:
         implementation["scripts/chocolate_current_price.py"] = checksum((ROOT / "scripts/chocolate_current_price.py").read_bytes())
@@ -281,12 +302,19 @@ def build_model_run(silver_root, output, group, *, gold_root=None, current_price
         report["gold_dataset_version"] = identity["gold_dataset_version"]
         if gold_manifest.get("review_provenance") is not None:
             report["gold_review_provenance"] = gold_manifest["review_provenance"]
-        report["population_selection"] = "all_gold_rows"
-        report["counts"] = {"training_rows": len(candidates), "selected_observations": len(selected),
-                            "selected_families": len({r["family_id"] for r in selected}),
-                            "other_group_observations": len(candidates) - len(selected)}
-        report.pop("exclusion_counts")
-        report.pop("selected_group_exclusion_counts")
+        if standard_gold:
+            report["population_selection"] = "gold_eligible_inputs"
+            report["exclusion_counts"] = dict(sorted(Counter(reason for row in audit.values() for reason in row["exclusion_reasons"]).items()))
+            report["selected_group_exclusion_counts"] = dict(sorted(Counter(
+                reason for row in candidates if row["comparable_group"] == group
+                for reason in audit[row["observation_id"]]["exclusion_reasons"]).items()))
+        else:
+            report["population_selection"] = "all_gold_rows"
+            report["counts"] = {"training_rows": len(candidates), "selected_observations": len(selected),
+                                "selected_families": len({r["family_id"] for r in selected}),
+                                "other_group_observations": len(candidates) - len(selected)}
+            report.pop("exclusion_counts")
+            report.pop("selected_group_exclusion_counts")
         files["inputs/gold-manifest.json"] = storage_manifest_bytes
     files["selected-inputs.jsonl"] = b"".join(json.dumps(r, sort_keys=True, ensure_ascii=False, allow_nan=False).encode() + b"\n" for r in selected)
     if report_source.get("status") != "complete_snapshot":
@@ -325,7 +353,7 @@ def build_model_run(silver_root, output, group, *, gold_root=None, current_price
             if gold_root is None:
                 model["eligibility_rules"] = design["eligibility_gates"]
             else:
-                model["population_selection"] = "all_gold_rows"
+                model["population_selection"] = report["population_selection"]
             model["input_kind"] = input_kind
             if gold_root is not None:
                 model["gold_dataset_version"] = report["gold_dataset_version"]

@@ -137,6 +137,26 @@ SHAP explanation. Missing provider configuration produces an explicit error.
 Record successful live extraction separately from hosted bridge and network
 availability.
 
+## Persistent review of standardized data
+
+Provide an interface for users to inspect a standardized Silver value, open its
+original Bronze evidence and see whether its method is `parsed`, `inferred` or
+human `reviewed`. All three can be used; precedence for the same fact is
+`reviewed > parsed > inferred`. Show missing information, parsing errors and
+conflicts distinctly. Repeated components and observations must identify the
+subject being reviewed.
+
+Users can confirm a value or revise it, save the decision and inspect earlier
+decisions. Persist each correction so it survives reprocessing and appears in
+subsequent Silver builds when applicable. Downstream users who discover an error
+can return to the source field and correct it. Saved decisions provide evidence
+for improving models, parsing rules and regression tests over time.
+
+The [data specification](../data/spec.md#persistent-corrections-and-replay) owns
+correction identity, history and replay. This durable review workflow is requested
+work; the existing local product draft and candidate Apply action do not
+implement it.
+
 ## Price review and interpretation
 
 The intended validated workflow lets a retailer review an existing SKU, proposed

@@ -26,7 +26,10 @@ def _validate_manifest(document):
     contract_set = document.get("contract_set", "")
     if not isinstance(contract_set, str) or not re.fullmatch(r"[a-z0-9][a-z0-9-]*(?:/[a-z0-9][a-z0-9-]*)*", contract_set):
         raise ValueError("Invalid dataset contract set path.")
-    for field in ("category", "market", "schema_version", "mapping_version", "model_design_version"):
+    fields = ["category", "market", "schema_version", "mapping_version"]
+    if isinstance(document.get("files"), dict) and "model-design.json" in document["files"]:
+        fields.append("model_design_version")
+    for field in fields:
         if not isinstance(document.get(field), str) or not document[field]:
             raise ValueError("Dataset reference is missing metadata: " + field)
     count = document.get("attribute_count")
@@ -70,9 +73,12 @@ def _verify_bytes(body, metadata, name):
         raise ValueError("Dataset contract must be a JSON object: " + name)
 
 
-def verify_contract_directory(manifest, directory, require_all=True):
+def verify_contract_directory(manifest, directory, require_all=True, required_files=None):
     """Validate available cache bytes; reject corruption rather than repairing it."""
     _validate_manifest(manifest)
+    required = set(manifest["files"]) if required_files is None else set(required_files)
+    if not required <= set(manifest["files"]):
+        raise ValueError("Requested contract files are outside the immutable reference.")
     directory = Path(directory)
     if directory.is_symlink():
         raise ValueError("Dataset contract cache cannot be a symlink.")
@@ -86,7 +92,7 @@ def verify_contract_directory(manifest, directory, require_all=True):
         if path.is_symlink():
             raise ValueError("Dataset contract cache file cannot be a symlink: " + name)
         if not path.exists():
-            if require_all:
+            if require_all and name in required:
                 raise FileNotFoundError("Pinned dataset contract is absent from the local cache: " + name)
             continue
         _verify_bytes(path.read_bytes(), metadata, name)
@@ -110,9 +116,12 @@ def _atomic_write(path, body):
             temporary.unlink()
 
 
-def resolve_contracts(manifest_path, cache_root, *, offline=False, download=None):
+def resolve_contracts(manifest_path, cache_root, *, offline=False, download=None, required_files=None):
     """Materialize and verify one pinned contract set, or use its offline cache."""
     manifest = load_manifest(manifest_path)
+    required = set(manifest["files"]) if required_files is None else set(required_files)
+    if not required <= set(manifest["files"]):
+        raise ValueError("Requested contract files are outside the immutable reference.")
     directory = cache_directory(manifest, cache_root)
     root = Path(cache_root).absolute()
     for path in (directory.absolute(), *directory.absolute().parents):
@@ -121,7 +130,7 @@ def resolve_contracts(manifest_path, cache_root, *, offline=False, download=None
         if path == root:
             break
     verify_contract_directory(manifest, directory, require_all=False)
-    missing = [name for name in manifest["files"] if not (directory / name).exists()]
+    missing = [name for name in manifest["files"] if name in required and not (directory / name).exists()]
     if missing and offline:
         raise FileNotFoundError("Pinned dataset contracts are not cached; fetch them before offline use: " + ", ".join(missing))
     fetch = download or _download
@@ -135,5 +144,5 @@ def resolve_contracts(manifest_path, cache_root, *, offline=False, download=None
     marker = directory / REFERENCE_FILE
     if not marker.exists():
         _atomic_write(marker, (json.dumps(manifest, sort_keys=True, indent=2) + "\n").encode())
-    verify_contract_directory(manifest, directory)
+    verify_contract_directory(manifest, directory, required_files=required)
     return directory

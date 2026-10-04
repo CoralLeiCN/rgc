@@ -172,6 +172,9 @@ def main(argv=None):
     author = commands.add_parser("init-profile", help="Generate five aligned contracts from an explicit category definition.")
     author.add_argument("--input", type=Path, required=True)
     author.add_argument("--output", type=Path, required=True)
+    silver_author = commands.add_parser("init-silver-profile", help="Author field contracts without a model design.")
+    silver_author.add_argument("--input", type=Path, required=True)
+    silver_author.add_argument("--output", type=Path, required=True)
     process = commands.add_parser("process", help="Build a seller-specific silver snapshot using a category profile.")
     process.add_argument("--archive-root", type=Path, required=True)
     profile_selection = process.add_mutually_exclusive_group(required=True)
@@ -181,6 +184,29 @@ def main(argv=None):
     process.add_argument("--offline", action="store_true", help="Require verified cached category contracts; never download.")
     process.add_argument("--output", type=Path, required=True)
     process.add_argument("--reviews", type=Path)
+    process.add_argument("--legacy", action="store_true", help="Reproduce the historical model-coupled Silver format.")
+    process.add_argument("--state-db", type=Path, help="Durable source identity and human correction SQLite database.")
+    process.add_argument("--inferences", type=Path, help="Evidence-backed inferred assertions; never marked human reviewed.")
+    export = commands.add_parser("export-silver-contracts", help="Prepare four versioned field contracts for local release review.")
+    export.add_argument("--profile", type=Path, required=True)
+    export.add_argument("--output", type=Path, required=True)
+    review = commands.add_parser("review", help="Open a loopback HTTP interface for durable human corrections.")
+    review.add_argument("--silver-root", type=Path, required=True)
+    review.add_argument("--state-db", type=Path, required=True)
+    review.add_argument("--archive-root", type=Path)
+    review.add_argument("--port", type=int, default=8765)
+    correction = commands.add_parser("save-correction", help="Save an explicit human decision with optimistic concurrency checks.")
+    correction.add_argument("--silver-root", type=Path, required=True)
+    correction.add_argument("--state-db", type=Path, required=True)
+    correction.add_argument("--input", type=Path, required=True)
+    restore = commands.add_parser("restore-state", help="Recover source assignments and correction history from a verified snapshot.")
+    restore.add_argument("--silver-root", type=Path, required=True)
+    restore.add_argument("--state-db", type=Path, required=True)
+    gold = commands.add_parser("prepare-gold", help="Apply a separate study design, target policy and relationships to Silver v2.")
+    gold.add_argument("--silver-root", type=Path, required=True)
+    gold.add_argument("--model-design", type=Path, required=True)
+    gold.add_argument("--relationships", type=Path)
+    gold.add_argument("--output", type=Path, required=True)
     for name, help_text in (("summarize", "Prepare a local mapping gap review packet."),
                             ("prepare-model", "Prepare reviewed family holdouts and a frozen predictor encoder.")):
         subparser = commands.add_parser(name, help=help_text)
@@ -193,6 +219,33 @@ def main(argv=None):
         if args.command == "init-profile":
             from .profile_builder import init_profile
             result = init_profile(_read_json(args.input), args.output)
+        elif args.command == "init-silver-profile":
+            from .silver_contracts import init_silver_profile
+            result = init_silver_profile(_read_json(args.input), args.output)
+        elif args.command == "export-silver-contracts":
+            from .silver_contracts import export_contracts
+            result = export_contracts(args.profile, args.output)
+        elif args.command == "review":
+            from .silver_review import serve
+            serve(args.silver_root, args.state_db, args.archive_root, args.port)
+            return 0
+        elif args.command == "save-correction":
+            from .silver_review import ReviewSession
+            result = ReviewSession(args.silver_root, args.state_db).save(_read_json(args.input))
+        elif args.command == "restore-state":
+            from .silver_review import ReviewSession
+            session = ReviewSession(args.silver_root, args.state_db)
+            result = {"status": "state_restored", "dataset_version": session.manifest["dataset_version"]}
+        elif args.command == "prepare-gold":
+            from .gold_preparation import prepare_gold
+            result = prepare_gold(args.silver_root, args.output, args.model_design, args.relationships)
+        elif args.command == "process" and not args.legacy:
+            from .silver_contracts import resolve_silver_profile
+            from .standard_silver import build_standard_silver
+            if args.reviews:
+                raise ValueError("Use --inferences for agent assertions or review/save-correction for human decisions; --reviews requires --legacy.")
+            profile = resolve_silver_profile(args.profile, category=args.category, cache_root=args.contracts_cache, offline=args.offline)
+            result = build_standard_silver(args.archive_root, args.output, profile, state_db=args.state_db, inferences=args.inferences)
         elif args.command == "process":
             from .pipeline import build_silver_dataset
             previous = []

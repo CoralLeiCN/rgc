@@ -1,5 +1,13 @@
 # Model specification
 
+Standard Silver v2 supplies reusable source facts. `chocolate-gold-standard-2`
+now owns study context selection, comparison groups, displayed-price targets,
+eligibility and selected model inputs. Its OLS loader verifies the prepared
+population before training. The local schema migration pilot is not model-ready;
+missing relationships and predictors remain reported. Existing experiment
+adapters and historical snapshots retain their selected contracts. See the
+[Gold interface](../data/chocolate-gold.md#standard-silver-handoff).
+
 This document defines the model feature's study readiness, pricing methods,
 explanations, validation and research requirements for the [model intention](intent.md).
 The [project specification](../spec.md) connects the three core features. The
@@ -7,6 +15,12 @@ The [project specification](../spec.md) connects the three core features. The
 immutable input contracts; the [app specification](../app/spec.md) owns user
 workflows and presentation. The [lifecycle plan](../lifecycle/plan.md) records
 implementation and verification evidence.
+
+Model comparison groups, eligibility, target/price policy, predictor selection
+and training-input preparation belong to the downstream Gold/model workflow.
+Silver supplies standardized source facts, persistent source identities and
+profiling reports under the [data requirements](../data/spec.md#21-research-a-category).
+The existing Silver model dependency remains legacy behavior pending migration.
 
 The numbered sections retain their original identifiers so existing requirements
 remain traceable. Historical experiment records keep their original assumptions
@@ -418,16 +432,17 @@ below supersedes the regular-price requirement for current chocolate training.
 Model design, predictor selection, training input preparation, family splits,
 encoders and design matrices belong to the downstream
 [Silver-to-Gold procedure](../../plugins/category-processing/skills/category-processing/references/silver-to-gold.md)
-after category-processing produces reviewed Silver. The data specification owns
-source interpretation, review decisions and canonical Parquet Gold export.
+after category-processing produces standardized Silver with quality metadata.
+Parsed and inferred values remain usable under the Silver contract. The data
+specification owns source interpretation, review decisions and canonical Parquet
+Gold export.
 
 The portable `prepare-model` compatibility helper writes JSONL inputs, splits,
-encoders and matrices; it does not create canonical Parquet Gold. Its loader
-still requires `model-design.json` before a Silver build, and Silver emits legacy
-training views. That runtime coupling requires a future migration; it does not
-authorize inventing model choices during schema creation or data processing.
-Existing portable profiles retain their selected price contracts, separately
-from current chocolate model preparation below.
+encoders and matrices; it does not create canonical Parquet Gold. The historical
+loader requires `model-design.json` and emits legacy training views. Standard
+Silver v2 loads four field contracts; `prepare-gold` accepts its study design
+separately. Historical portable profiles retain their selected price contracts,
+separately from current chocolate model preparation below.
 
 Historical regular-price models and the portable processing profiles use `regular-consumer-price-1`: regular, non-promotional, consumer-tax-inclusive selling price, with `fallback_policy: reject`. Retain displayed/promotional/reference amounts as evidence; none substitutes for the target, and no tax guess or reverse discount is permitted. A separately evidenced regular amount alongside a promotional offer is supported. Chocolate normalizes GBP per 100g and logs it; other categories retain their declared currency and quantity basis. This fixed monetary basis supersedes earlier examples allowing excluded-tax model targets, without changing the preserved observations. Generated custom profiles retain this basis.
 

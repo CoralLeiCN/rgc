@@ -200,7 +200,7 @@ class ProfileBuilderTests:
         import_document({"study": {"category": "stationery", "market": "us"}, "products": products}, archive)
         before = {path.relative_to(archive).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
                   for path in archive.rglob("*") if path.is_file()}
-        assert (run("process", "--archive-root", archive, "--profile", self.output, "--output", silver)["status"]) == ("complete_snapshot")
+        assert (run("process", "--legacy", "--archive-root", archive, "--profile", self.output, "--output", silver)["status"]) == ("complete_snapshot")
         def rows(name):
             return [json.loads(line) for line in (silver / (name + ".jsonl")).read_text().splitlines()]
         listings, prices = rows("products"), rows("prices")
@@ -233,7 +233,7 @@ class ProfileBuilderTests:
             }
         review_path = self.base / "reviews.json"
         review_path.write_text(json.dumps(reviews))
-        run("process", "--archive-root", archive, "--profile", self.output, "--output", silver, "--reviews", review_path)
+        run("process", "--legacy", "--archive-root", archive, "--profile", self.output, "--output", silver, "--reviews", review_path)
         eligible = rows("model-inputs")
         assert (sorted(row["target"]["regular_unit_price"] for row in eligible)) == ([2, 3])
         assert ({row["seller_uid"] for row in rows("products")}) == ({row["seller_uid"] for row in listings})

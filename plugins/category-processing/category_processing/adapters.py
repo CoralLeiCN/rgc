@@ -581,7 +581,7 @@ def _recipe_attributes(capture, recipe):
             continue
         attributes.append({"attribute": field["attribute"], "value": value,
                            "pointer": field["pointer"], "method": "profile_structured_field",
-                           **{key: field[key] for key in ("unit", "scope", "qualifier") if key in field}})
+                           **{key: field[key] for key in ("unit", "scope", "qualifier", "basis") if key in field}})
     for pointer, prefix in recipe.get("sections", {}).items():
         values = _configured_value(capture, pointer)
         if values is None:
@@ -602,7 +602,7 @@ def extract_capture(capture, recipe):
     """
     attributes = _recipe_attributes(capture, recipe)
     quantities, prices, warnings = [], [], []
-    quantity = recipe["quantity"]
+    quantity = recipe.get("quantity", {})
     if recipe["adapter"] == "chocolate":
         extracted = extract_chocolate_capture(capture)
         feature_map = recipe.get("feature_mappings", {})
@@ -616,7 +616,7 @@ def extract_capture(capture, recipe):
                 item["scope"] = "ingredient"
             attributes.append(item)
         group = extracted.get("group") or {}
-        if group.get("value"):
+        if group.get("value") and recipe.get("derive_comparison_group", True):
             attributes.append({"attribute": recipe.get("group_attribute", "identity.product_group"),
                                "value": group["value"], "pointer": group["raw_pointer"], "method": group["method"]})
 
@@ -625,7 +625,8 @@ def extract_capture(capture, recipe):
                     "method": item["method"]}
         for item in extracted["quantities"]:
             quantities.append(mass(item))
-            attributes.append({"attribute": quantity["attribute"], **mass(item)})
+            if quantity.get("attribute"):
+                attributes.append({"attribute": quantity["attribute"], **mass(item)})
             if item.get("pack_count") is not None and recipe.get("pack_count_attribute"):
                 attributes.append({"attribute": recipe["pack_count_attribute"], "value": item["pack_count"],
                                    "pointer": item["raw_pointer"], "method": item["method"]})
@@ -635,7 +636,7 @@ def extract_capture(capture, recipe):
             price["quantity_candidates"] = [mass(item) for item in item.get("quantities", extracted["quantities"])]
             prices.append(price)
         warnings.extend(extracted.get("warnings", []))
-    else:
+    elif recipe.get("price"):
         config = recipe["price"]
         pointer = config["amount_pointer"]
         amount = _configured_value(capture, pointer)
@@ -671,7 +672,7 @@ def extract_capture(capture, recipe):
     # Explicit profile quantity fields also establish the pack basis for a
     # structured adapter. Missing sections never become zero or empty absence.
     for item in attributes:
-        if item["attribute"] == quantity["attribute"] and item.get("value") is not None:
+        if item["attribute"] == quantity.get("attribute") and item.get("value") is not None:
             quantities.append({"value": item["value"], "unit": item.get("unit", quantity["unit"]),
                                "pointer": item["pointer"], "method": item["method"]})
     handled_pointers = []

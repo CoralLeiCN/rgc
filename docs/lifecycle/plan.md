@@ -1,5 +1,419 @@
 # Project implementation plan
 
+## Standard Silver v2 implementation, 4 October 2026
+
+The existing Bronze-to-Silver plan below was used before implementation. The
+current implementation is the default canonical chocolate build and portable
+`process` command. `--legacy` explicitly selects historical output contracts.
+The package version is 0.4.0. This section supersedes earlier pending-status
+entries for the source index, field representation, corrections and profiling.
+
+### Chosen structures and source evidence
+
+A local pilot copies two preserved listings from each of the 24 source folders:
+48 listings and 52 captures. It includes Shopify product/variant structures,
+retailer heading sections, retailer offer text and prior captures. This is a
+source-diverse convenience sample, not a random accuracy sample. Original
+capture bytes remain unchanged. The source list is retained locally at
+`data/silver-alignment-pilot/sample.json`.
+
+The chosen v2 representation uses current `products.jsonl`, effective contextual
+`facts.jsonl`, candidate `assertions.jsonl`, source `prices.jsonl` and stable
+`subjects.jsonl`. A listing embeds current child objects in `children` when a
+recipe defines a collection with a stable source key. Scoped facts retain scope,
+qualifier and basis. Separate minimum and source-stated cocoa declarations were
+observed for Love Cocoa Honeycomb 41% Milk Chocolate Bar and Ocado Lindt Excellence
+99% Bar. Their contexts stay distinct; the latter source also contains a 90%
+marketing statement, which is retained as conflicting source context rather
+than silently replacing the ingredients statement. No generic chocolate
+component keys were inferred from prose. Declared child collections and
+correction replay after array reordering are covered by fixtures.
+
+The selected field format uses snake_case names, `.source` arrays, `.method` and
+`.contexts`; errors use exactly `{"state": "..."}` and missing values use null.
+The column projection is unresolved when several semantic contexts exist.
+The dictionary owns units and descriptions; formulas are not repeated in values.
+References contain the original history path, capture ID, canonical capture
+SHA-256 and JSON pointer. Original file byte hashes remain in `raw-inputs.json`.
+
+SQLite tables hold unique source assignments, aliases and append-only correction
+revisions. Listing keys include category, market, source, host and source product/
+variant IDs; established seller UIDs are preserved. Missing external identity
+uses the archive record ID and raises a review issue. Children use parent and
+explicit source keys. Observation/price assignments are separate. Immutable
+logical index and correction exports support restore into a fresh database.
+Restoring divergent histories or saving with an outdated correction revision
+fails visibly. Corrections compare evidence and field meaning before replay;
+parser version alone does not invalidate them. Additional supporting references
+are also checked for continued applicability.
+
+### Implemented pipeline and downstream boundary
+
+The default path reads four field contracts and supports model-free authoring
+with `init-silver-profile`. Historical pinned catalogs migrate deterministically
+into versioned local field contracts. Offline resolution requires only those
+four payloads and verifies all cached payloads present. `--inferences` records
+agent/model results as inferred regardless of their supplied labels. The local
+`review` interface shows candidates, original evidence, current facts and history,
+and saves explicit human decisions with durable revision checks. Rebuilds apply
+decisions and regenerate all reports. The pricing app's local draft action
+continues to have its separate purpose; no hosted review service was added.
+
+Every Silver build manages a schema profile in JSON and Markdown, a dictionary,
+quality/review records and provenance. Reports include zero-coverage fields,
+current subjects, history, source/context partitions, method/state counts,
+complete categorical frequencies with member-wise list counts and numeric
+min/max/quartiles/median. Group denominators count subject-field-context cells.
+Canonical numeric reporting uses pandas; portable Python uses equivalent linear
+interpolation. Missing denominators produce null coverage and state counts
+reconcile to N. Capture-time coverage is explicitly labeled as recorded time.
+
+The pilot found two concrete parser failures. Cadbury Gifts Direct names such as
+`Dairy Milk Jelly Popping Candy Bar 160g (Box of 19)` require 19 units and a 3040 g
+selling pack. Moo Free body HTML has bare gram cells in its nutrition table;
+those cells cannot establish pack weight. Standard Silver now derives explicit
+identical-unit pack arithmetic and accepts labeled body weight statements while
+retaining rejected bare mass candidates for inspection. Nomo `32g / 12 Bars`
+and Moo Free `100g — Case of 10 X Bags` have regression coverage. Original source
+text is preserved verbatim.
+
+`prepare-gold` applies a separate study design, semantic selectors, evidence-backed
+family/physical-product relationships, comparison rules, target policy and
+eligibility. The canonical builder freezes candidates and selected inputs in
+Parquet and verifies their derivation from copied Silver. The OLS loader accepts
+this Gold interface. The default chocolate study keeps current-consumer-price-1,
+with no separate regular-price, promotion or confirmed tax gate. Historical
+regular-price snapshots and compatibility APIs retain their original policy.
+The pilot's absent relationship assignments and missing predictors prevent model
+readiness; no eligibility or target decision leaks into Silver's coverage report.
+
+### Verification and release status
+
+Behavioral fixtures cover source alias/archive relocation stability, different
+sellers, scopes, parsing failures, zero/false/missing values, method precedence,
+human correction revisions and stale-write rejection, changed evidence,
+component reorder/recovery, categorical denominators, numeric quantiles, immutable
+output verification, four-file offline contracts, model-free authoring and
+Silver-to-Gold target/Parquet verification. Compatibility tests explicitly select
+`--legacy`; isolated portable-copy tests exercise the new default path.
+
+Validation completed with `uv run pytest -q`: **647 passed, 7 skipped** in
+39.22 seconds. `uv run ruff check .`, `python3 -B scripts/check_documentation.py`,
+`python3 -B scripts/fetch_contracts.py --all --offline` and `git diff --check`
+passed. The locked environment was installed with `uv sync --locked`.
+
+The final pilot is `silver-0544ad1af117ffb2685b7ec0`: 48 source listings,
+52 captures, 5,358 contextual facts and 38 review issues. All 100 managed raw
+JSON files match the original archive; all 48 subject IDs match the baseline.
+Current available contextual cells increased from 310 to 325, with 21 of 103
+fields observed. The standalone schema report regenerates byte-for-byte and its
+5,300 report partitions reconcile their counts and denominators. The local
+browser interface displays the pilot's original evidence and correction history.
+
+Gold `gold-9b8faf252473d83482ce441a` preserves 48 candidates and zero eligible
+inputs. OLS run `model-run-cfdd4544e568e74488fb16d5` writes an unavailable report
+with actual input/family blockers and the current-price assumptions. It preserves
+the Silver quality report separately from the Gold preparation report. Tests
+also exercise a nonempty eligible subset; the separate coffee fixture retains
+its regular-price basis and yields one eligible input at GBP 2.60 per 100 g.
+
+The [release summary](../data/analysis/standard-silver-v2-release.md) records the
+exact versions, ten contract files and hashes, before/after evidence, validation
+and limitations. The user then authorized publication and PR creation. The ten
+approved files were added at dataset commit
+`337fb7f3984ac648e67edd2cb47802f056193efc`, with all remote bytes verified.
+Four new immutable references select the published Silver fields and separate
+Gold designs; default loaders use those references. Historical compatibility
+pins and local pilot snapshots remain intact. The offline documentation checker
+validates the new references, cached bytes and cross-layer schema metadata.
+Full-corpus accuracy, image extraction, historical correction migration and
+evidence completion remain separate work.
+
+After publication, `uv sync --locked` and the complete pytest suite passed:
+**649 passed, 7 skipped** in 40.09 seconds. Ruff, documentation maintenance and
+whitespace checks passed. All eight references also downloaded and verified
+successfully from an empty cache. The new reference checks cover partial-cache
+corruption and mismatched Silver/Gold metadata without requiring network access.
+
+The default published references rebuilt local Silver
+`silver-4371b65f54cccd794a8a9888` and Gold `gold-60876b0d1542f7fa9d55939a`.
+Products, assertions, prices, source assignments, correction history and raw
+hashes match the reviewed pilot byte-for-byte; all 5,358 contextual fact rows
+match independent of storage order, and profiling statistics agree. The new
+identities record published contract provenance and the updated loaders.
+OLS run `model-run-c23ab04d52c881e89033ec5b` retains the same two readiness
+blockers and current-price assumptions. These verification snapshots remain local.
+
+## Earlier planning and implementation records
+
+The following entries preserve the decisions and status at the time they were
+written. Their pending statements are superseded by the implementation above.
+
+## Bronze-to-Silver specification alignment, 4 October 2026
+
+The user confirmed Silver's purpose as shared structured, standardized data.
+The data specification now ends its core workflow at that handoff and assigns
+comparison groups, target/price policy, use-specific eligibility, derived features
+and model-input preparation to Gold. Silver preserves source facts, relationships,
+supported unit conversions and price arithmetic, uncertainty and corrections.
+
+The user also requested IDs that remain the same when parsing the same raw
+source, allowed a SQL index for those assignments, and placed concrete structures
+in planning or actual data investigation. Every revised Silver build must report
+schema popularity, categorical values and numeric ranges. The sections below
+describe planned methods; their implementation and a pilot remain pending.
+
+### Persistent source index
+
+1. Inspect identity fields across source formats, duplicate folders, repeat
+   captures and variant representations. Record which source identifiers are
+   stable and where they are missing or ambiguous. Distinguish source listing,
+   pack, component and observation identity from parsed attribute values.
+2. Start with a local SQLite index outside generated snapshot directories. Plan
+   durable subject assignments, source aliases and links to original captures.
+   Namespace lookup keys by category/market, source and subject kind. A listing
+   key can use the source key, host, source product and variant identifiers where
+   the evidence supports them. A website alone cannot identify a listing.
+3. Reuse an existing assignment before allocating a new ID. Preserve established
+   portable `seller_uid` values where applicable; record existing chocolate
+   `listing_id` values as aliases. For a source lacking external identifiers,
+   retain a persistent archive-record identity in the index. Relocation adds an
+   alias to that identity. Ambiguous matches produce review cases rather than
+   matches by product name, folder order or mutable parsed values.
+4. Resolve children through their parent identity and stable source subject keys.
+   Keep capture identity distinct from listing identity. Reprocessing an existing
+   capture reuses its observation/subject assignments; new observations keep
+   their own time and context under the same listing. Determine component keys
+   from the actual data so array positions do not define identity.
+5. Enforce unique source-key assignments with transactional lookup/insertion;
+   concurrent or repeated runs must resolve to the same stored ID. Retain alias
+   history and evidence for any reviewed identity change. Pin an immutable logical
+   export of the relevant index revision in build provenance so historical
+   assignments can be restored without depending on a mutable database file.
+6. Validate ID reuse after a parser/schema change, archive move, array reorder and
+   addition of an earlier-sorting duplicate folder. Verify different sellers and
+   source variants remain distinct and existing corrections still address the
+   same subject. Final SQL tables, key serialization and recovery procedure follow
+   source inspection and are recorded here before implementation.
+
+### Structures from inspected data
+
+Inspect representative Bronze records across sellers, product forms, packs,
+capture dates and source formats before choosing the physical tables or complete
+JSON structures. Include repeated ingredients/origins/packaging components,
+several statements supporting one value, conflicting statements, and exact versus
+minimum cocoa declarations. Check preserved text and images where those are the
+evidence. Record actual capture references, alternatives, rationale and limitations
+with each design decision. The existing reconstruction report supplies research
+leads; its proposed fields still require validation.
+
+Preserve the agreed standardized field names, `.source` and `.method` conventions,
+plain `null` for missing information, explicit other states and method precedence.
+The following source-reference example is a candidate structure to test, not a
+final executable contract:
+
+```json
+{
+  "net_weight_g": 100,
+  "net_weight_g.source": {
+    "bronze_path": "chocolate/uk/products/example_shop/example_product/history/example_capture.json",
+    "pointer": "/raw_record/information/net_weight"
+  },
+  "net_weight_g.method": "parsed"
+}
+```
+
+Test this reference against immutable captures and decide how to represent
+multiple supporting/conflicting references and locations within text or images.
+For repeated JSON subjects, test arrays of objects carrying IDs from the source
+index, values and evidence. Decide concrete scope, qualifier, measurement-basis
+and relationship fields from cases such as a chocolate component's minimum cocoa
+percentage and the different materials of an outer box and inner wrapper. Each
+subject must retain its own facts through reordering and reprocessing.
+
+Candidate error encodings include `{"state": "parse_error"}`,
+`{"state": "inference_error"}`, `{"state": "unresolved"}`,
+`{"state": "conflict"}` and `{"state": "not_applicable"}`. Validate that the
+chosen representation separates these states from domain objects and supports
+typed analytical views without treating errors as missing values. Keep candidate
+assertions and diagnostics available with their original source evidence.
+
+The pilot must exercise joins, distinct counts, pack comparisons, ingredient/claim
+analysis and observation history. Record the selected structures here and in the
+data dictionary, then generate and validate executable contracts through the
+existing contract maintenance process. Design choices may be revised as further
+source evidence is inspected.
+
+### Silver profiling methods
+
+Plan a structured `schema-profile.json` and a readable `schema-profile.md` summary
+as managed build artifacts, alongside the data dictionary and quality details.
+These names and report structures are proposed. Calculate the report from the
+effective Silver values after applicable human corrections. Use pandas in the
+canonical chocolate build; document equivalent report semantics for the portable
+engine without imposing a pandas dependency on that package.
+
+1. **Declare the population.** Profile every schema field, including fields with
+   zero coverage. Use one effective current result per stable subject, field and
+   declared semantic context for the primary view. Separate compatible contexts
+   before counting; label subject/context counts when one subject contributes
+   several qualified facts. Count seller listings separately from packs, components
+   and observations. Report observation history separately with its time coverage.
+   Count duplicate source aliases once; different sellers remain separate.
+   A missing child collection is a parent-level coverage gap, not invented child
+   rows. Record the unit of count and total subjects `N` for each field/source.
+2. **Measure schema popularity.** Build a table of subject, source, field, value,
+   state, method and basis. Count available values as `K`; coverage is `K / N`.
+   Count missing, parse errors, inference errors, unresolved, conflict and
+   not-applicable states separately so the state counts plus `K` sum to `N`.
+   Include `not_applicable` in the stated primary denominator and report its
+   count. A zero denominator produces an undefined percentage, recorded as null.
+   Show method counts separately, including cross-counts with result states;
+   reviewed missing values remain missing. Report coverage overall, by source,
+   and by schema field group. Group coverage states whether its unit is subjects
+   with any available member or available subject-field cells.
+3. **Profile categorical values.** On available, type-valid values, compute the
+   complete distinct-value set and exact frequency using `groupby`/`value_counts`.
+   Emit `distinct_count`, value counts, `count / N` and `count / K`; include
+   declared vocabulary values with zero observations separately from observed
+   distinct values. Count standardized values under the selected schema, retaining
+   unfamiliar/unmapped source values in quality evidence. For categories that
+   permit several values per subject, explode the selected list and count each
+   category at most once per subject; frequencies may sum above 100%. Preserve
+   ordered lists and repeated components according to their declared subject
+   semantics. Keep full frequencies in the structured output when the readable
+   summary shows only the most common values. Exact free-text repetition remains
+   distinct from categorical or semantic ingredient popularity.
+4. **Profile numeric values.** For each numeric field and canonical unit, compute
+   valid count, minimum, maximum, median, first quartile and third quartile with
+   linear-interpolated quantiles. Partition by source, subject scope, qualifier
+   and measurement basis; pool only compatible meanings. Keep minimum claims,
+   exact measurements and different nutrition bases separate. Use available,
+   finite, type-valid numbers, preserving meaningful zero values and excluding
+   booleans, missing values and explicit error states. Empty groups retain zero
+   counts and null statistics. Report invalid values and evidence separately;
+   extremes enter inspection queues without automatic clipping or deletion.
+5. **Retain provenance and review evidence.** Record Bronze/Silver snapshot IDs,
+   schema/mapping/parser versions, identity-index revision, correction revision,
+   report version and input hashes. Link unknown vocabulary, conflicts, failures
+   and numeric extremes to subject IDs and source references. Compare reports
+   before and after changes using the same population or disclose population
+   changes explicitly. Preserve all parsed and inferred values that satisfy the
+   field contract; human review is not a prerequisite for these statistics.
+6. **Validate calculations and meaning.** Check state-count reconciliation,
+   denominator handling, scalar frequency totals, categorical-list counts and
+   numeric summaries against small independently calculated examples. Include
+   empty/all-missing fields, zero/false values, conflicting scopes, repeated
+   captures and corrected values. Audit a diverse sample from every represented
+   source format, including apparently successful extraction, against Bronze.
+   Record sample coverage and actual semantic failures. Coverage and a correct
+   aggregation do not by themselves establish correct interpretation.
+
+The existing `scripts/analyze_chocolate_schema.py` supplies legacy field coverage,
+exact categorical/list frequencies and numeric quantiles, including summaries by
+basis. It is a separate command, uses the existing attribute envelope and reads a
+model design. Adapt it to the revised field/state/identity contract, remove the
+model requirement for Silver reporting, and integrate report creation into the
+build. Existing reports remain evidence only for their recorded snapshots.
+
+### Implementation sequence and validation status
+
+Inspect source identity and semantic cases, validate candidate structures and
+report calculations on a small pilot, then implement the source index, correction
+replay and reporting together with the versioned contract migration. Move the
+legacy model dependency and training outputs to the Gold preparation workflow.
+Validate Silver generation and reporting without a model design. Contract
+publication follows its existing release review process after local validation.
+
+Status: specification, intention and supporting guide alignment only. Source
+index implementation, final structures, revised runtime/report integration and
+pilot validation remain pending.
+
+Validation: `uv sync --locked --offline` completed with a temporary writable uv
+cache. All 27 documentation tests passed with
+`uv run --offline pytest scripts/tests/test_documentation.py`;
+`uv run --offline ruff check .` and
+`python3 -B scripts/check_documentation.py` passed. Semantic review checked the
+Silver/Gold boundary, ID reuse, deferred structures, counting units, denominators,
+states and declared implementation limits. Offline contract-cache verification
+reported missing pinned files; no corpus build or contract-dependent runtime
+validation was performed for this documentation change.
+
+## Silver states, methods and persistent user review, 4 October 2026
+
+Recorded the user's clarified acceptance approach: results produced by rules are
+`parsed`, LLM/model results are `inferred` and human decisions are `reviewed`.
+All three are usable, with precedence `reviewed > parsed > inferred` for the
+same fact and context. Missing information is plain `null`; the revised JSON
+design uses explicit tagged states for parsing/inference errors, unresolved
+values, conflicts and fields that do not apply. Repeated components or observations
+use arrays of objects with stable IDs and their own values/source references.
+
+The requested user interface supports inspection, confirmation, revision and
+durable saving. A correction store independent of generated snapshots must
+reapply matching active decisions after full reprocessing, preserve earlier
+decisions and flag changed applicability. Corrections also become reference
+examples for rule/model improvements and regression tests. Updated canonical
+data/app intentions and specifications, shared interfaces and processing guides.
+
+Status: requirements and illustrative JSON documented. The executable validators,
+state/method migration, correction store/replay, user review UI and feedback
+integration remain unimplemented. Existing review-file support retains its
+historical behavior and does not establish the new human review workflow.
+
+Validation: `uv sync --locked --offline` completed. All 27 documentation tests
+passed; Ruff, `python3 -B scripts/check_documentation.py` and `git diff --check`
+passed. Both illustrative JSON blocks parsed successfully. Semantic review
+checked missing/error distinctions, the human-only meaning of the revised
+`reviewed` method, correction replay and explicit implementation limits. No
+runtime code, published contract or source data changed.
+
+## Silver value and source naming, 4 October 2026
+
+Recorded the user's corrected convention: the standardized column holds the
+standardized result, for example `net_weight_g`, and its source reference is named
+`net_weight_g.source`. The `.source` suffix attaches to the complete column name,
+including its unit. This replaces the earlier proposed underscore suffixes.
+The example resolves the original raw value through a stored Bronze history path
+and JSON pointer. Raw values retain their original type and wording in Bronze,
+and unresolved parsing retains its source reference and explicit error state.
+
+Conversion rules belong in the versioned schema documentation, with the
+applicable schema version retained in dataset provenance. Individual Silver
+fields do not store conversion formulas or explanations. Updated the data intent,
+specification, chocolate schema/Silver guides and portable processing guide.
+The executable contracts, existing record envelopes and snapshots retain their
+current format; implementation and a versioned contract migration are pending.
+
+Validation: `uv sync --locked --offline` completed. The existing documentation
+suite passed all 27 tests; Ruff, `python3 -B scripts/check_documentation.py` and
+`git diff --check` passed. Semantic review confirmed that the reference name
+extends the full standardized column name and resolves the raw Bronze value.
+The corrected convention remains labeled pending contract/runtime migration.
+
+## Silver standardization and Gold enrichment boundary, 4 October 2026
+
+Recorded the user's clarification: Silver is the structured, standardized layer;
+Gold further enriches Silver for a downstream use case. Updated the data intent,
+specification, processing guides and shared/lifecycle summaries so that a model
+design or consumer-specific enrichment does not define Silver's intended scope.
+Source evidence, typed attributes, units, vocabularies, identity, uncertainty and
+quality metadata remain part of Silver. Additional features, aggregations and
+selection rules depend on the downstream Gold use case.
+
+The current chocolate and portable builders still have their documented model
+dependencies and training outputs. This documentation correction records that
+legacy behavior separately from intended responsibilities; it does not migrate
+the runtime, publish contracts or rebuild data. The reviewed pilot and any
+required contract/runtime migration remain pending.
+
+Validation: `uv sync --locked` completed with a temporary writable cache.
+`uv run --offline pytest scripts/tests/test_documentation.py` passed all 27 tests;
+`uv run --offline ruff check .`, `python3 -B scripts/check_documentation.py` and
+`git diff --check` passed. Semantic review checked the layer descriptions and
+diagrams against the clarified intent and retained runtime status. No
+implementation or analytical contracts changed.
+
 ## UK cat litter collection: main integration
 
 Committed the collection documentation and receipt as `7fa83387` on

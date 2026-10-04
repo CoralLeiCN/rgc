@@ -7,7 +7,17 @@ The [overall specification](../spec.md) connects the feature specifications;
 own their respective consumers. The [lifecycle plan](../lifecycle/plan.md)
 records implementation and verification evidence.
 
-The revised data preparation workflow from 4 October 2026 remains proposed.
+The revised data preparation workflow from 4 October 2026 is implemented locally
+as standard Silver v2, with source-diverse pilot validation recorded in the plan.
+Its intended boundary is explicit: Bronze preserves source evidence, Silver
+structures and standardizes it, and Gold further enriches Silver for a downstream
+use case. Silver defines shared category facts, types, units, vocabularies,
+identities, provenance and uncertainty. Gold defines the additional features,
+aggregations, interpretations and selection rules required by its consumer.
+Model design is one Gold use case. Existing model dependencies and training views
+in historical Silver are compatibility behavior; the default v2 path prepares them in Gold
+under this clarified intent.
+
 Section 3.2 records the executed initial schema research and its unvalidated
 proposal; no analytical schema or contract changed in that exercise. Existing
 requirements, implementation results and historical snapshots below remain their
@@ -25,7 +35,7 @@ verbatim preservation of original source evidence.
 
 | Stage | Requested data outcome | Implementation status |
 | --- | --- | --- |
-| 1 | Collect original product information, images and prices through a portable plugin; provide another plugin for processing within each seller, category profiles, mapping maintenance and model preparation. | Raw collection, combined chocolate Silver/schema, model preparation and documentation maintenance are implemented and verified. The processing package passed package, isolated copy and collected data validation. Classification review/evaluation remains outstanding; model fitting and validation status belong to the model specification. |
+| 1 | Collect original product information, images and prices through a portable plugin; process Bronze into standardized Silver with source identities, category schemas, mapping maintenance and quality reports. | Raw collection and the existing combined chocolate Silver/schema build are implemented and verified. The revised source index, field contract, persistent corrections and integrated reports are implemented in the default v2 path and have a local source-diverse pilot. The processing package passed package, isolated copy and collected data validation. Its model preparation helper belongs to downstream Gold work; classification review/evaluation remains outstanding. |
 
 The product must support many categories over time. Chocolate sold in the United
 Kingdom is the current collection study and an example for later categories.
@@ -34,8 +44,9 @@ manufacture is a separate attribute where relevant.
 
 Collect broadly using the minimal identity and provenance envelope in section
 3.1, then derive and extend the analytical schema in section 3.2. Each
-category/market study has its own dataset, eligibility, validation and domain for
-price testing. Adding a category may require source extractors and an analytical
+category/market study has its own source coverage and analytical schema. Gold
+consumers define their comparison populations, eligibility and validation for a
+particular use. Adding a category may require source extractors and an analytical
 profile while reusing the common collection core.
 
 Deliver collection as an agent plugin usable across multiple harnesses. A
@@ -45,8 +56,9 @@ harness is the runtime that executes an agent and supplies its tools. Section
 Both plugins use generic cores with category-specific configuration. Collection
 section tracking must not require food fields for non-food products. A new
 processing profile must be authorable without copying a bundled chocolate or
-coffee profile. Fields, source pointers, comparable groups, units, currency,
-observed quantity and tax basis belong to each study. Supporting a category's
+coffee profile. Fields, source pointers, units, currency, observed quantity and
+reported tax context belong to the source schema. Gold defines comparison groups
+and any required price or tax basis for its study. Supporting a category's
 configuration does not establish complete source extraction or model readiness.
 
 
@@ -63,22 +75,31 @@ verbatim preservation of original source evidence.
    attributes for the category, packaging, promotional claims, and price ranges.
 3. Use the collection plugin to archive product records and original source/image
    evidence under section 3.1.
-4. Within one silver build, verify raw captures/histories and group exact
+4. Review the collected corpus and derive the analytical category schema, with
+   field meanings, units, vocabularies, scopes and uncertainty rules. Refine its
+   concrete structures from inspected data through the lifecycle plan.
+5. Within one Silver build, verify raw captures/histories and group exact
    duplicate listings within each selling source; retain all original captures
-   and keep different shops' listings unique.
-5. After collecting many products, review the corpus and derive the analytical
-   category schema. Apply its versioned types, units and vocabularies after
-   deduplication within that same silver dataset. Classify features from preserved
-   evidence and review ambiguous, missing or conflicting data.
-6. Define comparable groups, price basis, normalization, and model eligibility;
-   produce a coverage and quality report before fitting a model.
+   and keep different shops' listings unique. Reuse their persistent source IDs.
+6. Apply the versioned schema, unit conversions and vocabularies, retaining
+   evidence, ambiguous or conflicting results and partially useful records.
+   Reapply applicable saved human corrections.
+7. Deliver standardized Silver, its data dictionary and a quality report covering
+   schema popularity, distinct categorical values and numeric ranges under
+   [Silver profiling reports](#silver-profiling-reports).
+
+This workflow completes at the Silver handoff. Gold owns downstream comparison
+groups, target/price policy, features, aggregates, eligibility and model-input
+preparation under section 10. Silver can be produced and analyzed without a
+model design or human confirmation of every parsed or inferred value.
 
 Collect as many distinct products and varieties as practicable. Report the
 number found, sources searched, coverage gaps, failed extraction and exclusions.
 Report seller listing counts and verified physical product coverage distinctly,
 and qualify market coverage when the search is incomplete.
-[Model dataset readiness](../model/spec.md#4-dataset-readiness) defines
-readiness through independent variation and validation instead of a fixed count.
+Gold consumers apply their own readiness criteria; the
+[model dataset readiness](../model/spec.md#4-dataset-readiness) requirements govern
+modeling after this handoff.
 
 ### 2.4 Agent plugin for collecting product information
 
@@ -167,7 +188,9 @@ price context.
 Bronze is the canonical raw-data layer: original collected records, source text,
 images and other artifacts, source identities, timestamps and immutable capture
 history. Collection writes Bronze; schema research reads its evidence; category
-processing applies a generated schema to Bronze and produces reviewed Silver.
+processing applies a generated schema to Bronze and produces structured,
+standardized Silver with evidence and quality metadata. Gold enriches that
+shared layer for the selected downstream use case.
 The layer sequence is **Bronze → Silver → Gold**. Existing raw archive paths and
 format identifiers refer to Bronze, including `data/collections/` and
 `category-research-raw-1`; layer naming requires no data migration.
@@ -380,10 +403,13 @@ hashes. Local schema decisions need no user sign-off. The calling harness owns t
 ### 3.1.2 Bronze and combined Silver responsibilities
 
 Bronze preservation and combined Silver own the processing responsibilities below.
+The Silver boundary is structure and standardization; enrichment for a downstream
+use belongs to Gold. Existing model dependencies and eligibility outputs are
+recorded separately as runtime compatibility behavior.
 The [stage descriptions and data flow](chocolate-silver.md#stage-descriptions)
-show Bronze as the raw-data layer and the implemented immutable Parquet Gold
-training interface downstream of Silver. Section 10
-and the [Gold guide](chocolate-gold.md) define its contracts and readiness
+describe the intended layers alongside the current implementation status.
+Section 10 and the [Gold guide](chocolate-gold.md) define the existing immutable
+Parquet Gold training interface, its contracts and readiness
 boundary. The original chocolate snapshot had no eligible inputs or fitted
 model; subsequent training status belongs to the
 [model specification](../model/spec.md).
@@ -391,22 +417,51 @@ model; subsequent training status belongs to the
 | Layer | Responsibility |
 | --- | --- |
 | Bronze (raw), `data/collections/chocolate/uk` | Preserve product indexes, arbitrary fields, source/image artifacts and immutable history under section 3.1. |
-| Silver, `data/silver/chocolate/uk` | Verify raw index/history consistency; deduplicate exact seller listings; apply schema/unit/vocabulary standardization; normalize supported prices; apply reviews supported by evidence and model eligibility; report provenance, missingness, exclusions and readiness. |
+| Silver, `data/silver/chocolate/uk` | Verify raw index/history consistency; preserve source IDs and deduplicate exact seller listings; apply schema/unit/vocabulary standardization and supported price arithmetic; apply evidence reviews and saved corrections; report provenance, field coverage, categorical values, numeric ranges and unresolved quality issues. |
 
 `uv run --script scripts/build_chocolate_silver.py --archive-root data/collections`
-builds silver in one command with pandas 2.2.3. Direct Python execution requires
-that dependency in its interpreter. Deduplication and standardization are internal operations of
-this layer. The build reads raw and writes one silver dataset directly.
+builds standard Silver v2 with pandas 2.2.3. It uses four field contracts without a
+model design, a persistent SQLite identity/correction index, contextual field
+results and integrated schema reports. `--legacy` selects the historical build.
+The output is an immutable snapshot directory with a mutable `latest.json`
+pointer outside it. The concrete executable interface is documented in the
+[portable reference](../../plugins/category-processing/skills/category-processing/references/standard-silver.md).
 The [silver guide](chocolate-silver.md) owns its CLI, output contract and evidence
 resolution; the [schema guide](chocolate-schema.md) owns attribute meanings,
 reviews and the pricing handoff.
 
-Deduplicate exact `source_key` + source URL hostname + `source_product_id` +
+#### Persistent source identity
+
+Assign a persistent ID to each source listing/variant and reuse it whenever the
+same raw source record is parsed again. The identity includes its source and
+the particular record within that source; a website alone is not an identity.
+Changes to extraction rules, schemas, output order, archive location or duplicate
+aliases must preserve the established ID. Different sellers and distinct records
+within one source retain separate identities. New captures of the same listing
+retain its listing ID and their own capture/observation context.
+
+Maintain a durable source-to-ID index outside generated Silver snapshots. A SQL
+index can store these assignments, source aliases and provenance. Components,
+packs and observations resolve through their parent source identity and their own
+stable subject identity. Use these IDs for corrections and analytical joins.
+Ambiguous source matches remain unresolved until evidence supports a mapping;
+names, row order and mutable parsed attributes cannot silently reassign IDs.
+Record the index revision used by each build so an earlier snapshot's assignments
+remain reproducible. The [implementation plan](../lifecycle/plan.md#persistent-source-index)
+defines the proposed SQL approach; its concrete keys follow inspection of Bronze.
+
+#### Existing deduplication implementation
+
+The current build deduplicates exact `source_key` + source URL hostname + `source_product_id` +
 `source_variant_id` matches within one selling source. Missing source identity
 does not justify a match, and names, brands, GTINs or weights do not cause a
-merge. Different shops retain unique listings and prices. Choose the first
-member raw folder ID in sorted order as the canonical listing ID, retain all
-members in `source_listing_ids`, and emit `listing-aliases.jsonl`.
+merge. Different shops retain unique listings and prices. It chooses the first
+member raw folder ID in sorted order as the canonical listing ID, retains all
+members in `source_listing_ids`, and emits `listing-aliases.jsonl`. This canonical
+listing alias can change when another duplicate folder sorts earlier; it is not
+the persistent source identity required above. The portable implementation has a
+separate stable `seller_uid`. Migration must retain established identities and
+map legacy aliases without changing historical snapshots.
 
 The exact seller listing identity and `source_key` must stay consistent across
 captures in one raw folder. Reject a folder with changed identity from accepted
@@ -474,13 +529,14 @@ raw directory or a schema-design plan does not satisfy the entry conditions.
 
 Processing configures mappings/extraction and serializes the generated catalog
 into `profile.json` and `product.schema.json`. It owns executable validation,
-evidence review, mapping/parser maintenance and the reviewed Silver output.
-Model design, predictor selection, training-input preparation, family splits,
-encoders and design matrices belong to the subsequent Silver-to-Gold stage.
+evidence review, mapping/parser maintenance and standardized Silver with quality
+metadata. Gold owns further enrichment for a downstream use case. For modeling,
+this includes model design, predictor selection, training-input preparation,
+family splits, encoders and design matrices.
 The [downstream procedure](../../plugins/category-processing/skills/category-processing/references/silver-to-gold.md)
 owns those steps, with model consumer requirements in the
 [model specification](../model/spec.md). Silver retains existing evidence review
-and eligibility decisions.
+and legacy eligibility decisions as recorded provenance.
 
 The portable generator and loader still require all five aligned files, including
 `model-design.json`, and its Silver runtime writes legacy training views.
@@ -500,31 +556,36 @@ synchronized distributions. Published executable contracts remain dataset-owned.
 Inventory the supplied raw corpus, distinguish mechanical counts from sampled
 semantic review, and investigate structured fields and source prose. Proposed
 fields include meanings, types, units, scopes, qualifiers, evidence, coverage,
-rationale and unresolved alternatives. Candidate source paths and aliases inform
+rationale and unresolved alternatives. Concrete representations of those meanings
+are decided in the [data design plan](../lifecycle/plan.md#structures-from-inspected-data)
+or during inspection of the actual Bronze data. Record and validate the chosen
+structures before publishing executable contracts; this specification sets the
+required meanings and behavior. Candidate source paths and aliases inform
 later implementation; their discovery does not establish tested extraction.
 A task requesting the full workflow can continue into processing and model
 steps using its existing authorization.
 
-Keep derived product variants, classified features and price observations as
-distinct records in the later analytical dataset:
+Keep the meanings of product variants, classified features and price observations
+distinct. Choose the concrete record/table layout during source inspection;
+the analytical dataset must preserve these concepts and their required content:
 
 | Record | Required content |
 | --- | --- |
-| Category profile | Category ID and profile version, typed attribute definitions, applicable units, identity and rules for product families, definitions of comparable groups, extraction guidance, and supported price/normalization bases. |
-| Category study | Category/profile version, market, included/excluded product forms, comparable groups, collection window, currency and price definition, quantity/normalization basis, source coverage. |
+| Category profile | Category ID and profile version, typed attribute definitions, applicable units, source identity and evidence for product relationships, extraction guidance, and supported standardization rules. |
+| Category study | Category/profile version, market, collected product forms, collection window, observed currencies and quantity/price meanings, source coverage. |
 | Product variant | Unique source listing ID, category/profile version, source identifiers where available, source role and seller identity separate from product brand, optional reviewed variant/family relationships, product name, variant, product form, and applicable selling unit/quantity information. Edible weight and pack count belong to profiles where relevant. |
 | Product information | Derived attributes for the category with types, units, raw source references, and mapping/schema version. Ingredients, cocoa percentage, nutrition, and dietary information are chocolate examples. Missing information remains missing. |
 | Source evidence | References to preserved source/image artifacts, source URL, collection time, and the location supporting each extracted feature. |
 | Classified feature | Feature name, normalized value, value type, evidence reference, extraction method, review status, and schema version. |
 | Price observation | Product ID, source/retailer, observation time, currency, displayed selling unit price, available regular price, promotional status/mechanics, applicable quantity and units, normalized price and basis where used, availability, and known tax basis. |
-| Model version | Saved study, data, design, fitted parameters and evaluation under the [model release metadata contract](../model/spec.md#53-validation-and-model-release). |
 
 Follow the category profile for analytical identity. Chocolate variants differ
 by flavor, ingredients, weight and pack configuration; other categories define
 their own attributes. Use source identifiers and review ambiguous matches.
 Apply the exact seller deduplication rule in section 3.1.2. Reviewed `variant_id`
-and `family_id` can link designs and related sizes for validation while retaining
-distinct seller rows.
+and `family_id` can link designs and related sizes while retaining distinct seller
+rows. A Gold consumer decides how to use these relationships in comparisons or
+validation partitions.
 
 Keep product brand separate from seller identity. Classify selling sources as
 `source_role: brand`, `retail` or `unknown` and expose direct brand stores and
@@ -578,7 +639,213 @@ directories and preserves raw artifacts. It fits no regression; `release_ready`
 stays false pending classification evaluation and modeling validation under
 section 3.2 and the [model readiness and regression requirements](../model/spec.md#4-dataset-readiness).
 
+#### Silver field naming and source references
+
+Use a snake_case name for each standardized Silver column, including its
+canonical unit where applicable. Append `.source` to the complete standardized
+column name to name its source reference. The dot is part of the literal column
+name, including in a flat JSON representation.
+
+| Name | Meaning |
+| --- | --- |
+| `<standardized_column>` | The typed, standardized value, such as `net_weight_g`. Its canonical unit and meaning are defined in the data dictionary. |
+| `<standardized_column>.source` | A reference locating the original raw value in the preserved Bronze capture, such as `net_weight_g.source`. |
+
+For example, a Bronze value of `"0.1 kg"` becomes `net_weight_g: 100` in
+Silver. Its `.source` must resolve the raw value in a specific preserved capture,
+including legacy archive layouts. Source URL, seller identity and collection
+time remain available through that capture. The dataset manifest identifies the
+Bronze input snapshot and schema version. The
+[design plan](../lifecycle/plan.md#structures-from-inspected-data) holds illustrative
+source-reference structures; inspect actual JSON, text and image evidence before
+finalizing their representation.
+
+The original raw value remains in Bronze with its JSON type and wording intact;
+the `.source` reference locates it directly. Preserve references to each raw
+statement when several statements support or conflict over a field. A failed
+parse retains its source reference and an explicit `parse_error` state. Plain
+`null` means missing. An absent statement has no fabricated raw
+value or source pointer.
+Existing scope, qualifier, uncertainty and review requirements still apply.
+
+Document parsing rules, vocabulary mappings, canonical units and conversion
+formulas in the versioned schema documentation. Silver records contain the
+result and source reference; they do not carry a `conversion` field, formula or
+conversion explanation for each value. Record the applicable documentation/schema
+version once in dataset provenance.
+
+Status: implemented in standard Silver v2, including a local 48-listing pilot
+covering 24 sources. Four effective contracts and their original input hashes
+are retained with each build. Publication of the new contract release remains
+subject to the existing release review. Published v1 snapshots retain `value`
+and `evidence` envelopes through the compatibility path.
+
+#### Repeated values and context in JSON
+
+Repeated subjects must retain their own stable IDs, standardized fields and
+corresponding `.source` references. When represented in JSON, use arrays of
+objects to keep values and evidence attached to the correct component, pack or
+observation. Choose the concrete collections, scope/qualifier fields and links
+after inspecting Bronze, recording the design in the
+[plan](../lifecycle/plan.md#structures-from-inspected-data).
+
+The category schema declares each collection's subject, fields and ID rules.
+IDs must survive reordering and reprocessing through the persistent source index.
+Review decisions address the subject ID and field, rather than the current array
+position. Keep different observations or components separate;
+different values become a conflict only when they describe the same fact,
+subject, basis, qualifier and observation context. Preserve all applicable source
+references when several statements support that fact.
+
+#### Missing values, errors and result methods
+
+The revised design reserves plain `null` for missing information. Represent the
+following other states explicitly so an error does not look like absence. Their
+concrete encoding belongs to the plan and validated schema:
+
+| Result or state | Meaning |
+| --- | --- |
+| Available value | A result of the declared type; the column definition supplies its unit. |
+| `null` | Missing information. |
+| `parse_error` | A rule attempted to parse available evidence and failed. |
+| `inference_error` | An attempted LLM/model extraction failed. |
+| `unresolved` | Available evidence does not support a selected value yet. |
+| `conflict` | Incompatible candidates remain for the same fact and context. |
+| `not_applicable` | Evidence establishes that this field does not apply. |
+
+Keep source references for error and conflict states and retain candidate values
+and diagnostics in the supporting assertion/quality records. The selected
+representation must distinguish states from valid domain values and allow typed
+analysis. The selected v2 representation is a tagged object with exactly one `state` key.
+The data dictionary and generated field validator describe it. Historical
+snapshots retain their original numeric/null envelope.
+
+Use `<standardized_column>.method` to record the origin of the result separately
+from missing/error states:
+
+| Method | Meaning | Priority |
+| --- | --- | --- |
+| `reviewed` | A human confirmed or corrected this field in its stated context. | 1 |
+| `parsed` | Rules produced the standardized result. | 2 |
+| `inferred` | An LLM or other model produced the result. | 3 |
+
+Parsed and inferred results can be used without human review. Apply the priority
+`reviewed > parsed > inferred` among comparable candidates, including a human
+decision that a value is missing or does not apply. A failed attempt supplies no
+usable candidate. Disagreements within one priority stay explicit until resolved; an
+explicitly superseding human decision replaces the earlier active correction.
+The priority does not reconcile different subjects, scopes or observation times.
+Retain the original automated candidate when a human reviews it. An automated
+agent's review remains `inferred` under this convention; the historical review
+format may record agent reviewers and must retain its original provenance.
+
+Method labels identify the process and precedence. Parsing/conversion formulas
+remain in versioned documentation and the dataset records the versions used.
+
+#### Persistent corrections and replay
+
+Store user decisions outside generated Silver snapshots in a durable correction
+store. A record identifies the correction and revision, human reviewer and time,
+source index identity for the seller listing, optional component/pack/observation
+ID, standardized field, prior result, accepted result or state, source references, reason and
+applicability context. Link a revision to the decision it supersedes. Keep the
+original Bronze evidence and the automated candidate available for comparison.
+
+On every rebuild, compute candidates and apply matching active human decisions
+before publishing the effective Silver results. Reprocessing the same records
+with a new rule or model preserves the correction. Match by stable subject and
+field identities; do not key corrections by generated row number, array position
+or output snapshot ID. Source and schema versions define applicability checks,
+not a requirement that every unchanged fact be reviewed again after a rebuild.
+If a source change alters the fact, pack or observation, or a schema change alters
+the field meaning, retain the saved decision and flag its applicability for
+review. Do not silently discard it or apply it to a different fact.
+
+The effective field is `reviewed` and links to its correction record, while its
+`.source` retains the Bronze evidence. Record applied, superseded and unresolved
+corrections in the build report and pin the correction revision used by the
+snapshot. Existing published snapshots remain reproducible; rebuilding creates
+a new version. Consumers that pin a snapshot adopt the new version explicitly.
+
+Corrections form a reusable reference set for parser fixes, model improvement
+and regression tests. Retain before/after values, evidence and versions so a
+reported failure can be reproduced. Evaluate proposed rule/model changes against
+this set and other source examples before adopting them; automated output does
+not overwrite the accepted human decision.
+
+The user interface lets a person inspect a value and its source, confirm or
+revise it, save the decision and view its history. The
+[app review specification](../app/spec.md#persistent-review-of-standardized-data)
+owns that experience. The portable loopback review interface implements inspection,
+durable SQLite saves, revision history and replay into a new build. Saving and
+applying a correction are reported separately. The deployed pricing app keeps
+its separate draft workflow; no hosted correction database is implied.
+
+Acceptance checks for the revised Bronze-to-Silver interface include:
+
+- A repeated component retains its own values, source references and correction
+  after array reordering.
+- Missing information is `null`; malformed available evidence produces an
+  explicit error state with its source.
+- Parsed and inferred values are usable with their method labels; a matching
+  human decision takes precedence and preserves the automated candidate.
+- A saved human correction survives a full rerun and changes to extraction
+  rules/models when its subject and fact remain applicable.
+- A later human revision supersedes the active correction with visible history;
+  changed source context produces an applicability review case.
+- A reported extraction error can be reproduced as a regression example linked
+  to the correction and original evidence.
+- Reprocessing the same raw source with new rules, a moved archive or another
+  duplicate alias retains its ID and applicable corrections; distinct source
+  records retain separate IDs.
+- A Silver build completes with its data dictionary and profiling report without
+  requiring a model design, predictor selection or downstream eligibility gate.
+- Every schema field appears in the profiling report, including fields with no
+  available values. Missing/error states remain separate from value frequencies
+  and numeric ranges, and all reported percentages declare their denominators.
+
+#### Silver profiling reports
+
+Generate a report with every revised Silver build describing the standardized
+data after applicable corrections. Include all schema fields and retain partially
+useful records. The report must provide:
+
+- **Schema popularity:** field coverage as counts and percentages of subjects with
+  available values, overall and by source. This measures availability in the
+  collected dataset. Report missing, error, unresolved, conflict and
+  not-applicable states separately, together with parsed, inferred and human
+  reviewed method counts.
+- **Categorical values:** the distinct observed values and their counts and
+  frequencies for every categorical field. Distinguish observed values from
+  allowed vocabulary entries with zero observations and disclose list semantics.
+- **Numeric ranges:** valid-value counts, minimum and maximum for every numeric
+  field, with canonical units, subject scope, qualifier and measurement basis.
+  Summarize different meanings separately, such as item mass versus pack mass
+  and exact declarations versus minimum claims.
+
+Declare the population and counting subject for every metric: seller listing,
+pack, component or observation. Identify historical versus current populations,
+provide denominators, and link reported problems to source evidence. Capture
+repetition and multiple sellers must not be reported as verified distinct physical
+products or market demand. Keep valid zero and false values; missing values and
+errors cannot become numeric zero or a categorical absence claim. Parsed and
+inferred results contribute without requiring human review, with methods disclosed.
+
+Accompany the report with the data dictionary and exact input/Silver, schema,
+processing, identity index and correction provenance. Store it with the build's
+managed artifacts or as a versioned companion tied to that snapshot. Coverage
+and distributions describe the data; semantic correctness still requires sampled
+evidence checks. The [profiling plan](../lifecycle/plan.md#silver-profiling-methods)
+defines calculations, report outputs and validation. Every v2 build manages
+`schema-profile.json`, `schema-profile.md` and `data-dictionary.json`. The analysis
+helper also reads verified v2 snapshots without a model design. Its historical
+mode retains the original snapshot's report semantics.
+
 #### Defined chocolate schema inside silver
+
+This subsection records the published v1 executable contract and its legacy
+training coupling, selected with `--legacy`. The default v2 interface above
+implements the revised Silver requirements; Gold prepares its study inputs.
 
 The initial schema is `chocolate-schema-1`. Its `profile.json`,
 `source-mappings.json`, `product.schema.json` and `model-design.json` are
@@ -637,7 +904,8 @@ exclusion reasons belong in the quality report. Follow the
 contracts, update manifest pins/versions and synchronize this specification,
 schema/silver guides and lifecycle plan, including intention when scope changes.
 
-The model design selects candidate predictors. Training inputs require reviewed scope,
+In the legacy build, the model design selects candidate predictors. Its historical
+training inputs require reviewed scope,
 comparison group, edible quantity, physical/family relationships, feature
 interpretations, and regular GBP consumer prices with confirmed tax basis and
 observation time. Selected predictor and mass reviews must cite evidence from
@@ -645,9 +913,10 @@ the price observation's capture, with supported product scope and qualifiers;
 later recipe or claim statements do not automatically classify historical
 observations. The `chocolate-schema-reviews-1` review format supplies
 these decisions with reviewer, reason, and valid capture/pointer evidence.
-Current facts derived from sources remain unreviewed and tax basis is unresolved, so
-the initial build has no eligible training rows. Apply the readiness requirements
-in the [model specification](../model/spec.md#4-dataset-readiness) before fitting.
+The initial build retained unreviewed source facts and unresolved tax basis,
+and had no eligible training rows. These gates describe that historical training
+contract. The Gold/model consumer applies its selected study policy under the
+[model specification](../model/spec.md#4-dataset-readiness).
 
 `scripts/analyze_chocolate_schema.py` provides a separate read-only pandas
 analysis of a downloaded silver snapshot. It verifies the SHA-256 hashes of
@@ -808,20 +1077,20 @@ package verification independently of data/model readiness.
 
 ### 3.3 Prices and comparability
 
-Each category study defines currency, selling unit, tax/promotion basis,
-quantities and normalization. Its profile may compare prices per item, pack,
-mass or volume; edible weight and GBP per 100 g are chocolate choices.
+Silver preserves and standardizes reported currency, selling unit, quantities,
+tax/promotion context and observation time. The category schema defines shared
+units and supported arithmetic, including a price per observed quantity where
+the evidence establishes that quantity. Gold defines comparison groups, target
+prices and tax/promotion assumptions for a particular use.
 
 Collection retains original price text, currency, quantities, and offers as
 reported, even when their normalization or model eligibility is unresolved.
 Computed prices belong to the derived layer and retain links to the originals.
 
-For the current UK chocolate study, use collected displayed GBP pack prices as
-the regular-price proxy and retain source tax/promotion metadata as limitations.
-The earlier regular-price proposal remains a historical study contract.
-For historical regular-price studies, if regular price is unobservable, exclude the observation from the regular price
-model or use a separately defined analysis of displayed prices. A discount label
-alone cannot establish regular price.
+Silver retains displayed, regular and promotional prices as reported. A discount
+label alone cannot establish a regular price. The current chocolate study's use
+of displayed prices as a regular-price proxy is a downstream Gold/model policy
+under section 10; it does not relabel the source facts.
 
 For this chocolate example, normalize by total edible weight:
 
@@ -830,14 +1099,15 @@ price_per_100g = pack_price_gbp / total_edible_weight_g * 100
 ```
 
 Validate currency, positive price, applicable quantity units, and arithmetic.
-Retain missing or ambiguous quantities in coverage reporting and exclude affected
-observations from models requiring them. Preserve promotion mechanics, discounted
+Retain missing or ambiguous quantities in coverage reporting and leave unsupported
+normalized results unresolved. Gold consumers determine their usability for a
+particular analysis or model. Preserve promotion mechanics, discounted
 and regular prices distinctly; record paid shipping when observed.
 
-Define comparable groups before modeling. Bars, assorted gift boxes, and baking
-chocolate can have different pricing mechanisms even after mass normalization.
-Use separate group models or group terms and supported interactions; report the
-chosen comparison boundary.
+Silver records source-supported product forms and quantities. Gold consumers
+define comparable groups and report their chosen comparison boundaries; bars,
+assorted gift boxes and baking chocolate may require different analyses even
+after mass normalization.
 
 ## 8. Acceptance scenarios for stages 1 and 2
 
@@ -853,13 +1123,13 @@ category and plugin conformance scenarios apply across supported studies.
 | A chocolate schema field cannot be supported by the available capture. | Emit its explicit unknown state and coverage/review information; do not infer absence or a feature value from missing evidence. |
 | A product name states Blonde Chocolate or Blond Chocolate. | Extract `blonde` with the complete original name and capture pointer; retain its unreviewed state. |
 | A product name states Milk Chocolate and Dark Chocolate Selection, or Milk & Dark Chocolate Selection. | Extract `mixed` from the coordinated selection, including lists with a shared chocolate suffix; retain original evidence and distinguish ambiguous component mentions. |
-| Raw chocolate records are processed into silver. | Verify the raw snapshot, deduplicate exact seller listings and standardize them in one build; retain original captures/aliases, preserve separate sellers and roles, and emit candidate rows separately from reviewed eligible inputs. |
+| Raw chocolate records are processed into Silver. | Verify the raw snapshot, retain persistent source IDs, deduplicate exact seller listings and standardize them in one build; preserve captures, sellers and roles, apply applicable corrections, and emit the data dictionary and profiling report. Gold owns downstream candidates and eligibility. |
 | A schema, mapping, pricing gate, or model interpretation changes. | Update the affected machine contracts, version references, specification, schema/silver guides, and lifecycle plan together; run the documentation drift check. |
 | A study uses a category whose comparison basis is price per item. | Preserve its original quantities and prices during collection; derive its analytical profile without requiring cocoa percentage, edible weight, or GBP per 100 g. |
 | Another category is added. | Reuse the minimal collection/evidence envelope, then derive its own analytical profile, dataset, and validated model domain from collected information. |
 | Furniture or another non-food category is collected. | Track general or explicitly selected source sections, preserve arbitrary specifications and evidence, and do not require ingredients or nutrition. |
-| A new category needs processing contracts. | Generate and validate all five local working contracts from its explicit versioned definition without copying a bundled profile; preserve existing folders and publish authoritative contracts separately with immutable dataset references. |
-| A category uses non-GBP per-item prices or a different minor-unit scale. | Use its declared currency, observed item count, normalization base and minor-unit factor; apply one reviewed tax basis and retain missing-context exclusions. |
+| A new category needs Silver processing contracts. | Use `init-silver-profile` to serialize its researched schema, source mappings, validator and recipe without a downstream model design; preserve existing folders and publish authoritative contracts separately with immutable dataset references. The historical five-file generator remains a compatibility interface. |
+| A category uses non-GBP per-item prices or a different minor-unit scale. | Standardize its declared currency, observed item count and minor-unit factor; preserve tax context and unresolved quantities. Gold applies any tax/comparison policy required by its use case. |
 | Any category's raw archive needs a portable local text export. | Apply `rgc-text-evidence-1` locally: include original product records, text evidence, history, catalogues, collection reports, and coverage; omit image bytes, transfer caches, and runtime files while retaining metadata and explicit omission manifests. Reject raw upload requests. |
 | A binary image is stored with a filename that suggests text. | Exclude its bytes from the local text export and record the reason; keep the original local evidence unchanged. |
 | A local text export references an omitted image or cache file. | Preserve the historical reference and provide its omission entry; resolve complete source evidence in the full local archive. |
@@ -885,8 +1155,8 @@ category and plugin conformance scenarios apply across supported studies.
   under their access and usage conditions.
 - The collection window and source/retailer coverage.
 - Further chocolate schema extensions and extraction coverage, reviewed
-  comparable groups, and confirmed quantity and the applicable consumer price
-  basis before modeling.
+  source relationships and quantity meanings. Gold consumers resolve their own
+  comparison populations and consumer price basis before modeling.
 - Coverage targets and the extraction review plan.
 
 Resolve these decisions before the corresponding implementation or release
@@ -898,7 +1168,32 @@ and access configuration.
 
 ## 10. Gold and the finalized training basis
 
-This section owns Gold storage, data interfaces and family identity. The
+Gold owns enrichment and preparation for a specified downstream analysis,
+application or model. After the Silver handoff, its consumer defines:
+
+- Comparison groups, cohort selection and eligibility for the particular use.
+- Target definitions, price/tax/promotion assumptions and any additional
+  normalization specific to that target.
+- Derived features, aggregates, predictor selection and model design where used.
+- Training-input preparation, validation partitions, fitted encoders and design
+  matrices for a modeling use case.
+
+These decisions consume Silver's source facts, identities, relationships and
+quality metadata. They are not prerequisites for generating or analyzing Silver.
+Save model versions, design, fitted parameters and evaluation under the
+[model release metadata contract](../model/spec.md#53-validation-and-model-release).
+For chocolate, a Gold study may compare bars, gift boxes and baking products
+separately or declare supported group terms/interactions.
+
+The current chocolate study uses collected displayed GBP prices as the
+regular-price proxy under `current-consumer-price-1`, retaining source tax and
+promotion uncertainty as limitations. Historical `regular-consumer-price-1`
+studies retain their original price and admission rules. Silver preserves the
+reported values and context used by either study.
+
+The following records implemented Gold storage and its current training consumer;
+moving the legacy Silver model dependency requires a future runtime and contract
+migration. The
 [model specification](../model/spec.md#10-gold-and-the-finalized-training-basis)
 owns the historical regular-price target and experimental OLS consumer. The
 [current chocolate price target](../model/spec.md#current-chocolate-study-price-target)

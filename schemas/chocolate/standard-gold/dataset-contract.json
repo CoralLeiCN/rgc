@@ -1,0 +1,19 @@
+{
+  "attribute_count": 103,
+  "category": "chocolate",
+  "contract_set": "chocolate-current-price/silver-2",
+  "files": {
+    "model-design.json": {
+      "path": "contracts/chocolate-current-price/silver-2/model-design.json",
+      "sha256": "29a452442ae00b807dd75303b60da1cc0a094215de7b4990c84ed5ef58fa1271",
+      "size_bytes": 23157
+    }
+  },
+  "format_version": "rgc-dataset-contract-reference-1",
+  "mapping_version": "chocolate-source-mappings-1.silver-2",
+  "market": "uk",
+  "model_design_version": "chocolate-pricing-current-price-design-1.silver-2",
+  "repo_id": "CoralLeiCN/rgc-collections",
+  "revision": "337fb7f3984ac648e67edd2cb47802f056193efc",
+  "schema_version": "chocolate-processing-schema-1.silver-2"
+}

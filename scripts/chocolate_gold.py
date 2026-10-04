@@ -552,8 +552,13 @@ def verified_gold_storage(root):
     return source, source_bytes, inputs
 
 
-def build_gold_dataset(silver_root, output):
-    """Export every Silver candidate without eligibility metadata."""
+def build_gold_dataset(silver_root, output, *, model_design=None, relationships=None, offline=False):
+    """Prepare standard Silver in Gold, or preserve a historical Silver handoff."""
+    source = Path(silver_root)
+    if ((source / "latest.json").is_file() and not (source / "manifest.json").is_file()
+            or read_json((source / "manifest.json").read_bytes()).get("manifest_format_version") == "category-silver-manifest-2"):
+        from chocolate_gold_standard import build_standard_gold
+        return build_standard_gold(silver_root, output, model_design=model_design, relationships=relationships, offline=offline)
     from chocolate_gold_population import build_population
     return build_population(silver_root, output, input_kind="silver")
 
@@ -567,6 +572,9 @@ def verified_gold(root):
     )
     root = Path(root).expanduser().resolve()
     manifest = read_json(checked_path(root, "manifest.json", "Gold").read_bytes())
+    if manifest.get("manifest_format_version") == "chocolate-gold-standard-2":
+        from chocolate_gold_standard import verified_standard_gold
+        return verified_standard_gold(root)
     if manifest.get("processing_rule_version") == POPULATION_RULE:
         return verified_population(root)
     source, source_bytes, inputs = verified_gold_storage(root)

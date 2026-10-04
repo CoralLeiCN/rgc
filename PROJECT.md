@@ -1,5 +1,23 @@
 # retail frontier
 
+The default Bronze-to-Silver build now generates standard Silver v2: persistent
+source IDs, contextual facts, durable human corrections and integrated schema
+coverage/value/range reports. Model design, comparison groups, targets and
+eligibility are prepared downstream in Gold. Run
+`uv run python scripts/build_chocolate_silver.py --archive-root <collections> --output <silver> --offline`,
+then `uv run python scripts/build_chocolate_gold.py --silver-root <silver> --output <gold> --offline`.
+Use `--legacy` for historical Silver reproduction. The local review command is
+`python3 plugins/category-processing/cli.py review --silver-root <silver> --state-db <db> --archive-root <collections>`.
+See [the Silver guide](docs/data/chocolate-silver.md) and
+[Gold guide](docs/data/chocolate-gold.md) for publication status and missing inputs.
+The new local 48-listing pilot does not replace published datasets or establish
+model readiness. Gold records the current displayed-price proxy assumption and
+preserves the limitations of unseparated promotions and unconfirmed tax inclusion.
+The reviewed field/study contracts are published at
+`337fb7f3984ac648e67edd2cb47802f056193efc`. Default loaders use the new immutable
+references; the [release record](docs/data/analysis/standard-silver-v2-release.md)
+records exact hashes and verification.
+
 ## What we built
 
 retail frontier helps brands and retail buyers investigate product features and
