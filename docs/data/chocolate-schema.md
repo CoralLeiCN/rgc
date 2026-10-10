@@ -1,6 +1,70 @@
 # Chocolate schema, reviews and pricing handoff in silver
 
+## Text extraction backlog and schema ownership, 10 October 2026
+
+GPT6.1 Sol with high reasoning effort owns inspection, field definitions and
+schema evolution; GPT6 Luna (`gpt-6-luna`) with medium reasoning effort extracts candidates
+under frozen definitions. The backlog retained locally at `data/investigation/2026-10-10-chocolate-local-reports/docs/data/schema-proposals/chocolate-text-extraction-2026-10-10.md`
+records combined/inline nutrition gaps and existing ingredient, allergen, claim,
+origin, packaging and storage targets needing evidence inspection. Of the local
+113-field catalog, 41 attributes have available current results and 72 have none;
+this includes review/identity fields and does not establish 72 parser defects.
+Stable component attribution, ingredient shares and additional nutrition bases
+still need Sol design. The confirmed Luna medium run now queues all captures
+under 100 frozen targets. Its initial phase addresses missing attributes;
+additional contexts for available attributes remain pending Sol assessment.
+Initial accepted assertions remain unapplied, and this extraction run has added
+no fields or contract versions.
+
+## Full corpus schema evolution, 10 October 2026
+
+The full corpus record retained locally at `data/investigation/2026-10-10-chocolate-local-reports/docs/data/schema-proposals/chocolate-corpus-evolution-2026-10-10.md`
+implements the user's clarified methodology: process every sample and evolve
+supported meanings between frozen rebuilds. The local candidate has 113 fields
+and covers 3,743 listings, 4,347 captures and 24 sources. Ten per-100 g product
+nutrition fields add polyols, available carbohydrate, added sugars, sodium,
+trans fat, cholesterol, monounsaturated fat, polyunsaturated fat, starch and
+source-declared net carbohydrate. Existing total carbohydrate and total sugars retain
+their meanings. Numeric units, qualifiers and evidence pointers remain explicit.
+
+The local schema is `chocolate-processing-schema-4.silver-2`, mappings are
+`chocolate-source-mappings-7.silver-2`, and recipe is
+`chocolate-processing-pipeline-9.silver-2`. The
+conflict audit retained locally at `data/investigation/2026-10-10-chocolate-local-reports/docs/data/schema-proposals/chocolate-conflict-audit-2026-10-10.md` records the
+parser follow-up and its frozen rebuild. A separately versioned Gold design
+coordinates schema compatibility. The detailed record distinguishes complete
+processing coverage from semantic review and training readiness. Published
+103-field pins remain the approved defaults pending specific release review.
+
+## Source maintenance, 9 October 2026
+
+The first source maintenance increment retained locally at `data/investigation/2026-10-10-chocolate-local-reports/docs/data/schema-proposals/chocolate-source-maintenance-2026-10-09.md`
+applies the revised methodology to the existing shared 103-field Silver catalog.
+All 60 NOMO variants and two Ocado counterexamples were processed; semantic
+review covered 11 listings. Thirty-two nutrition numbers and four original
+panels were supplied as agent assertions for four variants of two products.
+Available current field/context cells increased from 497 to 533 in the local
+pilot. The evidence record retained locally at `data/investigation/2026-10-10-chocolate-local-reports/docs/data/analysis/chocolate-schema-maintenance-2026-10-09.json`
+pins inputs, contracts, assertions and both immutable snapshots.
+
+Numeric facts retain explicit `per_100g` basis. Component shares, additional
+nutrition bases and ambiguous platform masses remain documented design work.
+The source review records missing data and contradictory copy; 505 review
+issues remain. This increment exercises the existing contract and inference
+interface. Catalog extensions and generalized extraction require further work.
+
 ## Standard Silver implementation, 4 October 2026
+
+The quantity parser distinguishes explicit unit grams, pack count and total
+edible grams within the selected offer. Verified source IDs and catalog pack
+expressions can attribute shared body quantities to another variant before
+conflict resolution. NOMO's 38 g bars derive 456 g for 12 bars and 912 g for
+24 bars. Other-option evidence stays in diagnostics; uncertain attribution and
+contradictory selected-offer quantities preserve conflicts. This repair applies
+the existing field meanings and introduces no catalog, mapping, recipe
+configuration or model design changes. The
+[portable reference](../../plugins/category-processing/skills/category-processing/references/standard-silver.md)
+defines the parser conditions.
 
 The default build now implements the revised Bronze-to-Silver contract. It uses
 four field contracts, a durable SQLite source index, stable source and component
@@ -30,14 +94,14 @@ Bronze product indexes may be grouped by source under
 Legacy flat indexes remain readable. Source grouping changes discovery paths;
 field meanings and the category's analytical schema stay shared across sources.
 
-The revised Silver requirements use a persistent source-to-ID index and generate
+Standard Silver uses a persistent source-to-ID index and generates
 schema popularity, distinct categorical values and numeric ranges under the
 [data specification](spec.md#silver-profiling-reports). The
 [plan](../lifecycle/plan.md#bronze-to-silver-specification-alignment-4-october-2026)
-owns the proposed SQL approach, profiling calculations and concrete structures
-to select from inspected Bronze data. Comparison groups, target policies,
-eligibility and model-input preparation belong to Gold. The contracts described
-below retain their existing model coupling until the planned migration.
+records the original design approach; its implementation section records the
+selected structures and validation. Comparison groups, target policies,
+eligibility and model-input preparation belong to Gold. The historical contracts
+described below retain their original model coupling for compatibility.
 
 The [fresh Bronze reconstruction and comparison](schema-proposals/chocolate-bronze-reconstruction-2026-10-04.md)
 records a separate 75-field research proposal created from raw evidence and then

@@ -1,13 +1,27 @@
 # Chocolate product identity decisions
 
+## Standard Silver agent assertions
+
+`data/investigation/2026-10-10-chocolate-local-reports/reviews/chocolate/schema-maintenance-2026-10-09-inferences.json` supplies 36 nutrition assertions
+for four NOMO seller variants. Its `subject_id`, `capture_id`, pointer, field,
+value, unit and basis entries are inputs to standard Silver's `--inferences`
+interface. The build records them as `inferred`; they are not human corrections.
+The source maintenance record retained locally at `data/investigation/2026-10-10-chocolate-local-reports/docs/data/schema-proposals/chocolate-source-maintenance-2026-10-09.md`
+owns the meanings, original evidence, reproduction command and impact comparison.
+New or changed source captures require another evidence assessment before
+assertions tied to those captures can apply.
+
+## Historical family registry
+
 `family-mappings.json` is the reusable, evidence-backed identity registry for
 the raw-to-Silver pipeline. Its contract is `chocolate-family-mappings-1`, using
-the `chocolate-product-identity-1` taxonomy. The combined Silver builder loads
-this registry by default; an explicit registry can be supplied with
+the `chocolate-product-identity-1` taxonomy. The historical combined Silver
+builder loads this registry by default; an explicit registry can be supplied with
 `--family-mappings`:
 
 ```sh
 python3 -B scripts/build_chocolate_silver.py \
+  --legacy \
   --archive-root /path/to/collections \
   --output data/silver/chocolate/uk-new-snapshot \
   --family-mappings reviews/chocolate/family-mappings.json

@@ -1,5 +1,209 @@
 # Project implementation plan
 
+## Local analysis storage, 10 October 2026
+
+The user requested that this PR exclude data analysis and audit artifacts and
+retain methodology documentation and code. The nine new report/inference files
+are preserved under ignored
+`data/investigation/2026-10-10-chocolate-local-reports/` with their original
+relative paths and byte hashes. The reports and five task investigation
+directories were copied to `/Users/coral/repos/rgc/data/investigation/`, with all
+nine report hashes verified. The active extraction queue continues in its
+original workspace, and its local copy is a checkpoint. Repository
+instructions and documentation policy now apply this storage rule to future
+analysis. Existing historical reports retain their recorded locations.
+
+
+## Chocolate text extraction assignments, 10 October 2026
+
+Documented the user's role split before extraction: GPT6 Luna (`gpt-6-luna`) with medium
+reasoning effort for source text converted to structured candidates; GPT6.1 Sol
+with high reasoning effort for inspection, schema definition, evolution and
+candidate decisions. The portable skill/reference, data intention/specification,
+schema/Silver guides and maintenance decision record these assignments. The
+backlog retained locally at `data/investigation/2026-10-10-chocolate-local-reports/docs/data/schema-proposals/chocolate-text-extraction-2026-10-10.md`
+distinguishes known nutrition representation gaps, existing zero-coverage
+targets and component/basis/share design work. Final audit coverage has 41 of
+113 attributes with available current results; the remaining 72 include
+identity/review fields and are not all parser defects.
+
+The user confirmed `gpt-6-luna` with medium reasoning; current role documents
+now use that executable name. The run kickoff ledger retained locally at `data/investigation/2026-10-10-chocolate-local-reports/docs/data/analysis/chocolate-text-extraction-run-2026-10-10.json`
+records the actual running task-local queue: all 4,347 captures, 3,743 listings
+and 24 sources, represented by 4,339 unique complete evidence inputs. Sol high
+froze 100 targets and 13 exclusions. Failed multi-record pilot outputs remain
+unapplied; the replacement harness isolates one record per call, checks settings
+and quotations and records per-candidate validation diagnostics. Sol's initial
+isolated assessment accepted 21 values and deferred two competing cocoa
+percentages. Accepted assertions remain `inferred` and unapplied.
+
+Stage 1 requests missing attributes. Available attributes need additional-context
+assessment; existing conflicts/unresolved states and guarded nutrition remain
+deferred. Pending: finish Luna extraction, assess all proposals and omissions
+with Sol high, evolve supported contracts and compare a frozen Silver rebuild.
+No new dataset release or Gold rebuild has occurred. The task-local harness does
+not add a model caller to the portable processing engine.
+
+Validation: `uv sync --locked`, offline verification of all pinned contract
+caches, `uv run ruff check .`, `python3 -B scripts/check_documentation.py`,
+`uv run pytest scripts/tests/test_documentation.py` plus the task-local isolated
+harness tests (35 passed), and `git diff --check`. The six harness cases check
+record binding, quotation diagnostics, supported missing targets, restricted
+output identifiers and explicit incomplete inspection. Semantically checked
+field meanings, the initial Sol decisions and model headers. Earlier parser
+build verification remains recorded below; this run has not rebuilt Silver.
+
+## Complete chocolate conflict parser audit, 10 October 2026
+
+Audited all 1,130 emitted conflicts after the NOMO variant repair across 3,743
+listings, 4,347 historical/current captures and 24 sources. Rebuilt under frozen
+recipe `chocolate-processing-pipeline-9.silver-2`; schema 4, mappings 7, validator
+and separate Gold design 3 retain their meanings.
+
+Repairs assemble source fragments, collect literal complementary excerpts, bound
+single ingredient statements, exclude exact retailer navigation and cocoa
+constituent percentages, handle explicit lolly counts with decimal pack arithmetic,
+block contradictory rows within one nutrition table, and distinguish explicit
+finished-product cocoa from component cocoa. Numeric and distinct recipe
+disagreements retain conflicts.
+
+Final `silver-11ef86d74c888345116d8cc5` has 491,262 fact/context rows, 36,204
+available current cells, 4,746 review issues and 1,451 unmapped occurrences.
+Conflicts fall from 1,130 to 69: 65 component declaration cases, one unresolved
+bundle attribution case, two source disagreements and one incomplete duplicate
+ingredient representation. The newly exposed unit-weight disagreement preserves
+both 11 g and 12 g. Deferred nutrition guard evidence remains in 292 captures.
+
+The case and evidence record retained locally at `data/investigation/2026-10-10-chocolate-local-reports/docs/data/schema-proposals/chocolate-conflict-audit-2026-10-10.md`
+and machine ledger retained locally at `data/investigation/2026-10-10-chocolate-local-reports/docs/data/analysis/chocolate-conflict-audit-2026-10-10.json`
+record every original conflict and every remaining case. Verified all managed
+snapshot hashes, all 8,090 original index/history files, stable IDs/aliases,
+corrections and inference input. Price amounts and identities are unchanged;
+one price's quantity linkage is repaired. Selected predictor contexts change
+for 18 cocoa results and two total weights. Gold was not rebuilt from this audit
+snapshot; prior Gold comparisons apply to their recorded inputs.
+
+The recipe 8 release packet below is superseded. Candidate contracts remain
+local pending an updated specific release review. Validation includes the locked
+environment, offline contract hashes, 44 focused parser tests, Ruff, documentation
+and whitespace checks, and an isolated 23-listing ASDA build from a copied
+standalone package with matching implementation hashes. Final `uv run pytest` passed 693 cases with seven web integration skips in
+43.57 seconds. The skips require absent web dependencies/model fixtures. All
+case and deferred-panel evidence pointers and 1,008 capture hashes verify.
+
+## NOMO variant quantity attribution, 10 October 2026
+
+Fixed the standard Silver quantity parser after inspecting the preserved NOMO
+Caramel Chocolate Bars variants. Both 12-bar and 24-bar options were already
+collected. Shared body copy `Weight : 38g X 24 bars` had contributed a 24 count
+to the 12-bar listing and an incorrect 38 g total to both listings. Matching
+source IDs, an unambiguous catalog entry and consistent selected pack evidence
+now identify other-option quantities before conflict resolution. The review
+queue retains their source text and pointer as `quantity_refers_to_other_variant`.
+Independent contradictions and uncertain variant attribution remain conflicts.
+Multipack arithmetic supplies 456 g for 12 bars and 912 g for 24 bars, with
+38 g unit mass. Selected variant price quantity candidates use refined totals.
+
+The schema, mapping, recipe configuration, validator and Gold design meanings
+remain valid: this is a parser repair within the existing quantity fields.
+Fresh snapshots record the changed implementation digest. Existing corpus
+snapshots retain their original results and require a subsequent rebuild to
+adopt the repair.
+
+Validation: `uv sync --locked`; offline pinned contracts verified; 25 focused
+tests passed, including both options, missing/inconsistent IDs, contradictory
+unit weights, source preservation and a complete two-listing Silver build.
+The complete portable processing suite passed 174 tests. A direct extraction
+comparison covered all 60 retained NOMO captures and changed quantity candidates
+for 20 listings, including the two Caramel variants. Ruff passed.
+
+An isolated rebuild of all 60 NOMO listings/captures using the published four
+Silver contracts compared baseline `silver-105070a63e9b9395fb17e6e8` with repaired
+`silver-48b1c4f7445e91eab5e80315`. Pack-count conflicts fell from nine to zero;
+total-weight conflicts fell from 19 to one. Seller subject IDs and all facts
+outside quantity fields matched. Verified 521 original index, history, source,
+image and catalog files unchanged. The remaining Kids Creamy Chocolate Lollies
+listing uses unsupported `12g / 72 lollies` title syntax; its shared source also
+mentions both 11 g and 12 g per lolly. Its quantity interpretation remains
+unresolved. The comparison is local verification of this parser repair, with
+outputs isolated under `/private/tmp/rgc-nomo-quantities-632olric`; the full
+corpus release record retains its earlier snapshot results.
+Documentation and whitespace checks passed.
+
+## Chocolate corpus schema evolution, 10 October 2026
+
+The user clarified that schema evolution must proceed while processing all
+samples. Processed all 3,743 listings and 4,347 retained captures from 24 sources;
+the two-source pilot is an earlier increment. Local versioned iterations add
+polyols, distinguish available from total carbohydrate, add four further
+nutrition meanings, map declared SKU evidence and prevent incompatible gift-set
+panels from supplying new whole-product nutrition numbers. The final local
+candidate has 113 fields. Contracts remained frozen during each rebuild.
+
+The evidence and release record retained locally at `data/investigation/2026-10-10-chocolate-local-reports/docs/data/schema-proposals/chocolate-corpus-evolution-2026-10-10.md`
+and machine impact retained locally at `data/investigation/2026-10-10-chocolate-local-reports/docs/data/analysis/chocolate-corpus-evolution-2026-10-10.json`
+retain counts, contract hashes, source inventory and validation. All original
+raw files, source identities, captures, prices and selected model predictor
+results are verified against the whole-corpus baseline. Separate Gold builds
+check the unchanged current-price study interface. Missing family links,
+required predictors, component subjects, additional nutrition bases, ambiguous
+masses and unknown labels remain explicit work. Complete processing does not
+mean complete semantic review, evaluated extraction or fitted models.
+
+Local implementation and impact review precede the required specific Hugging Face
+release review. Approved manifests retain their existing immutable pins while
+candidate contracts remain in ignored working storage. The release record owns
+completed checks and publication status.
+
+Validation: `uv sync --locked`; offline pinned caches verified; `uv run pytest`
+passed 667 tests with 7 web integration skips in 41.75 seconds, including 18
+nutrition counterexample tests. Ruff and documentation checks passed. An isolated
+portable copy processed all 23 ASDA listings/captures with the 113-field profile.
+Final Silver `silver-55088f50cb21478d999cf74d` has 491,261 fact/context rows,
+35,143 available current cells across 41 fields, 5,475 review issues and 1,495
+unmapped occurrences. Paired Gold builds each have 3,868 candidates and zero
+eligible rows; independent semantic/Parquet replay passed. Candidate groups,
+predictors, targets and exclusion audits match after version metadata. Gold
+uses the preceding frozen Silver snapshot whose preparation inputs are
+byte-identical to the final snapshot; the machine record records both versions.
+
+## Chocolate source maintenance, 9 October 2026
+
+Applied the revised methodology to the existing 103-field Silver catalog using
+the category-processing maintenance workflow. The decision and evidence record retained locally at `data/investigation/2026-10-10-chocolate-local-reports/docs/data/schema-proposals/chocolate-source-maintenance-2026-10-09.md`
+covers all 60 NOMO seller variants and two targeted Ocado records: 62 listings,
+64 captures and 126 verified index/history files. Eleven listings received
+semantic review. Paired variant representations describe two underlying bar
+recipes; they remain separate seller subjects.
+
+Baseline `silver-856c1fc6bf8d0c3ef79dbd35` and applied
+`silver-0bf97ddb3e5aafc150871da3` use the published four Silver contracts at
+`337fb7f3984ac648e67edd2cb47802f056193efc`. Supplied 32 per-100 g nutrition
+numbers and four original nutrition panels through the existing inference input.
+Exactly 36 missing current cells became available, with `inferred` method and
+resolvable capture pointers. Available cells increased from 497 to 533 and
+fields with values from 15 to 24 of 103. Original bytes, source assignments,
+capture exports, prices, contract hashes and the review queue were verified
+against the baseline. Both snapshots have empty human correction histories.
+The machine impact record retained locally at `data/investigation/2026-10-10-chocolate-local-reports/docs/data/analysis/chocolate-schema-maintenance-2026-10-09.json`
+retains hashes, source inventory and semantic sample; assertions are retained in
+`data/investigation/2026-10-10-chocolate-local-reports/reviews/chocolate/schema-maintenance-2026-10-09-inferences.json`.
+
+Validation: installed with `uv sync --locked`; all pinned caches verified with
+`python3 -B scripts/fetch_contracts.py --all --offline`; `uv run pytest` passed
+649 tests with 7 skips; `uv run ruff check .` passed. Both snapshot manifests and
+all managed files verified. A repeated applied build reproduced its ID and
+manifest hash. `python3 -B scripts/check_documentation.py` and `git diff --check`
+passed after the accompanying documentation updates.
+
+Remaining work: component subjects and panel mappings for assortments, explicit
+ingredient shares, additional nutrition bases, conflicting source copy, broader
+source assessment and full-corpus extraction validation. The pilot retains 51
+conflict issues and 454 rejected mass candidates; `release_ready` remains false.
+Structural discovery reports zero unmapped fields but does not detect every
+unused concept in handled prose. Executable schema extensions, generalized
+nutrition extraction and downstream Gold/model results are unvalidated.
+
 ## Standard Silver v2 implementation, 4 October 2026
 
 The existing Bronze-to-Silver plan below was used before implementation. The

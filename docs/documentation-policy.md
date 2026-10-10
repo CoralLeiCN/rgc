@@ -160,6 +160,16 @@ and the guard for pull requests and pushes. Its explicit `--base <git-ref>`
 compares against the pull request base or previous push revision; local checks
 include current tracked and untracked changes.
 
+## Local analysis artifacts
+
+New generated analysis, case audits, candidate inferences and execution reports
+belong in ignored `data/investigation/` storage. Copy the task artifacts to the
+local main checkout when landing the implementation. Keep methodology, interface
+documentation, implementation status and validation summaries in Git. Reference
+local artifacts as code paths, so clean-clone documentation checks do not require
+them. Existing historical reports retain their recorded locations; authoritative
+contracts still use the dataset publication and immutable manifest workflow.
+
 ## Completion record
 
 Record runnable verification commands and material limitations in the lifecycle

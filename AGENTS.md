@@ -34,6 +34,12 @@ concerns justify it; otherwise, continue toward completing the task.
 
 # Documentation maintenance
 
+Keep new generated data analysis, case audits, inference artifacts and execution
+reports in ignored local storage under `data/investigation/`. Copy task analysis
+artifacts to the local main checkout when landing code. Git retains methodology,
+implementation guides and validation summaries; existing historical reports
+retain their recorded locations.
+
 Update canonical documents and `docs/lifecycle/plan.md` with behavioral, schema,
 pipeline or modeling changes. Follow the ownership and required coverage tables
 in `docs/documentation-policy.md`, including intention when goals or constraints
