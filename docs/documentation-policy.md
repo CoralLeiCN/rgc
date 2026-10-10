@@ -158,7 +158,10 @@ contract caches with `python3 -B scripts/fetch_contracts.py --all --offline`.
 The [validation workflow](../.github/workflows/validation.yml) runs Ruff, pytest
 and the guard for pull requests and pushes. Its explicit `--base <git-ref>`
 compares against the pull request base or previous push revision; local checks
-include current tracked and untracked changes.
+include current tracked and untracked changes. If a branch revision leaves the
+previous push commit outside the fetched history, the workflow fetches that exact
+commit before checking coverage. An unavailable comparison commit remains a
+validation failure; the workflow does not reduce it to a structural-only check.
 
 ## Local analysis artifacts
 

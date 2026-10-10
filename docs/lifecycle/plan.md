@@ -13,6 +13,11 @@ original workspace, and its local copy is a checkpoint. Repository
 instructions and documentation policy now apply this storage rule to future
 analysis. Existing historical reports retain their recorded locations.
 
+After revising the PR branch to exclude those files, GitHub's push check could
+not resolve its previous head from the normal checkout history. The validation
+workflow now fetches that exact comparison commit when needed before running the
+documentation coverage guard. Local guard and 29 documentation tests passed;
+GitHub validation of the final revision remains required before merging.
 
 ## Chocolate text extraction assignments, 10 October 2026
 
