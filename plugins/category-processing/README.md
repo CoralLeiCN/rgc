@@ -1,6 +1,41 @@
 # Category Processing Agent Plugin
 
+## Chocolate text extraction model roles
+
+The study requests GPT6 Luna (`gpt-6-luna`) with medium reasoning effort for structured
+candidates from text and GPT6.1 Sol with high reasoning effort for inspection, schema
+definition, evolution and candidate assessment. The
+[standalone workflow](skills/category-processing/references/text-extraction.md)
+defines evidence provenance, corpus accounting and the existing `--inferences`
+handoff. Verify exact supported identifiers before execution. These are calling
+harness instructions; the package does not call models or configure chat settings.
+Use one record per worker call with constrained identifiers and selected-offer
+context. Account separately for absent attributes, additional contexts on
+available attributes and deferred conflicts. Every proposal still needs Sol
+assessment against original evidence before the inference handoff.
+
+## Schema evolution while processing the complete corpus
+
+Use the requested corpus as the processing scope. Source findings guide alias
+updates, extraction repairs and supported catalog additions throughout the work.
+Keep contracts frozen per run, then rebuild earlier affected sources and history
+under accepted versions. Record unresolved evidence rather than treating a
+successful build as complete semantic coverage.
+
+Standard Silver's optional chocolate nutrition table configuration preserves
+columns, units, inequalities and source attribution. The
+[standalone reference](skills/category-processing/references/standard-silver.md#configured-chocolate-nutrition-tables)
+defines its recipe, mapping agreement and limitations. The published profiles
+remain pinned; custom working contracts select these new rules explicitly.
+
 ## Standard Silver implementation, 4 October 2026
+
+Chocolate quantities are attributed to the selected variant before conflict
+resolution. Consistent source IDs and explicit catalog packs identify shared
+body quantities belonging to other options; those candidates remain in the
+review queue with evidence. Multipack arithmetic keeps count, unit grams and
+total grams distinct. See the [standalone reference](skills/category-processing/references/standard-silver.md)
+for the conservative attribution rules and unresolved cases.
 
 The default build now implements the revised Bronze-to-Silver contract. It uses
 four field contracts, a durable SQLite source index, stable source and component
@@ -210,3 +245,16 @@ treating successful processing as model readiness. No regression is fitted.
 ## Final price target
 
 Every category pricing target uses `regular-consumer-price-1`: regular, non-promotional, consumer-tax-inclusive price with reject fallback. Category currencies, quantities and transformations remain declared. Custom profile authoring retains this basis and rejects an excluded-tax target. Observed offers/tax evidence remain preserved; missing support yields no target. The candidate target stores its policy and normalization, and encoder version `category-processing-encoder-2` verifies/fixes that policy. Prepared bundled chocolate/coffee designs and recipes use version 2; dataset manifests update only after approved, verified publication.
+
+## Source section conflict resolution
+
+Optional `source_text_resolution` recipe policies collect literal source excerpts
+or accept equivalent ingredient formatting. Chocolate's explicit
+`bounded_chocolate_sections` parsing policy assembles cached heading lines and
+retains single recipes within explicit section boundaries. Numeric disagreements
+and different ingredient recipes remain conflicts. Internally contradictory
+nutrition panels are withheld; explicit cocoa butter, mass, powder and bean
+percentages cannot supply total cocoa. Decimal quantity arithmetic includes explicit
+lolly packs and retains contradictory unit masses. The
+[standalone reference](skills/category-processing/references/standard-silver.md)
+defines configuration, evidence preservation and unresolved cases.

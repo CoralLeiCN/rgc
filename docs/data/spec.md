@@ -1,11 +1,64 @@
 # Data specification
 
+## Text extraction model assignments, 10 October 2026
+
+For chocolate, use GPT6 Luna (`gpt-6-luna`) with medium reasoning effort to extract structured
+candidates from text under frozen field definitions. GPT6.1 Sol with high
+reasoning effort owns original evidence inspection, schema definition and
+evolution, and accept/reject/defer decisions. The
+[standalone workflow](../../plugins/category-processing/skills/category-processing/references/text-extraction.md)
+defines corpus accounting, exact model-setting verification, proposal provenance,
+validation and rebuild requirements. Accepted model assertions remain `inferred`;
+explicit human decisions alone use `reviewed`. Existing resolution precedence
+remains `reviewed > parsed > inferred`.
+
+The chocolate extraction backlog retained locally at `data/investigation/2026-10-10-chocolate-local-reports/docs/data/schema-proposals/chocolate-text-extraction-2026-10-10.md`
+distinguishes known parser representation gaps, existing unpopulated fields,
+missing evidence, conflicts and concepts requiring design. The confirmed
+`gpt-6-luna` medium queue has started over all 4,347 captures through a task-local
+harness with one record per call and frozen definitions. Stage 1 addresses
+absent attributes; available attributes need additional-context assessment,
+and existing conflicts and guarded nutrition remain deferred. The linked record
+owns observed progress and Sol decisions. The engine has no model caller;
+whole-corpus assessment and a new Silver rebuild remain pending.
+
+## Schema evolution across the collected corpus, 10 October 2026
+
+Chocolate maintenance now processes all 3,743 listings and 4,347 retained captures
+from 24 sources. The local release candidate extends the shared catalog from
+103 to 113 fields, maps declared SKU evidence and extracts nutrition tables from
+configured original representations. Each version remains frozen during its
+build; accepted changes cause a complete rebuild including historical captures.
+The evolution and release record retained locally at `data/investigation/2026-10-10-chocolate-local-reports/docs/data/schema-proposals/chocolate-corpus-evolution-2026-10-10.md`
+contains exact contracts, evidence, coverage, checks and unresolved cases.
+
+The optional chocolate recipe `nutrition_tables` declares section pointers,
+label aliases, energy units, excluded source products and the boolean
+`require_single_product_panel`. Contract loading validates aliases against
+mappings and numeric targets against the schema. Extraction selects an explicit
+per-100 g column and requires declared units. Zero and inequality qualifiers are
+retained. Stacked sections stop when a different serving basis begins. Multiple incompatible panels or several component GTINs require
+component identification or conflict resolution. Unfamiliar labels, units and
+bases become diagnostics. Component extraction and additional nutrition bases
+remain pending. Published pins retain their approved versions until the specific
+schema release receives the required Hugging Face review.
+
 This specification owns collection, evidence preservation, processing, data
 interfaces and publication requirements for the [data intention](intent.md).
 The [overall specification](../spec.md) connects the feature specifications;
 [model requirements](../model/spec.md) and [application requirements](../app/spec.md)
 own their respective consumers. The [lifecycle plan](../lifecycle/plan.md)
 records implementation and verification evidence.
+
+Standard Silver attributes quantities to the selected sale variant before
+conflict resolution. Matching source IDs, an unambiguous catalog entry and
+consistent explicit pack expressions establish attribution. Shared body packs
+matching another option retain their original text and pointer in the review
+queue with `quantity_refers_to_other_variant`. Missing identity support and
+contradictory selected-offer evidence preserve conflicts. Explicit multipacks
+produce separate count, unit grams and arithmetic total grams; source shipping
+weights cannot establish edible weight. The [portable reference](../../plugins/category-processing/skills/category-processing/references/standard-silver.md)
+owns the parser details. Rebuilding records the changed implementation digest.
 
 The revised data preparation workflow from 4 October 2026 is implemented locally
 as standard Silver v2, with source-diverse pilot validation recorded in the plan.
@@ -17,6 +70,14 @@ aggregations, interpretations and selection rules required by its consumer.
 Model design is one Gold use case. Existing model dependencies and training views
 in historical Silver are compatibility behavior; the default v2 path prepares them in Gold
 under this clarified intent.
+
+On 9 October 2026, the existing chocolate catalog entered source maintenance
+under this workflow. The first increment retained locally at `data/investigation/2026-10-10-chocolate-local-reports/docs/data/schema-proposals/chocolate-source-maintenance-2026-10-09.md`
+processes 60 NOMO variants and two Ocado counterexamples, with semantic review
+of 11 listings. It applies 36 agent assertions supported by source evidence through the
+existing Silver interface and retains exact input/output hashes. The report
+distinguishes unused evidence within known fields, conflicting source copy and
+proposed component/panel extensions. These extensions remain unimplemented.
 
 Section 3.2 records the executed initial schema research and its unvalidated
 proposal; no analytical schema or contract changed in that exercise. Existing
@@ -1230,3 +1291,16 @@ by `silver/chocolate/uk/latest.json`. The verified deletion is published at
 records all 24 removed files and verification of retained content. This specific
 retirement overrides prior snapshot retention for that directory; existing
 historical release records keep their original revision references.
+
+## Chocolate conflict parser review, 10 October 2026
+
+A complete corpus conflict audit checks all fields, sources and historical captures.
+The custom chocolate recipe can assemble retained heading lines into source sections,
+bound single ingredient statements at explicit headings and resolve literal text
+collections independently of numeric facts. Cocoa constituent percentages do not
+supply total cocoa. Decimal pack arithmetic and explicit lolly counts preserve
+unit and selling-pack bases. Contradictory rows within one nutrition panel block
+new product nutrition assertions. The
+conflict audit retained locally at `data/investigation/2026-10-10-chocolate-local-reports/docs/data/schema-proposals/chocolate-conflict-audit-2026-10-10.md` records
+case outcomes, genuine disagreements and validation. The candidate recipe is
+version 9; published contract pins await the specific release review.

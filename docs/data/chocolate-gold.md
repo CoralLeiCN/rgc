@@ -1,5 +1,21 @@
 # UK chocolate gold training data
 
+## Corpus schema evolution impact, 10 October 2026
+
+The full corpus evolution record retained locally at `data/investigation/2026-10-10-chocolate-local-reports/docs/data/schema-proposals/chocolate-corpus-evolution-2026-10-10.md`
+coordinates the local 113-field Silver catalog with
+`chocolate-pricing-current-price-design-3.silver-2`. This compatibility revision
+retains the selected predictors, missing-value rules and
+`current-consumer-price-1` displayed-price proxy. New nutrient fields do not
+enter the selected model. Existing predictor results, contexts and methods and
+collected prices are compared across complete Silver builds. Full Gold rebuilds
+record training candidates, exclusion reasons and eligibility. Both complete-corpus builds have 3,868 training candidates and zero
+eligible rows, with identical predictors, targets, comparison groups and
+exclusion audits after version metadata. Independent semantic and Parquet replay
+passed; the release record lists the exact source versions and input equivalence.
+Unresolved family links and required facts remain blockers. A completed Parquet snapshot
+and improved Silver coverage do not establish a trainable model.
+
 ## Standard Silver handoff
 
 The default builder detects standard Silver v2 and performs study preparation
@@ -493,3 +509,14 @@ at immutable dataset revision `88b08aeada37e228fcd80334b5abddd768da6968`. Its
 records 16 verified model and metadata files. The source inferred Gold snapshot
 retains its original immutable publication reference; model publication does
 not rewrite source inputs or establish calibrated market predictions.
+
+## Inputs after the conflict audit
+
+The conflict parser audit retained locally at `data/investigation/2026-10-10-chocolate-local-reports/docs/data/schema-proposals/chocolate-conflict-audit-2026-10-10.md`
+rebuilds all Silver captures with recipe 9. It changes supported selling-pack
+quantities and contextual cocoa readings, including explicit finished product
+scope. The selected predictor catalog and `current-consumer-price-1` policy
+retain their meanings. Earlier recipe 8 Gold comparisons apply to their recorded
+Silver inputs. Gold has not been rebuilt from this parser audit snapshot; its
+changed model-input impact requires that separate preparation before any release
+claim. No training snapshot or fitted model was changed by this audit.

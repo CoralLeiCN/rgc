@@ -18,6 +18,7 @@ from .archive import (
     sha256,
     source_identity,
 )
+from .chocolate_nutrition import extract_nutrition
 from .discovery import discover_fields
 from .profiles import profile_provenance
 from .silver_chocolate import refine_quantities
@@ -34,6 +35,7 @@ from .silver_contracts import (
 from .silver_profile import build_profile, render_profile
 from .silver_snapshot import MANIFEST, no_links, publish, row_bytes, verified_snapshot
 from .source_index import SourceIndex, encoded
+from .source_sections import resolve_text
 from .values import standardize_value
 
 
@@ -46,7 +48,7 @@ def context_for(definition, item):
     return {key: item.get(key, definition.get(key)) for key in ("scope", "qualifier", "basis")}
 
 
-def select_result(candidates):
+def select_result(candidates, text_policy=None):
     """Resolve only candidates for the same subject, observation, field and context."""
     if not candidates:
         return None, None
@@ -55,6 +57,8 @@ def select_result(candidates):
         usable = [item for item in selected if result_state(item["result"]) == "available"]
         if usable:
             unique = {encoded(item["result"]): item["result"] for item in usable}
+            if len(unique) > 1 and method == "parsed" and text_policy:
+                return resolve_text(usable, text_policy), method
             return (next(iter(unique.values())) if len(unique) == 1 else {"state": "conflict"}), method
         if selected and method == "reviewed":
             return selected[-1]["result"], method
@@ -161,6 +165,15 @@ def build_standard_silver(archive_root, output, profile_root, *, state_db=None, 
                 observation = index.assign("observation", [category, market, cid], parent=listing)
                 try:
                     extracted = refine_quantities(capture, extract_capture(capture, recipe), recipe)
+                    nutrition, rejected, handled = extract_nutrition(capture, recipe)
+                    if nutrition:
+                        extracted["attributes"] = [item for item in extracted["attributes"]
+                                                   if item["attribute"] != "nutrition.source_text"
+                                                   or not any(item["pointer"] == pointer or item["pointer"].startswith(pointer + "/")
+                                                              for pointer in handled)]
+                    extracted["attributes"].extend(nutrition)
+                    extracted.setdefault("rejected_candidates", []).extend(rejected)
+                    extracted.setdefault("handled_pointers", []).extend(handled)
                 except (ValueError, TypeError, KeyError, IndexError, AttributeError) as error:
                     extracted = {"attributes": [], "prices": [], "extraction_failed": True}
                     issues.append({"subject_id": listing, "capture_id": cid, "reason": "extraction_failed",
@@ -232,7 +245,7 @@ def build_standard_silver(archive_root, output, profile_root, *, state_db=None, 
                             contexts = {encoded(context_for(definition, {}))}
                         for context_key in sorted(contexts):
                             values = candidates[(name, context_key)]
-                            result, method = select_result(values)
+                            result, method = select_result(values, recipe.get("source_text_resolution", {}).get(name))
                             if not values and extracted.get("extraction_failed") and kind == "listing":
                                 result, method = {"state": "parse_error"}, "parsed"
                             refs = {encoded(ref): ref for item in values for ref in item["source"]}

@@ -1,6 +1,50 @@
 # Portable category processing
 
+## Model roles for text extraction
+
+The chocolate study assigns GPT6 Luna (`gpt-6-luna`) with medium reasoning effort to text
+extraction and GPT6.1 Sol with high reasoning effort to inspection, schema
+definition, evolution and candidate assessment. Follow the
+[standalone text extraction workflow](../../plugins/category-processing/skills/category-processing/references/text-extraction.md)
+for frozen definitions, full-corpus accounting, evidence and model provenance,
+and the existing `--inferences` handoff. The
+chocolate backlog retained locally at `data/investigation/2026-10-10-chocolate-local-reports/docs/data/schema-proposals/chocolate-text-extraction-2026-10-10.md`
+records the known gaps and the running full-corpus queue under the confirmed
+`gpt-6-luna` medium settings. The task-local harness isolates one record per call;
+its first phase requests missing attributes and explicitly defers additional
+contexts and existing unresolved declarations. Every capture is accounted for,
+including exact shared inputs. Sol assessment and Silver application remain
+pending across the corpus. The package engine has no model caller.
+
+## Evolve the schema while processing all samples
+
+Maintenance processes every listing and historical capture in the requested
+corpus. Check different source formats early, then continue through the full
+inventory. Interpret mapping gaps and new meanings from original evidence, apply
+supported changes to separately versioned contracts, freeze each build and
+rebuild affected history. Record unsupported evidence and conflicts explicitly.
+See the chocolate corpus evolution retained locally at `data/investigation/2026-10-10-chocolate-local-reports/docs/data/schema-proposals/chocolate-corpus-evolution-2026-10-10.md`
+for the complete 24-source pass and local 113-field candidate.
+
+Chocolate profiles can opt into `nutrition_tables` with explicit section
+pointers, mapped labels, energy targets and `require_single_product_panel`.
+The parser accepts an explicit per-100 g column with declared units, preserves
+zero and inequality qualifiers, and requires component or conflict resolution
+for incompatible panels or multiple component GTINs. The standalone
+[standard Silver reference](../../plugins/category-processing/skills/category-processing/references/standard-silver.md#configured-chocolate-nutrition-tables)
+owns the configuration interface and supported representation limits. The
+published version table below describes approved pins; the evolution record
+lists local candidate versions awaiting the specific Hugging Face release review.
+
 ## Standard Silver implementation, 4 October 2026
+
+Chocolate quantity extraction now attributes explicit shared body packs using
+matching selected source IDs and catalog options before resolving conflicts.
+Other-option quantities retain evidence in the review queue. Missing or
+inconsistent variant metadata preserves conflicts. The
+[standard Silver reference](../../plugins/category-processing/skills/category-processing/references/standard-silver.md)
+defines these parser rules and unit/pack arithmetic. NOMO's 38 g bars yield
+456 g for the 12-bar option and 912 g for the 24-bar option.
 
 The default build now implements the revised Bronze-to-Silver contract. It uses
 four field contracts, a durable SQLite source index, stable source and component
@@ -454,3 +498,24 @@ All pricing models and newly generated custom profiles use `regular-consumer-pri
 Published chocolate uses `chocolate-processing-pricing-design-2` and `chocolate-processing-pipeline-2`; coffee uses `coffee-pricing-design-2` and `coffee-processing-pipeline-2`. Attribute schema and source-mapping versions remain unchanged. Model and recipe declare the same target policy, candidates store it, and `category-processing-encoder-2` freezes and verifies it. [The published release](analysis/gold-modeling-contract-release.md) contains publication status and hashes. Canonical chocolate family mapping and the OLS trainer are repository components; the portable package retains generic family-review/preparation behavior.
 
 The repository [LightGBM with brand experiment](chocolate-lightgbm-with-brand.md) has a separate unpublished working configuration. The portable chocolate package retains its published preparation contract and independent use. Extending its schema, mappings, validator, recipe and selected design for that experiment remains pending; old prepare-only outputs cannot supply missing shared evidence.
+
+## Literal source sections and parser conflicts
+
+The standard engine supports optional recipe `source_text_resolution` policies
+for string fields whose `standardization_rule` is `source_section`.
+`collect_sections` joins distinct parsed excerpts in extraction order and retains
+all assertions and evidence references. It collapses a nested excerpt only when
+the enclosing excerpt uses the same exact source reference. `equivalent_sections`
+accepts differences in case, whitespace and a leading Ingredients heading;
+different recipes remain conflicts. Reviewed decisions keep precedence; inferred
+values, numbers, enumerations and other field meanings receive no text merging.
+
+Chocolate recipes can select `source_section_parsing: bounded_chocolate_sections`
+to assemble cached heading lines, exclude exact retailer navigation labels and
+bound a single ingredient section at explicit following headings. Typed warnings
+are extracted from the complete retained statement. Literal nutrition text can
+collect sections while contradictory numerical panels remain withheld. Internal
+panel disagreement, cocoa constituent exclusion and explicit lolly/decimal quantity
+handling and explicit finished product cocoa scope are covered in the corpus audit retained locally at `data/investigation/2026-10-10-chocolate-local-reports/docs/data/schema-proposals/chocolate-conflict-audit-2026-10-10.md`.
+The local candidate recipe is `chocolate-processing-pipeline-9.silver-2`; published
+pins retain their approved versions.

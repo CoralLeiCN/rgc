@@ -80,6 +80,27 @@ target or predictors to finish Bronze-to-Silver work.
 
 ## Process and maintain the profile
 
+For the authorized chocolate study, use GPT6 Luna (`gpt-6-luna`) with medium reasoning effort
+to extract structured candidates from text. Use GPT6.1 Sol with high reasoning
+effort for inspection, schema definition and evolution, and candidate decisions.
+Read [text-extraction.md](references/text-extraction.md) before such extraction.
+Verify the exact supported model identifiers, retain settings/evidence in proposal
+artifacts and keep accepted model assertions `inferred`. These are harness
+assignments; the engine does not dispatch model workers. Other studies retain
+their own authorized settings. Isolate each record per worker call, constrain
+output identifiers to that record and retain selected-offer context. Account for
+additional contexts even when an attribute already has an available value;
+absence-only extraction cannot establish complete structured coverage.
+
+Process every sample in the requested corpus while evolving the shared schema.
+An early source or second-source check starts this work; it does not reduce the
+authorized corpus to a pilot. Inspect processing findings throughout source
+onboarding, distinguish aliases and extraction defects from supported new
+meanings, and record accept/reject/defer decisions. Apply accepted changes in
+versioned rebuilds, including the earlier sources and historical captures
+affected by the change. Account for every sample as processed or explicitly
+unresolved. A completed run does not establish complete semantic accuracy.
+
 Read [profile-contract.md](references/profile-contract.md) before extending an
 existing profile. The pinned chocolate and coffee contracts are optional examples
 for their own categories.

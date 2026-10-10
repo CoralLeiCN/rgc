@@ -170,6 +170,52 @@ def load_silver_contracts(root):
         _pointer(field["pointer"], "Source pointer")
     for pointer in recipe.get("sections", {}):
         _pointer(pointer, "Section pointer")
+    text_resolution = recipe.get("source_text_resolution", {})
+    if not isinstance(text_resolution, dict):
+        raise ValueError("Source text resolution requires a field policy object.")
+    for name, policy in text_resolution.items():
+        definition = attributes.get(name, {})
+        if (definition.get("type") != "string" or definition.get("standardization_rule") != "source_section"
+                or policy not in ("collect_sections", "equivalent_sections")):
+            raise ValueError("Source text resolution requires a literal source-section string field: " + name)
+    if recipe.get("source_section_parsing") is not None and (
+            recipe["adapter"] != "chocolate" or recipe["source_section_parsing"] != "bounded_chocolate_sections"):
+        raise ValueError("Unsupported source section parsing policy.")
+    nutrition = recipe.get("nutrition_tables")
+    if nutrition is not None:
+        if recipe["adapter"] != "chocolate" or not isinstance(nutrition, dict):
+            raise ValueError("Nutrition tables require the chocolate adapter and a configuration object.")
+        labels, energy, sections = (nutrition.get(key) for key in ("labels", "energy", "sections"))
+        if not isinstance(labels, dict) or not isinstance(energy, dict) or set(energy) != {"kj", "kcal"}:
+            raise ValueError("Nutrition tables require declared labels and both energy units.")
+        if not isinstance(sections, list) or not sections:
+            raise ValueError("Nutrition tables require configured source sections.")
+        fields = list(energy.values())
+        for label, spec in labels.items():
+            if not isinstance(label, str) or not label or not isinstance(spec, dict):
+                raise ValueError("Nutrition label mappings must declare a field or energy.")
+            if spec.get("energy") is not True:
+                fields.append(spec.get("attribute"))
+        for name in fields:
+            definition = attributes.get(name, {})
+            if definition.get("type") != "number" or definition.get("basis") != "per_100g":
+                raise ValueError("Nutrition mapping requires a numeric per-100g field: " + str(name))
+        if mappings.get("nutrition_label_aliases") != labels:
+            raise ValueError("Nutrition labels must agree in mappings and recipe.")
+        if "require_single_product_panel" in nutrition and type(nutrition["require_single_product_panel"]) is not bool:
+            raise ValueError("Nutrition subject resolution must be a boolean policy.")
+        for section in sections:
+            if not isinstance(section, dict) or section.get("format") not in ("text", "section_array", "heading_map"):
+                raise ValueError("Unsupported nutrition section format.")
+            _pointer(section.get("pointer"), "Nutrition section pointer")
+            if not section["pointer"].startswith("/raw_record/information/"):
+                raise ValueError("Nutrition sections must reference retained product information.")
+            if section["format"] == "section_array" and not isinstance(section.get("text_key"), str):
+                raise ValueError("Nutrition section arrays require a text key.")
+            try:
+                re.compile(section.get("heading_pattern", "nutrition"))
+            except (re.error, TypeError) as error:
+                raise ValueError("Invalid nutrition heading pattern.") from error
     for values in mappings.get("unit_conversions", {}).values():
         if any(type(value) not in (int, float) or not math.isfinite(value) or value <= 0 for value in values.values()):
             raise ValueError("Unit conversion factors must be positive finite numbers.")

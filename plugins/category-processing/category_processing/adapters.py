@@ -10,6 +10,8 @@ import re
 from decimal import Decimal, InvalidOperation
 from html.parser import HTMLParser
 
+from .source_sections import ingredient_excerpt, navigation_claim
+
 INFO = "/raw_record/information"
 IDENTITY = "/raw_record/identity"
 MASS = r"(?<![\w.,\-])(?P<mass>\d+(?:\.\d+)?)\s*(?P<unit>kg|g|grams?|kilograms?)\b"
@@ -264,7 +266,7 @@ def _ocado_price(text, pointer, method, observed_at=None, cached=False, header=F
     return result
 
 
-def _statements(information):
+def _statements(information, assemble_sections=False):
     """Yield (kind, exact source wording, pointer, method) from bounded sections."""
     pp = information.get("product_page_information", {})
     if isinstance(pp, dict):
@@ -314,6 +316,14 @@ def _statements(information):
         for heading, lines in sections.items():
             kind = {"Ingredients": "ingredients_text", "Allergen Information": "allergen_text", "Nutritional data": "nutrition_text", "Features": "claim_text", "Dietary Information": "claim_text", "Product attributes": "claim_text"}.get(heading)
             if kind is None:
+                continue
+            section_pointer = INFO + "/original_product_page_observations/" + str(index) + "/original_heading_sections/" + _pointer_key(heading)
+            if assemble_sections:
+                text = "\n".join(line["text"] for line in lines if isinstance(line, dict)
+                                 and isinstance(line.get("text"), str) and line["text"].strip()
+                                 and not (kind == "claim_text" and navigation_claim(line["text"])))
+                if text:
+                    yield kind, text, section_pointer, "cached_source_heading_section"
                 continue
             for line_index, line in enumerate(lines):
                 if isinstance(line, dict) and isinstance(line.get("text"), str) and line["text"].strip():
@@ -382,7 +392,7 @@ def _chocolate_type(name):
     return next(iter(types)) if len(types) == 1 else None
 
 
-def extract_chocolate_capture(capture):
+def extract_chocolate_capture(capture, bounded_sections=False):
     """Extract reviewable candidates from one raw plugin capture, offline."""
     raw = capture.get("raw_record", {})
     information = raw.get("information", {})
@@ -393,6 +403,7 @@ def extract_chocolate_capture(capture):
         identity = {}
     source = raw.get("source_key")
     features, quantities, prices, warnings = [], [], [], []
+    rejected = []
     for key in ("name", "brand", "source_product_id", "source_variant_id", "gtin"):
         value = identity.get(key)
         if isinstance(value, (str, int)) and not isinstance(value, bool) and str(value).strip():
@@ -425,7 +436,11 @@ def extract_chocolate_capture(capture):
             if quantity:
                 quantity["raw_value"] = body_html
                 quantities.append(quantity)
-    statements = list(_statements(information))
+    statements = list(_statements(information, bounded_sections))
+    if bounded_sections:
+        rejected.extend({"pointer": pointer, "reason": "retailer_navigation_is_not_product_claim", "source_text": text}
+                        for kind, text, pointer, _ in _statements(information)
+                        if kind == "claim_text" and navigation_claim(text))
     # Where no prepared ingredient statement exists, a labeled body paragraph
     # can be retained with its HTML as the supporting raw value.
     if not any(kind == "ingredients_text" for kind, _, _, _ in statements):
@@ -434,7 +449,8 @@ def extract_chocolate_capture(capture):
             if match:
                 statements.append(("ingredients_text", match.group(1), INFO + "/body_html", "decoded_labeled_ingredient_paragraph"))
     for kind, text, pointer, method in statements:
-        features.append(_feature(kind, text, pointer, method, raw_value=body_html if pointer == INFO + "/body_html" else None))
+        excerpt = ingredient_excerpt(text) if bounded_sections and kind == "ingredients_text" else text
+        features.append(_feature(kind, excerpt, pointer, method, raw_value=body_html if pointer == INFO + "/body_html" else text))
         features.extend(_nut_features(text, pointer, kind))
     # Only product-specific titles, descriptions and bounded source statements
     # support claims; full pages include store navigation and unrelated products.
@@ -454,12 +470,18 @@ def extract_chocolate_capture(capture):
             if _positive_claim(text, term):
                 features.append(_feature(key, "present", pointer, "source_claim_term", "presence", raw_value=text))
         for match in re.finditer(r"(?:cocoa\s+solids?\s*[:\-]?\s*(?:of\s*)?(?:minimum|min\.?|at least)?\s*|cocoa\s+content\s*[:\-]?\s*)(\d+(?:\.\d+)?)\s*%|(\d+(?:\.\d+)?)\s*%\s*cocoa\b", text, re.I):
+            if match.group(2) and re.match(r"\s+(?:butter|mass|powder|beans)\b", text[match.end():], re.I):
+                rejected.append({"pointer": pointer, "reason": "cocoa_constituent_is_not_total_cocoa",
+                                 "source_text": text, "source_match": match.group(0)})
+                continue
             value = parse_money(match.group(1) or match.group(2))
             if value is not None and value <= 100:
                 assertion = _feature("cocoa_percentage", float(value), pointer, "explicit_cocoa_percentage", "number", "%", text)
                 nearby = text[max(0, match.start() - 35):match.end() + 25]
                 assertion["qualifier"] = "minimum" if re.search(r"\bmin(?:imum)?\.?\b|at least", nearby, re.I) else "source_stated"
-                assertion["scope"] = "source_declared_chocolate"
+                prefix = text[max(0, match.start() - 80):match.start()]
+                assertion["scope"] = ("product" if re.search(r"\bfinished\s+product\s+contains\s*:\s*$", prefix, re.I)
+                                      else "source_declared_chocolate")
                 features.append(assertion)
     for match in re.finditer(r"(\d+(?:\.\d+)?)\s*%\s+(?:dark|milk|white|ruby)\s+chocolate\b", name, re.I):
         value = parse_money(match.group(1))
@@ -559,7 +581,7 @@ def extract_chocolate_capture(capture):
                 seen.add(fingerprint)
                 result.append(item)
         return result
-    return {"features": unique(features), "quantities": unique(quantities),
+    return {"features": unique(features), "quantities": unique(quantities), "rejected_candidates": unique(rejected),
             "prices": unique(prices), "group": group,
             "boundary_status": boundary, "warnings": list(dict.fromkeys(warnings))}
 
@@ -601,10 +623,11 @@ def extract_capture(capture, recipe):
     evidence and eligibility; original capture objects are never changed.
     """
     attributes = _recipe_attributes(capture, recipe)
-    quantities, prices, warnings = [], [], []
+    quantities, prices, warnings, rejected = [], [], [], []
     quantity = recipe.get("quantity", {})
     if recipe["adapter"] == "chocolate":
-        extracted = extract_chocolate_capture(capture)
+        extracted = extract_chocolate_capture(capture, recipe.get("source_section_parsing") == "bounded_chocolate_sections")
+        rejected.extend(extracted.get("rejected_candidates", []))
         feature_map = recipe.get("feature_mappings", {})
         for feature in extracted["features"]:
             name = feature_map.get(feature["name"])
@@ -614,6 +637,8 @@ def extract_capture(capture, recipe):
                     "method": feature["method"], "unit": feature.get("unit"), "qualifier": feature.get("qualifier")}
             if feature.get("scope") == "source_declared_chocolate":
                 item["scope"] = "ingredient"
+            elif feature.get("scope") == "product":
+                item["scope"] = "product"
             attributes.append(item)
         group = extracted.get("group") or {}
         if group.get("value") and recipe.get("derive_comparison_group", True):
@@ -685,4 +710,5 @@ def extract_capture(capture, recipe):
             "source_collected_at", "catalogue_collected_at", "catalogue_archived_at",
         )]
     return {"attributes": attributes, "quantities": quantities, "prices": prices, "warnings": warnings,
+            "rejected_candidates": rejected,
             "handled_pointers": handled_pointers}

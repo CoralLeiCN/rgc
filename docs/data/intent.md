@@ -1,5 +1,23 @@
 # Data intention
 
+On 10 October 2026, the user assigned GPT6 Luna (`gpt-6-luna`) with medium reasoning effort
+to extracting structured candidates from source text, and GPT6.1 Sol with high
+reasoning effort to inspection, schema definition and evolution. Process all
+samples under that division of work. The
+text extraction record retained locally at `data/investigation/2026-10-10-chocolate-local-reports/docs/data/schema-proposals/chocolate-text-extraction-2026-10-10.md`
+documents known gaps, existing unpopulated targets and concepts needing design.
+Model output retains evidence and uncertainty; the assignment is documented
+before execution and does not establish completed extraction or schema adoption.
+
+On 10 October 2026, the user clarified that the methodology evolves the schema
+while processing **all collected samples**. Process the whole requested corpus,
+including historical captures. New evidence can require an alias, parser repair,
+field extension or unresolved decision. Keep each build's contracts frozen and
+rebuild affected history after accepting a change. Early checks on different
+source formats establish counterexamples; they do not limit source coverage.
+The full corpus evolution record retained locally at `data/investigation/2026-10-10-chocolate-local-reports/docs/data/schema-proposals/chocolate-corpus-evolution-2026-10-10.md`
+records the first complete processing pass and its remaining semantic gaps.
+
 Prepare meaningful, reusable product data that people can filter, join, compare
 and summarize within a category. Product classification, assortment analysis,
 ingredient and claim analysis, seller comparisons and pricing are downstream
@@ -43,6 +61,13 @@ delivery scope below and the [overall intention](../intention.md) provide
 context. Standard Silver v2 implements this approach locally. The
 [plan](../lifecycle/plan.md#standard-silver-v2-implementation-4-october-2026)
 records the source pilot, validation and remaining release work.
+
+On 9 October 2026, the user requested starting this methodology on the chocolate
+schema. Continue from the usable shared catalog through source maintenance:
+inspect original evidence, check a different source format early, distinguish
+mapping/extraction gaps from new concepts, record semantic decisions and compare
+immutable Silver builds. The first NOMO/Ocado increment retained locally at `data/investigation/2026-10-10-chocolate-local-reports/docs/data/schema-proposals/chocolate-source-maintenance-2026-10-09.md`
+records the inspected sample, applied nutrition evidence and unresolved design.
 
 ### Meanings and relationships to preserve
 

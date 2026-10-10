@@ -1,6 +1,67 @@
 # UK chocolate Bronze and Silver workflow
 
+## Structured candidates from text, 10 October 2026
+
+The text extraction record retained locally at `data/investigation/2026-10-10-chocolate-local-reports/docs/data/schema-proposals/chocolate-text-extraction-2026-10-10.md`
+documents GPT6 Luna (`gpt-6-luna`) with medium reasoning effort for extraction and GPT6.1 Sol
+with high reasoning effort for inspection, schema definition/evolution and
+candidate assessment. Accepted candidates enter the existing `--inferences`
+interface with exact subject/capture/pointer references and retain method
+`inferred`. Human corrections retain precedence. Proposal artifacts retain
+actual model settings and prompt/contract hashes; these are not new runtime
+assertion parameters. Full-corpus accounting includes historical captures and
+explicit deferrals. The confirmed Luna medium full-corpus queue is running with
+one record per call; Sol high assesses candidates against original evidence.
+Its first phase requests missing attributes and accounts separately for available
+attributes needing additional-context review. No new assertions have been applied
+to Silver and no new extraction snapshot has been built.
+
+## Full corpus evolution, 10 October 2026
+
+The evolution record retained locally at `data/investigation/2026-10-10-chocolate-local-reports/docs/data/schema-proposals/chocolate-corpus-evolution-2026-10-10.md`
+replaces the pilot's source limit with complete processing of the collected
+chocolate corpus: all 3,743 seller listings and 4,347 captures across 24 sources.
+An opt-in nutrition recipe interprets original HTML or pipe tables at an explicit
+per-100 g basis, retains units and qualifiers, and records unresolved evidence.
+Incompatible component panels cannot supply new numeric facts about a gift set.
+The prior 36 NOMO assertions remain attributable agent inferences.
+
+Local versions extend the field catalog to 109 and map declared identity SKU
+values. Whole-corpus baseline and candidate snapshots retain raw input hashes,
+stable source assignments, historical captures and prices. The linked release
+record owns measured coverage, conflicts and exact build IDs; a complete snapshot
+still reports `release_ready: false`. Gold owns downstream family links and
+eligibility. This processing pass does not establish semantic review of every
+source statement or a usable training population.
+
+## Source maintenance pilot, 9 October 2026
+
+The schema maintenance record retained locally at `data/investigation/2026-10-10-chocolate-local-reports/docs/data/schema-proposals/chocolate-source-maintenance-2026-10-09.md`
+documents a local build of 62 seller listings and 64 captures: all 60 NOMO
+variants and two Ocado counterexamples. Under the published four Silver contracts,
+36 agent assertions populated existing nutrition fields for four variants.
+The applied snapshot is `silver-0bf97ddb3e5aafc150871da3`; its baseline is
+`silver-856c1fc6bf8d0c3ef79dbd35`. Both are local under
+`data/investigation/2026-10-09-chocolate-schema/silver/`.
+
+Each assertion has its own seller/capture evidence and the `inferred` method.
+The comparison verified managed hashes, 126 original index/history files and
+stable source assignments. Current available field/context cells increased
+from 497 to 533. There are still 505 review issues; both snapshots report
+`release_ready: false`. The record includes the reproduction command, exact
+source coverage and unresolved component/panel work.
+
 ## Standard Silver implementation, 4 October 2026
+
+Selected variant quantity attribution runs before fact conflict resolution.
+Explicit catalog options and matching source IDs distinguish NOMO's 12 bars
+from 24 bars. Shared `Weight : 38g X 24 bars` evidence contributes a 912 g pack
+only to its applicable option; the 12-bar listing derives 456 g from its
+selected pack expression. Other-option candidates retain their source pointer
+and text in the review queue. Inconsistent variant metadata and disagreements
+within the selected offer remain unresolved. The
+[portable reference](../../plugins/category-processing/skills/category-processing/references/standard-silver.md)
+owns the parser rules; a fresh snapshot records the implementation digest.
 
 The default build now implements the revised Bronze-to-Silver contract. It uses
 four field contracts, a durable SQLite source index, stable source and component
@@ -30,18 +91,18 @@ Silver is the structured, standardized layer. It combines deduplication within
 each seller, schema and unit standardization, supported price normalization and
 source evidence review. Gold further enriches Silver for a downstream use case.
 
-The existing chocolate implementation also emits model eligibility and training
+The historical chocolate implementation emits model eligibility and training
 views during its combined Silver build, then exports immutable Parquet Gold for
-the training use case. Those legacy outputs remain documented below; removing
-their model dependency requires a runtime migration.
+the training use case. Those legacy outputs remain documented below. The default
+standard Silver path ends at structured source facts.
 
 The revised requirements also preserve IDs through a durable source-to-ID index
 and generate reports of schema popularity, categorical values and numeric ranges with
 every build. See [source identity](spec.md#persistent-source-identity) and
 [profiling requirements](spec.md#silver-profiling-reports). The
 [plan](../lifecycle/plan.md#bronze-to-silver-specification-alignment-4-october-2026)
-owns the proposed SQL index, calculations and structures to validate against
-Bronze. These additions remain pending implementation.
+records the proposed SQL index and calculations; its implementation section
+records their validated standard Silver structures.
 
 The [schema guide](chocolate-schema.md) owns the chocolate contract with 103 attributes,
 standardization rules, review format and pricing model handoff. The
@@ -555,3 +616,17 @@ inference decisions beside a conventional `training/` Gold child.
 The [experimental refit](analysis/lightgbm-without-brand-inferred-refit.md)
 uses available cells and current displayed prices while reporting numerical
 usability and family grouping separately from eligibility.
+
+## Conflict parser review, 10 October 2026
+
+The complete conflict audit retained locally at `data/investigation/2026-10-10-chocolate-local-reports/docs/data/schema-proposals/chocolate-conflict-audit-2026-10-10.md`
+reviews every conflict in the corpus after the NOMO variant repair. The local
+recipe 9 assembles original heading lines and distinguishes complementary
+source excerpts from competing numeric or ingredient recipe values. All literal
+assertions and references remain evidence; joining source wording does not resolve
+its factual claims. Explicit constituent cocoa percentages are excluded from total
+cocoa extraction. Lolly count expressions and decimal pack arithmetic supply
+consistent total grams while contradictory unit grams remain conflicts. Nutrition
+panels with internally contradictory rows are withheld with diagnostics.
+Earlier snapshots retain their original parser results. Published defaults retain
+their existing contract references pending release review.

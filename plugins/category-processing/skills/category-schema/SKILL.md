@@ -32,6 +32,13 @@ the subsequent steps within the same authorized task.
 
 ## Establish the study and evidence
 
+For the chocolate study, the requested schema inspection and definition model
+is GPT6.1 Sol with high reasoning effort. GPT6 Luna (`gpt-6-luna`) with medium reasoning
+effort handles text extraction under concrete definitions in the processing
+workflow. Follow the shared [model-role reference](../category-processing/references/text-extraction.md)
+for exact-setting verification and evidence boundaries. This instruction records
+the study's model choice; it does not provision models or change the calling chat.
+
 Read [raw-research.md](references/raw-research.md) for corpus inventory, semantic
 investigation and the proposal deliverable. Start from original retained captures;
 processed rows and discovery reports can guide investigation but do not define

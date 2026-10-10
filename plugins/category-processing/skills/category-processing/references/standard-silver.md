@@ -131,8 +131,58 @@ semantic correctness. Inspect successful extraction as well as reported failures
 Chocolate v2 distinguishes explicit identical-unit packs from unit mass. It uses
 labeled body weights and does not interpret bare nutrition-table gram cells as
 pack weights. Unclassified candidates remain in the review queue with evidence.
+For a selected variant, quantity attribution precedes conflict resolution. The
+source variant ID must match the selected variant and exactly one catalog entry;
+their explicit pack expressions and any pack in the listing name must agree.
+A shared body expression matching another catalog option is retained in the
+review queue as `quantity_refers_to_other_variant`, with its original source text
+and pointer. Missing or inconsistent variant evidence preserves the disagreement.
+Independent selected-name, selected-title and applicable body evidence still
+conflict when their quantities differ. Multipack expressions establish count,
+unit mass and their arithmetic total; `Weight: 38g X 24 bars` supplies 912 g
+total and 38 g per unit. Selected-variant price quantity candidates use the same
+refined totals. Shopify `grams` remains excluded from edible weight.
 
 ## Author a field profile
+
+### Configured chocolate nutrition tables
+
+The chocolate adapter supports an optional `pipeline.json` `nutrition_tables`
+object. The published v2 profile has no such configuration; a full custom profile
+can select it. Keep analytical payloads in a separate versioned working directory
+until their reviewed publication. The object contains:
+
+- `labels`: normalized source labels mapped to `{"attribute":"nutrition.fat_g_per_100g"}`
+  or `{"energy":true}`. `source-mappings.json` must repeat this exact object under
+  `nutrition_label_aliases`; drift fails loading. Normalization removes parenthetical
+  units, punctuation and a trailing `g`/`mg`. Original labels still establish units.
+- `energy`: `kj` and `kcal` mapped to their numeric per-100 g catalog fields.
+- `sections`: capture-root pointers under `/raw_record/information/`, with `format`
+  `text`, `section_array` or `heading_map`. Arrays declare `text_key`, optionally
+  `heading_key` and `heading_pattern`; maps optionally select headings by pattern.
+  Optional `source_keys` limits a rule to listed sources. Retained HTML tables and
+  text tables separated by `|` are supported.
+- `require_single_product_panel`: when true, incompatible panels anywhere among
+  the configured representations, or multiple explicit `gtin_number-*` component
+  keys, prevent numeric assertions about the complete product. A subset of an
+  otherwise identical complete panel is treated as an abridged representation.
+- `excluded_source_products`: source key to a list of string source product IDs
+  whose panel attribution is unresolved. Retain their evidence and diagnostics.
+
+Select one explicitly labeled per-100 g column. Keep blank HTML columns, serving
+columns and reference-intake percentages distinct. An unlabeled kcal continuation
+row is aligned with the preceding energy row. Numeric mass requires `g` or `mg`
+in its value or original label; no unit is assumed for a bare number. Zero is a
+valid declaration. `<`, `≤`, `>`, `≥` and `~` preserve their qualifier. Prepared
+bases, ranges, unfamiliar labels and unresolved units remain diagnostics.
+
+Original panel text and each capture pointer accompany accepted readings.
+Duplicate views retain their references. Source fragments consumed into a bounded
+nutrition panel are replaced by that panel's source text; original captures and
+earlier snapshots remain intact. Several component panels need component subjects
+or resolution of source disagreement before they can supply product values.
+The extractor does not derive salt from sodium, serving conversions or an
+aggregate nutrient profile for an assortment. Gold selects its own contexts.
 
 `init-silver-profile --input <definition.json> --output <profile>` accepts:
 
@@ -152,3 +202,55 @@ Declare units, vocabularies, bounds, semantic context and evidence-based meaning
 Numeric source values with explicit units use declared conversion factors. Price
 and quantity extraction are optional. Targets and predictors belong to the
 separate [Gold procedure](silver-to-gold.md).
+
+Chocolate table extraction preserves parenthesized nutrient labels and stops a
+stacked panel at its next explicit serving basis. Candidate schema extensions can
+retain source-declared net carbohydrate separately from available and total
+carbohydrate; the parser performs no arithmetic to equate those declarations.
+
+## Literal section resolution and conflict diagnostics
+
+A custom recipe may declare `source_text_resolution`, mapping literal string
+fields with `standardization_rule: source_section` to `collect_sections` or
+`equivalent_sections`. Other field types and rules are rejected by the contract
+loader. Both policies operate only on parsed candidates at the same subject,
+capture, field, scope, qualifier and basis; reviewed decisions keep precedence.
+Inferred disagreements receive the standard conflict rule.
+
+`collect_sections` joins distinct original excerpts with newlines in extraction
+order. A shorter excerpt contained within another excerpt collapses only when
+both use the same exact source reference. All assertions and capture references
+remain in the snapshot. This collects literal wording; it does not establish
+certification, allergen safety, recipe agreement or nutritional consistency.
+`equivalent_sections` accepts case, whitespace and leading Ingredients heading
+differences; it retains the first original wording. Different recipes remain
+conflicts and can require stable component subjects.
+
+The chocolate recipe can opt into
+`source_section_parsing: bounded_chocolate_sections`. It assembles cached
+`original_heading_sections` lines with a reference to their retained heading
+array, excludes exact `Ocado Price Promise` and `Shop all ...` navigation labels
+with diagnostics, and bounds a single labeled ingredient statement at explicit
+Origin, Nutrition, Allergen, Allergy advice, Shelf life or Storage headings.
+Several Ingredients labels prevent truncation. Typed warning extraction still
+uses the complete source text. Default profiles do not select these new policies.
+
+The cocoa parser rejects a percent immediately followed by cocoa butter, mass,
+powder or beans as `cocoa_constituent_is_not_total_cocoa`. Original wording stays
+in its capture and diagnostic. Several declared component cocoa percentages
+remain conflicting candidates without stable component attribution. An explicit
+`Finished Product contains: Cocoa Solids ...` declaration uses product scope;
+neighboring milk/dark chocolate percentages retain ingredient scope and their
+qualifiers.
+
+With `require_single_product_panel`, differing amounts, units or qualifiers for
+one nutrient inside the same panel now produce
+`nutrition_inconsistent_rows_within_panel`. Exact repeated rows are compatible.
+This closes the case where one signature contained both contradictory rows and
+passed comparison against other panels. Whole-product numbers remain withheld
+pending component attribution or source resolution.
+
+Explicit `12g / 72 lollies` quantity syntax supplies count 72, unit grams 12 and
+total grams 864. `Each 11g lolly` supplies a competing unit value with its own
+basis; it cannot change the pack total. Pack multiplication uses decimal arithmetic
+so `12 x 20.7g` gives exactly 248.4 g. Genuine competing quantities retain conflicts.
