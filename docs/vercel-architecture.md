@@ -1,16 +1,8 @@
 # Vercel application architecture
 
-Design recorded before implementation on 2026-10-03 in response to the request to
-use Vercel for both frontend and backend. Application root: `apps/web`.
-
-The [preview](https://rgc-9blxl7c79-ptyyyy-s-projects.vercel.app) is deployed with
-Vercel sign-in protection. Its cloud build verified data, vendor assets and all
-seven API snapshot traces. Local Chromium verified the family navigation and
-HTML terrain tooltips, point selection, orbit dragging, price slices and their
-2D sections. Numerical checks verified closed faces and volume conservation.
-Hosted interactions for this deployment remain unverified. The earlier cleaned
-preview passed 27 hosted route/asset checks and eight Next.js asset checks.
-See the [lifecycle proof](lifecycle/plan.md#proof).
+Application root: `apps/web`. Next.js serves the UI and server APIs. Use the
+[app setup guide](../apps/web/README.md) for execution and provider configuration.
+Keep deployment receipts and research population details in ignored documents.
 
 ## Deployment and data flow
 
@@ -204,7 +196,7 @@ Next.js constructs an internal URL with a different hostname, while rejecting
 foreign origins before calling the provider.
 
 The extraction panel offers **Use example photos** for the front and back of
-Well&Truly Fudge & Brownie Oat M!lk Chocolate, 30 g. Their original JPEG bytes are
+the bundled demonstration product. Their original JPEG bytes are
 repository demo assets in `apps/web/public/examples/well-and-truly/`. Selection
 loads both images for preview and clears the description after preparation
 succeeds; a separate **Extract traits** action submits the current inputs. The
@@ -314,39 +306,19 @@ See [Codex authentication](https://learn.chatgpt.com/docs/auth) and
 A private Tailscale address alone is not reachable from ordinary Vercel Functions.
 [Tailscale Funnel](https://tailscale.com/docs/features/tailscale-funnel) can expose
 the token-protected localhost bridge over HTTPS. The laptop must stay awake,
-connected and signed in. No tunnel is currently published. Setup commands and
+connected and signed in. Setup commands and
 Vercel environment variables are in [the app README](../apps/web/README.md).
 
-## Validation and remaining proof
+## Validation
 
-The real default terrain has 289 complete core-range rows from 3,743 matching
-listings and 892 usable prices; 81 prices are above the core range. Missing score
-and Z counts are disclosed, and raw snapshot eligibility remains zero. The app's added test fixtures and retired compatibility routes have been removed
-at the user's request. Current validation uses TypeScript, production compilation,
-asset/data verification and hosted HTTP checks, recorded in the lifecycle plan.
-
-Local Chromium with software WebGL verified family navigation, readable tooltip
-content and bounds, product selection, orbit dragging, price slices and pointer leave. Other
-browsers and the latest preview's hosted interaction flow remain unverified.
-
-Local browser checks verified example selection, custom upload and resizing of
-both original JPEGs, removal/appending, the two-image limit and preservation of
-draft name and price. Extraction reached the API and displayed the expected 503
-for missing provider configuration. This photo-input revision has not been
-deployed; the hosted preview above retains the earlier version.
-
-Earlier sandboxed Codex attempts failed during app-server initialization
-(`Operation not permitted`). Direct local text and two-photo extraction now succeed using
-the installed CLI and ChatGPT sign-in when the local server runs with host
-permissions. Browser review/Apply retained the draft price. Current proof is
-recorded in the lifecycle plan. An authenticated
-hosted tunnel remains to be verified. No API key has been provisioned. The
-locally connected synthetic price demo has its own verification; its endpoint
-and form require a hosted deployment.
+Validate types, production builds, snapshot and asset integrity, and the relevant
+browser interactions. Record actual deployment status and research-specific
+measurements privately. Verify configured providers and access controls in their
+intended environment; local execution does not establish hosted availability.
 
 ## Synthetic pricing function
 
-[The serving guide](data/analysis/web-fixture-pricing.md) defines
+The verified model artifact and its interface define
 `POST /api/predict-price`. Its original fixture model and manifest are downloaded
 at an immutable revision into ignored `apps/web/model-cache/`, verified by hash
 and identity, and included in the Node function trace. Prebuild prepares missing

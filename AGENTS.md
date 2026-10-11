@@ -34,11 +34,14 @@ concerns justify it; otherwise, continue toward completing the task.
 
 # Documentation maintenance
 
-Keep new generated data analysis, case audits, inference artifacts and execution
-reports in ignored local storage under `data/investigation/`. Copy task analysis
-artifacts to the local main checkout when landing code. Git retains methodology,
-implementation guides and validation summaries; existing historical reports
-retain their recorded locations.
+Keep research-specific intentions, category/source inventories, case audits,
+observations, schema proposals, experimental results and publication receipts in
+ignored local storage under `docs/private/` or `data/investigation/`. This applies
+to historical material as well as new work. Preserve originals before removing
+research detail from maintained documents. Copy private task documents to the
+local main checkout when landing changes. Git retains generic methodology,
+implementation interfaces and software validation summaries. Do not reproduce
+research field catalogs or schema definitions in public documentation.
 
 Update canonical documents and `docs/lifecycle/plan.md` with behavioral, schema,
 pipeline or modeling changes. Follow the ownership and required coverage tables
@@ -80,10 +83,8 @@ Silver → immutable Parquet Gold as the chocolate training architecture. Silver
 owns source identities, standardization, evidence review, persistent corrections
 and profiling reports. Gold owns downstream comparison groups, targets, features,
 eligibility and model-input preparation. Preserve historical Silver eligibility
-decisions as provenance. The current chocolate study uses
-`current-consumer-price-1`: collected displayed prices serve as the regular-price
-proxy without a separate regular-price, promotion or confirmed tax gate. Record
-this assumption in model specifications, run artifacts and `PROJECT.md`
-limitations. Historical `regular-consumer-price-1` snapshots and other study
-contracts retain their original price basis. Family taxonomy decisions need
+decisions as provenance. Selected price-policy assumptions belong in dataset-owned model specifications
+and private run records. Public guides describe supported target-policy behavior
+without identifying an active study. Historical snapshots retain their original
+price basis. Family taxonomy decisions need
 source evidence and stable reusable IDs, without merging seller rows.

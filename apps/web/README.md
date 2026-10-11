@@ -4,10 +4,9 @@ Next.js serves the React dashboard and collection/extraction APIs from one
 Vercel project. The verified immutable collection lives in private `snapshot/`
 files, derived from published Gold inferred data. The immutable source revision
 and manifest hash are pinned in [collection-dataset.json](collection-dataset.json).
-The collection includes 2,159 accepted additions across 33 traits with their
-original evidence and review states. Browser requests fetch bounded cohorts, terrain rows and selected evidence.
+Browser requests fetch bounded cohorts, terrain rows and selected evidence.
 See the [architecture](../../docs/vercel-architecture.md),
-[API interfaces](lib/contracts.ts) and [current proof](../../docs/lifecycle/plan.md#proof).
+[API interfaces](lib/contracts.ts) and [current proof](../../docs/lifecycle/plan.md#verification).
 
 ## Run locally
 
@@ -51,8 +50,7 @@ The closed layered terrain smooths nearby numeric values without moving exact
 product dots. Layer thickness is a visual category share, not a causal price
 contribution. Unsupported areas remain open; smoothing and layer highlighting
 are adjustable. Rotation defers geometry work, and a 2D projection provides a
-fallback. The default view shows 289 complete observations; excluded counts are
-available in the help control, and incomplete products remain in the matrix.
+fallback. Excluded counts are available in the help control; incomplete products remain in the matrix.
 
 Chart hover details use an HTML tooltip with explicit text and background colours.
 Product points show the name, observed or proposed unit price, demo trait score
@@ -75,7 +73,7 @@ The score cannot be edited directly. Price changes only the draft's price positi
 This is a disclosed prototype recipe, not the teammate's fitted model.
 
 Choose **Use example photos** to load the supplied front and back photos of
-Well&Truly Fudge & Brownie Oat M!lk Chocolate, 30 g, or upload your own images.
+the bundled demonstration product, or upload your own images.
 Add or remove up to two readable PNG/JPEG/WebP photos, each at most 20 MiB and
 40 megapixels before preparation. A new upload appends when room remains or
 replaces both photos when two are selected. Optionally add a description of up
@@ -96,14 +94,10 @@ draft clears both panels' prior sessions.
 Extraction checks the browser origin against the requested host, so both
 `localhost` and `127.0.0.1` work when opened at their matching local address.
 
-The original JPEGs are preserved in `public/examples/well-and-truly/front.jpg`
-and `back.jpg` as repository demo data, with hashes checked through
-`public/asset-manifest.json`. Image preparation creates temporary browser copies.
-The example has no prefilled extracted traits. Its label's
-43% minimum cocoa statement qualifies the chocolate component, and “fairly
-traded” does not establish a named Fairtrade certification. Review those meanings
-before applying candidates. The example may lack a supported input for the
-existing demo score; selecting photos does not supply a score or training row.
+Bundled demonstration images are verified through `public/asset-manifest.json`.
+Image preparation creates temporary browser copies. Selecting an example does
+not supply prefilled extracted traits, model support or a training row. Review
+component scope and the wording of claims before applying any candidates.
 
 Core range uses full-cohort Tukey bounds and discloses omitted tails. Full range
 includes every usable price. Gap finder highlights interior empty price bands;
@@ -203,19 +197,15 @@ Configure these server-only Vercel variables, then redeploy:
 No OpenAI API key is required for this provider. Vercel revalidates the returned
 traits. Do not remove the preview's access protection to set this up.
 
-Direct local text and two-photo extraction are verified with the installed CLI's
-ChatGPT sign-in, including review/Apply and preservation of the draft price.
-Earlier sandboxed attempts failed during app-server initialization; run the local
-server with the host permissions needed by the installed CLI. No Tailscale tunnel
-has been published. Hosted bridge configuration and network access remain pending.
-The [lifecycle plan](../../docs/lifecycle/plan.md#proof) records current live proof.
+Validate the configured extraction provider in the intended environment before
+release. Local sign-in does not establish hosted bridge configuration or network
+availability. Keep live verification receipts in ignored local documents.
 
 ## Vercel setup
 
-Project `rgc` in team `ptyyyy-s-projects` uses Next.js and Node 24.x, London
-(`lhr1`) functions, `npm ci` and `npm run build`. This app's ignored
-`.vercel/project.json` records the existing link. When connecting the whole Git
-repository, set Root Directory to `apps/web` and keep the framework output default.
+Use the configured Next.js project and Node runtime. When connecting the Git
+repository, set Root Directory to `apps/web`; the ignored `.vercel/project.json`
+records the local project link. Keep organization and deployment receipts private.
 
 ```sh
 vercel login
@@ -242,43 +232,12 @@ The Vercel ignore rule excludes only the app's root README; the vendor README
 is a required asset included in deployment and integrity checks.
 No raw archives or model training run on page requests.
 
-## Current preview
+## Validation
 
-The [current preview](https://rgc-9blxl7c79-ptyyyy-s-projects.vercel.app) is READY
-with price slices, the family popovers removed and HTML chart tooltips. The cloud build
-verified the data, all three vendor assets and all seven API snapshot traces.
-Local Chromium checks passed for family hover/click, product hover content,
-tooltip bounds, point selection, orbit dragging and pointer leave. Price slice
-checks covered pointer and keyboard input, both retained sides, the camera
-facing the cut, matching 2D sections, mobile controls and restoring the cake.
-Numerical checks passed for closed faces and volume conservation. The preview
-retains Vercel sign-in protection.
-
-The earlier cleaned preview passed 27 hosted route/asset checks and eight Next.js
-asset checks; those checks have not been repeated against this deployment.
-The terrain retains 289 core-range or 338 full-range products. Provider setup
-is still required for extraction.
-
-The example-photo and custom-upload revision is verified locally and has not
-been deployed to this preview.
-
-## Validation limits
-
-The Gold inferred snapshot has 3,743 listings, 103 traits, 33,845 known cells
-and zero eligible model rows. Its historical regular-price training policy and
-readiness remain recorded separately from the current-price training study. The test fixtures added during this demo have been removed. TypeScript,
-production build and data/asset integrity checks validate the current app.
-See the lifecycle plan for hosted verification.
-
-Local Chromium with software WebGL verified family navigation, terrain tooltips,
-selection, orbit dragging and price slices. Other browsers and the hosted
-interaction flow remain unverified.
-Local browser checks verified example selection, custom uploads, resizing,
-removal and the two-photo limit. Live text and two-photo requests succeeded
-through local Codex with ChatGPT sign-in. Review/Apply populated the draft and
-retained its proposed price. Hosted bridge setup remains pending.
-The synthetic pricing fixture is connected locally; a real market
-pricing benchmark remains unvalidated. The hosted preview predates these features.
+Run TypeScript, production build, data/asset integrity and relevant browser checks.
+A valid snapshot or successful build does not establish extraction accuracy or
+model readiness. Preserve actual deployment receipts, population counts and
+research results in ignored documents. Verify provider setup before using extraction.
 
 ## Synthetic price prediction
 
@@ -301,7 +260,7 @@ are required; extraction still needs its separate provider configuration.
 `POST /api/predict-price` accepts only model fields and explicit scope; it rejects
 proposed price, unknown categories, missing required fields and weights outside
 the fitted range. Legacy nuts `absent` needs user review before the model's
-`explicitly_absent` choice. See [the serving guide](../../docs/data/analysis/web-fixture-pricing.md).
+`explicitly_absent` choice. See [the serving architecture](../../docs/vercel-architecture.md).
 
 The web runtime computes exact stored-path SHAP in Node and is checked against
 LightGBM 4.6.0 native contributions across 324 input combinations. Pounds and

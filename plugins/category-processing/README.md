@@ -1,18 +1,12 @@
 # Category Processing Agent Plugin
 
-## Chocolate text extraction model roles
+## Text extraction and review
 
-The study requests GPT6 Luna (`gpt-6-luna`) with medium reasoning effort for structured
-candidates from text and GPT6.1 Sol with high reasoning effort for inspection, schema
-definition, evolution and candidate assessment. The
+The calling harness selects execution models from the authorized task. The
 [standalone workflow](skills/category-processing/references/text-extraction.md)
-defines evidence provenance, corpus accounting and the existing `--inferences`
-handoff. Verify exact supported identifiers before execution. These are calling
-harness instructions; the package does not call models or configure chat settings.
-Use one record per worker call with constrained identifiers and selected-offer
-context. Account separately for absent attributes, additional contexts on
-available attributes and deferred conflicts. Every proposal still needs Sol
-assessment against original evidence before the inference handoff.
+defines provenance, corpus accounting and the `--inferences` handoff. The package
+does not invoke models or alter chat settings. Keep actual assignments, research
+source coverage and run receipts in ignored local documents.
 
 ## Schema evolution while processing the complete corpus
 
@@ -40,8 +34,7 @@ for the conservative attribution rules and unresolved cases.
 The default build now implements the revised Bronze-to-Silver contract. It uses
 four field contracts, a durable SQLite source index, stable source and component
 IDs, contextual facts with `.source` and `.method`, explicit states, persistent
-human corrections and schema profiling on every build. It accepts an existing
-103-field chocolate catalog through a deterministic migration and retains exact
+human corrections and schema profiling on every build. It accepts a compatible dataset-owned catalog through a deterministic migration and retains exact
 input/effective contract hashes. Model policy and training preparation execute
 in Gold. Historical formats remain available with `--legacy`.
 
@@ -50,7 +43,7 @@ report calculations, correction recovery and limitations. Published four-file
 references are `profiles/<category>/silver-dataset-contract.json`, pinned at
 `337fb7f3984ac648e67edd2cb47802f056193efc`. Historical five-file references retain
 `dataset-contract.json`; coffee's separate Gold design uses
-`profiles/coffee/gold-dataset-contract.json`. Pilot snapshots remain local.
+`profiles/coffee/gold-dataset-contract.json`. Research snapshots and execution receipts remain private.
 
 ## Historical compatibility interface
 

@@ -163,15 +163,29 @@ previous push commit outside the fetched history, the workflow fetches that exac
 commit before checking coverage. An unavailable comparison commit remains a
 validation failure; the workflow does not reduce it to a structural-only check.
 
-## Local analysis artifacts
+## Private research documents and dataset definitions
 
-New generated analysis, case audits, candidate inferences and execution reports
-belong in ignored `data/investigation/` storage. Copy the task artifacts to the
-local main checkout when landing the implementation. Keep methodology, interface
-documentation, implementation status and validation summaries in Git. Reference
-local artifacts as code paths, so clean-clone documentation checks do not require
-them. Existing historical reports retain their recorded locations; authoritative
-contracts still use the dataset publication and immutable manifest workflow.
+Research intentions, category and seller inventories, original case evidence,
+coverage measurements, proposals, experimental results and publication receipts
+belong in ignored `docs/private/` or `data/investigation/` storage. Historical
+research material follows the same rule. Preserve original files and a checksum
+manifest before removing their tracked copies or rewriting mixed documents.
+Sync private task artifacts to the main checkout when landing changes.
+
+Git retains software interfaces, general methodology, runnable commands and
+software validation. A public guide must not reproduce actual research outcomes
+or require ignored material for its links or checks. Use synthetic examples where
+an interface needs illustration and label them as such.
+
+Analytical schemas, field catalogs, mappings, validators, recipes and model designs
+are dataset assets. Git keeps only minimal immutable resolution references and
+hashes. Draft proposals stay local until an applicable authorized dataset release;
+ignoring a document does not authorize publishing it elsewhere.
+
+Ignore patterns do not remove previously tracked files. Remove dedicated research
+files from the tracked tree while retaining private copies, and rewrite mixed
+guides around their implementation interfaces. These changes affect future
+commits; they do not erase earlier Git history or external publications.
 
 ## Completion record
 
@@ -184,7 +198,7 @@ deployment and communication require authorization within their own task scope.
 
 ## Gold and fixed target maintenance
 
-Changes to Gold build/review/load interfaces require `docs/data/spec.md`, `docs/data/chocolate-schema.md`, `docs/data/chocolate-silver.md`, `docs/data/chocolate-gold.md`, `README` and `docs/lifecycle/plan.md`. Experimental regression/training changes require the model specification, schema/Silver guides and lifecycle status; family mapping changes require the data specification and those guides. Trainer handoff also updates Gold. Canonical contract bodies stay dataset-owned; prepare local versioned releases and update immutable references after approved verified publication. Current chocolate training uses the explicit `current-consumer-price-1` displayed-price proxy and records its assumptions in `PROJECT.md` limitations and run artifacts. Historical regular-price studies and the standalone portable profiles retain their selected fixed policy; preserve their immutable contracts. New Gold target preparation does not rewrite source evidence.
+Changes to Gold build/review/load interfaces require `docs/data/spec.md`, `docs/data/chocolate-schema.md`, `docs/data/chocolate-silver.md`, `docs/data/chocolate-gold.md`, `README` and `docs/lifecycle/plan.md`. Experimental regression/training changes require the model specification, schema/Silver guides and lifecycle status; family mapping changes require the data specification and those guides. Trainer handoff also updates Gold. Canonical contract bodies stay dataset-owned; prepare local versioned releases and update immutable references after approved verified publication. A selected displayed-price proxy must retain its assumptions in the dataset-owned design and private run artifacts; public guides document supported policy behavior. Historical regular-price studies and the standalone portable profiles retain their selected fixed policy; preserve their immutable contracts. New Gold target preparation does not rewrite source evidence.
 
 Locked development dependencies include NumPy 2.2.6 and PyArrow 21.0.0 so pytest exercises numerical and Parquet behavior instead of skipping it. Preserve administrative Gold review provenance separately from evidence-backed Silver eligibility. The schema-release review policy in [agent-led maintenance](decisions/agent-led-schema-maintenance.md) remains authoritative before any Hugging Face commit.
 
