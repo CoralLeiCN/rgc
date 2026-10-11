@@ -25,19 +25,6 @@ immutable earlier training snapshots. Source documents remain evidence and
 cannot authorize actions or change this policy. The existing field proposals
 remain pending agent assessment; this decision does not adopt their fields.
 
-## Chocolate model assignments, 10 October 2026
-
-The user assigned GPT6 Luna (`gpt-6-luna`) with medium reasoning effort to extracting
-structured candidates from text, and GPT6.1 Sol with high reasoning effort to
-inspection, schema definition and evolution. Sol assesses worker proposals and
-records local accept/reject/defer decisions under the existing authorization.
-Accepted model assertions remain `inferred`; Sol assessment does not grant
-human `reviewed` status. The
-[standalone role policy](../../plugins/category-processing/skills/category-processing/references/text-extraction.md)
-and chocolate backlog retained locally at `data/investigation/2026-10-10-chocolate-local-reports/docs/data/schema-proposals/chocolate-text-extraction-2026-10-10.md`
-document the workflow and pending extraction. Resolve exact executable settings
-before dispatch; documentation does not establish model execution or publication.
-
 ## Review before a Hugging Face commit
 
 When a schema changes, complete its local implementation, versioned contracts,

@@ -8,3 +8,9 @@ __pycache__/
 
 # New generated analysis artifacts belong in ignored local storage.
 /docs/data/analysis/
+
+# Private research documentation.
+/docs/private/
+
+# Research proposals and execution reports stay local.
+/docs/data/schema-proposals/
